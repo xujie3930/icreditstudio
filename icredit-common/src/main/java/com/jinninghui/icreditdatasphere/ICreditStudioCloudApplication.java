@@ -1,4 +1,4 @@
-package com.jinninghui.icreditstudio;
+package com.jinninghui.icreditdatasphere;
 
 import com.hashtech.businessframework.sequence.configuration.EnableSequenceService;
 import com.hashtech.businessframework.validate.EnableValidator;
@@ -22,10 +22,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
-public class ICreditCloudApplication {
+public class ICreditStudioCloudApplication {
 
     public static void main(String[] args) {
-        SpringApplication springApplication = new SpringApplication(ICreditCloudApplication.class);
+        SpringApplication springApplication = new SpringApplication(ICreditStudioCloudApplication.class);
         springApplication.setBannerMode(Banner.Mode.OFF);
         springApplication.run(args);
     }

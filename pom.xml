@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <version>0.0.1</version>
-    <groupId>com.jinninghui</groupId>
+    <groupId>com.jinninghui.icreditdatasphere</groupId>
     <artifactId>iCreditStudio-all</artifactId>
     <packaging>pom</packaging>
 
@@ -58,7 +58,7 @@
 
             <!-- icredit studio -->
             <dependency>
-                <groupId>com.jinninghui</groupId>
+                <groupId>com.jinninghui.icreditdatasphere</groupId>
                 <artifactId>icredit-common</artifactId>
                 <version>${icredit.studio.version}</version>
             </dependency>

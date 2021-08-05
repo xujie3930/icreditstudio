@@ -1,4 +1,4 @@
-package com.jinninghui.icreditstudio;
+package com.jinninghui.icreditdatasphere;
 
 import com.hashtech.businessframework.sequence.configuration.EnableSequenceService;
 import com.hashtech.businessframework.validate.EnableValidator;
