@@ -1,0 +1,13 @@
+#eureka:
+#  instance:
+#    instance-id: ${spring.cloud.client.ip-address}:${server.port}:VIFRAME-1.0.0.RELEASE
+#    hostname: ${spring.cloud.client.ip-address}
+server:
+  tomcat:
+    accept-count: 2000
+    max-connections: 2000
+    max-threads: 800
+    basedir: ../../logs/api-gateway/
+    accesslog:
+      enabled: false
+      pattern: '%t %a "%r" %s (%D ms)'

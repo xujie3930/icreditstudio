@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: api-gateway
+  redis:
+    host: 192.168.0.30
+    port: 6379
+    timeout: 20000
+    lettuce:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+    password: hash2018
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
+system:
+  errorCode: '500'
+#  cloud:
+#    config:
+#      uri: http://192.168.0.14:8001/   # 配置spring cloud config服务端的url
+#      profile: dev                      # 指定profile
+#      label: develop                     # 指定gitlab仓库的分支
+management:
+  endpoints:
+    shutdown:
+      enabled: true
+    web:
+      exposure:
+        include: prometheus, info, health, shutdown
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 260000 # hystrix时间配置必须大于ribbon超时时间，否则重试机制没有意思
+ribbon:
+  ReadTimeout : 50000
+  SocketTimeout : 50000
+  ConnectTimeout: 50000
+zuul:
+  ratelimit:
+    key-prefix: /**
+    enabled: true
+    repository: REDIS
+    behind-proxy: true
+    policies:
+      hash: #特定的路由
+        limit: 100 #可选- 每个刷新时间窗口对应的请求数量限制
+#        quota: 300 #可选-  每个刷新时间窗口对应的请求时间限制（秒）
+        refresh-interval: 10 # 刷新时间窗口的时间，默认值 (秒)
+        type: #可选 限流方式
+#          - user #通过登录用户名进行区分，也包括匿名用户
+          - ORIGIN #通过客户端IP地址区分
+#          - url #通过请求路径区分
+  sensitive-headers:
+  host:
+    connect-timeout-millis: 10000
+    socket-timeout-millis: 60000
+  add-host-header: true
+  routes:
+    hash:
+      path: /**
+      url: http://localhost:13248
+logging:
+  #  file: ../logs/api-gateway/api-gateway.log
+  #  level:
+  #    root: info
+  config: classpath:logback/logback-dev.xml
+server:
+  port: 13249

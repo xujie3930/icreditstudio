@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/datadev/datadev.iml" filepath="$PROJECT_DIR$/datadev/datadev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/datasync/datasync.iml" filepath="$PROJECT_DIR$/datasync/datasync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert/dolphinscheduler-alert.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert/dolphinscheduler-alert.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-dingtalk/dolphinscheduler-alert-dingtalk.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-dingtalk/dolphinscheduler-alert-dingtalk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-email/dolphinscheduler-alert-email.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-email/dolphinscheduler-alert-email.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-feishu/dolphinscheduler-alert-feishu.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-feishu/dolphinscheduler-alert-feishu.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-http/dolphinscheduler-alert-http.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-http/dolphinscheduler-alert-http.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-plugin.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-script/dolphinscheduler-alert-script.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-script/dolphinscheduler-alert-script.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-slack/dolphinscheduler-alert-slack.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-slack/dolphinscheduler-alert-slack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-wechat/dolphinscheduler-alert-wechat.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-alert-plugin/dolphinscheduler-alert-wechat/dolphinscheduler-alert-wechat.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-api/dolphinscheduler-api.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-api/dolphinscheduler-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-common/dolphinscheduler-common.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-common/dolphinscheduler-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-dao/dolphinscheduler-dao.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-dao/dolphinscheduler-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-registry-plugin/dolphinscheduler-registry-plugin.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-registry-plugin/dolphinscheduler-registry-plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-remote/dolphinscheduler-remote.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-remote/dolphinscheduler-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-server/dolphinscheduler-server.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-server/dolphinscheduler-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-service/dolphinscheduler-service.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-service/dolphinscheduler-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-spi/dolphinscheduler-spi.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-spi/dolphinscheduler-spi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
+      <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/iCreditStudio.iml" filepath="$PROJECT_DIR$/.idea/iCreditStudio.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icredit-common/icredit-common.iml" filepath="$PROJECT_DIR$/icredit-common/icredit-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/system/system.iml" filepath="$PROJECT_DIR$/system/system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/workspace/workspace.iml" filepath="$PROJECT_DIR$/workspace/workspace.iml" />
+    </modules>
+  </component>
+</project>

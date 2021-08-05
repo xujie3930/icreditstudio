@@ -1,0 +1,131 @@
+[INFO] 2021-07-09 16:45:56.271 org.apache.zookeeper.server.ZooKeeperServerMain:[98] - Starting server
+[INFO] 2021-07-09 16:45:56.281 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:zookeeper.version=3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03/06/2019 16:18 GMT
+[INFO] 2021-07-09 16:45:56.282 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:host.name=localhost
+[INFO] 2021-07-09 16:45:56.282 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.version=1.8.0_292
+[INFO] 2021-07-09 16:45:56.283 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.vendor=AdoptOpenJDK
+[INFO] 2021-07-09 16:45:56.283 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.home=/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre
+[INFO] 2021-07-09 16:45:56.283 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.class.path=/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/target/test-classes:/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/target/classes:/Users/liyanhui/.m2/repository/org/apache/zookeeper/zookeeper/3.4.14/zookeeper-3.4.14.jar:/Users/liyanhui/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/liyanhui/.m2/repository/jline/jline/0.9.94/jline-0.9.94.jar:/Users/liyanhui/.m2/repository/org/apache/yetus/audience-annotations/0.5.0/audience-annotations-0.5.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-framework/4.3.0/curator-framework-4.3.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-client/4.3.0/curator-client-4.3.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-recipes/4.3.0/curator-recipes-4.3.0.jar:/Users/liyanhui/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/Users/liyanhui/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/Users/liyanhui/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-test/2.12.0/curator-test-2.12.0.jar:/Users/liyanhui/.m2/repository/org/javassist/javassist/3.18.1-GA/javassist-3.18.1-GA.jar:/Users/liyanhui/.m2/repository/com/google/guava/guava/24.1-jre/guava-24.1-jre.jar:/Users/liyanhui/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar:/Users/liyanhui/.m2/repository/org/checkerframework/checker-compat-qual/2.0.0/checker-compat-qual-2.0.0.jar:/Users/liyanhui/.m2/repository/com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar:/Users/liyanhui/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar:/Users/liyanhui/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar:/Users/liyanhui/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/liyanhui/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-spi/target/apache-dolphinscheduler-1.3.6-SNAPSHOT.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.5/jackson-annotations-2.10.5.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.5/jackson-databind-2.10.5.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.5/jackson-core-2.10.5.jar:
+[INFO] 2021-07-09 16:45:56.284 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.library.path=/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default:/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib:/usr/lib
+[INFO] 2021-07-09 16:45:56.284 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.io.tmpdir=/var/folders/8c/2mc2ds253c3fs2dg9rh0pmz80000gn/T/
+[INFO] 2021-07-09 16:45:56.284 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:java.compiler=j9jit29
+[INFO] 2021-07-09 16:45:56.284 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:os.name=Mac OS X
+[INFO] 2021-07-09 16:45:56.285 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:os.arch=x86_64
+[INFO] 2021-07-09 16:45:56.285 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:os.version=10.16
+[INFO] 2021-07-09 16:45:56.285 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:user.name=liyanhui
+[INFO] 2021-07-09 16:45:56.285 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:user.home=/Users/liyanhui
+[INFO] 2021-07-09 16:45:56.285 org.apache.zookeeper.server.ZooKeeperServer:[100] - Server environment:user.dir=/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper
+[INFO] 2021-07-09 16:45:56.300 org.apache.zookeeper.server.ZooKeeperServer:[836] - tickTime set to 3000
+[INFO] 2021-07-09 16:45:56.301 org.apache.zookeeper.server.ZooKeeperServer:[845] - minSessionTimeout set to -1
+[INFO] 2021-07-09 16:45:56.301 org.apache.zookeeper.server.ZooKeeperServer:[854] - maxSessionTimeout set to -1
+[INFO] 2021-07-09 16:45:56.326 org.apache.zookeeper.server.ServerCnxnFactory:[117] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+[INFO] 2021-07-09 16:45:56.367 org.apache.zookeeper.server.NIOServerCnxnFactory:[89] - binding to port 0.0.0.0/0.0.0.0:55343
+[INFO] 2021-07-09 16:45:57.695 org.apache.curator.utils.Compatibility:[48] - Running in ZooKeeper 3.4.x compatibility mode
+[INFO] 2021-07-09 16:45:57.698 org.apache.curator.utils.Compatibility:[61] - Using emulated InjectSessionExpiration
+[INFO] 2021-07-09 16:45:57.772 org.apache.curator.framework.imps.CuratorFrameworkImpl:[308] - Starting
+[INFO] 2021-07-09 16:45:57.788 org.apache.zookeeper.ZooKeeper:[100] - Client environment:zookeeper.version=3.4.14-4c25d480e66aadd371de8bd2fd8da255ac140bcf, built on 03/06/2019 16:18 GMT
+[INFO] 2021-07-09 16:45:57.789 org.apache.zookeeper.ZooKeeper:[100] - Client environment:host.name=localhost
+[INFO] 2021-07-09 16:45:57.790 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.version=1.8.0_292
+[INFO] 2021-07-09 16:45:57.790 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.vendor=AdoptOpenJDK
+[INFO] 2021-07-09 16:45:57.790 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.home=/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre
+[INFO] 2021-07-09 16:45:57.791 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.class.path=/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/target/test-classes:/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper/target/classes:/Users/liyanhui/.m2/repository/org/apache/zookeeper/zookeeper/3.4.14/zookeeper-3.4.14.jar:/Users/liyanhui/.m2/repository/log4j/log4j/1.2.17/log4j-1.2.17.jar:/Users/liyanhui/.m2/repository/jline/jline/0.9.94/jline-0.9.94.jar:/Users/liyanhui/.m2/repository/org/apache/yetus/audience-annotations/0.5.0/audience-annotations-0.5.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-framework/4.3.0/curator-framework-4.3.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-client/4.3.0/curator-client-4.3.0.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-recipes/4.3.0/curator-recipes-4.3.0.jar:/Users/liyanhui/.m2/repository/ch/qos/logback/logback-classic/1.2.3/logback-classic-1.2.3.jar:/Users/liyanhui/.m2/repository/ch/qos/logback/logback-core/1.2.3/logback-core-1.2.3.jar:/Users/liyanhui/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar:/Users/liyanhui/.m2/repository/org/apache/curator/curator-test/2.12.0/curator-test-2.12.0.jar:/Users/liyanhui/.m2/repository/org/javassist/javassist/3.18.1-GA/javassist-3.18.1-GA.jar:/Users/liyanhui/.m2/repository/com/google/guava/guava/24.1-jre/guava-24.1-jre.jar:/Users/liyanhui/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar:/Users/liyanhui/.m2/repository/org/checkerframework/checker-compat-qual/2.0.0/checker-compat-qual-2.0.0.jar:/Users/liyanhui/.m2/repository/com/google/errorprone/error_prone_annotations/2.1.3/error_prone_annotations-2.1.3.jar:/Users/liyanhui/.m2/repository/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar:/Users/liyanhui/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.14/animal-sniffer-annotations-1.14.jar:/Users/liyanhui/.m2/repository/junit/junit/4.12/junit-4.12.jar:/Users/liyanhui/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-spi/target/apache-dolphinscheduler-1.3.6-SNAPSHOT.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.10.5/jackson-annotations-2.10.5.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.10.5/jackson-databind-2.10.5.jar:/Users/liyanhui/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.10.5/jackson-core-2.10.5.jar:
+[INFO] 2021-07-09 16:45:57.791 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.library.path=/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default:/Users/liyanhui/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib:/usr/lib
+[INFO] 2021-07-09 16:45:57.792 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.io.tmpdir=/var/folders/8c/2mc2ds253c3fs2dg9rh0pmz80000gn/T/
+[INFO] 2021-07-09 16:45:57.792 org.apache.zookeeper.ZooKeeper:[100] - Client environment:java.compiler=j9jit29
+[INFO] 2021-07-09 16:45:57.792 org.apache.zookeeper.ZooKeeper:[100] - Client environment:os.name=Mac OS X
+[INFO] 2021-07-09 16:45:57.792 org.apache.zookeeper.ZooKeeper:[100] - Client environment:os.arch=x86_64
+[INFO] 2021-07-09 16:45:57.793 org.apache.zookeeper.ZooKeeper:[100] - Client environment:os.version=10.16
+[INFO] 2021-07-09 16:45:57.793 org.apache.zookeeper.ZooKeeper:[100] - Client environment:user.name=liyanhui
+[INFO] 2021-07-09 16:45:57.794 org.apache.zookeeper.ZooKeeper:[100] - Client environment:user.home=/Users/liyanhui
+[INFO] 2021-07-09 16:45:57.795 org.apache.zookeeper.ZooKeeper:[100] - Client environment:user.dir=/Users/liyanhui/Workspace/Code/github/dolphinscheduler/dolphinscheduler-registry-plugin/dolphinscheduler-registry-zookeeper
+[INFO] 2021-07-09 16:45:57.798 org.apache.zookeeper.ZooKeeper:[442] - Initiating client connection, connectString=127.0.0.1:55343 sessionTimeout=1000 watcher=org.apache.curator.ConnectionState@6849e97c
+[INFO] 2021-07-09 16:45:57.831 org.apache.zookeeper.ClientCnxn:[1025] - Opening socket connection to server localhost/127.0.0.1:55343. Will not attempt to authenticate using SASL (unknown error)
+[INFO] 2021-07-09 16:45:57.839 org.apache.curator.framework.imps.CuratorFrameworkImpl:[356] - Default schema
+[INFO] 2021-07-09 16:45:57.841 org.apache.zookeeper.server.NIOServerCnxnFactory:[222] - Accepted socket connection from /127.0.0.1:55348
+[INFO] 2021-07-09 16:45:57.842 org.apache.zookeeper.ClientCnxn:[879] - Socket connection established to localhost/127.0.0.1:55343, initiating session
+[INFO] 2021-07-09 16:45:57.864 org.apache.zookeeper.server.ZooKeeperServer:[949] - Client attempting to establish new session at /127.0.0.1:55348
+[INFO] 2021-07-09 16:45:57.869 org.apache.zookeeper.server.persistence.FileTxnLog:[216] - Creating new log file: log.1
+[INFO] 2021-07-09 16:45:57.987 org.apache.zookeeper.server.ZooKeeperServer:[694] - Established session 0x100335abb440000 with negotiated timeout 6000 for client /127.0.0.1:55348
+[INFO] 2021-07-09 16:45:57.988 org.apache.zookeeper.ClientCnxn:[1299] - Session establishment complete on server localhost/127.0.0.1:55343, sessionid = 0x100335abb440000, negotiated timeout = 6000
+[INFO] 2021-07-09 16:45:58.013 org.apache.curator.framework.state.ConnectionStateManager:[251] - State change: CONNECTED
+[WARN] 2021-07-09 16:45:58.069 org.apache.curator.utils.ZKPaths:[78] - The version of ZooKeeper being used doesn't support Container nodes. CreateMode.PERSISTENT will be used instead.
+[INFO] 2021-07-09 16:45:58.093 org.apache.zookeeper.server.PrepRequestProcessor:[653] - Got user-level KeeperException when processing sessionid:0x100335abb440000 type:create cxid:0x6 zxid:0x4 txntype:-1 reqpath:n/a Error Path:/dolphinscheduler/nodes Error:KeeperErrorCode = NoNode for /dolphinscheduler/nodes
+[INFO] 2021-07-09 16:45:58.642 org.apache.curator.framework.imps.CuratorFrameworkImpl:[955] - backgroundOperationsLoop exiting
+[INFO] 2021-07-09 16:45:58.644 org.apache.zookeeper.server.PrepRequestProcessor:[487] - Processed session termination for sessionid: 0x100335abb440000
+[INFO] 2021-07-09 16:45:58.645 org.apache.zookeeper.server.NIOServerCnxn:[1056] - Closed socket connection for client /127.0.0.1:55348 which had sessionid 0x100335abb440000
+[INFO] 2021-07-09 16:45:58.655 org.apache.zookeeper.ZooKeeper:[693] - Session: 0x100335abb440000 closed
+[INFO] 2021-07-09 16:45:58.656 org.apache.zookeeper.server.NIOServerCnxnFactory:[249] - NIOServerCnxn factory exited run method
+[INFO] 2021-07-09 16:45:58.656 org.apache.zookeeper.server.ZooKeeperServer:[502] - shutting down
+[INFO] 2021-07-09 16:45:58.656 org.apache.zookeeper.server.SessionTrackerImpl:[226] - Shutting down
+[INFO] 2021-07-09 16:45:58.657 org.apache.zookeeper.server.PrepRequestProcessor:[769] - Shutting down
+[INFO] 2021-07-09 16:45:58.657 org.apache.zookeeper.server.SyncRequestProcessor:[208] - Shutting down
+[INFO] 2021-07-09 16:45:58.657 org.apache.zookeeper.server.PrepRequestProcessor:[144] - PrepRequestProcessor exited loop!
+[INFO] 2021-07-09 16:45:58.657 org.apache.zookeeper.server.SyncRequestProcessor:[186] - SyncRequestProcessor exited!
+[INFO] 2021-07-09 16:45:58.658 org.apache.zookeeper.server.FinalRequestProcessor:[430] - shutdown of request processor complete
+[INFO] 2021-07-09 16:45:58.655 org.apache.zookeeper.ClientCnxn:[522] - EventThread shut down for session: 0x100335abb440000
+[INFO] 2021-07-09 16:45:58.664 org.apache.zookeeper.server.ZooKeeperServerMain:[98] - Starting server
+[INFO] 2021-07-09 16:45:58.665 org.apache.zookeeper.server.ZooKeeperServer:[836] - tickTime set to 3000
+[INFO] 2021-07-09 16:45:58.665 org.apache.zookeeper.server.ZooKeeperServer:[845] - minSessionTimeout set to -1
+[INFO] 2021-07-09 16:45:58.665 org.apache.zookeeper.server.ZooKeeperServer:[854] - maxSessionTimeout set to -1
+[INFO] 2021-07-09 16:45:58.665 org.apache.zookeeper.server.ServerCnxnFactory:[117] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+[INFO] 2021-07-09 16:45:58.665 org.apache.zookeeper.server.NIOServerCnxnFactory:[89] - binding to port 0.0.0.0/0.0.0.0:55349
+[INFO] 2021-07-09 16:45:59.673 org.apache.curator.framework.imps.CuratorFrameworkImpl:[308] - Starting
+[INFO] 2021-07-09 16:45:59.675 org.apache.zookeeper.ZooKeeper:[442] - Initiating client connection, connectString=127.0.0.1:55349 sessionTimeout=1000 watcher=org.apache.curator.ConnectionState@9d591abc
+[INFO] 2021-07-09 16:45:59.676 org.apache.curator.framework.imps.CuratorFrameworkImpl:[356] - Default schema
+[INFO] 2021-07-09 16:45:59.691 org.apache.zookeeper.ClientCnxn:[1025] - Opening socket connection to server localhost/127.0.0.1:55349. Will not attempt to authenticate using SASL (unknown error)
+[INFO] 2021-07-09 16:45:59.694 org.apache.zookeeper.ClientCnxn:[879] - Socket connection established to localhost/127.0.0.1:55349, initiating session
+[INFO] 2021-07-09 16:45:59.695 org.apache.zookeeper.server.NIOServerCnxnFactory:[222] - Accepted socket connection from /127.0.0.1:55352
+[INFO] 2021-07-09 16:45:59.696 org.apache.zookeeper.server.ZooKeeperServer:[949] - Client attempting to establish new session at /127.0.0.1:55352
+[INFO] 2021-07-09 16:45:59.699 org.apache.zookeeper.server.persistence.FileTxnLog:[216] - Creating new log file: log.1
+[INFO] 2021-07-09 16:45:59.703 org.apache.zookeeper.server.ZooKeeperServer:[694] - Established session 0x100335ac4150000 with negotiated timeout 6000 for client /127.0.0.1:55352
+[INFO] 2021-07-09 16:45:59.705 org.apache.zookeeper.ClientCnxn:[1299] - Session establishment complete on server localhost/127.0.0.1:55349, sessionid = 0x100335ac4150000, negotiated timeout = 6000
+[INFO] 2021-07-09 16:45:59.707 org.apache.curator.framework.state.ConnectionStateManager:[251] - State change: CONNECTED
+[INFO] 2021-07-09 16:46:00.213 org.apache.zookeeper.server.SessionTrackerImpl:[163] - SessionTrackerImpl exited loop!
+[INFO] 2021-07-09 16:46:00.246 org.apache.curator.framework.imps.CuratorFrameworkImpl:[955] - backgroundOperationsLoop exiting
+[INFO] 2021-07-09 16:46:00.248 org.apache.zookeeper.server.PrepRequestProcessor:[487] - Processed session termination for sessionid: 0x100335ac4150000
+[INFO] 2021-07-09 16:46:00.250 org.apache.zookeeper.ZooKeeper:[693] - Session: 0x100335ac4150000 closed
+[INFO] 2021-07-09 16:46:00.250 org.apache.zookeeper.ClientCnxn:[522] - EventThread shut down for session: 0x100335ac4150000
+[INFO] 2021-07-09 16:46:00.250 org.apache.zookeeper.server.NIOServerCnxn:[1056] - Closed socket connection for client /127.0.0.1:55352 which had sessionid 0x100335ac4150000
+[INFO] 2021-07-09 16:46:00.261 org.apache.zookeeper.server.NIOServerCnxnFactory:[249] - NIOServerCnxn factory exited run method
+[INFO] 2021-07-09 16:46:00.262 org.apache.zookeeper.server.ZooKeeperServer:[502] - shutting down
+[INFO] 2021-07-09 16:46:00.263 org.apache.zookeeper.server.SessionTrackerImpl:[226] - Shutting down
+[INFO] 2021-07-09 16:46:00.263 org.apache.zookeeper.server.PrepRequestProcessor:[769] - Shutting down
+[INFO] 2021-07-09 16:46:00.264 org.apache.zookeeper.server.SyncRequestProcessor:[208] - Shutting down
+[INFO] 2021-07-09 16:46:00.264 org.apache.zookeeper.server.PrepRequestProcessor:[144] - PrepRequestProcessor exited loop!
+[INFO] 2021-07-09 16:46:00.264 org.apache.zookeeper.server.SyncRequestProcessor:[186] - SyncRequestProcessor exited!
+[INFO] 2021-07-09 16:46:00.265 org.apache.zookeeper.server.FinalRequestProcessor:[430] - shutdown of request processor complete
+[INFO] 2021-07-09 16:46:00.271 org.apache.zookeeper.server.ZooKeeperServerMain:[98] - Starting server
+[INFO] 2021-07-09 16:46:00.271 org.apache.zookeeper.server.ZooKeeperServer:[836] - tickTime set to 3000
+[INFO] 2021-07-09 16:46:00.272 org.apache.zookeeper.server.ZooKeeperServer:[845] - minSessionTimeout set to -1
+[INFO] 2021-07-09 16:46:00.272 org.apache.zookeeper.server.ZooKeeperServer:[854] - maxSessionTimeout set to -1
+[INFO] 2021-07-09 16:46:00.273 org.apache.zookeeper.server.ServerCnxnFactory:[117] - Using org.apache.zookeeper.server.NIOServerCnxnFactory as server connection factory
+[INFO] 2021-07-09 16:46:00.273 org.apache.zookeeper.server.NIOServerCnxnFactory:[89] - binding to port 0.0.0.0/0.0.0.0:55353
+[INFO] 2021-07-09 16:46:01.278 org.apache.curator.framework.imps.CuratorFrameworkImpl:[308] - Starting
+[INFO] 2021-07-09 16:46:01.279 org.apache.zookeeper.ZooKeeper:[442] - Initiating client connection, connectString=127.0.0.1:55353 sessionTimeout=1000 watcher=org.apache.curator.ConnectionState@bdcb605a
+[INFO] 2021-07-09 16:46:01.280 org.apache.curator.framework.imps.CuratorFrameworkImpl:[356] - Default schema
+[INFO] 2021-07-09 16:46:01.281 org.apache.zookeeper.ClientCnxn:[1025] - Opening socket connection to server localhost/127.0.0.1:55353. Will not attempt to authenticate using SASL (unknown error)
+[INFO] 2021-07-09 16:46:01.282 org.apache.zookeeper.ClientCnxn:[879] - Socket connection established to localhost/127.0.0.1:55353, initiating session
+[INFO] 2021-07-09 16:46:01.282 org.apache.zookeeper.server.NIOServerCnxnFactory:[222] - Accepted socket connection from /127.0.0.1:55356
+[INFO] 2021-07-09 16:46:01.284 org.apache.zookeeper.server.ZooKeeperServer:[949] - Client attempting to establish new session at /127.0.0.1:55356
+[INFO] 2021-07-09 16:46:01.286 org.apache.zookeeper.server.persistence.FileTxnLog:[216] - Creating new log file: log.1
+[INFO] 2021-07-09 16:46:01.289 org.apache.zookeeper.ClientCnxn:[1299] - Session establishment complete on server localhost/127.0.0.1:55353, sessionid = 0x100335aca5d0000, negotiated timeout = 6000
+[INFO] 2021-07-09 16:46:01.289 org.apache.zookeeper.server.ZooKeeperServer:[694] - Established session 0x100335aca5d0000 with negotiated timeout 6000 for client /127.0.0.1:55356
+[INFO] 2021-07-09 16:46:01.289 org.apache.curator.framework.state.ConnectionStateManager:[251] - State change: CONNECTED
+[INFO] 2021-07-09 16:46:01.319 org.apache.zookeeper.server.PrepRequestProcessor:[653] - Got user-level KeeperException when processing sessionid:0x100335aca5d0000 type:create cxid:0x5 zxid:0x4 txntype:-1 reqpath:n/a Error Path:/dolphinscheduler/lock Error:KeeperErrorCode = NoNode for /dolphinscheduler/lock
+[INFO] 2021-07-09 16:46:01.332 org.apache.dolphinscheduler.plugin.registry.zookeeper.ZookeeperRegistryTest:[75] - Thread-8 :I got the lock, but I don't want to work. I want to rest for a while
+[INFO] 2021-07-09 16:46:01.333 org.apache.dolphinscheduler.plugin.registry.zookeeper.ZookeeperRegistryTest:[92] - Thread-9 :I am trying to acquire the lock
+[INFO] 2021-07-09 16:46:02.333 org.apache.dolphinscheduler.plugin.registry.zookeeper.ZookeeperRegistryTest:[78] - Thread-8 :I'm going to start working
+[INFO] 2021-07-09 16:46:02.335 org.apache.dolphinscheduler.plugin.registry.zookeeper.ZookeeperRegistryTest:[84] - Thread-8 :I have finished my work, now I release the lock
+[INFO] 2021-07-09 16:46:02.354 org.apache.dolphinscheduler.plugin.registry.zookeeper.ZookeeperRegistryTest:[94] - Thread-9 :I got the lock and I started working
+[INFO] 2021-07-09 16:46:02.856 org.apache.curator.framework.imps.CuratorFrameworkImpl:[955] - backgroundOperationsLoop exiting
+[INFO] 2021-07-09 16:46:02.858 org.apache.zookeeper.server.PrepRequestProcessor:[487] - Processed session termination for sessionid: 0x100335aca5d0000
+[INFO] 2021-07-09 16:46:02.861 org.apache.zookeeper.ClientCnxn:[522] - EventThread shut down for session: 0x100335aca5d0000
+[INFO] 2021-07-09 16:46:02.861 org.apache.zookeeper.ZooKeeper:[693] - Session: 0x100335aca5d0000 closed
+[INFO] 2021-07-09 16:46:02.861 org.apache.zookeeper.server.NIOServerCnxn:[1056] - Closed socket connection for client /127.0.0.1:55356 which had sessionid 0x100335aca5d0000
+[INFO] 2021-07-09 16:46:02.863 org.apache.zookeeper.server.NIOServerCnxnFactory:[249] - NIOServerCnxn factory exited run method
+[INFO] 2021-07-09 16:46:02.864 org.apache.zookeeper.server.ZooKeeperServer:[502] - shutting down
+[INFO] 2021-07-09 16:46:02.865 org.apache.zookeeper.server.SessionTrackerImpl:[226] - Shutting down
+[INFO] 2021-07-09 16:46:02.866 org.apache.zookeeper.server.PrepRequestProcessor:[769] - Shutting down
+[INFO] 2021-07-09 16:46:02.866 org.apache.zookeeper.server.SyncRequestProcessor:[208] - Shutting down
+[INFO] 2021-07-09 16:46:02.866 org.apache.zookeeper.server.PrepRequestProcessor:[144] - PrepRequestProcessor exited loop!
+[INFO] 2021-07-09 16:46:02.867 org.apache.zookeeper.server.SyncRequestProcessor:[186] - SyncRequestProcessor exited!
+[INFO] 2021-07-09 16:46:02.868 org.apache.zookeeper.server.FinalRequestProcessor:[430] - shutdown of request processor complete
