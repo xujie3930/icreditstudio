@@ -14,6 +14,7 @@
         <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
         <spring.cloud.version>Finchley.RELEASE</spring.cloud.version>
         <business.framework.version>FRAMEWORK-1.1.1.RELEASE</business.framework.version>
+        <nacos.version>0.2.1.RELEASE</nacos.version>
         <icredit.studio.version>0.0.1</icredit.studio.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
@@ -48,12 +49,12 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-                <version>0.2.1.RELEASE</version>
+                <version>${nacos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
-                <version>0.2.1.RELEASE</version>
+                <version>${nacos.version}</version>
             </dependency>
 
             <!-- icredit studio -->

@@ -627,21 +627,12 @@
         <module>dolphinscheduler-dao</module>
         <module>dolphinscheduler-remote</module>
         <module>dolphinscheduler-service</module>
+        <module>dolphinscheduler-master-server</module>
+        <module>dolphinscheduler-worker-server</module>
     </modules>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.dolphinscheduler</groupId>
-                <artifactId>dolphinscheduler-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <version>1.0.0</version>
-                <!--<configuration>-->
-                <!--<allowedProvidedDependencies>-->
-                <!--<allowedProvidedDependency>org.apache.dolphinscheduler:dolphinscheduler-common</allowedProvidedDependency>-->
-                <!--</allowedProvidedDependencies>-->
-                <!--</configuration>-->
-            </plugin>
 
         </plugins>
     </build>
