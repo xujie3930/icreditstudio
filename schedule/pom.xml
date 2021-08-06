@@ -184,16 +184,6 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.dolphinscheduler</groupId>
-                <artifactId>dolphinscheduler-alert-plugin</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.dolphinscheduler</groupId>
-                <artifactId>dolphinscheduler-registry-plugin</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.dolphinscheduler</groupId>
                 <artifactId>dolphinscheduler-dao</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -214,12 +204,12 @@
             </dependency>
             <dependency>
                 <groupId>org.apache.dolphinscheduler</groupId>
-                <artifactId>dolphinscheduler-alert</artifactId>
+                <artifactId>dolphinscheduler-registry-zookeeper</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.dolphinscheduler</groupId>
-                <artifactId>dolphinscheduler-spi</artifactId>
+                <artifactId>dolphinscheduler-registry</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -629,14 +619,12 @@
     </dependencyManagement>
 
     <modules>
-        <module>dolphinscheduler-spi</module>
-        <module>dolphinscheduler-alert-plugin</module>
-        <module>dolphinscheduler-registry-plugin</module>
+        <module>dolphinscheduler-registry-zookeeper</module>
+        <module>dolphinscheduler-registry</module>
         <module>dolphinscheduler-server</module>
         <module>dolphinscheduler-common</module>
         <module>dolphinscheduler-api</module>
         <module>dolphinscheduler-dao</module>
-        <module>dolphinscheduler-alert</module>
         <module>dolphinscheduler-remote</module>
         <module>dolphinscheduler-service</module>
     </modules>

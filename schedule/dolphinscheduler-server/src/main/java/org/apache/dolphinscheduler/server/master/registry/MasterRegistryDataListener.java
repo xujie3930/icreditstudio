@@ -22,8 +22,8 @@ import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHED
 
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.NodeType;
-import org.apache.dolphinscheduler.spi.register.DataChangeEvent;
-import org.apache.dolphinscheduler.spi.register.SubscribeListener;
+import org.apache.dolphinscheduler.registry.DataChangeEvent;
+import org.apache.dolphinscheduler.registry.SubscribeListener;
 
 import javax.annotation.Resource;
 

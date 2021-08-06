@@ -40,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.dolphinscheduler</groupId>
-            <artifactId>dolphinscheduler-spi</artifactId>
+            <artifactId>dolphinscheduler-registry-zookeeper</artifactId>
         </dependency>
 
 
@@ -94,5 +94,7 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 </project>

@@ -83,7 +83,7 @@
     <modules>
         <module>gateway</module>
         <module>system</module>
-        <module>frontend</module>
+<!--        <module>frontend</module>-->
         <module>workspace</module>
         <module>datasync</module>
         <module>schedule</module>

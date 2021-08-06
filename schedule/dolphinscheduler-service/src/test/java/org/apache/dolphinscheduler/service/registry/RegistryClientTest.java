@@ -24,10 +24,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
 
 import org.apache.dolphinscheduler.common.enums.NodeType;
-import org.apache.dolphinscheduler.spi.register.Registry;
 
 import java.util.Arrays;
 
+import org.apache.dolphinscheduler.registry.Registry;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

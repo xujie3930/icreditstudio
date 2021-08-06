@@ -54,10 +54,6 @@ public class RegistryClient extends RegistryCenter {
 
     private static final Logger logger = LoggerFactory.getLogger(RegistryClient.class);
 
-    private void loadRegistry() {
-        init();
-    }
-
     /**
      * get active master num
      *

@@ -17,36 +17,23 @@
 
 package org.apache.dolphinscheduler.service.registry;
 
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_DEAD_SERVERS;
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS;
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS;
-
+import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.IStoppable;
 import org.apache.dolphinscheduler.common.utils.PropertyUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.spi.plugin.DolphinPluginLoader;
-import org.apache.dolphinscheduler.spi.plugin.DolphinPluginManagerConfig;
-import org.apache.dolphinscheduler.spi.register.Registry;
-import org.apache.dolphinscheduler.spi.register.RegistryConnectListener;
-import org.apache.dolphinscheduler.spi.register.RegistryException;
-import org.apache.dolphinscheduler.spi.register.RegistryPluginManager;
-import org.apache.dolphinscheduler.spi.register.SubscribeListener;
+import org.apache.dolphinscheduler.registry.Registry;
+import org.apache.dolphinscheduler.registry.RegistryConnectListener;
+import org.apache.dolphinscheduler.registry.RegistryException;
+import org.apache.dolphinscheduler.registry.SubscribeListener;
+import org.apache.dolphinscheduler.registry.zookeeper.ZookeeperRegistry;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.ImmutableList;
-
 /**
  * All business parties use this class to access the registry
  */
 public class RegistryCenter {
-
-    private static final Logger logger = LoggerFactory.getLogger(RegistryCenter.class);
 
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
@@ -59,24 +46,9 @@ public class RegistryCenter {
      */
     protected static String NODES;
 
-    private RegistryPluginManager registryPluginManager;
-
     protected static final String EMPTY = "";
 
     private static final String REGISTRY_PREFIX = "registry";
-
-    private static final String REGISTRY_PLUGIN_BINDING = "registry.plugin.binding";
-
-    private static final String REGISTRY_PLUGIN_DIR = "registry.plugin.dir";
-
-    private static final String MAVEN_LOCAL_REPOSITORY = "maven.local.repository";
-
-    private static final String REGISTRY_PLUGIN_NAME = "plugin.name";
-
-    /**
-     * default registry plugin dir
-     */
-    private static final String REGISTRY_PLUGIN_PATH = "lib/plugin/registry";
 
     private static final String REGISTRY_CONFIG_FILE_PATH = "/registry.properties";
 
@@ -91,11 +63,7 @@ public class RegistryCenter {
             if (null == registryConfig || registryConfig.isEmpty()) {
                 throw new RegistryException("registry config param is null");
             }
-            if (null == registryPluginManager) {
-                installRegistryPlugin(registryConfig.get(REGISTRY_PLUGIN_NAME));
-                registry = registryPluginManager.getRegistry();
-            }
-
+            registry = new ZookeeperRegistry();
             registry.init(registryConfig);
             initNodes();
 
@@ -106,33 +74,9 @@ public class RegistryCenter {
      * init nodes
      */
     private void initNodes() {
-        persist(REGISTRY_DOLPHINSCHEDULER_MASTERS, EMPTY);
-        persist(REGISTRY_DOLPHINSCHEDULER_WORKERS, EMPTY);
-        persist(REGISTRY_DOLPHINSCHEDULER_DEAD_SERVERS, EMPTY);
-    }
-
-    /**
-     * install registry plugin
-     */
-    private void installRegistryPlugin(String registryPluginName) {
-        DolphinPluginManagerConfig registryPluginManagerConfig = new DolphinPluginManagerConfig();
-        registryPluginManagerConfig.setPlugins(PropertyUtils.getString(REGISTRY_PLUGIN_BINDING));
-        if (StringUtils.isNotBlank(PropertyUtils.getString(REGISTRY_PLUGIN_DIR))) {
-            registryPluginManagerConfig.setInstalledPluginsDir(PropertyUtils.getString(REGISTRY_PLUGIN_DIR, REGISTRY_PLUGIN_PATH).trim());
-        }
-
-        if (StringUtils.isNotBlank(PropertyUtils.getString(MAVEN_LOCAL_REPOSITORY))) {
-            registryPluginManagerConfig.setMavenLocalRepository(PropertyUtils.getString(MAVEN_LOCAL_REPOSITORY).trim());
-        }
-
-        registryPluginManager = new RegistryPluginManager(registryPluginName);
-
-        DolphinPluginLoader registryPluginLoader = new DolphinPluginLoader(registryPluginManagerConfig, ImmutableList.of(registryPluginManager));
-        try {
-            registryPluginLoader.loadPlugins();
-        } catch (Exception e) {
-            throw new RuntimeException("Load registry Plugin Failed !", e);
-        }
+        persist(Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS, EMPTY);
+        persist(Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS, EMPTY);
+        persist(Constants.REGISTRY_DOLPHINSCHEDULER_DEAD_SERVERS, EMPTY);
     }
 
     /**
@@ -188,7 +132,7 @@ public class RegistryCenter {
      * @return get dead server node parent path
      */
     public String getDeadZNodeParentPath() {
-        return REGISTRY_DOLPHINSCHEDULER_DEAD_SERVERS;
+        return Constants.REGISTRY_DOLPHINSCHEDULER_DEAD_SERVERS;
     }
 
     public void setStoppable(IStoppable stoppable) {
@@ -206,7 +150,7 @@ public class RegistryCenter {
      * @return result
      */
     public boolean isMasterPath(String path) {
-        return path != null && path.contains(REGISTRY_DOLPHINSCHEDULER_MASTERS);
+        return path != null && path.contains(Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS);
     }
 
     /**
@@ -216,7 +160,7 @@ public class RegistryCenter {
      * @return worker group path
      */
     public String getWorkerGroupPath(String workerGroup) {
-        return REGISTRY_DOLPHINSCHEDULER_WORKERS + "/" + workerGroup;
+        return Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS + "/" + workerGroup;
     }
 
     /**
@@ -226,7 +170,7 @@ public class RegistryCenter {
      * @return result
      */
     public boolean isWorkerPath(String path) {
-        return path != null && path.contains(REGISTRY_DOLPHINSCHEDULER_WORKERS);
+        return path != null && path.contains(Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS);
     }
 
     /**

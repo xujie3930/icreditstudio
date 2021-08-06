@@ -26,10 +26,10 @@ import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.AlertDao;
 import org.apache.dolphinscheduler.dao.entity.WorkerGroup;
 import org.apache.dolphinscheduler.dao.mapper.WorkerGroupMapper;
+import org.apache.dolphinscheduler.registry.DataChangeEvent;
+import org.apache.dolphinscheduler.registry.SubscribeListener;
 import org.apache.dolphinscheduler.remote.utils.NamedThreadFactory;
 import org.apache.dolphinscheduler.service.registry.RegistryClient;
-import org.apache.dolphinscheduler.spi.register.DataChangeEvent;
-import org.apache.dolphinscheduler.spi.register.SubscribeListener;
 
 import org.apache.commons.collections.CollectionUtils;
 
