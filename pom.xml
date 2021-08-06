@@ -60,7 +60,7 @@
             <!-- icredit studio -->
             <dependency>
                 <groupId>com.jinninghui.icreditdatasphere</groupId>
-                <artifactId>icredit-common</artifactId>
+                <artifactId>icreditstudio-common</artifactId>
                 <version>${icredit.studio.version}</version>
             </dependency>
 
@@ -82,13 +82,13 @@
     </build>
 
     <modules>
-        <module>gateway</module>
-        <module>system</module>
-<!--        <module>frontend</module>-->
-        <module>workspace</module>
-        <module>datasync</module>
-        <module>schedule</module>
-        <module>datadev</module>
-        <module>icredit-common</module>
+        <module>icreditstudio-common</module>
+        <module>icreditstudio-datasync</module>
+<!--        <module>icreditstudio-frontend</module>-->
+        <module>icreditstudio-scheduler</module>
+        <module>icreditstudio-datadev</module>
+        <module>icreditstudio-gateway</module>
+        <module>icreditstudio-workspace</module>
+        <module>icreditstudio-system</module>
     </modules>
 </project>

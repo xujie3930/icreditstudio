@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>gateway</artifactId>
+    <artifactId>icreditstudio-gateway</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -20,7 +20,7 @@
     <dependencies>
         <dependency>
             <groupId>com.jinninghui.icreditdatasphere</groupId>
-            <artifactId>icredit-common</artifactId>
+            <artifactId>icreditstudio-common</artifactId>
         </dependency>
     </dependencies>
 

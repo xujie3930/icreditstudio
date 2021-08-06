@@ -2,25 +2,24 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/datadev/datadev.iml" filepath="$PROJECT_DIR$/datadev/datadev.iml" />
-      <module fileurl="file://$PROJECT_DIR$/datasync/datasync.iml" filepath="$PROJECT_DIR$/datasync/datasync.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-api/dolphinscheduler-api.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-api/dolphinscheduler-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-common/dolphinscheduler-common.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-common/dolphinscheduler-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-dao/dolphinscheduler-dao.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-dao/dolphinscheduler-dao.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-master-server/dolphinscheduler-master-server.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-master-server/dolphinscheduler-master-server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-registry/dolphinscheduler-registry.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-registry/dolphinscheduler-registry.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-remote/dolphinscheduler-remote.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-remote/dolphinscheduler-remote.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-server/dolphinscheduler-server.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-server/dolphinscheduler-server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-service/dolphinscheduler-service.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-service/dolphinscheduler-service.iml" />
-      <module fileurl="file://$PROJECT_DIR$/schedule/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" filepath="$PROJECT_DIR$/schedule/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" />
-      <module fileurl="file://$PROJECT_DIR$/frontend/frontend.iml" filepath="$PROJECT_DIR$/frontend/frontend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/gateway/gateway.iml" filepath="$PROJECT_DIR$/gateway/gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-api/dolphinscheduler-api.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-api/dolphinscheduler-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-common/dolphinscheduler-common.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-common/dolphinscheduler-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-dao/dolphinscheduler-dao.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-dao/dolphinscheduler-dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-master-server/dolphinscheduler-master-server.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-master-server/dolphinscheduler-master-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-registry/dolphinscheduler-registry.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-registry/dolphinscheduler-registry.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-registry-zookeeper/dolphinscheduler-registry-zookeeper.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-remote/dolphinscheduler-remote.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-remote/dolphinscheduler-remote.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-server/dolphinscheduler-server.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-server/dolphinscheduler-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-service/dolphinscheduler-service.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-service/dolphinscheduler-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/iCreditStudio.iml" filepath="$PROJECT_DIR$/.idea/iCreditStudio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/icredit-common/icredit-common.iml" filepath="$PROJECT_DIR$/icredit-common/icredit-common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/system/system.iml" filepath="$PROJECT_DIR$/system/system.iml" />
-      <module fileurl="file://$PROJECT_DIR$/workspace/workspace.iml" filepath="$PROJECT_DIR$/workspace/workspace.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icredit-common/icreditstudio-common.iml" filepath="$PROJECT_DIR$/icredit-common/icreditstudio-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" filepath="$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" filepath="$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" filepath="$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-system/icreditstudio-system.iml" filepath="$PROJECT_DIR$/icreditstudio-system/icreditstudio-system.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-workspace/icreditstudio-workspace.iml" filepath="$PROJECT_DIR$/icreditstudio-workspace/icreditstudio-workspace.iml" />
     </modules>
   </component>
 </project>

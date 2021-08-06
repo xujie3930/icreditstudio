@@ -9,17 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datasync</artifactId>
+    <artifactId>icreditstudio-system</artifactId>
 
-    <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
-    </properties>
+    <packaging>jar</packaging>
+    <name>icreditstudio-system</name>
 
     <dependencies>
         <dependency>
             <groupId>com.jinninghui.icreditdatasphere</groupId>
-            <artifactId>icredit-common</artifactId>
+            <artifactId>icreditstudio-common</artifactId>
         </dependency>
     </dependencies>
 

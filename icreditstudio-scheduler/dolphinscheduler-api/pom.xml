@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>com.jinninghui.icreditdatasphere</groupId>
-            <artifactId>icredit-common</artifactId>
+            <artifactId>icreditstudio-common</artifactId>
         </dependency>
 
         <!-- use jetty -->

@@ -9,16 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>system</artifactId>
+    <artifactId>icreditstudio-workspace</artifactId>
 
-    <packaging>jar</packaging>
-    <name>system</name>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.jinninghui.icreditdatasphere</groupId>
-            <artifactId>icredit-common</artifactId>
+            <artifactId>icreditstudio-common</artifactId>
         </dependency>
     </dependencies>
-
 </project>
