@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.mapper.RoleDao">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.modules.system.role.mapper.RoleDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.entity.RoleEntity" id="roleMap">
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.modules.system.role.entity.RoleEntity" id="roleMap">
         <result property="id" column="ID"/>
         <result property="roleName" column="ROLE_NAME"/>
         <result property="roleCode" column="ROLE_CODE"/>
@@ -17,7 +17,7 @@
         <result property="lastUpdateTime" column="LAST_UPDATE_TIME"/>
         <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
     </resultMap>
-    <select id="getRoleInfoByUserId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.entity.RoleEntity">
+    <select id="getRoleInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.role.entity.RoleEntity">
         SELECT
             t.ID,
             t.ROLE_NAME,
@@ -37,7 +37,7 @@
             a.USER_ID =  #{userId}
 
     </select>
-    <select id="getAllRoleInfo" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+    <select id="getAllRoleInfo" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
         SELECT
             t.id ,
             t.ROLE_NAME name
@@ -46,7 +46,7 @@
         where t.DELETE_FLAG = 'N'
         ORDER BY t.SORT_NUMBER
     </select>
-    <select id="getChildrenByParentId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+    <select id="getChildrenByParentId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
         select
             r.id ,
             r.roleName,
@@ -98,7 +98,7 @@
           and b.ROLE_CODE = #{roleCode}
 
     </select>
-    <select id="getUserInfoByRoleId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserEntity">
+    <select id="getUserInfoByRoleId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.user.entity.UserEntity">
         SELECT
             t.ID,
             t.USER_NAME,

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.mapper.InterfacesDao">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.modules.system.interfaces.mapper.InterfacesDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.entity.InterfacesEntity" id="interfacesMap">
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.modules.system.interfaces.entity.InterfacesEntity" id="interfacesMap">
         <result property="interfaceId" column="interface_id"/>
         <result property="uri" column="uri"/>
         <result property="method" column="method"/>
@@ -16,7 +16,7 @@
         <result property="uriType" column="uri_type"/>
     </resultMap>
     <select id="getUserAuthInterfaceIdList"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.InterfaceAuthResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.InterfaceAuthResult">
 
         SELECT
             t.id interfaceId,
@@ -30,7 +30,7 @@
           AND b.USER_ID = #{userId}
 
     </select>
-    <select id="exportExcel" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.web.result.InterfacesInfoExpert">
+    <select id="exportExcel" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.interfaces.web.result.InterfacesInfoExpert">
         SELECT
             t.interface_id,
             t.uri,

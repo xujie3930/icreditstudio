@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.mapper.AllInterfacesDao">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.mapper.AllInterfacesDao">
 
 
     <select id="getFlowableApproveGroupInfoByGroupIds"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
 
         SELECT id, NAME
         FROM
@@ -30,7 +30,7 @@
 
     </select>
     <select id="getFlowableApproveUserInfoByGroupIds"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
         SELECT DISTINCT
             a.id,
             a.USER_NAME NAME
@@ -62,7 +62,7 @@
 
     </select>
     <select id="getFlowableApproveGroupInfoByUserIds"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
         SELECT
             a.id,
             a.ROLE_NAME NAME
@@ -111,7 +111,7 @@
 
     </select>
     <select id="getFlowableUserGroupMapByUserIds"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.UserGroupMapResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.UserGroupMapResult">
         SELECT
             b.ID,
             b.USER_ID,
@@ -162,7 +162,7 @@
 
     </select>
     <select id="getFlowableUserGroupMapByGroupIds"
-            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.UserGroupMapResult">
+            resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.UserGroupMapResult">
 
         SELECT
             b.ID,
@@ -212,7 +212,7 @@
         </where>
 
     </select>
-    <select id="getRoleInfoByUserId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.entity.RoleEntity">
+    <select id="getRoleInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.role.entity.RoleEntity">
         SELECT
         g.*
         FROM
@@ -230,7 +230,7 @@
 
 
     </select>
-    <select id="getOrgInfoByUserId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.org.entity.OrganizationEntity">
+    <select id="getOrgInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.org.entity.OrganizationEntity">
         SELECT
         g.*
         FROM
