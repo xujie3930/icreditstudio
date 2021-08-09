@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.resources.mapper.ResourcesDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.resources.entity.ResourcesEntity" id="resourcesMap">
+        <result property="id" column="ID"/>
+        <result property="name" column="NAME"/>
+        <result property="code" column="CODE"/>
+        <result property="parentId" column="PARENT_ID"/>
+        <result property="url" column="URL"/>
+        <result property="authIdentification" column="AUTH_IDENTIFICATION"/>
+        <result property="redirectPath" column="REDIRECT_PATH"/>
+        <result property="filePath" column="FILE_PATH"/>
+        <result property="isShow" column="IS_SHOW"/>
+        <result property="isCache" column="IS_CACHE"/>
+        <result property="iconPath" column="ICON_PATH"/>
+        <result property="sortNumber" column="SORT_NUMBER"/>
+        <result property="remark" column="MENU_REMARK"/>
+        <result property="type" column="MENU_TYPE"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="lastUpdateTime" column="LAST_UPDATE_TIME"/>
+        <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
+    </resultMap>
+    <select id="getMenuInfoByRoleIds" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.resources.entity.ResourcesEntity">
+        SELECT DISTINCT
+            t.ID,
+            t.NAME,
+            t.CODE,
+            t.PARENT_ID,
+            t.URL,
+            t.AUTH_IDENTIFICATION,
+            t.REDIRECT_PATH,
+            t.FILE_PATH,
+            t.IS_SHOW,
+            t.IS_CACHE,
+            t.ICON_PATH,
+            t.SORT_NUMBER,
+            t.REMARK,
+            t.TYPE,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID
+        FROM
+            ge_resources t
+                LEFT JOIN ge_role_resources_map a ON t.ID = a.RESOURCES_ID
+
+        <where>
+            <if test="deleteFlag != null and deleteFlag != ''">
+                AND t.DELETE_FLAG =  #{deleteFlag, jdbcType=VARCHAR}
+            </if>
+
+            <if test="type != null and type != ''">
+                AND t.TYPE =  #{type, jdbcType=VARCHAR}
+            </if>
+            AND a.ROLE_ID IN
+            <foreach collection="roleIdList" item="item" open="(" separator="," close=")">
+                #{item, jdbcType=VARCHAR}
+            </foreach>
+
+        </where>
+
+        order by t.SORT_NUMBER asc,t.CREATE_TIME desc
+
+    </select>
+    <select id="queryInfoByName" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.resources.web.result.ResourcesEntityExport">
+        SELECT
+            t.ID,
+            t.NAME,
+            t.CODE,
+            t.PARENT_ID,
+            t.URL,
+            t.AUTH_IDENTIFICATION,
+            t.REDIRECT_PATH,
+            t.FILE_PATH,
+            CASE
+                t.IS_SHOW
+                WHEN 'Y' THEN
+                    '是' ELSE '否'
+                END IS_SHOW,
+            CASE
+                t.KEEP_ALIVE
+                WHEN 'Y' THEN
+                    '是' ELSE '否'
+                END IS_CACHE,
+            t.KEEP_ALIVE,
+            t.ICON_PATH,
+            t.SORT_NUMBER,
+            t.INTERNAL_OR_EXTERNAL,
+            t.REMARK,
+            CASE
+                t.TYPE
+                WHEN 'M' THEN
+                    '菜单'
+                WHEN 'D' THEN
+                    '顶部模块'
+                WHEN 'B' THEN
+                    '按钮' ELSE ''
+                END TYPE,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID,
+            gr.`NAME` parentName
+        FROM
+            ge_resources t
+                LEFT JOIN ge_resources gr ON t.PARENT_ID = gr.ID
+
+            <where>
+                <if test="name != null and name != ''">
+                    AND t.name like concat('%' , #{name, jdbcType=VARCHAR} , '%')
+                </if>
+            </where>
+
+    </select>
+    <select id="getRoleInfoByMenuIds" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.entity.RoleEntity">
+        SELECT
+            t.ID,
+            t.ROLE_NAME,
+            t.ROLE_CODE,
+            t.PARENT_ID,
+            t.SORT_NUMBER,
+            t.ROLE_REMARK,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID
+        FROM
+            ge_role t
+                LEFT JOIN ge_role_resources_map a ON t.ID = a.ROLE_ID
+
+        where  t.DELETE_FLAG = 'N'
+
+        AND a.RESOURCES_ID IN
+        <foreach collection="resourcesIdList" item="item" open="(" separator="," close=")">
+            #{item, jdbcType=VARCHAR}
+        </foreach>
+
+
+    </select>
+
+
+</mapper>

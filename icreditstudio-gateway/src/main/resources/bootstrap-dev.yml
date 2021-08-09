@@ -1,4 +1,11 @@
 spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.30:8848
+      config:
+        server-addr: 192.168.0.30:8848
+        file-extension: yml
   application:
     name: api-gateway
   redis:

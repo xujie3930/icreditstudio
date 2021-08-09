@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.mapper.InterfacesDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.entity.InterfacesEntity" id="interfacesMap">
+        <result property="interfaceId" column="interface_id"/>
+        <result property="uri" column="uri"/>
+        <result property="method" column="method"/>
+        <result property="module" column="module"/>
+        <result property="name" column="name"/>
+        <result property="remark" column="remark"/>
+        <result property="needAuth" column="need_auth"/>
+        <result property="supportAuthType" column="support_auth_type"/>
+        <result property="uriType" column="uri_type"/>
+    </resultMap>
+    <select id="getUserAuthInterfaceIdList"
+            resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.InterfaceAuthResult">
+
+        SELECT
+            t.id interfaceId,
+            t.URL uri
+        FROM
+            ge_resources t
+                LEFT JOIN ge_role_resources_map a ON t.ID = a.RESOURCES_ID
+                LEFT JOIN ge_user_role_map b ON a.ROLE_ID = b.ROLE_ID
+        WHERE
+            t.TYPE = 'B'
+          AND b.USER_ID = #{userId}
+
+    </select>
+    <select id="exportExcel" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.interfaces.web.result.InterfacesInfoExpert">
+        SELECT
+            t.interface_id,
+            t.uri,
+            t.method,
+            t.module,
+            t.NAME,
+            t.remark,
+            t.need_auth,
+            CASE
+                t.need_auth
+                WHEN 1 THEN
+                    '是' ELSE '否'
+                END needAuthName,
+            t.support_auth_type,
+            CASE
+                t.uri_type
+                WHEN '1' THEN
+                    '通配符' ELSE '接口地址'
+                END uri_type
+        FROM
+            ge_interfaces t
+
+        <where>
+            <if test="name != null and name != ''">
+                AND t.name like concat('%' , #{name, jdbcType=VARCHAR} , '%')
+            </if>
+        </where>
+
+    </select>
+
+
+</mapper>

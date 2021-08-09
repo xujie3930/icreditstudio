@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.mapper.UserAccountDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserAccountEntity" id="userAccountMap">
+        <result property="id" column="ID"/>
+        <result property="accountExpired" column="ACCOUNT_EXPIRED"/>
+        <result property="accountLocked" column="ACCOUNT_LOCKED"/>
+        <result property="accountCredential" column="ACCOUNT_CREDENTIAL"/>
+        <result property="accountIdentifier" column="ACCOUNT_IDENTIFIER"/>
+        <result property="credentialExpired" column="CREDENTIAL_EXPIRED"/>
+        <result property="identityType" column="IDENTITY_TYPE"/>
+        <result property="lastLoginIp" column="LAST_LOGIN_IP"/>
+        <result property="lastLoginTime" column="LAST_LOGIN_TIME"/>
+        <result property="loginMode" column="LOGIN_MODE"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="lastUpdateTime" column="LAST_UPDATE_TIME"/>
+        <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
+    </resultMap>
+
+
+</mapper>

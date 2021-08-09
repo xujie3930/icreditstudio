@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.mapper.UserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserEntity" id="userMap">
+        <result property="id" column="ID"/>
+        <result property="userName" column="USER_NAME"/>
+        <result property="userCode" column="USER_CODE"/>
+        <result property="userGender" column="USER_GENDER"/>
+        <result property="userBirth" column="USER_BIRTH"/>
+        <result property="idCard" column="ID_CARD"/>
+        <result property="entryTime" column="ENTRY_TIME"/>
+        <result property="departureTime" column="DEPARTURE_TIME"/>
+        <result property="eMail" column="E_MAIL"/>
+        <result property="userPosition" column="USER_POSITION"/>
+        <result property="telPhone" column="TEL_PHONE"/>
+        <result property="sortNumber" column="SORT_NUMBER"/>
+        <result property="deleteFlag" column="DELETE_FLAG"/>
+        <result property="picturePath" column="PICTURE_PATH"/>
+        <result property="userRemark" column="USER_REMARK"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="createUserId" column="CREATE_USER_ID"/>
+        <result property="lastUpdateTime" column="LAST_UPDATE_TIME"/>
+        <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
+        <result property="extendOne" column="EXTEND_ONE"/>
+        <result property="extendTwo" column="EXTEND_TWO"/>
+        <result property="extendThree" column="EXTEND_THREE"/>
+        <result property="extendFour" column="EXTEND_FOUR"/>
+    </resultMap>
+    <select id="queryPage" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserEntity">
+        SELECT
+        DISTINCT
+            t.ID,
+            t.USER_NAME,
+            t.USER_CODE,
+            t.USER_GENDER,
+            t.USER_BIRTH,
+            t.ID_CARD,
+            t.ENTRY_TIME,
+            t.DEPARTURE_TIME,
+            t.E_MAIL,
+            t.USER_POSITION,
+            t.TEL_PHONE,
+            t.SORT_NUMBER,
+            t.DELETE_FLAG,
+            t.PICTURE_PATH,
+            t.USER_REMARK,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID,
+            t.EXTEND_ONE,
+            t.EXTEND_TWO,
+            t.EXTEND_THREE,
+            t.EXTEND_FOUR
+        FROM
+            ge_user t
+
+        left join ge_user_org_map a on t.ID = a.USER_ID
+        left join ge_user_org_map b on b.ORG_ID = a.ORG_ID
+        left join ge_user_role_map c on c.USER_ID = t.ID
+        <where>
+
+            <if test="userQuery.userId != null and userQuery.userId != ''">
+                AND b.USER_ID =  #{userQuery.userId, jdbcType=VARCHAR}
+            </if>
+            <if test="userQuery.roleId != null and userQuery.roleId != ''">
+                AND c.ROLE_ID =  #{userQuery.roleId, jdbcType=VARCHAR}
+            </if>
+            <if test="userQuery.orgId != null and userQuery.orgId != ''">
+                AND b.ORG_ID =  #{userQuery.orgId, jdbcType=VARCHAR}
+            </if>
+            <if test="userQuery.userName != null and userQuery.userName != ''">
+                AND t.USER_NAME like concat('%' , #{userQuery.userName, jdbcType=VARCHAR} , '%')
+            </if>
+            <if test="userQuery.telPhone != null and userQuery.telPhone != ''">
+                AND t.TEL_PHONE like concat('%' , #{userQuery.telPhone, jdbcType=VARCHAR} , '%')
+            </if>
+            <if test="userQuery.deleteFlag != null and userQuery.deleteFlag != ''">
+                AND t.DELETE_FLAG =  #{userQuery.deleteFlag, jdbcType=VARCHAR}
+            </if>
+
+        </where>
+
+        order by t.SORT_NUMBER asc,t.CREATE_TIME desc
+
+    </select>
+    <select id="getAllUserInfo" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+        SELECT
+            t.id ,
+            t.USER_NAME name
+        FROM
+            ge_user t
+
+        where t.DELETE_FLAG = 'N'
+
+        ORDER BY t.SORT_NUMBER
+
+    </select>
+    <select id="getOrgInfoByUsrId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.org.entity.OrganizationEntity">
+        SELECT
+            t.ID,
+            t.ORG_CODE,
+            t.ORG_NAME,
+            t.PARENT_ID,
+            t.ORG_ADDRESS,
+            t.ICON_PATH,
+            t.SORT_NUMBER,
+            t.LINK_MAN_NAME,
+            t.LINK_MAN_TEL,
+            t.ORG_REMARK,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID,
+            t.EXTEND_ONE,
+            t.EXTEND_TWO,
+            t.EXTEND_FOUR,
+            t.EXTEND_THREE
+        FROM
+            ge_organization t
+                LEFT JOIN ge_user_org_map a ON t.ID = a.ORG_ID
+        <where>
+            <if test="userId !=null and userId != '' ">
+                AND a.USER_ID = #{userId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="deleteFlag !=null and deleteFlag != '' ">
+                AND t.DELETE_FLAG = #{deleteFlag, jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </select>
+    <select id="getUserInfoByOrgId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserEntity">
+        SELECT
+            t.ID,
+            t.USER_NAME,
+            t.USER_CODE,
+            t.USER_GENDER,
+            t.USER_BIRTH,
+            t.ID_CARD,
+            t.ENTRY_TIME,
+            t.DEPARTURE_TIME,
+            t.E_MAIL,
+            t.USER_POSITION,
+            t.TEL_PHONE,
+            t.SORT_NUMBER,
+            t.DELETE_FLAG,
+            t.PICTURE_PATH,
+            t.USER_REMARK,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID,
+            t.EXTEND_ONE,
+            t.EXTEND_TWO,
+            t.EXTEND_THREE,
+            t.EXTEND_FOUR
+        FROM
+            ge_user t
+                LEFT JOIN ge_user_org_map a ON t.ID = a.USER_ID
+                LEFT JOIN ge_organization b ON a.ORG_ID = b.ID
+        <where>
+            <if test="orgId !=null and orgId != '' ">
+                AND b.ID = #{orgId, jdbcType=VARCHAR}
+            </if>
+            <if test="orgCode !=null and orgCode != '' ">
+                AND b.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+            </if>
+
+            <if test="deleteFlag !=null and deleteFlag != '' ">
+                AND t.DELETE_FLAG = #{deleteFlag, jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </select>
+    <select id="getOrgChildUserInfoByOrgId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.entity.UserEntity">
+        SELECT DISTINCT
+        t.ID,
+        t.USER_NAME,
+        t.USER_CODE,
+        t.USER_GENDER,
+        t.USER_BIRTH,
+        t.ID_CARD,
+        t.ENTRY_TIME,
+        t.DEPARTURE_TIME,
+        t.E_MAIL,
+        t.USER_POSITION,
+        t.TEL_PHONE,
+        t.SORT_NUMBER,
+        t.DELETE_FLAG,
+        t.PICTURE_PATH,
+        t.USER_REMARK,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_THREE,
+        t.EXTEND_FOUR
+        FROM
+        ge_user t
+        LEFT JOIN ge_user_org_map a ON t.ID = a.USER_ID
+        LEFT JOIN ge_organization b ON a.ORG_ID = b.PARENT_ID
+        <where>
+            <if test="orgId !=null and orgId != '' ">
+                AND b.PARENT_ID = #{orgId, jdbcType=VARCHAR}
+            </if>
+            <if test="orgCode !=null and orgCode != '' ">
+                AND b.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
+            </if>
+
+            <if test="deleteFlag !=null and deleteFlag != '' ">
+                AND t.DELETE_FLAG = #{deleteFlag, jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </select>
+    <select id="getRoleInfoByUserId" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.role.entity.RoleEntity">
+        SELECT
+            t.ID,
+            t.ROLE_NAME,
+            t.ROLE_CODE,
+            t.PARENT_ID,
+            t.SORT_NUMBER,
+            t.ROLE_REMARK,
+            t.DELETE_FLAG,
+            t.CREATE_TIME,
+            t.CREATE_USER_ID,
+            t.LAST_UPDATE_TIME,
+            t.LAST_UPDATE_USER_ID
+        FROM
+            ge_role t
+                LEFT JOIN ge_user_role_map a ON a.ROLE_ID = t.ID
+        <where>
+            <if test="userId !=null and userId != '' ">
+                AND a.USER_ID = #{userId, jdbcType=VARCHAR}
+            </if>
+
+            <if test="deleteFlag !=null and deleteFlag != '' ">
+                AND t.DELETE_FLAG = #{deleteFlag, jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </select>
+    <select id="queryUserInfoByName" resultType="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.user.web.result.LikeQueryUserListResult">
+
+        SELECT
+            t.ID,
+            t.USER_NAME NAME
+        FROM
+            ge_user t
+        WHERE
+            t.USER_NAME LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
+           OR t.TEL_PHONE LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        UNION
+        SELECT
+            t.ID,
+            a.ACCOUNT_IDENTIFIER NAME
+        FROM
+            ge_user t
+                LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
+        WHERE
+            a.ACCOUNT_IDENTIFIER LIKE  concat('%' , #{name, jdbcType=VARCHAR} , '%')
+
+    </select>
+
+
+</mapper>

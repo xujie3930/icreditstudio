@@ -19,6 +19,21 @@
             <groupId>com.jinninghui.icreditdatasphere</groupId>
             <artifactId>icreditstudio-common</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.hashtech.businessframework</groupId>
+            <artifactId>business-job</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>2.10.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-framework</artifactId>
+            <version>2.10.0</version>
+        </dependency>
     </dependencies>
 
 </project>

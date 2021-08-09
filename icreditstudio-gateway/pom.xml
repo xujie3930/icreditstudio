@@ -14,6 +14,10 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <commons-lang-version>3.4</commons-lang-version>
+        <netflix-commons-version>0.1.1</netflix-commons-version>
+        <commons-collections4-version>4.1</commons-collections4-version>
+        <commons-io-version>2.4</commons-io-version>
     </properties>
 
 
@@ -21,6 +25,70 @@
         <dependency>
             <groupId>com.jinninghui.icreditdatasphere</groupId>
             <artifactId>icreditstudio-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.hashtech.businessframework</groupId>
+                    <artifactId>business-log</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.hashtech.businessframework</groupId>
+                    <artifactId>business-sequence-spring-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.hashtech.businessframework</groupId>
+                    <artifactId>business-sequence-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>5.0.4.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+            <version>2.0.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.60</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.marcosbarbero.cloud</groupId>
+            <artifactId>spring-cloud-zuul-ratelimit</artifactId>
+            <version>1.7.1.RELEASE</version>
         </dependency>
     </dependencies>
 

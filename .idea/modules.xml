@@ -14,7 +14,7 @@
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-service/dolphinscheduler-service.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-service/dolphinscheduler-service.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" filepath="$PROJECT_DIR$/icreditstudio-scheduler/dolphinscheduler-worker-server/dolphinscheduler-worker-server.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/iCreditStudio.iml" filepath="$PROJECT_DIR$/.idea/iCreditStudio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/icredit-common/icreditstudio-common.iml" filepath="$PROJECT_DIR$/icredit-common/icreditstudio-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-common/icreditstudio-common.iml" filepath="$PROJECT_DIR$/icreditstudio-common/icreditstudio-common.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" filepath="$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" filepath="$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" filepath="$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" />

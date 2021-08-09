@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jinninghui.icreditdatasphere.icreditstudio.modules.system.form.mapper.FormHiDefintionMapper">
+
+
+    <update id="updateStatusByFormDefiIds" parameterType="java.util.List">
+      UPDATE ge_form_hi_definition
+      SET FORM_STATUS = #{status}
+      WHERE ID IN(
+        SELECT ID
+        FROM ge_form_definition
+        WHERE ID IN
+        <foreach collection="formIds" index="index" item="formId" open="(" separator="," close=")">
+            #{formId}
+        </foreach>
+      )
+    </update>
+
+    <update id="updateHiFormStatusById">
+        UPDATE ge_form_hi_definition
+        SET FORM_STATUS = #{status}
+        WHERE ID = #{id}
+    </update>
+
+</mapper>

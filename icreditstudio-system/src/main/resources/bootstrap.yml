@@ -8,7 +8,7 @@ spring:
   application:
     name: uaa
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    driver-class-name: com.mysql.jdbc.Driver
   http:
     encoding:
       charset: UTF-8
