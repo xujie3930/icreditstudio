@@ -4,8 +4,8 @@
 
     <modelVersion>4.0.0</modelVersion>
     <version>0.0.1</version>
-    <groupId>com.jinninghui.icreditdatasphere</groupId>
-    <artifactId>iCreditStudio-all</artifactId>
+    <groupId>com.jinninghui.datasphere</groupId>
+    <artifactId>icreditstudio-all</artifactId>
     <packaging>pom</packaging>
 
     <name>iCreditStudio</name>
@@ -18,7 +18,6 @@
         <icredit.studio.version>0.0.1</icredit.studio.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <business.job.version>COMPONENT-JOB-1.0.0-SNAPSHOT</business.job.version>
     </properties>
 
     <dependencyManagement>
@@ -60,16 +59,9 @@
 
             <!-- icredit studio -->
             <dependency>
-                <groupId>com.jinninghui.icreditdatasphere</groupId>
+                <groupId>com.jinninghui.datasphere</groupId>
                 <artifactId>icreditstudio-common</artifactId>
                 <version>${icredit.studio.version}</version>
-            </dependency>
-
-            <!-- businessframework -->
-            <dependency>
-                <groupId>com.hashtech.businessframework</groupId>
-                <artifactId>business-job</artifactId>
-                <version>${business.job.version}</version>
             </dependency>
 
         </dependencies>
