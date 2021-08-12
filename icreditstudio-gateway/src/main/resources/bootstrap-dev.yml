@@ -6,6 +6,23 @@ spring:
       config:
         server-addr: 192.168.0.30:8848
         file-extension: yml
+    gateway:
+      routes: # 路由可以有多个
+        - id: service-router1 # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+
+          uri: lb://server-pruduce-8082-feign # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          # gateway⽹关从服务注册中⼼获取实例信息然后负载后路由
+
+
+          predicates: #断⾔：路由条件，Predicate 接受⼀个输⼊参数，返回⼀个布尔值结果。该接⼝包含多种默 认⽅法来将 Predicate 组合成其他复杂的逻辑（⽐如：与，或，⾮）。
+            - Path=/api/**
+        - id: service-router2 # 我们⾃定义的路由 ID，保持唯⼀
+          uri: lb://cloud-eureka-client-8081 #服务名不要用下划线
+          predicates: #断⾔：路由条件，Predicate 接受⼀个输⼊参数，返回⼀个布尔值结果。该接⼝包含多种默 认⽅法来将 Predicate 组合成其他复杂的逻辑（⽐如：与，或，⾮）。
+            - Path=/api2/**
+            #filters:
+            #- StripPrefix=1 #可以去掉url中的占位后转发路由 可以去掉api后转发
   application:
     name: api-gateway
   redis:
@@ -52,30 +69,6 @@ ribbon:
   ReadTimeout : 50000
   SocketTimeout : 50000
   ConnectTimeout: 50000
-zuul:
-  ratelimit:
-    key-prefix: /**
-    enabled: true
-    repository: REDIS
-    behind-proxy: true
-    policies:
-      hash: #特定的路由
-        limit: 100 #可选- 每个刷新时间窗口对应的请求数量限制
-#        quota: 300 #可选-  每个刷新时间窗口对应的请求时间限制（秒）
-        refresh-interval: 10 # 刷新时间窗口的时间，默认值 (秒)
-        type: #可选 限流方式
-#          - user #通过登录用户名进行区分，也包括匿名用户
-          - ORIGIN #通过客户端IP地址区分
-#          - url #通过请求路径区分
-  sensitive-headers:
-  host:
-    connect-timeout-millis: 10000
-    socket-timeout-millis: 60000
-  add-host-header: true
-  routes:
-    hash:
-      path: /**
-      url: http://localhost:13248
 logging:
   #  file: ../logs/api-gateway/api-gateway.log
   #  level:

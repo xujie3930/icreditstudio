@@ -18,6 +18,7 @@
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" filepath="$PROJECT_DIR$/icreditstudio-datadev/icreditstudio-datadev.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" filepath="$PROJECT_DIR$/icreditstudio-datasync/icreditstudio-datasync.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" filepath="$PROJECT_DIR$/icreditstudio-gateway/icreditstudio-gateway.iml" />
+      <module fileurl="file://$PROJECT_DIR$/icreditstudio-metadata/icreditstudio-metadata.iml" filepath="$PROJECT_DIR$/icreditstudio-metadata/icreditstudio-metadata.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-system/icreditstudio-system.iml" filepath="$PROJECT_DIR$/icreditstudio-system/icreditstudio-system.iml" />
       <module fileurl="file://$PROJECT_DIR$/icreditstudio-workspace/icreditstudio-workspace.iml" filepath="$PROJECT_DIR$/icreditstudio-workspace/icreditstudio-workspace.iml" />
     </modules>

@@ -90,5 +90,6 @@
         <module>icreditstudio-gateway</module>
         <module>icreditstudio-workspace</module>
         <module>icreditstudio-system</module>
+        <module>icreditstudio-metadata</module>
     </modules>
 </project>
