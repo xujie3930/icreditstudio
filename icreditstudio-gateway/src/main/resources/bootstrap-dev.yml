@@ -3,6 +3,7 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.0.30:8848
+        namespace: dd8ede24-19c7-4547-8956-a566f800a823
     gateway:
       routes: # 路由可以有多个
         - id: service-router1 # 我们⾃定义的路由 ID，保持唯⼀
