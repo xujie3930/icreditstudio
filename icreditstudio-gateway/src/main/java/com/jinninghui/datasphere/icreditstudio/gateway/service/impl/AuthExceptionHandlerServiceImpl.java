@@ -1,9 +1,9 @@
 package com.jinninghui.datasphere.icreditstudio.gateway.service.impl;
 
-import com.hashtech.businessframework.utils.StringUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import com.jinninghui.datasphere.icreditstudio.gateway.common.Constants;
 import com.jinninghui.datasphere.icreditstudio.gateway.service.AuthExceptionHandlerService;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;

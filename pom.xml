@@ -13,7 +13,8 @@
     <properties>
         <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
         <spring.cloud.version>Finchley.RELEASE</spring.cloud.version>
-        <business.framework.version>FRAMEWORK-1.1.1.RELEASE</business.framework.version>
+        <spring.cloud.inner.version>2.0.0.RELEASE</spring.cloud.inner.version>
+        <spring.version>5.0.4.RELEASE</spring.version>
         <nacos.version>0.2.1.RELEASE</nacos.version>
         <icredit.studio.version>0.0.1</icredit.studio.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,14 +38,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>com.hashtech.businessframework</groupId>
-                <artifactId>business-dependencies</artifactId>
-                <version>${business.framework.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
             <!-- nacos -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -78,11 +71,18 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <modules>
-        <module>icreditstudio-common</module>
         <module>icreditstudio-datasync</module>
 <!--        <module>icreditstudio-frontend</module>-->
         <module>icreditstudio-scheduler</module>
@@ -91,5 +91,6 @@
         <module>icreditstudio-workspace</module>
         <module>icreditstudio-system</module>
         <module>icreditstudio-metadata</module>
+        <module>icreditstudio-framework</module>
     </modules>
 </project>

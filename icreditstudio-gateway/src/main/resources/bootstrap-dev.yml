@@ -3,9 +3,6 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.0.30:8848
-      config:
-        server-addr: 192.168.0.30:8848
-        file-extension: yml
     gateway:
       routes: # 路由可以有多个
         - id: service-router1 # 我们⾃定义的路由 ID，保持唯⼀

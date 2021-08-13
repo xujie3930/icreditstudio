@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.jinninghui.datasphere.icreditstudio.modules.system.org.mapper.OrganizationDao">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.mapper.OrganizationDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.modules.system.org.entity.OrganizationEntity" id="organizationMap">
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity" id="organizationMap">
         <result property="id" column="ID"/>
         <result property="orgCode" column="ORG_CODE"/>
         <result property="orgName" column="ORG_NAME"/>
@@ -25,7 +25,7 @@
         <result property="extendFour" column="EXTEND_FOUR"/>
         <result property="extendThree" column="EXTEND_THREE"/>
     </resultMap>
-    <select id="getOrgInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.org.web.result.OrganizationInfoResult">
+    <select id="getOrgInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.OrganizationInfoResult">
         SELECT
             t.ID,
             t.ORG_CODE,
@@ -53,7 +53,7 @@
         WHERE
             a.USER_ID =  #{userId}
     </select>
-    <select id="getAllOrgTreeInfo" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectTreeInfoResult">
+    <select id="getAllOrgTreeInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectTreeInfoResult">
         SELECT
             t.id ,
             t.ORG_NAME name
@@ -74,7 +74,7 @@
         ORDER BY t.SORT_NUMBER
 
     </select>
-    <select id="getAllOrgInfo" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.allinterface.result.SelectInfoResult">
+    <select id="getAllOrgInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
         SELECT
             t.id ,
             t.ORG_NAME name
@@ -84,7 +84,7 @@
         ORDER BY t.SORT_NUMBER
 
     </select>
-    <select id="queryOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.org.entity.OrganizationEntityExpert">
+    <select id="queryOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntityExpert">
 
         SELECT
             g.ORG_NAME,
@@ -113,7 +113,7 @@
 
 
     </select>
-    <select id="getChildrenOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.modules.system.org.entity.OrganizationEntity">
+    <select id="getChildrenOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
         SELECT
             t.ID,
             t.ORG_CODE,

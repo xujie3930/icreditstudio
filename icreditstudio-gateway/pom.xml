@@ -27,18 +27,47 @@
             <artifactId>icreditstudio-common</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>com.hashtech.businessframework</groupId>
-                    <artifactId>business-log</artifactId>
+                    <groupId>com.jinninghui.datasphere</groupId>
+                    <artifactId>icreditstudio-log</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.hashtech.businessframework</groupId>
-                    <artifactId>business-sequence-spring-boot-starter</artifactId>
+                    <groupId>com.jinninghui.datasphere</groupId>
+                    <artifactId>icreditstudio-sequence-spring-boot-starter</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.hashtech.businessframework</groupId>
-                    <artifactId>business-sequence-api</artifactId>
+                    <groupId>com.jinninghui.datasphere</groupId>
+                    <artifactId>icreditstudio-sequence-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-actuator</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-web</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-webmvc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jinninghui.datasphere</groupId>
+                    <artifactId>icreditstudio-exception</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.jinninghui.datasphere</groupId>
+                    <artifactId>icreditstudio-feign</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.tomcat.embed</groupId>
+                    <artifactId>tomcat-embed-core</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+            <version>${spring.cloud.inner.version}</version>
         </dependency>
 
         <dependency>
@@ -49,12 +78,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>5.0.4.RELEASE</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>${spring.boot.version}</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -83,7 +107,7 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-gateway</artifactId>
-            <version>2.0.0.RELEASE</version>
+            <version>${spring.cloud.inner.version}</version>
         </dependency>
         <!--引⼊webflux-->
         <dependency>
@@ -126,8 +150,25 @@
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.tomcat</groupId>
+            <artifactId>tomcat-servlet-api</artifactId>
+            <version>8.5.32</version>
+        </dependency>
+
         <!--引⼊Jaxb，结束-->
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.5.3</version>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>
