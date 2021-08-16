@@ -1,0 +1,40 @@
+.iframe-layout-aside-header {
+  img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+  }
+
+  span {
+    color: $--color-white;
+    font-weight: 900;
+    font-size: 26px;
+    letter-spacing: 4px;
+  }
+}
+
+.iframe-layout-main {
+  width: 100vw;
+  overflow-x: hidden !important;
+  padding: 0 !important;
+  background-color: $--background-color-base !important;
+}
+
+.el-menu-item.is-active {
+  color: $--color-primary;
+  border-left: 4px solid $--color-primary !important;
+  background-color: $--color-aside-bg-active !important;
+}
+
+.el-table tr td,
+.el-table tr td:first-child {
+  /* 980 高度下最佳边距 */
+  padding: 14px 0;
+}
+
+.el-dialog .iframe-form-btn {
+  width: 100%;
+}
+.el-table th.gutter {
+  display: table-cell !important;
+}

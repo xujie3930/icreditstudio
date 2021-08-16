@@ -1,0 +1,33 @@
+/* base */
+export const ACCESS_TOKEN = 'Access-Token'
+export const INDEX_MAIN_PAGE_PATH = '/'
+export const COMMON_TOGGLE_COLLAPSE = 'COMMON_TOGGLE_COLLAPSE'
+export const COMMON_TOGGLE_HEADER_COLLAPSE = 'COMMON_TOGGLE_HEADER_COLLAPSE'
+
+/* user */
+export const SET_TOKEN = 'SET_TOKEN'
+export const SET_USERINFO = 'SET_USERINFO'
+export const SET_AUTH = 'SET_AUTH'
+export const SET_PERMISSION_LIST = 'SET_PERMISSION_LIST'
+export const SET_TOP_MODULES = 'SET_TOP_MODULES'
+export const SET_MODULE_MENUS = 'SET_MODULE_MENUS'
+export const SET_ACTIVE_MODULE_ID = 'SET_ACTIVE_MODULE_ID'
+export const SET_USERTHEME = 'SET_USERTHEME'
+export const SET_MESSAGE_NOTICE_INFO = 'SET_MESSAGE_NOTICE_INFO'
+export const SET_SYSTEM_SETTING = 'SET_SYSTEM_SETTING'
+
+/* permission router */
+export const SET_ROUTERS = 'SET_ROUTERS'
+
+/* j-form */
+export const SET_FORM_CONFIG = 'SET_FORM_CONFIG'
+export const SET_FORM_INFO = 'SET_FORM_INFO'
+export const SET_MODEL_DATA = 'SET_MODEL_DATA'
+export const SET_APPROVAL_INFO = 'SET_APPROVAL_INFO'
+export const SET_XML_CONFIG = 'SET_XML_CONFIG'
+export const SET_BACK_XML_INFO = 'SET_BACK_XML_INFO'
+
+export const SET_COPYRIGHT = 'SET_COPYRIGHT'
+
+export const SET_USER_SHORTMENU = 'SET_USER_SHORTMENU'
+export const SET_IS_SHOWQUICKMENU = 'SET_IS_SHOWQUICKMENU'

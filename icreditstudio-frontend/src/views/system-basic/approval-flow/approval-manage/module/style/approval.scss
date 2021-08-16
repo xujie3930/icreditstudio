@@ -1,0 +1,73 @@
+.tab-header{
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    align-items: center;
+    .title{
+        font-size: 16px !important;
+        color: #333333;
+    }
+    .operation-center{
+        display: flex;
+        align-items: center;
+    }
+}
+.tab-header-end{
+    display: flex;
+    margin-bottom: 10px;
+    justify-content: flex-end;
+    align-items: center;
+}
+.doc-row{
+    display: flex;
+    align-items: center;
+    .doc{
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 4px;
+    }
+}
+.createTime-row{
+    display: flex;
+    flex-direction: column;
+    .time{
+        display: flex;
+        align-items: center;
+        span{
+            display: block;
+            width: 140px;
+        }
+    }
+}
+.tab_list{
+    ::v-deep .cell{
+       text-align: left !important;
+     }
+   }
+   .tab-header ::v-deep{
+       .el-input{
+           .el-input__inner{
+               height: 32px;
+           }
+           .el-select__caret{
+            line-height: 32px;
+           }
+       }
+   }
+.approval-item{
+    text-align: start;
+    .form{
+        display: flex;
+        .form-value{
+            flex: 1;
+            overflow:hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            -o-text-overflow:ellipsis;
+        }
+    }
+    span{
+        margin-left: 70px;
+    }
+}

@@ -1,0 +1,160 @@
+$--height-layout-header: 64px;
+
+.iframe-layout-container {
+  width: 100%;
+  height: 100vh;
+  min-width: 1280px;
+}
+
+.iframe-layout-container:before {
+  content: none !important;
+}
+
+.iframe-layout-aside {
+  height: calc(100vh - 104px);
+  background-color: $--color-white;
+  transition: width 0.5s;
+  &.is-collapse {
+    width: 65px !important;
+    overflow-x: hidden;
+  }
+
+  &-header {
+    @include flex();
+    height: $--height-layout-header;
+  }
+  /* 侧边栏 el的导航菜单组件样式 */
+  .el-menu {
+    background-color: transparent;
+    border-right: none;
+
+    .el-submenu__title {
+      font-size: 14px;
+
+      i {
+        font-size: 24px;
+      }
+    }
+  }
+}
+
+.sidebar {
+  .el-menu-item {
+    @include flex(column, center, center);
+    line-height: unset;
+    border-left: 2px solid transparent;
+  }
+}
+
+.header-sidebar {
+  background-color: #1c2c42;
+  height: calc(100vh - 64px);
+
+  .el-menu-item {
+    color: #fff;
+  }
+}
+
+.iframe-layout-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-layout-main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: $--height-layout-header;
+  background-color: $--color-blur;
+  color: $--color-white;
+
+  .iframe-layout-main-header-crumbs {
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    .el-button {
+      margin-right: 20px;
+      border: none;
+      font-size: 20px;
+      background: transparent;
+      color: $--color-white;
+    }
+  }
+
+  .iframe-layout-main-header-user {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    padding-right: 16px;
+
+    p {
+      cursor: pointer;
+
+      span {
+        margin-right: 5px;
+        vertical-align: middle;
+        color: $--color-white;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.iframe-layout-main-container {
+  min-height: calc(100% - 150px);
+  flex: 1;
+  padding: 0 16px 16px;
+}
+
+$--layout-tabs-bar-height: 36px;
+$--layout-tab-height: 36px;
+
+.iframe-tabs-bar-container {
+  height: $--layout-tabs-bar-height;
+  margin: 10px 16px 0;
+  user-select: none;
+  background: #f7f7f7;
+  box-sizing: border-box;
+
+  .iframe-tabs {
+    width: calc(100% - 90px);
+    height: $--layout-tab-height;
+
+    .el-tabs__nav-next,
+    .el-tabs__nav-prev {
+      height: $--layout-tab-height;
+      line-height: $--layout-tab-height;
+    }
+
+    .el-tabs__header {
+      border-bottom: 0;
+
+      .el-tabs__nav {
+        border: 0;
+      }
+
+      .el-tabs__item {
+        height: $--layout-tab-height;
+        margin-right: 5px;
+        border: none;
+        line-height: $--layout-tab-height;
+        box-sizing: border-box;
+        transition: padding 0.3s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+
+        &.is-active {
+          border-radius: 6px 6px 0 0;
+          background-color: #ffffff;
+        }
+      }
+    }
+  }
+
+  .iframe-tabs-options {
+    cursor: pointer;
+  }
+}
+
+.h100 {
+  height: 100%;
+}
