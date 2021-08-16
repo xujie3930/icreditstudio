@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.jinninghui.datasphere.icreditstudio.modules.system.user.mapper.UserOrgMapDao">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserOrgMapDao">
 
 	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.modules.system.user.entity.UserOrgMapEntity" id="userOrgMapMap">
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserOrgMapEntity" id="userOrgMapMap">
         <result property="id" column="ID"/>
         <result property="userId" column="USER_ID"/>
         <result property="orgId" column="ORG_ID"/>

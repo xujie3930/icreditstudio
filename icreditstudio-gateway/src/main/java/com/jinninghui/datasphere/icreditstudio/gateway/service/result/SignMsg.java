@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.gateway.service.result;
 
-import com.hashtech.businessframework.result.CommonOuterResponse;
+import com.jinninghui.datasphere.icreditstudio.framework.result.CommonOuterResponse;
 
 /**
  * @author liyanhui

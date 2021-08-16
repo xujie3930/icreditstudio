@@ -1,28 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.gateway.service;
 
-import com.netflix.zuul.context.RequestContext;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
 
 /**
  * @author liyanhui
  */
 public interface AuthExceptionHandlerService {
 
-    /**
-     * 本地异常处理（业务异常）
-     *
-     * @param ctx
-     * @param code
-     * @param msg
-     */
-    void businessExceptionHandler(RequestContext ctx, String code, String msg);
+    Mono<Void> handleException(ServerWebExchange exchange, String code, String message);
 
-    /**
-     * 可同时处理本地异常以及远程异常 方法不会抛出异常
-     */
-    void systemExceptionHandler(Exception e, RequestContext ctx);
 
-    /**
-     * 可同时处理本地异常以及远程异常 方法不会抛出异常
-     */
-    void systemExceptionHandler(Exception e, RequestContext ctx, String code, String msg);
 }

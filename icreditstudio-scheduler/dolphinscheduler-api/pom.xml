@@ -38,7 +38,7 @@
         <!--springboot-->
 
         <dependency>
-            <groupId>com.jinninghui.icreditdatasphere</groupId>
+            <groupId>com.jinninghui.datasphere</groupId>
             <artifactId>icreditstudio-common</artifactId>
         </dependency>
 
