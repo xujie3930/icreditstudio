@@ -4,17 +4,32 @@
 -->
 <template>
   <div class="iframe-header-breadcrumb">
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-      <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-      <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-      <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+    <el-breadcrumb
+      v-if="curBreadcrumb.length"
+      separator-class="el-icon-arrow-right"
+    >
+      <el-breadcrumb-item :key="index" v-for="(item, index) in curBreadcrumb">
+        {{ item.label || item.name }}
+      </el-breadcrumb-item>
     </el-breadcrumb>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      // curBreadcrumb: []
+    }
+  },
+
+  props: {
+    curBreadcrumb: {
+      type: Array,
+      default: () => []
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

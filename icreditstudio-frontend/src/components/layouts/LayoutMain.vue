@@ -8,20 +8,31 @@
       />
 
       <div class="layout-container">
+        <!-- 一级菜单 -->
         <LayoutHeaderSidebar
           v-if="isHeaderCollapse"
           :menu="moduleMenus[activeModuleId]"
           :crumbs-list="breadCrumbItems"
           :modules="topModules"
           :active-module-id="activeModuleId"
+          @onChange="changeMenu"
         />
-        <LayoutMainSidebar v-else :menu="moduleMenus[activeModuleId]" />
+        <!-- 二级菜单 -->
+        <LayoutMainSidebar
+          v-else
+          :menu="moduleMenus[activeModuleId]"
+          @getChildMenus="getChildMenus"
+        />
         <div class="layout-content">
           <!-- <LayoutMainTabBar /> -->
-          <LayoutBreadcrumd />
+          <LayoutBreadcrumd :curBreadcrumb="curBreadcrumb" />
           <main class="iframe-layout-main-container">
+            <!-- 三级以及四级菜单 -->
             <LayoutContainerSidebar
-              :menu="filterChildrenMenu(moduleMenus[activeModuleId])"
+              v-if="isExistThreeMenus"
+              :menu="threeChildrenMenus"
+              @threeMenuChange="threeMenuChange"
+              @fourMenuChange="fourMenuChange"
             />
             <keep-alive>
               <router-view v-if="keepAlive" />
@@ -62,7 +73,12 @@ export default {
 
   data() {
     return {
-      breadCrumbItems: []
+      curBreadcrumb: [],
+      breadCrumbItems: [],
+
+      // 存在三级以及四级菜单
+      isExistThreeMenus: true,
+      threeChildrenMenus: []
     }
   },
 
@@ -74,6 +90,7 @@ export default {
       activeModuleId: 'permission/activeModuleId',
       isHeaderCollapse: 'common/isHeaderCollapse'
     }),
+
     keepAlive() {
       return this.$route.meta.keepAlive
     }
@@ -89,6 +106,7 @@ export default {
   },
 
   created() {
+    this.curBreadcrumb.push(this.topModules[0])
     this.initBreadCrumbItems(this.$route)
   },
 
@@ -108,12 +126,30 @@ export default {
       this.breadCrumbItems = breadCrumbItem
     },
 
-    filterChildrenMenu(menu) {
-      const secondMenu = menu.filter(
-        item => item.isShow && item.children && item.children.length
-      )
-      const thirdMenu = secondMenu.map(list => list.children)
-      return thirdMenu.flat()
+    changeMenu(curMenu) {
+      this.threeChildrenMenus = []
+      this.curBreadcrumb = [curMenu]
+    },
+
+    getChildMenus(curMenu) {
+      const { children: childMenus, ...rest } = curMenu
+      this.curBreadcrumb = [this.curBreadcrumb[0], rest]
+      this.isExistThreeMenus = !!childMenus?.length
+      this.threeChildrenMenus = childMenus?.filter(item => item.isShow)
+    },
+
+    // 三级菜单更改
+    threeMenuChange(curMenu) {
+      console.log(curMenu, 'lololo')
+      const [firstItem, secondItem] = this.curBreadcrumb
+      this.curBreadcrumb = [firstItem, secondItem, curMenu]
+    },
+
+    // 四级菜单更改
+    fourMenuChange(curMenu) {
+      const [firstItem, secondItem, thirdItem] = this.curBreadcrumb
+      console.log(curMenu, 'lololo')
+      this.curBreadcrumb = [firstItem, secondItem, thirdItem, curMenu]
     }
   }
 }

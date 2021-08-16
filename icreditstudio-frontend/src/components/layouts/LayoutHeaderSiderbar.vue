@@ -6,7 +6,7 @@
           :key="item.id"
           :index="item.id"
           class="menu-left-item"
-          @click="handleMenuSelected"
+          @click="handleMenuSelected(item)"
         >
           <i :class="[item.iconPath, 'menu-icon']" />
           <span slot="title">{{ item.label }}</span>
@@ -63,9 +63,10 @@ export default {
     ...mapMutations('permission', { setActinveMenuId: SET_ACTIVE_MODULE_ID }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
 
-    handleMenuSelected(node) {
-      this.setActinveMenuId(node.index)
+    handleMenuSelected(item) {
+      this.setActinveMenuId(item.id)
       this.toggleHeaderCollapseActions(false)
+      this.$emit('onChange', item)
     },
 
     getBaseConfig(key) {

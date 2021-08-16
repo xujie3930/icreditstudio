@@ -19,6 +19,7 @@
             :key="item.name"
             :index="item.url"
             class="menu-left-item"
+            @click="handleMenuSelected(item)"
           >
             <i :class="[item.iconPath, 'menu-icon']" />
             <span slot="title">{{ item.name }}</span>
@@ -67,14 +68,15 @@ export default {
   },
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
-    /**
-     * @desc 返回配置
-     * @param {String} key
-     * @return {String} 配置值
-     */
+
+    handleMenuSelected(item) {
+      this.$emit('getChildMenus', item)
+    },
+
     getBaseConfig(key) {
       return variables[key]
     },
+
     renderPath(item) {
       let _path = item.url
       if (item.component === 'main/LayoutIframe' && item.src) {
@@ -82,12 +84,14 @@ export default {
       }
       return _path
     },
+
     // 点击一级菜单，如没有子菜单则跳转，有则展开/收缩菜单
     handleLinkOrToggle({ children, url, redirectPath }, e) {
-      if (children && children.length >= 1) return
+      if (children && children?.length >= 1) return
       e.stopPropagation()
       this.$router.push({ path: redirectPath || url })
     },
+
     handleCollapse() {
       this.toggleCollapseActions(!this.isCollapse)
     }

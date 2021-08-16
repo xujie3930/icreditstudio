@@ -1,6 +1,6 @@
 <template>
   <div class="home iframe-flex-row-center-center">
-    iframe
+    iCredit
   </div>
 </template>
 
@@ -10,7 +10,7 @@ export default {
 }
 </script>
 <style scoped>
-.home{
+.home {
   width: 100%;
   height: 100%;
   background-color: #fff;

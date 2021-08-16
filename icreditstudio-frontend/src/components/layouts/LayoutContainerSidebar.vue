@@ -17,18 +17,20 @@
             <template #title>
               <div
                 class="custom-submenu-item"
-                @click="handleLinkOrToggle(item, $event)"
+                @click="handleThreeLevelMenuChange(item, $event)"
               >
+                <!-- @click="handleLinkOrToggle(item, $event)" -->
                 <i :class="[item.iconPath]" />
                 <span>{{ item.name }}</span>
               </div>
             </template>
             <el-menu-item-group>
               <el-menu-item
-                v-for="son in item.children.filter(e => e.isShow)"
+                v-for="son in item.children"
                 :key="son.url"
                 :index="renderPath(son)"
                 class="menu-left-item"
+                @click="handleFourLevelMenuChange(son, $event)"
               >
                 {{ son.name }}
               </el-menu-item>
@@ -76,7 +78,16 @@ export default {
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
 
-    // 是否存在二级及以上菜单
+    handleThreeLevelMenuChange(curMenu, evt) {
+      console.log(curMenu, evt)
+      this.$emit('threeMenuChange', curMenu)
+    },
+
+    handleFourLevelMenuChange(curMenu, evt) {
+      console.log(curMenu, evt)
+      this.$emit('fourMenuChange', curMenu)
+    },
+
     isExistChildren(item) {
       const { children } = item
       const moreThirdMore = []
@@ -91,14 +102,10 @@ export default {
       return moreThirdMore.length
     },
 
-    /**
-     * @desc 返回配置
-     * @param {String} key
-     * @return {String} 配置值
-     */
     getBaseConfig(key) {
       return variables[key]
     },
+
     renderPath(item) {
       let _path = item.url
       if (item.component === 'main/LayoutIframe' && item.src) {
@@ -106,12 +113,15 @@ export default {
       }
       return _path
     },
+
     // 点击一级菜单，如没有子菜单则跳转，有则展开/收缩菜单
     handleLinkOrToggle({ children, url, redirectPath }, e) {
-      if (children && children.length >= 1) return
+      console.log(url, children, e)
+      if (children?.length) return
       e.stopPropagation()
       this.$router.push({ path: redirectPath || url })
     },
+
     handleCollapse() {
       this.toggleCollapseActions(!this.isCollapse)
     }
