@@ -6,17 +6,32 @@
         :class="['header-collapse', isCollapse ? 'unfold' : 'fold']"
         @on-click="handleCollapse"
       />
-      <!-- <el-button
-        :icon="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
-        @click="handleCollapse"
-      /> -->
-      <!-- <layout-header-slot
-        :modules="modules"
-        :active-module-id="activeModuleId"
-        @handleModuleClick="handleModuleClick"
-      /> -->
     </div>
+
+    <div class="header-text">
+      <j-svg name="logo" class="logo" />
+      <span class="system-name">iCredit数据开发与管理平台</span>
+      <span class="split">|</span>
+      <span class="menu">工作空间</span>
+    </div>
+
     <div class="iframe-layout-main-header-user">
+      <!-- 工作空间 -->
+      <el-select
+        class="workspace-select"
+        size="mini"
+        placeholder="请选择"
+        v-model="workspaceValue"
+      >
+        <el-option
+          v-for="item in workspaceOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        >
+        </el-option>
+      </el-select>
+
       <!-- 快捷菜单 -->
       <i
         @click="handleShowShortMenu"
@@ -117,6 +132,13 @@ export default {
   data() {
     this.getSystemTheme = getSystemTheme
     return {
+      workspaceValue: 'default',
+      workspaceOptions: [
+        { value: 'default', label: '默认工作空间' },
+        { value: 'shuiwu', label: '水务工作空间' },
+        { value: 'test', label: '测试工作空间' }
+      ],
+
       isShowQuickMenu: 'N',
       activeModule: '',
       count: 1,
@@ -288,6 +310,57 @@ export default {
 
   .unfold {
     transform: rotateY(180deg);
+  }
+}
+
+.header-text {
+  @include flex;
+  margin-left: 15px;
+
+  .logo {
+    width: 42px;
+    height: 36px;
+    margin-right: 5px;
+  }
+
+  .system-name {
+    font-size: 18px;
+    font-family: PingFangSC, PingFangSC-Semibold;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .split {
+    margin: 0 10px;
+  }
+
+  .menu {
+    font-size: 16px;
+    font-family: PingFangSC, PingFangSC-Semibold;
+    font-weight: 600;
+    color: #fff;
+  }
+}
+
+.iframe-layout-main-header-user {
+  .workspace-select {
+    width: 150px;
+
+    ::v-deep {
+      .el-input__inner {
+        background-color: #1890ff;
+        color: #fff;
+        border-color: #fff;
+      }
+
+      .el-select__caret {
+        color: #fff;
+      }
+
+      .el-input.is-focus .el-input__inner {
+        border-color: #fff;
+      }
+    }
   }
 }
 </style>

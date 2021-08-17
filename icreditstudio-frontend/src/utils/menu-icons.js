@@ -1,8 +1,3 @@
-/*
- * @Author: lizheng
- * @Description: ĞÂÔöElement IconÃû³Æ
- * @Date: 2021-05-24
- */
 export const icons = [
   'el-icon-platform-eleme',
   'el-icon-eleme',

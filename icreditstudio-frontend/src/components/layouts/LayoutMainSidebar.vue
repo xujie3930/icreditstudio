@@ -70,6 +70,8 @@ export default {
     ...mapActions('common', ['toggleCollapseActions']),
 
     handleMenuSelected(item) {
+      console.log(item, 'item')
+      this.$router.push(item.url)
       this.$emit('getChildMenus', item)
     },
 
