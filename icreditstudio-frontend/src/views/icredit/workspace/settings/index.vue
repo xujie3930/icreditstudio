@@ -30,7 +30,7 @@
       :handleExport="mixinHandleExport"
       :handleUpdate="mixinHandleCreateOrUpdate"
       :handleCancel="mixinHandleCancel"
-      @handleExportTemplate="handleExportTemplate"
+      @handleAddWorkspace="handleAddWorkspace"
     >
     </crud-basic>
   </div>
@@ -90,7 +90,23 @@ export default {
           ]
         }
       },
-      tableConfiguration: tableConfiguration(this)
+      tableConfiguration: tableConfiguration(this),
+      fetchConfig: {
+        retrieve: {
+          url: '/user/user/pageList',
+          method: 'post'
+        }
+      }
+    }
+  },
+
+  created() {
+    this.mixinRetrieveTableData()
+  },
+
+  methods: {
+    handleAddWorkspace() {
+      console.log(111111)
     }
   }
 }

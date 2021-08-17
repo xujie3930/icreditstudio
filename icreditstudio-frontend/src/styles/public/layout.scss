@@ -15,7 +15,7 @@ $--height-layout-header: 64px;
   background-color: $--color-white;
   transition: width 0.5s;
   &.is-collapse {
-    width: 65px !important;
+    width: 64px !important;
     overflow-x: hidden;
   }
 

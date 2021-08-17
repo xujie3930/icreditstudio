@@ -124,6 +124,7 @@ export default {
 
 .menu-icon {
   font-size: 24px;
+  margin-bottom: 11px;
 }
 
 .menu-left-item {
@@ -139,6 +140,13 @@ export default {
   @include flex(column, space-between);
   height: calc(100vh - 64px);
   overflow: hidden;
+
+  ::v-deep {
+    .el-menu-item,
+    .el-submenu__title {
+      height: 70px;
+    }
+  }
 }
 
 .iframe-layout-sidebar-crumbs {

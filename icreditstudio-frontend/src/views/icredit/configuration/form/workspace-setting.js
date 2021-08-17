@@ -18,5 +18,14 @@ export default [
       { value: 'Y', label: 'admin' },
       { value: 'M', label: '张三' }
     ]
+  },
+  {
+    type: 'date',
+    label: '创建时间',
+    model: '',
+    ruleProp: 'loginTime',
+    isSearch: true,
+    format: 'yyyy-MM-dd',
+    valueFormat: 'timestamp'
   }
 ]
