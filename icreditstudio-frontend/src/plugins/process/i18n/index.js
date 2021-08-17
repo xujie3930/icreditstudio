@@ -15,33 +15,47 @@
  *
  */
 
-import Vue from 'vue';
+import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import en from 'iview/dist/locale/en-US';
-import zh from 'iview/dist/locale/zh-CN';
-import processlang from '../component/vue-process/lang';
+import en from 'iview/dist/locale/en-US'
+import zh from 'iview/dist/locale/zh-CN'
+import enLocale from 'element-ui/lib/locale/lang/en'
+import zhLocale from 'element-ui/lib/locale/lang/zh-CN'
+import processlang from '../component/vue-process/lang'
 
-Vue.use(VueI18n);
+Vue.use(VueI18n)
+
 // 先判断是否有设置语言，没有就用本地语言
 if (localStorage.getItem('locale')) {
-  Vue.config.lang = localStorage.getItem('locale');
+  Vue.config.lang = localStorage.getItem('locale')
 } else {
-  const lang = navigator.language;
+  const lang = navigator.language
   if (lang === 'zh-CN') {
-    Vue.config.lang = 'zh-CN';
-    localStorage.setItem('locale', 'zh-CN');
+    Vue.config.lang = 'zh-CN'
+    localStorage.setItem('locale', 'zh-CN')
   } else {
-    Vue.config.lang = 'en';
-    localStorage.setItem('locale', 'en');
+    Vue.config.lang = 'en'
+    localStorage.setItem('locale', 'en')
   }
 }
-Vue.locale = () => {};
+
+Vue.locale = () => {}
 const messages = {
-  'en': Object.assign(en, processlang.en, require('../commonData/i18n/common/en.json')),
-  'zh-CN': Object.assign(zh, processlang['zh-CN'], require('../commonData/i18n/common/zh.json'))
+  en: Object.assign(
+    enLocale,
+    en,
+    processlang.en,
+    require('../commonData/i18n/common/en.json')
+  ),
+  'zh-CN': Object.assign(
+    zhLocale,
+    zh,
+    processlang['zh-CN'],
+    require('../commonData/i18n/common/zh.json')
+  )
 }
 
 export default new VueI18n({
   locale: Vue.config.lang,
   messages
-});
+})
