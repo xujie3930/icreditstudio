@@ -12,7 +12,7 @@
       <j-svg name="logo" class="logo" />
       <span class="system-name">iCredit数据开发与管理平台</span>
       <span class="split">|</span>
-      <span class="menu">工作空间</span>
+      <span class="menu">{{ workspace }}</span>
     </div>
 
     <div class="iframe-layout-main-header-user">
@@ -126,6 +126,10 @@ export default {
     },
     activeModuleId: {
       type: String
+    },
+    workspace: {
+      type: String,
+      default: '工作空间'
     }
   },
 

@@ -4,6 +4,7 @@ export default _this => {
     id: 'setting',
     isBorder: true,
     hasPage: true,
+    // maxHeight: '550',
     customBtnConfig: [
       {
         label: '新增工作空间',
@@ -74,27 +75,27 @@ export default _this => {
         fixed: 'right',
         operationList: [
           {
-            func: _this.mixinHandleRoleSet,
+            func: ({ row }) => _this.handleOperateClick(row, 'view'),
             label: '查看',
-            key: 'roleSet',
+            key: 'view',
             show: true
           },
           {
-            func: _this.mixinHandleEdit,
+            func: ({ row }) => _this.handleOperateClick(row, 'disabled'),
             label: '停用',
-            key: 'update',
+            key: 'disabled',
             show: true
           },
           {
-            func: _this.mixinHandleDelete,
+            func: _this.handleDeleteClick,
             label: '删除',
             key: 'delete',
             show: true
           },
           {
-            func: _this.mixinHandleEdit,
+            func: ({ row }) => _this.handleOperateClick(row, 'enabled'),
             label: '启用',
-            key: 'update',
+            key: 'enabled',
             show: true
           },
           {

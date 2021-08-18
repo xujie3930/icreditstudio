@@ -4,10 +4,11 @@
       <LayoutHeader
         :crumbs-list="breadCrumbItems"
         :modules="topModules"
+        :workspace="workspace"
         :active-module-id="activeModuleId"
       />
 
-      <div class="layout-container">
+      <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
         <!-- 一级菜单 -->
         <LayoutHeaderSidebar
           v-if="isHeaderCollapse"
@@ -73,6 +74,7 @@ export default {
 
   data() {
     return {
+      workspace: '工作空间',
       curBreadcrumb: [],
       breadCrumbItems: [],
 
@@ -88,7 +90,8 @@ export default {
       topModules: 'permission/topModules',
       moduleMenus: 'permission/moduleMenus',
       activeModuleId: 'permission/activeModuleId',
-      isHeaderCollapse: 'common/isHeaderCollapse'
+      isHeaderCollapse: 'common/isHeaderCollapse',
+      isCollapse: 'common/isCollapse'
     }),
 
     keepAlive() {
@@ -96,14 +99,14 @@ export default {
     }
   },
 
-  watch: {
-    $route: {
-      immediate: true,
-      handler(to) {
-        this.initBreadCrumbItems(to)
-      }
-    }
-  },
+  // watch: {
+  //   $route: {
+  //     immediate: true,
+  //     handler(to) {
+  //       this.initBreadCrumbItems(to)
+  //     }
+  //   }
+  // },
 
   created() {
     this.curBreadcrumb.push(this.topModules[0])
@@ -113,24 +116,31 @@ export default {
   methods: {
     initBreadCrumbItems(router) {
       const breadCrumbItem = [
-        { path: '/', title: window.__JConfig.baseConfig.projectName }
+        // { path: '/', title: window.__JConfig.baseConfig.projectName }
       ]
       router.matched.forEach(item => {
         if (item.meta && item.meta.name) {
           breadCrumbItem.push({
             path: item.path,
-            title: item.meta.name
+            name: item.meta.name
           })
         }
       })
       this.breadCrumbItems = breadCrumbItem
+      this.curBreadcrumb.push(breadCrumbItem[0])
     },
 
+    // 一级菜单
     changeMenu(curMenu) {
+      const { children = [], label } = curMenu
       this.threeChildrenMenus = []
       this.curBreadcrumb = [curMenu]
+      this.workspace = label
+      // 自动加载二级菜单的第一个菜单
+      children.length && this.getChildMenus(children[0])
     },
 
+    // 二级菜单
     getChildMenus(curMenu) {
       const { children: childMenus, ...rest } = curMenu
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
@@ -162,13 +172,19 @@ export default {
 
 .iframe-layout-container {
   .layout-container {
-    width: 100%;
     @include center();
+    margin-top: 64px;
+    margin-left: 100px;
+    transition: all 0.5s;
   }
 
   .layout-content {
     min-width: calc(100% - 220px);
     flex: 1;
+  }
+
+  .layout-collapse {
+    margin-left: 64px;
   }
 }
 </style>

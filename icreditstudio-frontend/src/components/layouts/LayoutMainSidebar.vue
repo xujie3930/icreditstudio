@@ -70,7 +70,6 @@ export default {
     ...mapActions('common', ['toggleCollapseActions']),
 
     handleMenuSelected(item) {
-      console.log(item, 'item')
       this.$router.push(item.url)
       this.$emit('getChildMenus', item)
     },
@@ -140,6 +139,9 @@ export default {
   @include flex(column, space-between);
   height: calc(100vh - 64px);
   overflow: hidden;
+  position: fixed;
+  left: 0;
+  z-index: 999;
 
   ::v-deep {
     .el-menu-item,

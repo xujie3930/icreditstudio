@@ -33,6 +33,8 @@
       @handleAddWorkspace="handleAddWorkspace"
     >
     </crud-basic>
+
+    <Dialog ref="settingDialog" />
   </div>
 </template>
 
@@ -40,9 +42,12 @@
 import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting'
 import formOption from '@/views/icredit/configuration/form/workspace-setting'
+import Dialog from './dialog'
 
 export default {
   mixins: [crud],
+
+  components: { Dialog },
 
   data() {
     return {
@@ -108,6 +113,22 @@ export default {
     handleAddWorkspace() {
       console.log(111111)
       this.$router.push('/workspace/detail')
+    },
+
+    handleDeleteClick(row) {
+      console.log(row, 'row')
+    },
+
+    handleOperateClick(row, opType) {
+      console.log(row, 'row', opType)
+      switch (opType) {
+        case 'view':
+          this.$router.push('/workspace/detail')
+          break
+        default:
+          this.$refs.settingDialog.open(opType, 'xxxx工作空间')
+          break
+      }
     }
   }
 }

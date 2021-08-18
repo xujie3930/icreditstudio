@@ -61,7 +61,12 @@ $--height-layout-header: 64px;
 }
 
 .iframe-layout-main-header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
   display: flex;
+  z-index: 1;
   justify-content: space-between;
   align-items: center;
   height: $--height-layout-header;
