@@ -108,12 +108,9 @@ export default {
   font-size: 24px;
 }
 
-.menu-left-item {
-  /deep/ .el-tooltip {
-    height: unset !important;
-    width: unset !important;
-    left: unset !important;
-    top: unset !important;
-  }
+.header-sidebar {
+  position: fixed;
+  left: 0;
+  z-index: 999;
 }
 </style>
