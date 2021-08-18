@@ -107,6 +107,7 @@ export default {
   methods: {
     handleAddWorkspace() {
       console.log(111111)
+      this.$router.push('/workspace/detail')
     }
   }
 }
