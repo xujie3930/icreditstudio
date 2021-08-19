@@ -11,7 +11,7 @@
       <span class="color-text">
         {{ workspaceName }}
       </span>
-      吗？
+      在调度，请先下线工作流后再停用。
     </div>
     <span slot="footer" class="dialog-footer">
       <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
@@ -40,7 +40,7 @@ export default {
       this.title = `工作空间${opType === 'disabled' ? '停用' : '删除'}`
       this.operateMsg =
         opType === 'disabled'
-          ? '停用工作空间后，工作空间中的项目和工作流都不再进行调度，请谨慎操作。确认要停用'
+          ? '当前数据源有工作流（'
           : '删除工作空间后，工作空间内的项目和工作流都将删除，请谨慎操作。确认要删除'
     },
 

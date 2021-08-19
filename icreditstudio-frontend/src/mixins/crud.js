@@ -30,7 +30,7 @@ export default {
       mixinSearchFormItems: [], // 搜索的配置
       mixinSearchFormFunc: [
         {
-          btnText: '搜索',
+          btnText: '查询',
           btnEmitName: 'mixinSearch',
           type: 'primary'
         },

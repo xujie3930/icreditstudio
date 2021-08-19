@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="45px" height="40px" viewBox="0 0 45 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>形状</title>
+    <desc>Created with Sketch.</desc>
+    <g id="UI" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="数据源管理-新增" transform="translate(-595.000000, -434.000000)">
+            <g id="编组-9" transform="translate(320.000000, 84.000000)">
+                <g id="txt文件备份-4" transform="translate(275.000000, 350.000000)">
+                    <path d="M26.2,9.91666667 L26.2,0 L8,0 L8,17 L36,17 L36,9.91666667 L26.2,9.91666667 Z M36,9 L28,9 L28,0 L36,9 Z M0,20 L0,40 L45,40 L45,20 L0,20 Z" id="形状" fill="#000000" fill-rule="nonzero"></path>
+                    <text id="SFTP" font-family="SourceHanSansCN-Heavy, Source Han Sans CN" font-size="16.3636364" font-weight="600" fill="#FFFFFF">
+                        <tspan x="1.47272727" y="35">SFTP</tspan>
+                    </text>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

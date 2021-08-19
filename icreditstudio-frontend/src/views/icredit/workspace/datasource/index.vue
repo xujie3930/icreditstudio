@@ -30,11 +30,12 @@
       :handleExport="mixinHandleExport"
       :handleUpdate="mixinHandleCreateOrUpdate"
       :handleCancel="mixinHandleCancel"
-      @handleAddWorkspace="handleAddWorkspace"
+      @handleAddDataSource="handleAddDataSource"
     >
     </crud-basic>
 
-    <!-- <Dialog ref="settingDialog" /> -->
+    <Dialog ref="dataSourceDialog" />
+    <AddDataSourceStepFirst ref="addStepFirst" />
   </div>
 </template>
 
@@ -42,12 +43,12 @@
 import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource'
 import formOption from '@/views/icredit/configuration/form/workspace-datasource'
-// import Dialog from './dialog'
+import Dialog from './dialog'
+import AddDataSourceStepFirst from './add-step-first'
 
 export default {
   mixins: [crud],
-
-  // components: { Dialog },
+  components: { Dialog, AddDataSourceStepFirst },
 
   data() {
     return {
@@ -110,9 +111,8 @@ export default {
   },
 
   methods: {
-    handleAddWorkspace() {
-      console.log(111111)
-      this.$router.push('/workspace/detail')
+    handleAddDataSource() {
+      this.$refs.addStepFirst.open()
     },
 
     handleDeleteClick(row) {
@@ -126,7 +126,7 @@ export default {
           this.$router.push('/workspace/detail')
           break
         default:
-          this.$refs.settingDialog.open(opType, 'xxxx工作空间')
+          this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
           break
       }
     }
@@ -141,8 +141,8 @@ export default {
   background: red;
 
   ::v-deep {
-    .iframe-label .iframe-form-label {
-      width: 104px;
+    .iframe-label .iframe-form-label[title='数据源自定义名称'] {
+      width: 150px;
     }
   }
 }

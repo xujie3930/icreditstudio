@@ -41,6 +41,7 @@ Vue.use(component)
 Vue.config.productionTip = false
 
 Vue.prototype.$t = (key, value) => i18n.t(key, value)
+Vue.prototype.$ELEMENT = { size: 'small' }
 
 new Vue({
   router,

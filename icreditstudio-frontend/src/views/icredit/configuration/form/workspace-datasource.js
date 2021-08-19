@@ -34,7 +34,7 @@ export default [
   {
     type: 'select',
     label: '是否启用',
-    ruleProp: 'deleteFlag',
+    ruleProp: '',
     model: '',
     isSearch: true,
     options: [

@@ -12,7 +12,7 @@ export default _this => {
         key: 'addDataSource',
         options: {
           eventType: 'click',
-          eventName: 'handleAddWorkspace'
+          eventName: 'handleAddDataSource'
         }
       }
     ],
