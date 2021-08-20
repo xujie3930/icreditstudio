@@ -97,5 +97,6 @@
         <module>icreditstudio-system</module>
         <module>icreditstudio-metadata</module>
         <module>icreditstudio-framework</module>
+        <module>icreditstudio-datasource</module>
     </modules>
 </project>
