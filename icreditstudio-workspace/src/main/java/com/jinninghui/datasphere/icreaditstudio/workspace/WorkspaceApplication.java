@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.workspace;
+package com.jinninghui.datasphere.icreaditstudio.workspace;
 
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.configuration.EnableSequenceService;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.EnableValidator;

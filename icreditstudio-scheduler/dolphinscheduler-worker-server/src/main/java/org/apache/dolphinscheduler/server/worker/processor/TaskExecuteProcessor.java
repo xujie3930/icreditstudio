@@ -150,6 +150,7 @@ public class TaskExecuteProcessor implements NettyRequestProcessor {
         try {
             FileUtils.createWorkDirIfAbsent(execLocalPath);
             if (CommonUtils.isSudoEnable() && workerConfig.getWorkerTenantAutoCreate()) {
+                //在mac、linux、win系统下创建用户
                 OSUtils.createUserIfAbsent(taskExecutionContext.getTenantCode());
             }
         } catch (Throwable ex) {
