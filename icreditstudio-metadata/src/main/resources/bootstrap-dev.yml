@@ -1,0 +1,76 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.30:8848
+        namespace: dd8ede24-19c7-4547-8956-a566f800a823
+    gateway:
+      routes: # 路由可以有多个
+        - id: service-router1 # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+
+          uri: lb://server-pruduce-8082-feign # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          # gateway⽹关从服务注册中⼼获取实例信息然后负载后路由
+
+
+          predicates: #断⾔：路由条件，Predicate 接受⼀个输⼊参数，返回⼀个布尔值结果。该接⼝包含多种默 认⽅法来将 Predicate 组合成其他复杂的逻辑（⽐如：与，或，⾮）。
+            - Path=/api/**
+        - id: service-router2 # 我们⾃定义的路由 ID，保持唯⼀
+          uri: lb://cloud-eureka-client-8081 #服务名不要用下划线
+          predicates: #断⾔：路由条件，Predicate 接受⼀个输⼊参数，返回⼀个布尔值结果。该接⼝包含多种默 认⽅法来将 Predicate 组合成其他复杂的逻辑（⽐如：与，或，⾮）。
+            - Path=/api2/**
+            #filters:
+            #- StripPrefix=1 #可以去掉url中的占位后转发路由 可以去掉api后转发
+  application:
+    name: api-gateway
+  redis:
+    host: 192.168.0.30
+    port: 6379
+    timeout: 20000
+    lettuce:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+    password: hash2018
+  http:
+    encoding:
+      charset: UTF-8
+      force: true
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 1000MB
+system:
+  errorCode: '500'
+#  cloud:
+#    config:
+#      uri: http://192.168.0.14:8001/   # 配置spring cloud config服务端的url
+#      profile: dev                      # 指定profile
+#      label: develop                     # 指定gitlab仓库的分支
+management:
+  endpoints:
+    shutdown:
+      enabled: true
+    web:
+      exposure:
+        include: prometheus, info, health, shutdown
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 260000 # hystrix时间配置必须大于ribbon超时时间，否则重试机制没有意思
+ribbon:
+  ReadTimeout : 50000
+  SocketTimeout : 50000
+  ConnectTimeout: 50000
+logging:
+  #  file: ../logs/api-gateway/api-gateway.log
+  #  level:
+  #    root: info
+  config: classpath:logback/logback-dev.xml
+server:
+  port: 13249
