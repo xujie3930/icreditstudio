@@ -4,28 +4,26 @@
 -->
 
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="480px" top="25vh">
-    <div class="dialog-title" slot="title">{{ title }}</div>
+  <BaseDialog ref="baseDialog" width="480px" :title="title">
     <div class="content">
       {{ operateMsg }}
-      <span class="color-text">
-        {{ workspaceName }}
-      </span>
-      在调度，请先下线工作流后再停用。
+      <template v-if="opType === 'disabled'">
+        （<span class="color-text"> {{ workspaceName }}</span
+        >） 在调度，请先下线工作流后再停用。
+      </template>
     </div>
-    <span slot="footer" class="dialog-footer">
-      <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
-      <el-button size="mini" type="primary" @click="handleConfirm">
-        确 定</el-button
-      >
-    </span>
-  </el-dialog>
+  </BaseDialog>
 </template>
 
 <script>
+import BaseDialog from '../components/dialog'
+
 export default {
+  components: { BaseDialog },
+
   data() {
     return {
+      opType: '',
       title: '',
       workspaceName: '',
       operateMsg: '',
@@ -37,11 +35,13 @@ export default {
     open(opType, name) {
       this.dialogVisible = true
       this.workspaceName = name
-      this.title = `工作空间${opType === 'disabled' ? '停用' : '删除'}`
+      this.opType = opType
+      this.title = `数据源${opType === 'disabled' ? '停用' : '删除'}`
       this.operateMsg =
         opType === 'disabled'
-          ? '当前数据源有工作流（'
-          : '删除工作空间后，工作空间内的项目和工作流都将删除，请谨慎操作。确认要删除'
+          ? '当前数据源有工作流'
+          : '数据源删除后将不在列表中展示，且不再参与工作流调度，确认删除吗？'
+      this.$refs.baseDialog.open()
     },
 
     handleConfirm() {

@@ -75,9 +75,15 @@ export default _this => {
         fixed: 'right',
         operationList: [
           {
-            func: ({ row }) => _this.handleOperateClick(row, 'view'),
+            func: ({ row }) => _this.handleDetailClick(row, 'view'),
             label: '查看',
             key: 'view',
+            show: true
+          },
+          {
+            func: ({ row }) => _this.handleSyncClick(row, 'sync'),
+            label: '同步',
+            key: 'sync',
             show: true
           },
           {
@@ -87,21 +93,21 @@ export default _this => {
             show: true
           },
           {
-            func: _this.handleDeleteClick,
+            func: ({ row }) => _this.handleOperateClick(row, 'delete'),
             label: '删除',
             key: 'delete',
             show: true
           },
           {
-            func: ({ row }) => _this.handleOperateClick(row, 'enabled'),
+            func: ({ row }) => _this.handleEnabledClick(row, 'enabled'),
             label: '启用',
             key: 'enabled',
             show: true
           },
           {
-            func: _this.mixinHandleEdit,
+            func: ({ row }) => _this.handleDetailClick(row, 'edit'),
             label: '编辑',
-            key: 'update',
+            key: 'edit',
             show: true
           }
         ]

@@ -4,7 +4,7 @@
 -->
 
 <template>
-  <div class="workspace-setting">
+  <div class="datasource">
     <crud-basic
       class="user-container"
       ref="crud"
@@ -34,7 +34,13 @@
     >
     </crud-basic>
 
+    <div class="source-slider" v-if="isSyncClick">
+      <div class="bar"></div>
+      <div class="text">同步成功，新增10张表</div>
+    </div>
+
     <Dialog ref="dataSourceDialog" />
+    <Detail ref="dataSourceDetail" />
     <AddDataSourceStepFirst ref="addStepFirst" />
   </div>
 </template>
@@ -43,15 +49,18 @@
 import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource'
 import formOption from '@/views/icredit/configuration/form/workspace-datasource'
-import Dialog from './dialog'
+import Dialog from './tip-dialog'
+import Detail from './detail'
 import AddDataSourceStepFirst from './add-step-first'
 
 export default {
   mixins: [crud],
-  components: { Dialog, AddDataSourceStepFirst },
+  components: { Dialog, Detail, AddDataSourceStepFirst },
 
   data() {
     return {
+      isSyncClick: false,
+      sliderVal: 100,
       formOption,
       mixinSearchFormConfig: {
         models: {
@@ -119,26 +128,73 @@ export default {
       console.log(row, 'row')
     },
 
+    // 查看操作
+    handleDetailClick(row, opType) {
+      console.log('row', row)
+      this.$refs.dataSourceDetail.open({ row, opType })
+    },
+
+    // 启用
+    handleEnabledClick(row) {
+      console.log(row)
+      this.$message.success({
+        type: 'success',
+        offset: 200,
+        center: true,
+        duration: 1500,
+        message: '启用成功！'
+      })
+      // 调用接口
+    },
+
+    // 同步
+    handleSyncClick(row) {
+      console.log(row)
+      this.isSyncClick = true
+      // 调用接口
+      setTimeout(() => {
+        this.isSyncClick = false
+      }, 3000)
+    },
+
     handleOperateClick(row, opType) {
       console.log(row, 'row', opType)
-      switch (opType) {
-        case 'view':
-          this.$router.push('/workspace/detail')
-          break
-        default:
-          this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
-          break
-      }
+      this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.workspace-setting {
+.datasource {
+  position: relative;
   width: 100%;
   height: 100%;
-  background: red;
+
+  .source-slider {
+    display: inline-block;
+    position: absolute;
+    height: 30px;
+    top: 100px;
+    right: 150px;
+    line-height: 30px;
+    padding-top: 5px;
+
+    .bar {
+      display: inline-block;
+      width: 320px;
+      height: 6px;
+      line-height: 6px;
+      border-radius: 4px;
+      background-color: #52c41a;
+    }
+
+    .text {
+      display: inline-block;
+      margin-left: 10px;
+      color: #52c41a;
+    }
+  }
 
   ::v-deep {
     .iframe-label .iframe-form-label[title='数据源自定义名称'] {
