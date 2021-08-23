@@ -44,7 +44,7 @@ public class CodeGenerator {
         projectPath = projectPath + "\\" + scanner("模块名");
         gc.setOutputDir(projectPath +"\\src\\main\\java");
         gc.setFileOverride(true);
-        gc.setAuthor("jobob");
+        gc.setAuthor("xujie");
         gc.setOpen(false);
         // 自定义文件名风格，%s自动填充表实体属性
         gc.setMapperName("%sMapper");
