@@ -5,29 +5,42 @@
 -->
 
 <template>
-  <el-dialog
-    class="add-datasource"
-    width="800px"
-    :visible.sync="visible"
-    @closed="close"
-  >
-    <div slot="title" class="add-title-text">新增数据源</div>
-    <div class="logo-wrap" v-for="(item, key) in logoList" :key="key">
-      <div class="logo-item">
-        <div class="title">{{ logoNameMapping[key] }}</div>
-        <div class="logo-list-wrap">
-          <div class="logo-list" :key="list.logo" v-for="list in item">
-            <j-svg class="logo-icon" :name="list.name" />
-            <h3 class="logo-text">{{ list.logo }}</h3>
+  <div>
+    <el-dialog
+      class="add-datasource"
+      width="800px"
+      :visible.sync="visible"
+      @close="close"
+    >
+      <div slot="title" class="add-title-text">新增数据源</div>
+      <div class="logo-wrap" v-for="(item, key) in logoList" :key="key">
+        <div class="logo-item">
+          <div class="title">{{ logoNameMapping[key] }}</div>
+          <div class="logo-list-wrap">
+            <div
+              class="logo-list"
+              :key="list.logo"
+              v-for="list in item"
+              @click="handleSelectClick(key)"
+            >
+              <j-svg class="logo-icon" :name="list.name" />
+              <h3 class="logo-text">{{ list.logo }}</h3>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </el-dialog>
+    </el-dialog>
+
+    <AddStepSecond ref="addStep" />
+  </div>
 </template>
 
 <script>
+import AddStepSecond from './add-step-second'
+
 export default {
+  components: { AddStepSecond },
+
   data() {
     return {
       visible: false,
@@ -63,6 +76,7 @@ export default {
       }
     }
   },
+
   methods: {
     open() {
       this.visible = true
@@ -70,6 +84,12 @@ export default {
 
     close() {
       this.visible = false
+    },
+
+    handleSelectClick(type) {
+      if (type === 'blockChain') return
+      this.close()
+      this.$refs.addStep.open(type)
     }
   }
 }
