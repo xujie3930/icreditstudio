@@ -5,3 +5,6 @@ spring:
     refresh:
       refreshable: none
 
+  application:
+    name: datasync
+
