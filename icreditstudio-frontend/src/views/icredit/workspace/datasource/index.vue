@@ -40,7 +40,7 @@
     </div>
 
     <Dialog ref="dataSourceDialog" />
-    <Detail ref="dataSourceDetail" />
+    <Detail ref="dataSourceDetail" :footer="true" />
     <AddDataSourceStepFirst ref="addStepFirst" />
   </div>
 </template>

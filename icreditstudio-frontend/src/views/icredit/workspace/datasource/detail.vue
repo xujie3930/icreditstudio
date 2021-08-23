@@ -8,6 +8,7 @@
     ref="baseDialog"
     title="数据源查看"
     width="600px"
+    :hide-footer="true"
     @onClose="handleClose"
     @onConfirm="handleConfirm"
   >
@@ -56,6 +57,8 @@
       <template>
         <el-form-item label="数据源名称" prop="name">
           <el-input
+            show-word-limit
+            :maxlength="15"
             v-model="ruleForm.name"
             placeholder="请输入自定义数据源名称"
           ></el-input>
@@ -94,6 +97,8 @@
 
         <el-form-item label="数据源描述" prop="desc">
           <el-input
+            show-word-limit
+            :maxlength="250"
             type="textarea"
             v-model="ruleForm.desc"
             placeholder="请输入数据源描述"
@@ -153,7 +158,7 @@ export default {
     },
 
     handleConfirm() {
-      this.close()
+      this.handleClose()
       this.$emit('on-confirm')
     }
   }

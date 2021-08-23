@@ -9,18 +9,22 @@
       class="icredit-dialog"
       :visible.sync="dialogVisible"
       :width="width"
-      top="25vh"
+      :top="top"
     >
       <div class="icredit-dialog-title" slot="title">{{ title }}</div>
       <div class="icredit-dialog-content">
         <slot />
       </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button size="mini" @click="close">取 消</el-button>
-        <el-button size="mini" type="primary" @click="confirm">
-          确 定
-        </el-button>
-      </span>
+
+      <footer v-if="!hideFooter" slot="footer" class="dialog-footer">
+        <slot v-if="footer" name="customFooter" />
+        <div v-else>
+          <el-button size="mini" @click="close">取 消</el-button>
+          <el-button size="mini" type="primary" @click="confirm">
+            确 定
+          </el-button>
+        </div>
+      </footer>
     </el-dialog>
   </div>
 </template>
@@ -32,6 +36,11 @@ export default {
   },
 
   props: {
+    top: {
+      type: String,
+      default: '25vh'
+    },
+
     opType: {
       type: String,
       default: 'view'
@@ -45,6 +54,16 @@ export default {
     title: {
       type: String,
       default: 'dialog title'
+    },
+
+    footer: {
+      type: Boolean,
+      default: false
+    },
+
+    hideFooter: {
+      type: Boolean,
+      default: false
     }
   },
 
