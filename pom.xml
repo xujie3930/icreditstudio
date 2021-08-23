@@ -97,5 +97,7 @@
         <module>icreditstudio-system</module>
         <module>icreditstudio-metadata</module>
         <module>icreditstudio-framework</module>
+        <module>icreditstudio-datasource</module>
+        <module>auto-generator</module>
     </modules>
 </project>

@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync;
+package com.jinninghui.datasphere.icreaditstudio.workspace;
 
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.configuration.EnableSequenceService;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.EnableValidator;
@@ -14,8 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
-public class DataSyncApplication {
+public class WorkspaceApplication {
     public static void main(String[] args) {
-        SpringApplication.run(DataSyncApplication.class, args);
+        SpringApplication.run(WorkspaceApplication.class, args);
     }
 }
