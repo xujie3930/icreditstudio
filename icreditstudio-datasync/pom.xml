@@ -20,7 +20,23 @@
         <dependency>
             <groupId>com.jinninghui.datasphere</groupId>
             <artifactId>icreditstudio-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.25</version>
+        </dependency>
+
     </dependencies>
 
 </project>

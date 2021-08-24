@@ -7,9 +7,9 @@ spring:
         server-addr: 192.168.0.30:8848
         file-extension: yml
   datasource:
-    url: "jdbc:mysql://192.168.0.23:3306/iHousekeeping?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'ihk'
-    password: 'ihk@0923'
+    url: "jdbc:mysql://127.0.0.1:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'root'
+    password: 'root'
   redis:
     host: 192.168.0.30
     port: 6379

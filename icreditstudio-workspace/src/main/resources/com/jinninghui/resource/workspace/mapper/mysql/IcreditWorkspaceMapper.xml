@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper">
+
+    <update id="updateStatusById" parameterType="java.lang.String">
+        UPDATE icredit_workspace
+        SET del_flag = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <select id="hasExit"
+            parameterType="com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest"
+            resultType="java.lang.Boolean">
+        select 1
+        from icredit_workspace
+        <where>
+            <if test="name != null and name != '' ">
+                AND name =  #{name}
+            </if>
+        </where>
+         limit 1
+    </select>
+</mapper>
