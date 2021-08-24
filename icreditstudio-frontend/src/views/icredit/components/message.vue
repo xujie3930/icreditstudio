@@ -1,51 +1,49 @@
 <!--
+ * @Author: lizheng
  * @Description: 操作提示弹窗
- * @Date: 2021-08-18
+ * @Date: 2021-08-24
 -->
 
 <template>
   <BaseDialog ref="baseDialog" width="480px" :title="title">
     <div class="content">
-      {{ operateMsg }}
-      <template v-if="opType === 'disabled'">
-        （<span class="color-text"> {{ workspaceName }}</span
-        >） 在调度，请先下线工作流后再停用。
-      </template>
+      {{ beforeOperateMsg }}
+      <span class="color-text">{{ name }}</span>
+      {{ afterOperateMsg }}
     </div>
   </BaseDialog>
 </template>
 
 <script>
-import BaseDialog from '@/views/icredit/components/dialog'
+import BaseDialog from './dialog'
 
 export default {
   components: { BaseDialog },
 
   data() {
     return {
-      opType: '',
       title: '',
-      workspaceName: '',
-      operateMsg: '',
+      name: '',
+      afterOperateMsg: '',
+      beforeOperateMsg: '',
       dialogVisible: false
     }
   },
 
   methods: {
-    open(opType, name) {
+    open(options) {
+      const { title, name, afterOperateMsg, beforeOperateMsg } = options
+      this.name = name
+      this.title = title
+      this.afterOperateMsg = afterOperateMsg
+      this.beforeOperateMsg = beforeOperateMsg
       this.dialogVisible = true
-      this.workspaceName = name
-      this.opType = opType
-      this.title = `数据源${opType === 'disabled' ? '停用' : '删除'}`
-      this.operateMsg =
-        opType === 'disabled'
-          ? '当前数据源有工作流'
-          : '数据源删除后将不在列表中展示，且不再参与工作流调度，确认删除吗？'
       this.$refs.baseDialog.open()
     },
 
     handleConfirm() {
       this.dialogVisible = false
+      this.$emit('on-confirm')
     }
   }
 }

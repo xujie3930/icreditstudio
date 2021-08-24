@@ -110,7 +110,7 @@
 </template>
 
 <script>
-import BaseDialog from '../components/dialog'
+import BaseDialog from '@/views/icredit/components/dialog'
 
 export default {
   components: { BaseDialog },
