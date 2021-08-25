@@ -8,6 +8,9 @@ spring:
   application:
     name: uaa
   datasource:
+    url: "jdbc:mysql://127.0.0.1:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'root'
+    password: 'root'
     driver-class-name: com.mysql.jdbc.Driver
   http:
     encoding:
@@ -20,23 +23,23 @@ spring:
       accept_empty_string_as_null_object: true
     # Flyway实现数据库版本管理
   flyway:
-      #是否开启flyway，默认true
-      enabled: false
-      #当迁移时发现目标schema非空，而且没有元数据的表时，（即迭代中项目）是否自动执行基准迁移，默认false.
-      baseline-on-migrate: true
-      # 是否允许无序运行迁移, 默认false，建议开发环境开启，生成环境关闭
-      out-of-order: false
-      #设定SQL脚本的目录,可以配置多个，比如为classpath:db/migration,filesystem:/sql-migrations,默认classpath:db/migration
-      locations:
-        - classpath:db/migration
+    #是否开启flyway，默认true
+    enabled: false
+    #当迁移时发现目标schema非空，而且没有元数据的表时，（即迭代中项目）是否自动执行基准迁移，默认false.
+    baseline-on-migrate: true
+    # 是否允许无序运行迁移, 默认false，建议开发环境开启，生成环境关闭
+    out-of-order: false
+    #设定SQL脚本的目录,可以配置多个，比如为classpath:db/migration,filesystem:/sql-migrations,默认classpath:db/migration
+    locations:
+      - classpath:db/migration
 
 server:
   port: 8084
 system:
   errorCode: 500
 mybatis:
-  mapper-locations: classpath*:com/jinninghui/**/mapper/mysql/*.xml
-  type-handlers-package: com.jinninghui
+  mapper-locations: classpath*:com/hashtech/**/mapper/mysql/*.xml
+  type-handlers-package: com.hashtech
   configuration:
     #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     log-prefix: mapper.
@@ -46,7 +49,7 @@ mybatis:
 mybatis-plus:
   mapper-locations: classpath*:com/jinninghui/**/mapper/mysql/*.xml
   #实体扫描，多个package用逗号或者分号分隔
-#  typeAliasesPackage: com.hashtech.modules.*.entity
+  #  typeAliasesPackage: com.hashtech.modules.*.entity
   global-config:
     #数据库相关配置
     db-config:

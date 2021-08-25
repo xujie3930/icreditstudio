@@ -7,7 +7,7 @@ spring:
         server-addr: 192.168.0.30:8848
         file-extension: yml
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/iframe?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    url: "jdbc:mysql://127.0.0.1:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'root'
     password: 'root'
   redis:
@@ -35,6 +35,3 @@ knife4j:
     password: admin123456
   production: false #默认是false ,屏蔽所有Swagger的相关资源
   enable: true #是否开启swagger
-
-account:
-  defaultPassword: 123456

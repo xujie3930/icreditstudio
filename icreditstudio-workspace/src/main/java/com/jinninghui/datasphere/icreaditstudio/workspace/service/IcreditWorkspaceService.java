@@ -21,7 +21,7 @@ public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity
 
     BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param);
 
-    BusinessResult<Boolean> deleteFormById(IcreditWorkspaceDelParam param);
+    BusinessResult<Boolean> deleteById(IcreditWorkspaceDelParam param);
 
     BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest);
 

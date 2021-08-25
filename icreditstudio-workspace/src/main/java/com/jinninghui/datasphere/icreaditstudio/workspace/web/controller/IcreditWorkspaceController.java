@@ -17,8 +17,6 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 /**
  * <p>
  *  前端控制器
@@ -72,10 +70,10 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/delete")
     @Logable
-    public BusinessResult<Boolean> delete(@RequestBody IcreditWorkspaceDelRequest request) {
+    public BusinessResult<Boolean> deleteById(@RequestBody IcreditWorkspaceDelRequest request) {
         IcreditWorkspaceDelParam param = new IcreditWorkspaceDelParam();
         BeanCopyUtils.copyProperties(request, param);
-        return workspaceService.deleteFormById(param);
+        return workspaceService.deleteById(param);
     }
 
     /**
