@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="h100 w100">
     <crud-basic
       ref="crud"
       title="模块列表"

@@ -1,29 +1,31 @@
 <template>
-  <crud-basic
-    ref="crud"
-    title="部门列表"
-    :form-items-search="mixinSearchFormItems"
-    :form-func-search="mixinSearchFormFunc"
-    :form-config-search="mixinSearchFormConfig"
-    :form-items-dialog="mixinDialogFormItems"
-    :form-func-dialog="mixinDialogFormFunc"
-    :form-config-dialog="mixinDialogFormConfig"
-    :tableLoading="mixinTableLoading"
-    :table-configuration="tableConfiguration"
-    :table-pagination="mixinTablePagination"
-    :table-data="mixinTableData"
-    :dialog-type="mixinDialogType"
-    :dialog-visible.sync="mixinDialog"
-    :handleSizeChange="mixinHandleSizeChange"
-    :handleCurrentChange="mixinHandleCurrentChange"
-    :handleAdd="mixinHandleAdd"
-    :handleImport="mixinHandleImport"
-    :handleExport="mixinHandleExport"
-    :handleSearch="mixinHandleSearch"
-    :handleReset="mixinHandleReset"
-    :handleUpdate="mixinHandleCreateOrUpdate"
-    :handleCancel="mixinHandleCancel"
-  ></crud-basic>
+  <div class="h100 w100">
+    <crud-basic
+      ref="crud"
+      title="部门列表"
+      :form-items-search="mixinSearchFormItems"
+      :form-func-search="mixinSearchFormFunc"
+      :form-config-search="mixinSearchFormConfig"
+      :form-items-dialog="mixinDialogFormItems"
+      :form-func-dialog="mixinDialogFormFunc"
+      :form-config-dialog="mixinDialogFormConfig"
+      :tableLoading="mixinTableLoading"
+      :table-configuration="tableConfiguration"
+      :table-pagination="mixinTablePagination"
+      :table-data="mixinTableData"
+      :dialog-type="mixinDialogType"
+      :dialog-visible.sync="mixinDialog"
+      :handleSizeChange="mixinHandleSizeChange"
+      :handleCurrentChange="mixinHandleCurrentChange"
+      :handleAdd="mixinHandleAdd"
+      :handleImport="mixinHandleImport"
+      :handleExport="mixinHandleExport"
+      :handleSearch="mixinHandleSearch"
+      :handleReset="mixinHandleReset"
+      :handleUpdate="mixinHandleCreateOrUpdate"
+      :handleCancel="mixinHandleCancel"
+    ></crud-basic>
+  </div>
 </template>
 
 <script>

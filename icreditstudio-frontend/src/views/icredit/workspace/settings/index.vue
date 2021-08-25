@@ -15,14 +15,8 @@
       :form-items-dialog="mixinDialogFormItems"
       :form-func-dialog="mixinDialogFormFunc"
       :form-config-dialog="mixinDialogFormConfig"
-      :tableLoading="mixinTableLoading"
-      :table-configuration="tableConfiguration"
-      :table-pagination="mixinTablePagination"
-      :table-data="mixinTableData"
       :dialog-type="mixinDialogType"
       :dialog-visible.sync="mixinDialog"
-      :handleSizeChange="mixinHandleSizeChange"
-      :handleCurrentChange="mixinHandleCurrentChange"
       :handleAdd="mixinHandleAdd"
       :handleSearch="mixinHandleSearch"
       :handleReset="mixinHandleReset"
@@ -32,6 +26,22 @@
       :handleCancel="mixinHandleCancel"
       @handleAddWorkspace="handleAddWorkspace"
     >
+      <template #content>
+        <j-table
+          v-loading="mixinTableLoading"
+          :table-configuration="tableConfiguration"
+          :table-pagination="mixinTablePagination"
+          :table-data="mixinTableData"
+          @handleSizeChange="mixinHandleSizeChange"
+          @handleCurrentChange="mixinHandleCurrentChange"
+        >
+          <template #statusColumn="{row}">
+            <span :style="{ color: row.status ? '#52c41a' : '#ff4d4f' }">
+              {{ row.status ? '启用' : '停用' }}
+            </span>
+          </template>
+        </j-table>
+      </template>
     </crud-basic>
 
     <Dialog ref="settingDialog" />
@@ -111,7 +121,6 @@ export default {
 
   methods: {
     handleAddWorkspace() {
-      console.log(111111)
       this.$router.push('/workspace/detail')
     },
 
@@ -138,7 +147,6 @@ export default {
 .workspace-setting {
   width: 100%;
   height: 100%;
-  background: red;
 
   ::v-deep {
     .iframe-label .iframe-form-label {

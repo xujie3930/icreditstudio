@@ -1,3 +1,7 @@
+/*
+ * @Description: 菜单Icon
+ * @Date: 2021-08-16
+ */
 export const icons = [
   'el-icon-platform-eleme',
   'el-icon-eleme',
@@ -28,5 +32,9 @@ export const icons = [
   'el-icon-set-up',
   'el-icon-odometer',
   'el-icon-full-screen',
-  'el-icon-c-scale-to-original'
+  'el-icon-c-scale-to-original',
+  'el-icon-s-home',
+  'el-icon-monitor',
+  'el-icon-coin',
+  'el-icon-guide'
 ]

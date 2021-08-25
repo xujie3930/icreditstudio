@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="w100 h100">
     <crud-basic
       ref="crud"
       title="角色列表"

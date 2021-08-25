@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="w100 h100">
     <crud-basic
       class="user-container"
       ref="crud"

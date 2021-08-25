@@ -140,22 +140,24 @@ export default {
       children.length && this.getChildMenus(children[0])
     },
 
-    // 二级菜单
+    // 二级菜单切换
     getChildMenus(curMenu) {
+      console.log('二级菜单切换curMenu', curMenu)
       const { children: childMenus, ...rest } = curMenu
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
       this.isExistThreeMenus = !!childMenus?.length
       this.threeChildrenMenus = childMenus?.filter(item => item.isShow)
+      console.log('threeChildrenMenus::', this.threeChildrenMenus)
     },
 
-    // 三级菜单更改
+    // 三级菜单切换
     threeMenuChange(curMenu) {
       console.log(curMenu, 'lololo')
       const [firstItem, secondItem] = this.curBreadcrumb
       this.curBreadcrumb = [firstItem, secondItem, curMenu]
     },
 
-    // 四级菜单更改
+    // 四级菜单切换
     fourMenuChange(curMenu) {
       const [firstItem, secondItem, thirdItem] = this.curBreadcrumb
       console.log(curMenu, 'lololo')

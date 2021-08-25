@@ -26,37 +26,38 @@ export default _this => {
       {
         type: 'text',
         label: '工作空间名称',
-        prop: 'userName'
+        prop: 'name'
       },
       {
-        type: 'text',
+        type: 'slot',
         label: '空间状态',
-        prop: 'orgName'
+        prop: 'status',
+        width: 100
       },
       {
         type: 'text',
         label: '包含业务流程数（个）',
-        prop: 'accountIdentifier'
+        prop: 'businessFlowCount'
       },
       {
         type: 'text',
         label: '包含工作流个数（个）',
-        prop: 'telPhone'
+        prop: 'workFlowCount'
       },
       {
-        type: 'date',
+        type: 'text',
         label: '更新时间',
-        prop: 'createTime'
+        prop: 'updateTime'
       },
       {
-        type: 'date',
+        type: 'text',
         label: '更新人',
-        prop: 'createTime'
+        prop: 'updateUser'
       },
       {
-        type: 'date',
+        type: 'text',
         label: '描述',
-        prop: 'createTime'
+        prop: 'descriptor'
       },
       // {
       //   type: 'switch',
@@ -77,32 +78,31 @@ export default _this => {
           {
             func: ({ row }) => _this.handleOperateClick(row, 'view'),
             label: '查看',
-            key: 'view',
-            show: true
+            key: 'view'
           },
           {
             func: ({ row }) => _this.handleOperateClick(row, 'disabled'),
             label: '停用',
             key: 'disabled',
-            show: true
+            isHide: ({ row }) => row.status
           },
           {
             func: _this.handleDeleteClick,
             label: '删除',
             key: 'delete',
-            show: true
+            isHide: ({ row }) => !row.status
           },
           {
             func: ({ row }) => _this.handleOperateClick(row, 'enabled'),
             label: '启用',
             key: 'enabled',
-            show: true
+            isHide: ({ row }) => !row.status
           },
           {
             func: _this.mixinHandleEdit,
             label: '编辑',
             key: 'update',
-            show: true
+            isHide: ({ row }) => !row.status
           }
         ]
       }

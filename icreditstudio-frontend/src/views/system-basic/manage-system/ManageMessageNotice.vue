@@ -1,5 +1,5 @@
 <template>
-  <div class="h100 noticeContainer">
+  <div class="w100 h100 noticeContainer">
     <div class="iframe-layout-basic-main-top">
       <span>{{ pageTitle }}</span>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="h100 log">
+  <div class="w100 h100 log">
     <crud-basic
       ref="crud"
       title="登录日志"

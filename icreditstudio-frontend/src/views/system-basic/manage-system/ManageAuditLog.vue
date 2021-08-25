@@ -1,5 +1,5 @@
 <template>
-  <div class="log">
+  <div class="log h100 w100">
     <crud-basic
       ref="crud"
       title="审计日志"
@@ -84,7 +84,9 @@ export default {
   },
 
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption).filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   },
 
@@ -93,7 +95,10 @@ export default {
     interceptorsRequestRetrieve(params) {
       const { operateTime, ...restParams } = params
       const startTime = operateTime && operateTime.length ? operateTime[0] : ''
-      const endTime = operateTime && operateTime.length ? operateTime[1] + 24 * 60 * 60 * 1000 - 1 : ''
+      const endTime =
+        operateTime && operateTime.length
+          ? operateTime[1] + 24 * 60 * 60 * 1000 - 1
+          : ''
       const newParams = { startTime, endTime, ...restParams }
       return handleTrim(newParams)
     },
@@ -101,19 +106,23 @@ export default {
     // 详情弹窗-渲染表单参数处理
     interceptorsBeforeView(params) {
       return params.map(({ label, type, ...item }) => {
-        if (label === '操作内容') return ({ type: 'textarea', label, ...item })
+        if (label === '操作内容') return { type: 'textarea', label, ...item }
         return { label, type, ...item }
       })
     },
 
     // 数据拦截-修改接口返回的表格数据
     interceptorsResponseTableData(data) {
-      return deepClone(data).map(({ oprateTime, oprateType, oprateResult, ...item }) => ({
-        oprateType: OPRATE_TYPE_ENUMS[oprateType],
-        oprateResult: OPRAT_ERESULT_ENUMS[oprateResult],
-        oprateTime: oprateTime ? dayjs(Number(oprateTime)).format('YYYY-MM-DD HH:mm:ss') : '',
-        ...item
-      }))
+      return deepClone(data).map(
+        ({ oprateTime, oprateType, oprateResult, ...item }) => ({
+          oprateType: OPRATE_TYPE_ENUMS[oprateType],
+          oprateResult: OPRAT_ERESULT_ENUMS[oprateResult],
+          oprateTime: oprateTime
+            ? dayjs(Number(oprateTime)).format('YYYY-MM-DD HH:mm:ss')
+            : '',
+          ...item
+        })
+      )
     }
   }
 }
@@ -121,9 +130,9 @@ export default {
 
 <style lang="scss">
 .log {
-   .el-range__icon,
-   .el-range-separator,
-   .el-range__close-icon {
+  .el-range__icon,
+  .el-range-separator,
+  .el-range__close-icon {
     line-height: 24px !important;
   }
 }
