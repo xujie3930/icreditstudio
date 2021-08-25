@@ -12,7 +12,9 @@
     </j-panel>
     <j-panel title="列表">
       <template #title>
-        <el-button type="primary" size="mini" @click="mixinHandleAdd">新增</el-button>
+        <el-button type="primary" size="mini" @click="mixinHandleAdd"
+          >新增</el-button
+        >
       </template>
       <j-table
         v-loading="mixinTableLoading"
@@ -45,7 +47,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import crud from '@/mixins/crud';
+import crud from '@/mixins/crud'
 import { deepClone } from '@/utils/util'
 
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-demo'
@@ -77,19 +79,19 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/sys/get/userRoles',
+          url: '/system/sys/get/userRoles',
           method: 'post'
         },
         create: {
-          url: '/sys/get/userRoles',
+          url: '/system/sys/get/userRoles',
           method: 'post'
         },
         update: {
-          url: '/sys/get/userRoles',
+          url: '/system/sys/get/userRoles',
           method: 'post'
         },
         delete: {
-          url: '/sys/get/userRoles',
+          url: '/system/sys/get/userRoles',
           method: 'post'
         }
       }
@@ -118,8 +120,9 @@ export default {
       }
     })
 
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   },
   methods: {

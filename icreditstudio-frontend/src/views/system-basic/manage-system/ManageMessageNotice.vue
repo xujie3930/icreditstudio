@@ -1,17 +1,21 @@
 <template>
   <div class="h100 noticeContainer">
     <div class="iframe-layout-basic-main-top">
-        <span>{{ pageTitle }}</span>
+      <span>{{ pageTitle }}</span>
     </div>
-    <el-tabs v-model="activeReadStatus" @tab-click="handleClick" style="padding: 0 16px">
+    <el-tabs
+      v-model="activeReadStatus"
+      @tab-click="handleClick"
+      style="padding: 0 16px"
+    >
       <el-tab-pane name="ALL">
-        <span slot="label"> 全部消息({{message.allCount}})</span>
+        <span slot="label"> 全部消息({{ message.allCount }})</span>
       </el-tab-pane>
       <el-tab-pane name="N">
-        <span slot="label"> 未读消息({{message.unReadCount}})</span>
+        <span slot="label"> 未读消息({{ message.unReadCount }})</span>
       </el-tab-pane>
       <el-tab-pane name="Y">
-        <span slot="label"> 已读消息({{message.readCount}})</span>
+        <span slot="label"> 已读消息({{ message.readCount }})</span>
       </el-tab-pane>
     </el-tabs>
     <crud-basic
@@ -48,7 +52,13 @@
 <script>
 import crud from '@/mixins/crud'
 import { deepClone } from '@/utils/util'
-import { infoCount, deleteAllUserInfos, userAllReadInfo, queryMessageNoticeInfo, pollingUnreadInfos } from '@/api/message'
+import {
+  infoCount,
+  deleteAllUserInfos,
+  userAllReadInfo,
+  queryMessageNoticeInfo,
+  pollingUnreadInfos
+} from '@/api/message'
 import { mapActions, mapGetters } from 'vuex'
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-message-notice'
 import formOption from '@/views/system-basic/configuration/form/manage/manage-message-notice'
@@ -105,11 +115,11 @@ export default {
       tableConfiguration: tableConfiguration(this, { READ_STATUS_ENUMS }),
       fetchConfig: {
         retrieve: {
-          url: '/information/information/infoNoticePage',
+          url: '/system/information/information/infoNoticePage',
           method: 'post'
         },
         delete: {
-          url: '/information/information/deleteUserInfo',
+          url: '/system/information/information/deleteUserInfo',
           method: 'post',
           id: 'id'
         }
@@ -141,8 +151,9 @@ export default {
   methods: {
     ...mapActions('user', ['setMessageNoticeInfo']),
     initPage() {
-      this.mixinSearchFormItems = deepClone(this.formOption)
-        .filter(e => e.isSearch)
+      this.mixinSearchFormItems = deepClone(this.formOption).filter(
+        e => e.isSearch
+      )
       // this.activeReadStatus = 'ALL'
       this.qryInfoCount()
       this.handleRetrieveTableData()
@@ -151,25 +162,27 @@ export default {
       const { infoType } = this
       if (infoType) {
         // 获取初始的全部消息、未读消息、已读消息数量
-        infoCount({ infoType })
-          .then(res => {
-            if (res.success) {
-              Object.keys(this.message).forEach(key => {
-                this.message[key] = res.data[key] || 0
-              })
-            }
-          })
+        infoCount({ infoType }).then(res => {
+          if (res.success) {
+            Object.keys(this.message).forEach(key => {
+              this.message[key] = res.data[key] || 0
+            })
+          }
+        })
       }
     },
     interceptorsResponseTableData(data, res) {
       // 根据列表返回更新消息条数
-      this.message[READ_STATUS_MAP[this.activeReadStatus]] = res.data.total || 0;
+      this.message[READ_STATUS_MAP[this.activeReadStatus]] = res.data.total || 0
       return data
     },
     handleClick({ name }) {
       this.mixinHandleReset(false)
-      if (name === 'Y') { // 已读消息tab中，屏蔽<全部标记为已读>按钮
-        this.tableConfiguration.customBtnConfig = this.backupTableConfiguration.customBtnConfig.filter(e => e.key !== 'readAll')
+      if (name === 'Y') {
+        // 已读消息tab中，屏蔽<全部标记为已读>按钮
+        this.tableConfiguration.customBtnConfig = this.backupTableConfiguration.customBtnConfig.filter(
+          e => e.key !== 'readAll'
+        )
       } else {
         this.tableConfiguration.customBtnConfig = this.backupTableConfiguration.customBtnConfig
       }
@@ -178,8 +191,8 @@ export default {
     handleRetrieveTableData() {
       const { infoType } = this
       if (infoType) {
-        this.mixinSearchFormConfig.retrieveModels.infoType = infoType; // 消息类型
-        this.mixinSearchFormConfig.retrieveModels.readStatus = this.activeReadStatus; // 阅读状态
+        this.mixinSearchFormConfig.retrieveModels.infoType = infoType // 消息类型
+        this.mixinSearchFormConfig.retrieveModels.readStatus = this.activeReadStatus // 阅读状态
         this.mixinRetrieveTableData()
       }
     },
@@ -188,13 +201,12 @@ export default {
       userAllReadInfo({
         readStatus: this.activeReadStatus,
         infoType: this.infoType
+      }).then(res => {
+        if (res.success) {
+          this.$notify.success('全部消息已读')
+          this.updatePages()
+        }
       })
-        .then(res => {
-          if (res.success) {
-            this.$notify.success('全部消息已读')
-            this.updatePages()
-          }
-        })
     },
     // 全部删除
     handleDeleteAll() {
@@ -206,28 +218,28 @@ export default {
         deleteAllUserInfos({
           readStatus: this.activeReadStatus,
           infoType: this.infoType
+        }).then(res => {
+          if (res.success) {
+            this.$notify.success('删除成功')
+            this.updatePages()
+          }
         })
-          .then(res => {
-            if (res.success) {
-              this.$notify.success('删除成功')
-              this.updatePages()
-            }
-          })
       })
     },
     // 查看详情
     async handleView({ row }) {
       const { infoType } = this
-      if (row.readStatus === 'Y') { // 已读消息查看详情直接展示行数据
+      if (row.readStatus === 'Y') {
+        // 已读消息查看详情直接展示行数据
         this.mixinHandleView({ row }, INFO_TYPE_ENUMS[infoType])
-      } else { // 全部和未读查看详情需实时查询最新状态
-        await queryMessageNoticeInfo({ id: row.id })
-          .then(res => {
-            if (res.success) {
-              this.mixinHandleView({ row: res.data }, INFO_TYPE_ENUMS[infoType])
-              this.updatePages()
-            }
-          })
+      } else {
+        // 全部和未读查看详情需实时查询最新状态
+        await queryMessageNoticeInfo({ id: row.id }).then(res => {
+          if (res.success) {
+            this.mixinHandleView({ row: res.data }, INFO_TYPE_ENUMS[infoType])
+            this.updatePages()
+          }
+        })
       }
     },
     updatePages() {
@@ -236,28 +248,27 @@ export default {
       this.updateUnreadInfos()
     },
     updateUnreadInfos() {
-      pollingUnreadInfos()
-        .then(res => {
-          if (res.success) {
-            this.setMessageNoticeInfo(res.data)
-          }
-        })
+      pollingUnreadInfos().then(res => {
+        if (res.success) {
+          this.setMessageNoticeInfo(res.data)
+        }
+      })
     }
   }
 }
 </script>
 <style lang="scss" scoped>
-  .noticeContainer{
-    background: #fff;
-  }
-  .iframe-layout-basic-main-top{
-    padding: 5px 16px 0;
+.noticeContainer {
+  background: #fff;
+}
+.iframe-layout-basic-main-top {
+  padding: 5px 16px 0;
 
-    span{
-      color: $--color-text-primary;
-      font-size: 16px;
-      font-weight: bolder;
-      letter-spacing: 2px;
-    }
+  span {
+    color: $--color-text-primary;
+    font-size: 16px;
+    font-weight: bolder;
+    letter-spacing: 2px;
   }
+}
 </style>

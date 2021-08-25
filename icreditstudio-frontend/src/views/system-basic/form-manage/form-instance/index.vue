@@ -78,11 +78,11 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/form/instance/page',
+          url: '/system/form/instance/page',
           method: 'post'
         },
         delete: {
-          url: '/form/instance/delete',
+          url: '/system/form/instance/delete',
           method: 'post'
         }
       },

@@ -35,6 +35,7 @@
     </crud-basic>
 
     <Message ref="operateMessage" />
+    <Detail ref="dataDetail" />
   </div>
 </template>
 
@@ -43,10 +44,11 @@ import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-sync'
 import formOption from '@/views/icredit/configuration/form/data-manage-sync'
 import Message from '@/views/icredit/components/message'
+import Detail from './detail'
 
 export default {
   mixins: [crud],
-  components: { Message },
+  components: { Message, Detail },
 
   data() {
     return {
@@ -99,7 +101,7 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/user/user/pageList',
+          url: '/system/user/user/pageList',
           method: 'post'
         }
       }
@@ -130,7 +132,7 @@ export default {
     // 查看操作
     handleDetailClick(row, opType) {
       console.log('row', row)
-      this.$refs.dataSourceDetail.open({ row, opType })
+      this.$refs.dataDetail.open({ row, opType })
     },
 
     // 启用

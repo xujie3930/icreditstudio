@@ -1,7 +1,5 @@
 import { postAction } from './index'
 
-const setCodeStatus = params => postAction('/code/code/status', params)
+const setCodeStatus = params => postAction('/system/code/code/status', params)
 
-export {
-  setCodeStatus
-}
+export { setCodeStatus }

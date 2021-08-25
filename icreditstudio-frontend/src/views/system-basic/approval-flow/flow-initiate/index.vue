@@ -35,7 +35,7 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/process/definition/info/page/myself/start',
+          url: '/system/process/definition/info/page/myself/start',
           method: 'get'
         }
       }
@@ -115,21 +115,25 @@ export default {
         [bindValue.type === 'get' ? 'params' : 'data']: params
       }).then(res => {
         // eslint-disable-next-line no-param-reassign
-        data.options.defaultValue = res.data[data.options.bindValue.external.value]
+        data.options.defaultValue =
+          res.data[data.options.bindValue.external.value]
       })
     },
     viewFormDetail(data) {
-      this.$ls.set('approvalInitiate-formInfo', JSON.stringify(_.cloneDeep(data)))
+      this.$ls.set(
+        'approvalInitiate-formInfo',
+        JSON.stringify(_.cloneDeep(data))
+      )
       this.$router.push('/approvalFlow/formApproval')
       // this.$router.push('/approvalFlow/formApproval')
-    //   this.setFormInfo(Object.assign(
-    //     {},
-    //     data,Vue.use
-    //     { form: '/approvalFlow/approvalInitiate', processInstanceId: data.id }
-    //   ))
-    //     .then(() => {
-    //       this.$router.push('/approvalFlow/formApproval')
-    //     })
+      //   this.setFormInfo(Object.assign(
+      //     {},
+      //     data,Vue.use
+      //     { form: '/approvalFlow/approvalInitiate', processInstanceId: data.id }
+      //   ))
+      //     .then(() => {
+      //       this.$router.push('/approvalFlow/formApproval')
+      //     })
     }
   }
 }

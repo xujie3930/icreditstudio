@@ -29,10 +29,10 @@
 </template>
 
 <script>
-import crud from '@/mixins/crud';
+import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-login-log'
 import formOption from '@/views/system-basic/configuration/form/manage/manage-login-log'
-import dayjs from 'dayjs';
+import dayjs from 'dayjs'
 import { deepClone, handleTrim } from 'utils/util'
 
 export default {
@@ -57,7 +57,7 @@ export default {
       // 接口请求参数
       fetchConfig: {
         retrieve: {
-          url: '/log/loginlog/pageList',
+          url: '/system/log/loginlog/pageList',
           method: 'post'
         }
       }
@@ -78,7 +78,10 @@ export default {
     interceptorsRequestRetrieve(params) {
       const { loginTime, ...restParams } = params
       const startTime = loginTime && loginTime.length ? loginTime[0] : ''
-      const endTime = loginTime && loginTime.length ? loginTime[1] + 24 * 60 * 60 * 1000 - 1 : ''
+      const endTime =
+        loginTime && loginTime.length
+          ? loginTime[1] + 24 * 60 * 60 * 1000 - 1
+          : ''
       const newParams = { startTime, endTime, ...restParams }
       return handleTrim(newParams)
     },
@@ -97,9 +100,9 @@ export default {
 
 <style lang="scss">
 .log {
-   .el-range__icon,
-   .el-range-separator,
-   .el-range__close-icon {
+  .el-range__icon,
+  .el-range-separator,
+  .el-range__close-icon {
     line-height: 24px !important;
   }
 }

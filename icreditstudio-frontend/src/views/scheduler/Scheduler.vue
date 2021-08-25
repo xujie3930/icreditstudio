@@ -70,27 +70,28 @@ export default {
       },
       fetchConfig: {
         retrieve: {
-          url: '/job/queryjob',
+          url: '/system/job/queryjob',
           method: 'get'
         },
         create: {
-          url: '/job/addjob',
+          url: '/system/job/addjob',
           method: 'post'
         },
         update: {
-          url: '/job/reschedulejob',
+          url: '/system/job/reschedulejob',
           method: 'post'
         },
         delete: {
-          url: '/job/deletejob',
+          url: '/system/job/deletejob',
           method: 'post'
         }
       }
     }
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   }
 }

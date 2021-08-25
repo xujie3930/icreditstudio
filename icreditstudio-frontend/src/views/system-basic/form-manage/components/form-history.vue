@@ -68,7 +68,7 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/form/hi/definition/hiPage',
+          url: '/system/form/hi/definition/hiPage',
           method: 'post'
         }
       },

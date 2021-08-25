@@ -98,7 +98,7 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/user/user/pageList',
+          url: '/workspace/pageList',
           method: 'post'
         }
       }

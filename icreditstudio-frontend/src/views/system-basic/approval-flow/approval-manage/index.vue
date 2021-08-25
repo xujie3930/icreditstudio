@@ -1,9 +1,7 @@
 <template>
   <div class="approval-manage-scope">
     <div class="h100" v-if="isApproval">
-      <layout-main-basic-container
-        title="审批列表"
-      >
+      <layout-main-basic-container title="审批列表">
         <template #header>
           <j-form
             ref="searchForm"
@@ -41,9 +39,12 @@
       <div
         v-loading.fullscreen.lock="loading"
         class="dialog-container"
-        :class="{'cus-dialog-container':widgetForm.config.isBackEdge}"
+        :class="{ 'cus-dialog-container': widgetForm.config.isBackEdge }"
       >
-        <div class="form-container" :class="{'container-max':activeName !== 'draft'}">
+        <div
+          class="form-container"
+          :class="{ 'container-max': activeName !== 'draft' }"
+        >
           <j-form-preview
             v-if="!previewVisible"
             ref="generateForm"
@@ -110,18 +111,14 @@
             >
               退回
             </el-button>
-<!--            <el-button-->
-<!--              v-if="operationInfo.manual"-->
-<!--              size="small"-->
-<!--              @click="manual"-->
-<!--            >-->
-<!--              抄送-->
-<!--            </el-button>-->
-            <el-button
-              v-if="operationInfo.assign"
-              size="small"
-              @click="assign"
-            >
+            <!--            <el-button-->
+            <!--              v-if="operationInfo.manual"-->
+            <!--              size="small"-->
+            <!--              @click="manual"-->
+            <!--            >-->
+            <!--              抄送-->
+            <!--            </el-button>-->
+            <el-button v-if="operationInfo.assign" size="small" @click="assign">
               指派
             </el-button>
             <el-button
@@ -131,16 +128,10 @@
             >
               撤销指派
             </el-button>
-            <el-button
-              size="small"
-              @click="preview"
-            >
+            <el-button size="small" @click="preview">
               导出预览
             </el-button>
-            <el-button
-              size="small"
-              @click="init"
-            >
+            <el-button size="small" @click="init">
               返回
             </el-button>
           </div>
@@ -165,8 +156,12 @@
               @on-change="handleDetailsChange"
             />
             <span slot="footer" class="dialog-footer">
-              <el-button size="small" type="primary" @click="toImage">确 定</el-button>
-              <el-button size="small" @click="previewVisible = false">取 消</el-button>
+              <el-button size="small" type="primary" @click="toImage"
+                >确 定</el-button
+              >
+              <el-button size="small" @click="previewVisible = false"
+                >取 消</el-button
+              >
             </span>
           </el-dialog>
         </div>
@@ -197,9 +192,14 @@
         @on-change="handleDataChange"
       />
     </el-dialog>
-    <dialog-modal ref="dialogModal" :active-name="activeName" @carbon="setCarbon" @init="init"
-                  @dialogAgainStart="dialogAgainStart"/>
-    <projectCredit ref="projectCredit"/>
+    <dialog-modal
+      ref="dialogModal"
+      :active-name="activeName"
+      @carbon="setCarbon"
+      @init="init"
+      @dialogAgainStart="dialogAgainStart"
+    />
+    <projectCredit ref="projectCredit" />
     <div class="common-dialog">
       <el-dialog
         v-if="dialogVisible"
@@ -208,11 +208,13 @@
         width="30%"
         :close-on-click-modal="false"
       >
-        <div :class="{'cus-dialog-container':dialoForm.config.isBackEdge}">
+        <div :class="{ 'cus-dialog-container': dialoForm.config.isBackEdge }">
           <el-form
-            v-if="type === 'returnBack'
-              && formInfo.description
-              && JSON.parse(formInfo.description).backInfo === 'choose'"
+            v-if="
+              type === 'returnBack' &&
+                formInfo.description &&
+                JSON.parse(formInfo.description).backInfo === 'choose'
+            "
             ref="ruleForm"
             :model="ruleForm"
             :rules="rules"
@@ -220,7 +222,11 @@
             label-width="100px"
           >
             <el-form-item label="退回节点:" prop="activityId">
-              <el-select v-model="ruleForm.activityId" style="width:100%" placeholder="请选择">
+              <el-select
+                v-model="ruleForm.activityId"
+                style="width:100%"
+                placeholder="请选择"
+              >
                 <el-option
                   v-for="item in optionsBack"
                   :key="item.value"
@@ -242,8 +248,12 @@
           />
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button size="small" type="primary" @click="handleSaveInfo">确 定</el-button>
-          <el-button size="small" @click="dialogVisible = false">取 消</el-button>
+          <el-button size="small" type="primary" @click="handleSaveInfo"
+            >确 定</el-button
+          >
+          <el-button size="small" @click="dialogVisible = false"
+            >取 消</el-button
+          >
         </span>
       </el-dialog>
       <el-dialog
@@ -253,7 +263,7 @@
         width="600px"
         :close-on-click-modal="false"
       >
-        <div :class="{'cus-dialog-container':detailsForm.config.isBackEdge}">
+        <div :class="{ 'cus-dialog-container': detailsForm.config.isBackEdge }">
           <j-form-preview
             insite="true"
             class="cus-dialog"
@@ -296,9 +306,7 @@ import {
   proctaskPass,
   procdefQueryDetail
 } from '@/api/system-basic/approval-list'
-import {
-  initiateApprovalSaveDraft
-} from '@/api/system-basic/approval-flow'
+import { initiateApprovalSaveDraft } from '@/api/system-basic/approval-flow'
 
 export default {
   name: 'ManageFrom',
@@ -322,215 +330,221 @@ export default {
         models: {},
         rule: {}
       },
-      tabList: [{
-        name: '待处理',
-        tabName: 'approval',
-        url: 'user/task/info/page/todo',
-        type: 'post',
-        tableColumn: [
-          {
-            type: 'text',
-            label: '审批标题',
-            prop: 'processInstanceName',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '审批摘要',
-            prop: 'approvalSummary',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '发起时间',
-            prop: 'startTime',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '状态',
-            prop: 'stateStr',
-            align: 'center'
-          },
-          {
-            type: 'operation',
-            label: '操作',
-            prop: 'operation',
-            operationList: [
-              {
-                func: this.approvalPreview,
-                label: '查看',
-                key: 'preview'
-              }
-            ],
-            fixed: 'right'
-          }
-        ]
-      }, {
-        name: '已处理',
-        url: 'user/task/info/page/done',
-        type: 'post',
-        tabName: 'notApproval',
-        tableColumn: [
-          {
-            type: 'text',
-            label: '审批标题',
-            prop: 'processInstanceName',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '审批摘要',
-            prop: 'approvalSummary',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '发起与完成',
-            prop: 'startTime',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '状态',
-            prop: 'stateStr',
-            align: 'left'
-          },
-          {
-            type: 'operation',
-            label: '操作',
-            prop: 'operation',
-            operationList: [
-              {
-                func: this.approvalPreview,
-                label: '查看',
-                key: 'preview'
-              }
-            ],
-            fixed: 'right'
-          }
-        ]
-      }, {
-        name: '我发起的',
-        url: 'process/instance/info/page/myself',
-        type: 'post',
-        tabName: 'sponsor',
-        tableColumn: [
-          {
-            type: 'text',
-            label: '审批标题',
-            prop: 'name',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '审批摘要',
-            prop: 'approvalSummary',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '发起与完成',
-            prop: 'startTime',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '状态',
-            prop: 'stateStr',
-            align: 'left'
-          },
-          {
-            type: 'operation',
-            label: '操作',
-            prop: 'operation',
-            operationList: [
-              {
-                func: this.approvalPreview,
-                label: '查看',
-                key: 'preview'
-              }
-            ],
-            fixed: 'right'
-          }
-        ]
-      }, {
-        name: '抄送',
-        url: 'process/instance/info/page/carbon/record',
-        type: 'post',
-        tabName: 'copy',
-        tableColumn: [
-          {
-            type: 'text',
-            label: '审批标题',
-            prop: 'name',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '审批摘要',
-            prop: 'approvalSummary',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '发起与完成',
-            prop: 'createTime',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '状态',
-            prop: 'stateStr',
-            align: 'left'
-          },
-          {
-            type: 'operation',
-            label: '操作',
-            prop: 'operation',
-            operationList: [
-              {
-                func: this.approvalPreview,
-                label: '查看',
-                key: 'preview'
-              }
-            ],
-            fixed: 'right'
-          }
-        ]
-      }, {
-        name: '草稿箱',
-        url: 'process/definition/info/page/myself/draft',
-        type: 'get',
-        tabName: 'draft',
-        tableColumn: [
-          {
-            type: 'text',
-            label: '审批标题',
-            prop: 'name',
-            align: 'left'
-          },
-          {
-            type: 'text',
-            label: '更新时间',
-            prop: 'procdefInfoUpdateTime',
-            align: 'left'
-          },
-          {
-            type: 'operation',
-            label: '操作',
-            prop: 'operation',
-            operationList: [
-              {
-                func: this.approvalPreview,
-                label: '查看',
-                key: 'preview'
-              }
-            ],
-            fixed: 'right'
-          }
-        ]
-      }],
+      tabList: [
+        {
+          name: '待处理',
+          tabName: 'approval',
+          url: 'user/task/info/page/todo',
+          type: 'post',
+          tableColumn: [
+            {
+              type: 'text',
+              label: '审批标题',
+              prop: 'processInstanceName',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '审批摘要',
+              prop: 'approvalSummary',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '发起时间',
+              prop: 'startTime',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '状态',
+              prop: 'stateStr',
+              align: 'center'
+            },
+            {
+              type: 'operation',
+              label: '操作',
+              prop: 'operation',
+              operationList: [
+                {
+                  func: this.approvalPreview,
+                  label: '查看',
+                  key: 'preview'
+                }
+              ],
+              fixed: 'right'
+            }
+          ]
+        },
+        {
+          name: '已处理',
+          url: 'user/task/info/page/done',
+          type: 'post',
+          tabName: 'notApproval',
+          tableColumn: [
+            {
+              type: 'text',
+              label: '审批标题',
+              prop: 'processInstanceName',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '审批摘要',
+              prop: 'approvalSummary',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '发起与完成',
+              prop: 'startTime',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '状态',
+              prop: 'stateStr',
+              align: 'left'
+            },
+            {
+              type: 'operation',
+              label: '操作',
+              prop: 'operation',
+              operationList: [
+                {
+                  func: this.approvalPreview,
+                  label: '查看',
+                  key: 'preview'
+                }
+              ],
+              fixed: 'right'
+            }
+          ]
+        },
+        {
+          name: '我发起的',
+          url: 'process/instance/info/page/myself',
+          type: 'post',
+          tabName: 'sponsor',
+          tableColumn: [
+            {
+              type: 'text',
+              label: '审批标题',
+              prop: 'name',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '审批摘要',
+              prop: 'approvalSummary',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '发起与完成',
+              prop: 'startTime',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '状态',
+              prop: 'stateStr',
+              align: 'left'
+            },
+            {
+              type: 'operation',
+              label: '操作',
+              prop: 'operation',
+              operationList: [
+                {
+                  func: this.approvalPreview,
+                  label: '查看',
+                  key: 'preview'
+                }
+              ],
+              fixed: 'right'
+            }
+          ]
+        },
+        {
+          name: '抄送',
+          url: 'process/instance/info/page/carbon/record',
+          type: 'post',
+          tabName: 'copy',
+          tableColumn: [
+            {
+              type: 'text',
+              label: '审批标题',
+              prop: 'name',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '审批摘要',
+              prop: 'approvalSummary',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '发起与完成',
+              prop: 'createTime',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '状态',
+              prop: 'stateStr',
+              align: 'left'
+            },
+            {
+              type: 'operation',
+              label: '操作',
+              prop: 'operation',
+              operationList: [
+                {
+                  func: this.approvalPreview,
+                  label: '查看',
+                  key: 'preview'
+                }
+              ],
+              fixed: 'right'
+            }
+          ]
+        },
+        {
+          name: '草稿箱',
+          url: 'process/definition/info/page/myself/draft',
+          type: 'get',
+          tabName: 'draft',
+          tableColumn: [
+            {
+              type: 'text',
+              label: '审批标题',
+              prop: 'name',
+              align: 'left'
+            },
+            {
+              type: 'text',
+              label: '更新时间',
+              prop: 'procdefInfoUpdateTime',
+              align: 'left'
+            },
+            {
+              type: 'operation',
+              label: '操作',
+              prop: 'operation',
+              operationList: [
+                {
+                  func: this.approvalPreview,
+                  label: '查看',
+                  key: 'preview'
+                }
+              ],
+              fixed: 'right'
+            }
+          ]
+        }
+      ],
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
@@ -538,15 +552,15 @@ export default {
           method: 'post'
         },
         create: {
-          url: '/re/res/user/add',
+          url: '/system/re/res/user/add',
           method: 'post'
         },
         update: {
-          url: '/re/res/user/edit',
+          url: '/system/re/res/user/edit',
           method: 'post'
         },
         delete: {
-          url: '/re/res/user/delete',
+          url: '/system/re/res/user/delete',
           method: 'post'
         }
       },
@@ -612,7 +626,7 @@ export default {
         recall: false, // 是否有撤回按钮
         manual: false, // 是否有抄送按钮
         assign: false, // 是否有指派按钮
-        unassign: false// 是否有撤销指派按钮
+        unassign: false // 是否有撤销指派按钮
       },
       type: '',
       saveLoading: false,
@@ -648,8 +662,9 @@ export default {
     })
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.queryFromGroup1()
     this.mixinRetrieveTableData()
   },
@@ -664,7 +679,8 @@ export default {
   methods: {
     ...mapActions('approval-form', ['setFormInfo']),
     interceptorsResponseTableData(data) {
-      this.tableConfiguration.rowKey = this.activeName === 'draft' ? 'recordId' : 'id'
+      this.tableConfiguration.rowKey =
+        this.activeName === 'draft' ? 'recordId' : 'id'
       data.forEach(el => Object.assign(el, { stateStr: changState(el.state) }))
       return data
     },
@@ -697,14 +713,14 @@ export default {
     },
     queryFromGroup1() {
       queryFromGroup().then(res => {
-        this.mixinSearchFormItems
-          .find(el => el.ruleProp === 'formGroupId')
-          .options = res.data.map(item => {
-            return {
-              name: item.name,
-              value: item.id
-            }
-          })
+        this.mixinSearchFormItems.find(
+          el => el.ruleProp === 'formGroupId'
+        ).options = res.data.map(item => {
+          return {
+            name: item.name,
+            value: item.id
+          }
+        })
       })
     },
     interceptorsRequestRetrieve() {
@@ -714,13 +730,20 @@ export default {
     },
     changePage() {
       try {
-        if (this.activeName !== 'draft' && this.formInfo.name.indexOf('【') > -1) {
+        if (
+          this.activeName !== 'draft' &&
+          this.formInfo.name.indexOf('【') > -1
+        ) {
           const reg = /(?<=[【[]).*(?=[】\]])/
           this.formtitle = this.formInfo.name.match(reg)[0]
         } else {
           this.formtitle = this.formInfo.name
         }
-        const description = JSON.parse(this.activeName !== 'draft' ? this.formInfo.description : this.formInfo.modelEditorJson)
+        const description = JSON.parse(
+          this.activeName !== 'draft'
+            ? this.formInfo.description
+            : this.formInfo.modelEditorJson
+        )
         const back = this.activeName === 'approval' && this.formInfo.description
         this.reset()
         /**
@@ -730,16 +753,21 @@ export default {
           this.loading = true
         }
         // 是否有提交按钮
-        this.operationInfo.startProcinst = this.activeName === 'draft'// 草稿箱
+        this.operationInfo.startProcinst = this.activeName === 'draft' // 草稿箱
         // 是否有保存按钮
-        this.operationInfo.save = this.activeName === 'draft'// 草稿箱
+        this.operationInfo.save = this.activeName === 'draft' // 草稿箱
         if (description) {
           // 是否有指派按钮
-          this.operationInfo.assign = description.isAssign && this.activeName === 'approval' && !this.formInfo.assignFlag
+          this.operationInfo.assign =
+            description.isAssign &&
+            this.activeName === 'approval' &&
+            !this.formInfo.assignFlag
           // 是否有通过按钮
-          this.operationInfo.pass = description.isApprove && this.activeName === 'approval'
+          this.operationInfo.pass =
+            description.isApprove && this.activeName === 'approval'
           // 是否有不通过按钮
-          this.operationInfo.noPass = description.isBack && this.activeName === 'approval'
+          this.operationInfo.noPass =
+            description.isBack && this.activeName === 'approval'
           // 是否有退回按钮
           this.operationInfo.returnBack = description.isNoConfirm && back
         }
@@ -813,18 +841,20 @@ export default {
           message: JSON.stringify(this.dialoForm),
           values: data
         }
-        proctaskPass(params).then(res => {
-          this.loading = false
-          if (res.success) {
-            this.$notify.success('提交申请成功')
-            this.dialogVisible = false
-            this.init()
-          } else {
-            this.$notify.error(res.returnMsg)
-          }
-        }).catch(() => {
-          this.loading = false
-        })
+        proctaskPass(params)
+          .then(res => {
+            this.loading = false
+            if (res.success) {
+              this.$notify.success('提交申请成功')
+              this.dialogVisible = false
+              this.init()
+            } else {
+              this.$notify.error(res.returnMsg)
+            }
+          })
+          .catch(() => {
+            this.loading = false
+          })
       })
     },
     handleDialo(val) {
@@ -832,21 +862,24 @@ export default {
       const { description } = this.formInfo
       const descriptionJson = JSON.parse(description)
       if (val === 'pass') {
-        this.dialoForm = description
-          && descriptionJson.approveForm
-          && JSON.parse(descriptionJson.approveForm)
+        this.dialoForm =
+          description &&
+          descriptionJson.approveForm &&
+          JSON.parse(descriptionJson.approveForm)
       } else if (val === 'noPass') {
-        this.dialoForm = description
-          && descriptionJson.backForm
-          && JSON.parse(descriptionJson.backForm)
+        this.dialoForm =
+          description &&
+          descriptionJson.backForm &&
+          JSON.parse(descriptionJson.backForm)
       } else if (val === 'returnBack') {
         if (descriptionJson.backInfo === 'choose') {
           // 退回时选择节点
           this.returnBack()
         }
-        this.dialoForm = description
-          && descriptionJson.notCofirmForm
-          && JSON.parse(descriptionJson.notCofirmForm)
+        this.dialoForm =
+          description &&
+          descriptionJson.notCofirmForm &&
+          JSON.parse(descriptionJson.notCofirmForm)
       }
       if (this.dialoForm.list && this.dialoForm.list.length) {
         this.dialogVisible = true
@@ -911,16 +944,15 @@ export default {
           values: data,
           recordId: this.formInfo.recordId
         }
-        initiateApprovalSaveDraft(params)
-          .then(res => {
-            this.loading = false
-            if (res.success) {
-              this.$notify.success('保存申请成功')
-              this.init()
-            } else {
-              this.$notify.error(res.returnMsg)
-            }
-          })
+        initiateApprovalSaveDraft(params).then(res => {
+          this.loading = false
+          if (res.success) {
+            this.$notify.success('保存申请成功')
+            this.init()
+          } else {
+            this.$notify.error(res.returnMsg)
+          }
+        })
       })
     },
     assign() {
@@ -944,11 +976,11 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.handleLaunch()
-        }).catch(() => {
-
         })
+          .then(() => {
+            this.handleLaunch()
+          })
+          .catch(() => {})
       } else {
         this.handleLaunch()
       }
@@ -958,34 +990,33 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(() => {
-        if (this.activeName === 'sponsor') {
-          if (this.formInfo.state === 'NOPASS') {
-            this.startProcinst() // 不通过是调发起接口
-          } else {
-            this.sponsorAgain() // 其他状态调重新发起接口
-          }
-        } else {
-          this.procinstAgain()
-        }
-      }).catch(() => {
-
       })
-    },
-    handleLaunch() {
-      this.$refs.generateForm.getData()
-        .then(data => {
-          console.log('this.activeName', this.activeName)
+        .then(() => {
           if (this.activeName === 'sponsor') {
             if (this.formInfo.state === 'NOPASS') {
-              this.$refs.dialogModal.startProcinst(data) // 不通过是调发起接口
+              this.startProcinst() // 不通过是调发起接口
             } else {
-              this.$refs.dialogModal.promiseApprove(data)// 其他状态调重新发起接口
+              this.sponsorAgain() // 其他状态调重新发起接口
             }
-          } else if (this.activeName === 'draft') {
-            this.$refs.dialogModal.startProcinst(data) // 草稿箱也是调发起接口
+          } else {
+            this.procinstAgain()
           }
         })
+        .catch(() => {})
+    },
+    handleLaunch() {
+      this.$refs.generateForm.getData().then(data => {
+        console.log('this.activeName', this.activeName)
+        if (this.activeName === 'sponsor') {
+          if (this.formInfo.state === 'NOPASS') {
+            this.$refs.dialogModal.startProcinst(data) // 不通过是调发起接口
+          } else {
+            this.$refs.dialogModal.promiseApprove(data) // 其他状态调重新发起接口
+          }
+        } else if (this.activeName === 'draft') {
+          this.$refs.dialogModal.startProcinst(data) // 草稿箱也是调发起接口
+        }
+      })
     },
     sponsorAgain() {
       this.loading = true
@@ -1047,18 +1078,16 @@ export default {
                     values: data,
                     recordId: this.formInfo.recordId
                   }
-                  this.$api.approval
-                    .procinstStart(params2)
-                    .then(resl => {
-                      this.startLoading = false
-                      this.loading = false
-                      if (resl.success) {
-                        this.$notify.success('提交申请成功')
-                        this.init()
-                      } else {
-                        this.$notify.error(resl.returnMsg)
-                      }
-                    })
+                  this.$api.approval.procinstStart(params2).then(resl => {
+                    this.startLoading = false
+                    this.loading = false
+                    if (resl.success) {
+                      this.$notify.success('提交申请成功')
+                      this.init()
+                    } else {
+                      this.$notify.error(resl.returnMsg)
+                    }
+                  })
                 } else {
                   this.$notify.error(res.returnMsg)
                   this.startLoading = false
@@ -1081,16 +1110,15 @@ export default {
     returnBack() {
       proctaskfNodes({
         taskId: this.formInfo.taskId
-      })
-        .then(res => {
-          this.optionsBack = res.data.map(i => {
-            const actRoleInfos = i.actRoleInfos.map(j => j.name).join('、')
-            const value = i.initiator ? i.userName : actRoleInfos
-            const label = i.nodeName ? `${value}（${i.nodeName}）` : value
-            this.$set(i, 'label', label)
-            return i
-          })
+      }).then(res => {
+        this.optionsBack = res.data.map(i => {
+          const actRoleInfos = i.actRoleInfos.map(j => j.name).join('、')
+          const value = i.initiator ? i.userName : actRoleInfos
+          const label = i.nodeName ? `${value}（${i.nodeName}）` : value
+          this.$set(i, 'label', label)
+          return i
         })
+      })
     },
     previousNode() {
       this.loading = true
@@ -1100,17 +1128,16 @@ export default {
         processDefinitionKey: this.formInfo.processDefinitionKey,
         processInstanceId: this.formInfo.processInstanceId
       }
-      proctaskPrevious(params)
-        .then(res => {
-          this.loading = false
-          if (res.success) {
-            this.$notify.success('退回成功')
-            this.dialogVisible = false
-            this.init()
-          } else {
-            this.$notify.error(res.returnMsg)
-          }
-        })
+      proctaskPrevious(params).then(res => {
+        this.loading = false
+        if (res.success) {
+          this.$notify.success('退回成功')
+          this.dialogVisible = false
+          this.init()
+        } else {
+          this.$notify.error(res.returnMsg)
+        }
+      })
     },
     initiatingNode() {
       this.loading = true
@@ -1120,13 +1147,12 @@ export default {
         processDefinitionKey: this.formInfo.processDefinitionKey,
         processInstanceId: this.formInfo.processInstanceId
       }
-      proctaskStartNode(params)
-        .then(() => {
-          this.loading = false
-          this.$notify.success('退回成功')
-          this.dialogVisible = false
-          this.init()
-        })
+      proctaskStartNode(params).then(() => {
+        this.loading = false
+        this.$notify.success('退回成功')
+        this.dialogVisible = false
+        this.init()
+      })
     },
     saveReturn() {
       this.loading = true
@@ -1143,18 +1169,17 @@ export default {
         processInstanceStartUserId: this.formInfo.processInstanceStartUserId,
         processInstanceId: this.formInfo.processInstanceId,
         processVariables: this.formInfo.processVariables
+      }).then(() => {
+        this.$notify.success('退回成功')
+        this.dialogVisible = false
+        this.ruleForm = {
+          activityId: '',
+          message: ''
+        }
+        this.hasJson = true
+        this.init()
+        this.loading = false
       })
-        .then(() => {
-          this.$notify.success('退回成功')
-          this.dialogVisible = false
-          this.ruleForm = {
-            activityId: '',
-            message: ''
-          }
-          this.hasJson = true
-          this.init()
-          this.loading = false
-        })
     },
     searchDetails(row) {
       if (this.activeName === 'draft') return
@@ -1213,11 +1238,11 @@ export default {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
-          }).then(() => {
-            this.recallOperate()
-          }).catch(() => {
-
           })
+            .then(() => {
+              this.recallOperate()
+            })
+            .catch(() => {})
         }
       })
     },
@@ -1247,7 +1272,8 @@ export default {
           this.$notify.success('提交成功')
           this.dialogVisible = false
           this.init()
-        }).catch(err => {
+        })
+        .catch(err => {
           console.log(err)
         })
         .finally(() => {
@@ -1310,7 +1336,11 @@ export default {
         })
     },
     setCarbon() {
-      if (this.activeName === 'sponsor' || this.activeName === 'notApproval' || this.activeName === 'copy') {
+      if (
+        this.activeName === 'sponsor' ||
+        this.activeName === 'notApproval' ||
+        this.activeName === 'copy'
+      ) {
         // const params = {
         //   processDefinitionKey: this.formInfo.processDefinitionKey,
         //   processInstanceId: this.formInfo.processInstanceId,
@@ -1321,7 +1351,7 @@ export default {
         // proctaskCarbon(params).then(res => {
         //   if (res.success) {
         //     // 是否有抄送按钮
-        this.operationInfo.manual = true// res.data
+        this.operationInfo.manual = true // res.data
         //   } else {
         //     this.$notify.error(res.returnMsg)
         //   }
@@ -1337,9 +1367,17 @@ export default {
       /**
        * 我发起的--退回状态单独判断是否有重新提交按钮
        */
-      if (this.activeName === 'sponsor' && (this.formInfo.state === 'GOBACK' || this.formInfo.state === 'RECALL' || this.formInfo.state === 'NOPASS')) {
+      if (
+        this.activeName === 'sponsor' &&
+        (this.formInfo.state === 'GOBACK' ||
+          this.formInfo.state === 'RECALL' ||
+          this.formInfo.state === 'NOPASS')
+      ) {
         const data = res[res.length - 1]
-        if ((data.activityType === 'userTask' && data.initiator) || this.formInfo.state === 'NOPASS') {
+        if (
+          (data.activityType === 'userTask' && data.initiator) ||
+          this.formInfo.state === 'NOPASS'
+        ) {
           this.operationInfo.againStart = true
           this.procdefQueryDetail()
           //   this.setFormJson()
@@ -1349,17 +1387,18 @@ export default {
     },
     procdefQueryDetail() {
       const params = {
-        procdefKey: this.formInfo[this.activeName === 'draft' ? 'procdefKey' : 'processDefinitionKey']
+        procdefKey: this.formInfo[
+          this.activeName === 'draft' ? 'procdefKey' : 'processDefinitionKey'
+        ]
       }
-      procdefQueryDetail(params)
-        .then(res => {
-          const document = JSON.parse(res.data.document)
-          if (document) {
-            if (document.termList && document.termList.length) {
-              this.changeTermState(document)
-            }
+      procdefQueryDetail(params).then(res => {
+        const document = JSON.parse(res.data.document)
+        if (document) {
+          if (document.termList && document.termList.length) {
+            this.changeTermState(document)
           }
-        })
+        }
+      })
     },
     changeTermState(target) {
       const termList = target.termList || []
@@ -1418,18 +1457,21 @@ export default {
     },
     setRecall() {
       // 是否有撤回按钮
-      const recall = this.activeName === 'notApproval' && this.formInfo.state === 'TOAUDIT' && !this.formInfo.endTime
+      const recall =
+        this.activeName === 'notApproval' &&
+        this.formInfo.state === 'TOAUDIT' &&
+        !this.formInfo.endTime
       // 我发起的 - 撤回或者待审核单独判断
-      const condition = this.activeName === 'sponsor' && this.formInfo.state === 'TOAUDIT'
+      const condition =
+        this.activeName === 'sponsor' && this.formInfo.state === 'TOAUDIT'
       if (recall || condition) {
         const params = {
           processDefinitionKey: this.formInfo.processDefinitionKey,
           processInstanceId: this.formInfo.processInstanceId
         }
-        taskStartCheck(params)
-          .then(res => {
-            this.operationInfo.recall = res.data.resubmit
-          })
+        taskStartCheck(params).then(res => {
+          this.operationInfo.recall = res.data.resubmit
+        })
       }
     },
     setUnassign() {
@@ -1505,16 +1547,28 @@ export default {
           }
           if (this.activeName !== 'draft') {
             const termList =
-              (this.formInfo.description && JSON.parse(this.formInfo.description)
-                && JSON.parse(this.formInfo.description).termList) || []
+              (this.formInfo.description &&
+                JSON.parse(this.formInfo.description) &&
+                JSON.parse(this.formInfo.description).termList) ||
+              []
             // 发起人条件 当我发起的是处于撤回或者退回状态是可编辑的
-            const sponsorCondition = this.activeName === 'sponsor' && (this.formInfo.state !== 'GOBACK' && this.formInfo.state !== 'RECALL')
+            const sponsorCondition =
+              this.activeName === 'sponsor' &&
+              this.formInfo.state !== 'GOBACK' &&
+                this.formInfo.state !== 'RECALL'
             // 流程配置节点 过滤没有的表单key 如果是审批节点默认是只读 发起节点默认是可编辑
-            const approvalCondition = termList.map(i => i.model).indexOf(item.model) === -1 && this.activeName === 'approval'
-            if (this.activeName === 'copy' || this.activeName === 'notApproval' || sponsorCondition || approvalCondition) {
+            const approvalCondition =
+              termList.map(i => i.model).indexOf(item.model) === -1 &&
+              this.activeName === 'approval'
+            if (
+              this.activeName === 'copy' ||
+              this.activeName === 'notApproval' ||
+              sponsorCondition ||
+              approvalCondition
+            ) {
               this.setOptions(item, 'disabled')
             }
-            if ((this.activeName === 'approval') && termList && termList.length) {
+            if (this.activeName === 'approval' && termList && termList.length) {
               termList.forEach(i => {
                 if (item.type === 'childForm') {
                   item.tableColumns.forEach(j => {
@@ -1562,12 +1616,11 @@ export default {
         }
       }
     }
-
   }
 }
 </script>
 <style lang="scss" scoped>
-.approval-manage-scope{
+.approval-manage-scope {
   .search-tab {
     margin: 0;
 
@@ -1589,7 +1642,7 @@ export default {
     margin-bottom: 10px;
 
     .button-container {
-      margin-right: 10px
+      margin-right: 10px;
     }
   }
 
