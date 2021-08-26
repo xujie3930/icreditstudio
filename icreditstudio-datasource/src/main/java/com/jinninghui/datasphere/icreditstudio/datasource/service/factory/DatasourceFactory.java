@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl.MysqlDatasource;
 
 /**
@@ -9,10 +10,9 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl.M
  **/
 public class DatasourceFactory {
 
-    private static final int MYSQL = 1;
-
     public static DatasourceSync getDatasource(Integer type){
-        switch (type){
+        DatasourceTypeEnum datasourceTypeEnum = DatasourceTypeEnum.findDatasourceTypeByType(type);
+        switch (datasourceTypeEnum){
             case MYSQL: return new MysqlDatasource();
             default: return new MysqlDatasource();
         }

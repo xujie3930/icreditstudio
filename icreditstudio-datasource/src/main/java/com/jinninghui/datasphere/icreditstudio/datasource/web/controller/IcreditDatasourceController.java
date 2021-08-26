@@ -95,7 +95,7 @@ public class IcreditDatasourceController {
 
     @GetMapping("/sync/{id}")
     @Logable
-    public BusinessResult<Boolean> sync(@PathVariable("id") String id){
+    public BusinessResult<String> sync(@PathVariable("id") String id){
         return datasourceService.syncById(id);
     }
 }

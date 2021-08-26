@@ -26,6 +26,11 @@ public class IcreditWorkspaceUserEntity implements Serializable {
     public static final String SPACE_ID = "SPACE_ID";
 
     /**
+     * 主键id
+     */
+    private String id;
+
+    /**
      * 工作空间id
      */
     private String spaceId;
@@ -34,6 +39,11 @@ public class IcreditWorkspaceUserEntity implements Serializable {
      * 用户id
      */
     private String userId;
+
+    /**
+     * 用户名称
+     */
+    private String username;
 
     /**
      * 功能权限

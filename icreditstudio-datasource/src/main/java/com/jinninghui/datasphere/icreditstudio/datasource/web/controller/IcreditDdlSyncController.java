@@ -22,6 +22,6 @@ public class IcreditDdlSyncController {
     @Autowired
     private IcreditDdlSyncService ddlSyncService;
 
-
+    
 }
 

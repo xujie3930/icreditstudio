@@ -88,17 +88,17 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request) {
         DatasourceSync datasource = DatasourceFactory.getDatasource(request.getType());
-        String resp = datasource.testConn(request.getType(), request.getUri(), request.getUsername(), request.getPassword());
+        String resp = datasource.testConn(request.getType(), request.getUri());
         return BusinessResult.success(resp);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> syncById(String id){
-        //TODO:同步任务耗时较久，看后期是否需要加redis锁，防止重复点击
+    public BusinessResult<String> syncById(String id){
+        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
         IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null){
-            return BusinessResult.success(false);
+            return BusinessResult.success("没有找到数据源信息");
         }
         //这里根据不同type类型，连接不同的数据库，同步其表
         DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
@@ -106,16 +106,17 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         try {
             ddlInfo = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
         } catch (Exception e) {
-            return BusinessResult.success(true);
+            return BusinessResult.success(e.getMessage());
         }
         IcreditDdlSyncEntity ddlEntity = new IcreditDdlSyncEntity();
         BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
         ddlEntity.setId(sequenceService.nextValueString());
         //建立外键关联
         ddlEntity.setDatasourceId(dataEntity.getId());
+        //TODO:这里改为上传到hdfs
         ddlEntity.setColumnsInfo(ddlInfo);
         ddlEntity.setCreateTime(new Date());
         ddlSyncMapper.insert(ddlEntity);
-        return BusinessResult.success(true);
+        return BusinessResult.success("同步成功");
     }
 }
