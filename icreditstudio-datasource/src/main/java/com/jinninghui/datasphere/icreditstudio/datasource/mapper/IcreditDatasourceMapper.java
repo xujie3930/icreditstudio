@@ -15,4 +15,6 @@ import org.apache.ibatis.annotations.Param;
 public interface IcreditDatasourceMapper extends BaseMapper<IcreditDatasourceEntity> {
 
     void updateStatusById(@Param("id") String id);
+
+    IcreditDatasourceEntity selectById(@Param("id") String id);
 }

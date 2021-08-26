@@ -6,7 +6,7 @@ spring:
       max-file-size: 30MB
       max-request-size: 50MB
   application:
-    name: uaa
+    name: datasource
   datasource:
     url: "jdbc:mysql://127.0.0.1:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'root'
@@ -34,7 +34,7 @@ spring:
       - classpath:db/migration
 
 server:
-  port: 8084
+  port: 8086
 system:
   errorCode: 500
 mybatis:

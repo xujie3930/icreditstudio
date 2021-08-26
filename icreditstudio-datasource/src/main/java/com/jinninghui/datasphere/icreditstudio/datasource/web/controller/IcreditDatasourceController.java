@@ -5,9 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasour
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceDelRequest;
-import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
-import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceSaveRequest;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -48,7 +46,7 @@ public class IcreditDatasourceController {
      */
     @PostMapping("/update")
     @Logable
-    public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditDatasourceSaveRequest request) {
+    public BusinessResult<Boolean> update(@RequestBody IcreditDatasourceUpdateRequest request) {
 
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(request, entity);
@@ -77,13 +75,28 @@ public class IcreditDatasourceController {
     }
 
     /**
-     *
+     *分页查询数据源列表
      */
     @PostMapping("/pageList")
     @Logable
     public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditDatasourceEntityPageRequest pageRequest){
         BusinessPageResult page = datasourceService.queryPage(pageRequest);
         return BusinessResult.success(page);
+    }
+
+    /**
+     * 测试数据源连接
+     */
+    @PostMapping("/testConnect")
+    @Logable
+    public BusinessResult<String> testConnect(@RequestBody IcreditDatasourceTestConnectRequest request){
+        return datasourceService.testConn(request);
+    }
+
+    @GetMapping("/sync/{id}")
+    @Logable
+    public BusinessResult<Boolean> sync(@PathVariable("id") String id){
+        return datasourceService.syncById(id);
     }
 }
 

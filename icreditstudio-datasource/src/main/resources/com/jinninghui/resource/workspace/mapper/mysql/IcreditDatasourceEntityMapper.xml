@@ -7,4 +7,10 @@
         SET del_flag = 'Y'
         WHERE ID = #{id}
     </update>
+
+    <select id="selectById" resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
+        select *
+        from icredit_datasource
+        where ID = #{id} limit 1
+    </select>
 </mapper>

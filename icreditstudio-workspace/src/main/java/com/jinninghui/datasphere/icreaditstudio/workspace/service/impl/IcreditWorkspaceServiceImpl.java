@@ -70,7 +70,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         if (StringUtils.isNotBlank(pageRequest.getCreateUser())) {
             wrapper.eq(IcreditWorkspaceEntity.CREATE_USER, pageRequest.getCreateUser());
         }
-        if (Objects.nonNull(pageRequest.getCreateTime())) {
+        if (StringUtils.isNotBlank(pageRequest.getCreateTime())) {
             wrapper.le(IcreditWorkspaceEntity.CREATE_TIME, pageRequest.getCreateTime());
         }
         wrapper.orderByDesc(IcreditWorkspaceEntity.CREATE_TIME);

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
@@ -23,4 +24,8 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
     BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param);
 
     BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest);
+
+    BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request);
+
+    BusinessResult<Boolean> syncById(String id);
 }

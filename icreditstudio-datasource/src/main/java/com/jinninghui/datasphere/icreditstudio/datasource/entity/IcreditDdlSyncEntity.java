@@ -1,12 +1,12 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import java.io.Serializable;
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
@@ -14,19 +14,14 @@ import java.util.Date;
  * </p>
  *
  * @author xujie
- * @since 2021-08-24
+ * @since 2021-08-25
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("icredit_datasource")
-public class IcreditDatasourceEntity implements Serializable {
+@TableName("icredit_ddl_sync")
+public class IcreditDdlSyncEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    public static final String NAME = "NAME";
-    public static final String TYPE  = "TYPE";
-    public static final String STATUS  = "STATUS";
-    public static final String CREATE_TIME  = "CREATE_TIME";
 
     /**
      * 主键id
@@ -39,14 +34,9 @@ public class IcreditDatasourceEntity implements Serializable {
     private String spaceId;
 
     /**
-     * 数据源类型
+     * datasource表的id
      */
-    private Integer type;
-
-    /**
-     * 数据源自定义名称
-     */
-    private String name;
+    private String datasourceId;
 
     /**
      * 连接信息
@@ -54,29 +44,9 @@ public class IcreditDatasourceEntity implements Serializable {
     private String uri;
 
     /**
-     * 是否启用：0-启用，1-非启用
+     * 表所有信息
      */
-    private Integer status;
-
-    /**
-     * 是否删除:0-否，1-删除
-     */
-    private String delFlag;
-
-    /**
-     * 最后一次同步时间
-     */
-    private Date lastSyncTime;
-
-    /**
-     * 最后一次同步状态：0-成功，1-失败,2未执行
-     */
-    private Integer lastSyncStatus;
-
-    /**
-     * 描述信息
-     */
-    private String descriptor;
+    private String columnsInfo;
 
     /**
      * 创建时间
@@ -99,6 +69,16 @@ public class IcreditDatasourceEntity implements Serializable {
      * 更新人
      */
     private String updateBy;
+
+    /**
+     * 版本号
+     */
+    private Integer version;
+
+    /**
+     * 是否删除:0-否，1-删除
+     */
+    private String delFlag;
 
     /**
      * 备注
