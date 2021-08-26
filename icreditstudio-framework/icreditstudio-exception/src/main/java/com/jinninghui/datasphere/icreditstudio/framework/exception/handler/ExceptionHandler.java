@@ -32,9 +32,9 @@ import java.util.Set;
  *@author liyanhui
  */
 @Component
-public class ExceptionHandle implements HandlerExceptionResolver, Ordered, ApplicationContextAware {
+public class ExceptionHandler implements HandlerExceptionResolver, Ordered, ApplicationContextAware {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionHandler.class);
 
     @Value("${system.errorCode}")
     private String systemErrorCode;

@@ -22,7 +22,7 @@ public class ManagerInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(ManagerInterceptor.class);
     private static final int PARAM_LENGTH_MAX = 100;
 
-    @Pointcut("execution(* com.hashtech..manager..*(..))")
+    @Pointcut("execution(* com.jinninghui..manager..*(..))")
     public void pointcut(){
 
     }
