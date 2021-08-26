@@ -14,7 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.UUIDUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author xujie
@@ -39,6 +39,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Autowired
     private IcreditWorkspaceMapper workspaceMapper;
 
+    @Autowired
+    private SequenceService sequenceService;
+
 
     @Override
     @BusinessParamsValidate
@@ -46,14 +49,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     public BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param) {
         IcreditWorkspaceEntity defEntity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
-        defEntity.setId(UUIDUtils.uuid());
+        defEntity.setId(sequenceService.nextValueString());
         defEntity.setCreateTime(new Date());
         return BusinessResult.success(save(defEntity));
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public BusinessResult<Boolean> deleteFormById(IcreditWorkspaceDelParam param) {
+    public BusinessResult<Boolean> deleteById(IcreditWorkspaceDelParam param) {
         workspaceMapper.updateStatusById(param.getId());
         return BusinessResult.success(true);
     }
@@ -67,7 +70,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         if (StringUtils.isNotBlank(pageRequest.getCreateUser())) {
             wrapper.eq(IcreditWorkspaceEntity.CREATE_USER, pageRequest.getCreateUser());
         }
-        if (Objects.nonNull(pageRequest.getCreateTime())) {
+        if (StringUtils.isNotBlank(pageRequest.getCreateTime())) {
             wrapper.le(IcreditWorkspaceEntity.CREATE_TIME, pageRequest.getCreateTime());
         }
         wrapper.orderByDesc(IcreditWorkspaceEntity.CREATE_TIME);

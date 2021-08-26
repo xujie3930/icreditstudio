@@ -19,15 +19,15 @@ import java.util.List;
  */
 @FeignClient("uaa")
 public interface UaaFeignClient {
-    @GetMapping({"/interfaces"})
+    @GetMapping({"/system/interfaces"})
     List<Interface> getAllInterface();
 
-    @PostMapping(value = "/tokenAuth")
+    @PostMapping(value = "/system/tokenAuth")
     BusinessToken tokenAuth(@RequestParam(value = "interfaceUrl") String interfaceUrl, @RequestParam(value = "interfaceMethod") String interfaceMethod,
                             @RequestParam(value = "token") String token,
                             @RequestParam(value = "requestType") String requestType);
 
-    @RequestMapping(value ="/sign", method = RequestMethod.POST)
+    @RequestMapping(value ="/system/sign", method = RequestMethod.POST)
     SignMsg sign(@RequestParam(value = "input") String input);
 
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper">
+
+    <update id="updateStatusById" parameterType="java.lang.String">
+        UPDATE icredit_datasource
+        SET del_flag = 'Y'
+        WHERE ID = #{id}
+    </update>
+
+    <select id="selectById" resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
+        select *
+        from icredit_datasource
+        where ID = #{id} limit 1
+    </select>
+</mapper>

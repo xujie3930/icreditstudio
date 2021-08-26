@@ -8,6 +8,8 @@ server:
     accesslog:
       enabled: false
       pattern: '%t %a "%r" %s (%D ms)'
+  servlet:
+    context-path: /system
 
 spring:
   cloud:
