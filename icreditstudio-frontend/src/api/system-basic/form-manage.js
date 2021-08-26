@@ -6,11 +6,12 @@
 import { getAction, postAction } from '../index'
 
 // 表单配置 - 表单保存或发布
-const formManageOperate = params => postAction('/form/definition/save', params)
+const formManageOperate = params =>
+  postAction('/system/form/definition/save', params)
 
 // 表单配置 - 数字字典
 const formManageDictionary = params =>
-  getAction('/code/code/getInfoByKey', params)
+  getAction('/system/code/code/getInfoByKey', params)
 
 // 表单列表 - 更多 - 发布
 const formListPublish = params => postAction('form/definition/publish', params)

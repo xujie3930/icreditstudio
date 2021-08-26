@@ -302,23 +302,23 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/process/form/group/query',
+          url: '/system/process/form/group/query',
           method: 'post'
         },
         create: {
-          url: '/process/form/group/add',
+          url: '/system/process/form/group/add',
           method: 'post'
         },
         update: {
-          url: '/re/res/user/edit',
+          url: '/system/re/res/user/edit',
           method: 'post'
         },
         delete: {
-          url: '/form/info/delete',
+          url: '/system/form/info/delete',
           method: 'post'
         },
         multipleDelete: {
-          url: '/code/code/delete',
+          url: '/system/code/code/delete',
           method: 'post'
         }
       },

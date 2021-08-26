@@ -1,29 +1,31 @@
 <template>
-  <crud-basic
-    ref="crud"
-    title="部门列表"
-    :form-items-search="mixinSearchFormItems"
-    :form-func-search="mixinSearchFormFunc"
-    :form-config-search="mixinSearchFormConfig"
-    :form-items-dialog="mixinDialogFormItems"
-    :form-func-dialog="mixinDialogFormFunc"
-    :form-config-dialog="mixinDialogFormConfig"
-    :tableLoading="mixinTableLoading"
-    :table-configuration="tableConfiguration"
-    :table-pagination="mixinTablePagination"
-    :table-data="mixinTableData"
-    :dialog-type="mixinDialogType"
-    :dialog-visible.sync="mixinDialog"
-    :handleSizeChange="mixinHandleSizeChange"
-    :handleCurrentChange="mixinHandleCurrentChange"
-    :handleAdd="mixinHandleAdd"
-    :handleImport="mixinHandleImport"
-    :handleExport="mixinHandleExport"
-    :handleSearch="mixinHandleSearch"
-    :handleReset="mixinHandleReset"
-    :handleUpdate="mixinHandleCreateOrUpdate"
-    :handleCancel="mixinHandleCancel"
-  ></crud-basic>
+  <div class="h100 w100">
+    <crud-basic
+      ref="crud"
+      title="部门列表"
+      :form-items-search="mixinSearchFormItems"
+      :form-func-search="mixinSearchFormFunc"
+      :form-config-search="mixinSearchFormConfig"
+      :form-items-dialog="mixinDialogFormItems"
+      :form-func-dialog="mixinDialogFormFunc"
+      :form-config-dialog="mixinDialogFormConfig"
+      :tableLoading="mixinTableLoading"
+      :table-configuration="tableConfiguration"
+      :table-pagination="mixinTablePagination"
+      :table-data="mixinTableData"
+      :dialog-type="mixinDialogType"
+      :dialog-visible.sync="mixinDialog"
+      :handleSizeChange="mixinHandleSizeChange"
+      :handleCurrentChange="mixinHandleCurrentChange"
+      :handleAdd="mixinHandleAdd"
+      :handleImport="mixinHandleImport"
+      :handleExport="mixinHandleExport"
+      :handleSearch="mixinHandleSearch"
+      :handleReset="mixinHandleReset"
+      :handleUpdate="mixinHandleCreateOrUpdate"
+      :handleCancel="mixinHandleCancel"
+    ></crud-basic>
+  </div>
 </template>
 
 <script>
@@ -33,7 +35,7 @@ import { deepClone, arrayToTree, getObjType } from '@/utils/util'
 
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-org'
 import formOption from '@/views/system-basic/configuration/form/manage/manage-org'
-import { setOrgStatus } from '@/api/org';
+import { setOrgStatus } from '@/api/org'
 
 export default {
   name: 'ManageOrg',
@@ -44,14 +46,14 @@ export default {
       if (getObjType(value) === 'array') {
         const len = value.length
         if (len === 0) {
-          return callback(new Error('上级部门不能为空'));
+          return callback(new Error('上级部门不能为空'))
         } else if (value[value.length - 1] === this.mixinUpdate.id) {
-          return callback(new Error('部门不能和上级部门相同'));
+          return callback(new Error('部门不能和上级部门相同'))
         } else {
           callback()
         }
       }
-    };
+    }
     return {
       formOption,
       mixinSearchFormConfig: {
@@ -101,27 +103,27 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/org/organization/queryList',
+          url: '/system/org/organization/queryList',
           method: 'post'
         },
         create: {
-          url: '/org/organization/save',
+          url: '/system/org/organization/save',
           method: 'post'
         },
         update: {
-          url: '/org/organization/update',
+          url: '/system/org/organization/update',
           method: 'post'
         },
         delete: {
-          url: '/org/organization/delete',
+          url: '/system/org/organization/delete',
           method: 'post'
         },
         export: {
-          url: '/org/organization/exportExcel',
+          url: '/system/org/organization/exportExcel',
           method: 'get'
         },
         import: {
-          url: '/org/organization/importExcel',
+          url: '/system/org/organization/importExcel',
           method: 'get'
         }
       }
@@ -134,28 +136,33 @@ export default {
     })
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinSearchFormConfig.retrieveModels.userId = this.userInfo.id || ''
     this.mixinRetrieveTableData()
   },
   methods: {
     interceptorsResponseTableData(data) {
       // const rootParentId = data.find(x => x.currOrg)?.parentId || '0'
-      const _data = arrayToTree(data.map(e => {
-        const disabled = e.parentId === '0' || e.operateFlag !== '1'
-        return {
-          ...e,
-          deleteFlagConfig: {
-            switchDisabled: disabled
-          },
-          operationConfig: {
-            updateDisabled: disabled,
-            deleteDisabled: disabled
-          },
-          disabled: e.deleteFlag === 'Y'// 弹框中的树结构，禁用部门不可选
-        }
-      }), '0') || [];
+      const _data =
+        arrayToTree(
+          data.map(e => {
+            const disabled = e.parentId === '0' || e.operateFlag !== '1'
+            return {
+              ...e,
+              deleteFlagConfig: {
+                switchDisabled: disabled
+              },
+              operationConfig: {
+                updateDisabled: disabled,
+                deleteDisabled: disabled
+              },
+              disabled: e.deleteFlag === 'Y' // 弹框中的树结构，禁用部门不可选
+            }
+          }),
+          '0'
+        ) || []
       this.formOption.find(e => e.ruleProp === 'parentId').options = _data
       return _data
     },
@@ -179,11 +186,10 @@ export default {
       }
     },
     handleStatusChange(e) {
-      setOrgStatus({ id: e.scope.row.id, deleteFlag: e.value })
-        .then(() => {
-          this.$notify.success(`${e.value === 'Y' ? '禁用' : '启用'}成功`)
-          this.mixinRetrieveTableData()
-        })
+      setOrgStatus({ id: e.scope.row.id, deleteFlag: e.value }).then(() => {
+        this.$notify.success(`${e.value === 'Y' ? '禁用' : '启用'}成功`)
+        this.mixinRetrieveTableData()
+      })
     }
   }
 }

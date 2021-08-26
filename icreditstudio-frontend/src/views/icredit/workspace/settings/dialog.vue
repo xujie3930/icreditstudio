@@ -8,16 +8,18 @@
     <div class="dialog-title" slot="title">{{ title }}</div>
     <div class="content">
       {{ operateMsg }}
-      <span class="color-text">
-        {{ workspaceName }}
-      </span>
-      吗？
+      <span class="color-text"> {{ workspaceName }} </span>吗？
     </div>
     <span slot="footer" class="dialog-footer">
-      <el-button size="mini" @click="dialogVisible = false">取 消</el-button>
-      <el-button size="mini" type="primary" @click="handleConfirm">
-        确 定</el-button
+      <el-button size="mini" @click="close">取 消</el-button>
+      <el-button
+        size="mini"
+        type="primary"
+        :loading="btnLoading"
+        @click="handleConfirm"
       >
+        确 定
+      </el-button>
     </span>
   </el-dialog>
 </template>
@@ -26,26 +28,37 @@
 export default {
   data() {
     return {
+      row: '',
+      opType: '',
       title: '',
       workspaceName: '',
       operateMsg: '',
-      dialogVisible: false
+      dialogVisible: false,
+      btnLoading: false
     }
   },
 
   methods: {
-    open(opType, name) {
+    open(opType, row) {
+      this.row = row
       this.dialogVisible = true
-      this.workspaceName = name
-      this.title = `工作空间${opType === 'disabled' ? '停用' : '删除'}`
+      this.workspaceName = row.name
+      this.opType = opType
+      this.title = `工作空间${opType === 'Disabled' ? '停用' : '删除'}`
       this.operateMsg =
-        opType === 'disabled'
+        opType === 'Disabled'
           ? '停用工作空间后，工作空间中的项目和工作流都不再进行调度，请谨慎操作。确认要停用'
           : '删除工作空间后，工作空间内的项目和工作流都将删除，请谨慎操作。确认要删除'
     },
 
-    handleConfirm() {
+    close() {
       this.dialogVisible = false
+      this.btnLoading = false
+    },
+
+    handleConfirm() {
+      this.btnLoading = true
+      this.$emit('onConfirm', this.opType, this.row)
     }
   }
 }

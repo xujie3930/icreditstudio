@@ -1,29 +1,31 @@
 <template>
-  <crud-basic
-    ref="crud"
-    title="接口列表"
-    :form-items-search="mixinSearchFormItems"
-    :form-func-search="mixinSearchFormFunc"
-    :form-config-search="mixinSearchFormConfig"
-    :form-items-dialog="mixinDialogFormItems"
-    :form-func-dialog="mixinDialogFormFunc"
-    :form-config-dialog="mixinDialogFormConfig"
-    :tableLoading="mixinTableLoading"
-    :table-configuration="tableConfiguration"
-    :table-pagination="mixinTablePagination"
-    :table-data="mixinTableData"
-    :dialog-type="mixinDialogType"
-    :dialog-visible.sync="mixinDialog"
-    :handleSizeChange="mixinHandleSizeChange"
-    :handleCurrentChange="mixinHandleCurrentChange"
-    :handleAdd="mixinHandleAdd"
-    :handleSearch="mixinHandleSearch"
-    :handleReset="mixinHandleReset"
-    :handleImport="mixinHandleImport"
-    :handleExport="mixinHandleExport"
-    :handleUpdate="mixinHandleCreateOrUpdate"
-    :handleCancel="mixinHandleCancel"
-  ></crud-basic>
+  <div class="h100 w100">
+    <crud-basic
+      ref="crud"
+      title="接口列表"
+      :form-items-search="mixinSearchFormItems"
+      :form-func-search="mixinSearchFormFunc"
+      :form-config-search="mixinSearchFormConfig"
+      :form-items-dialog="mixinDialogFormItems"
+      :form-func-dialog="mixinDialogFormFunc"
+      :form-config-dialog="mixinDialogFormConfig"
+      :tableLoading="mixinTableLoading"
+      :table-configuration="tableConfiguration"
+      :table-pagination="mixinTablePagination"
+      :table-data="mixinTableData"
+      :dialog-type="mixinDialogType"
+      :dialog-visible.sync="mixinDialog"
+      :handleSizeChange="mixinHandleSizeChange"
+      :handleCurrentChange="mixinHandleCurrentChange"
+      :handleAdd="mixinHandleAdd"
+      :handleSearch="mixinHandleSearch"
+      :handleReset="mixinHandleReset"
+      :handleImport="mixinHandleImport"
+      :handleExport="mixinHandleExport"
+      :handleUpdate="mixinHandleCreateOrUpdate"
+      :handleCancel="mixinHandleCancel"
+    ></crud-basic>
+  </div>
 </template>
 <script>
 import crud from '@/mixins/crud'
@@ -42,8 +44,7 @@ export default {
     return {
       formOption,
       mixinSearchFormConfig: {
-        models: {
-        }
+        models: {}
       },
       mixinDialogFormConfig: {
         models: {
@@ -56,9 +57,7 @@ export default {
           uriType: ''
         },
         rule: {
-          name: [
-            { required: true, message: '名称不能为空', trigger: 'blur' }
-          ],
+          name: [{ required: true, message: '名称不能为空', trigger: 'blur' }],
           method: [
             { required: true, message: '请求类型不能为空', trigger: 'change' }
           ],
@@ -82,49 +81,47 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/interfaces/interfaces/pageList',
+          url: '/system/interfaces/interfaces/pageList',
           method: 'post'
         },
         create: {
-          url: '/interfaces/interfaces/save',
+          url: '/system/interfaces/interfaces/save',
           method: 'post'
         },
         update: {
-          url: '/interfaces/interfaces/update',
+          url: '/system/interfaces/interfaces/update',
           method: 'post',
           id: 'interfaceId'
         },
         delete: {
-          url: '/interfaces/interfaces/delete',
+          url: '/system/interfaces/interfaces/delete',
           method: 'post',
           id: 'interfaceId'
         },
         export: {
-          url: '/interfaces/interfaces/exportExcel',
+          url: '/system/interfaces/interfaces/exportExcel',
           method: 'get'
         },
         import: {
-          url: '/interfaces/interfaces/importExcel',
+          url: '/system/interfaces/interfaces/importExcel',
           method: 'get'
         }
       }
     }
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   },
   methods: {
     interceptorsResponseTableData(data) {
       data.forEach(e => {
-        Object.assign(
-          e,
-          {
-            needAuthStr: CONSTANT_IS[e.needAuth],
-            uriTypeStr: CONSTANT_TYPE[e.uriType]
-          }
-        )
+        Object.assign(e, {
+          needAuthStr: CONSTANT_IS[e.needAuth],
+          uriTypeStr: CONSTANT_TYPE[e.uriType]
+        })
       })
       return data
     },

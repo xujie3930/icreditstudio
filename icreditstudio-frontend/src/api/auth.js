@@ -1,15 +1,23 @@
 import { postAction } from './index'
 
-const getAuthList = params => postAction('/resources/resources/queryList', params)
+const getAuthList = params =>
+  postAction('/system/resources/resources/queryList', params)
 // 设置模块的角色信息
-const setRoleToResources = params => postAction('/resources/resources/setRoleToResources', params)
+const setRoleToResources = params =>
+  postAction('/system/resources/resources/setRoleToResources', params)
 // 根据模板id获取当前模板已配置的角色信息
-const getRoleInfoByMenuIds = params => postAction('/resources/resources/getRoleInfoByMenuIds', params)
-const getAuthResourceList = params => postAction('/res/auth/resource/query', params)
-const getAllAuthResourceList = params => postAction('/res/resource/query', params)
-const addAuthResource = params => postAction('/res/auth/resource/add', params)
-const editAuthResource = params => postAction('/res/auth/resource/edit', params)
-const deleteAuthResource = params => postAction('/res/auth/resource/delete', params)
+const getRoleInfoByMenuIds = params =>
+  postAction('/system/resources/resources/getRoleInfoByMenuIds', params)
+const getAuthResourceList = params =>
+  postAction('/system/res/auth/resource/query', params)
+const getAllAuthResourceList = params =>
+  postAction('/system/res/resource/query', params)
+const addAuthResource = params =>
+  postAction('/system/res/auth/resource/add', params)
+const editAuthResource = params =>
+  postAction('/system/res/auth/resource/edit', params)
+const deleteAuthResource = params =>
+  postAction('/system/res/auth/resource/delete', params)
 
 export {
   getAuthList,

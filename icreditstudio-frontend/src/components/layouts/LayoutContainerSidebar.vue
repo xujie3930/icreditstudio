@@ -5,21 +5,31 @@
 -->
 <template>
   <div v-if="menu.length" class="iframe-layout-container-wrap ">
-    <el-aside :class="['iframe-layout-aside', 'sidebar']" width="245px">
+    <el-aside
+      :class="['iframe-layout-aside', 'sidebar', 'container-sidebar']"
+      width="245px"
+    >
       <el-menu
-        router
-        :default-active="$route.path"
+        :default-active="menu.filter(e => e.isShow)[0].name"
         :background-color="getBaseConfig('menu-color-bg')"
         :active-text-color="getBaseConfig('menu-color-text-active')"
       >
-        <template v-for="item in menu">
-          <el-submenu :key="item.name" :index="item.url">
+        <template v-for="item in menu.filter(({ isShow }) => isShow)">
+          <el-menu-item
+            :key="item.name"
+            :index="item.name"
+            class="menu-left-item"
+            @click="handleMenuSelected(item)"
+          >
+            <i :class="[item.iconPath, 'menu-icon']" />
+            <span slot="title">{{ item.name }}</span>
+          </el-menu-item>
+          <!-- <el-submenu :key="item.name" :index="item.url">
             <template #title>
               <div
                 class="custom-submenu-item"
                 @click="handleThreeLevelMenuChange(item, $event)"
               >
-                <!-- @click="handleLinkOrToggle(item, $event)" -->
                 <i :class="[item.iconPath]" />
                 <span>{{ item.name }}</span>
               </div>
@@ -35,7 +45,7 @@
                 {{ son.name }}
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu>
+          </el-submenu> -->
         </template>
       </el-menu>
     </el-aside>
@@ -78,6 +88,16 @@ export default {
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
 
+    handleMenuSelected(item) {
+      const showChildArr = item.children
+        ? item.children.filter(({ isShow }) => isShow)
+        : []
+      console.log(showChildArr, 'showChildArr')
+      // !showChildArr.length && this.$router.push(item.url)
+      this.$router.push(item.url)
+      this.$emit('getChildMenus', item)
+    },
+
     handleThreeLevelMenuChange(curMenu, evt) {
       console.log(curMenu, evt)
       this.$emit('threeMenuChange', curMenu)
@@ -89,6 +109,7 @@ export default {
     },
 
     isExistChildren(item) {
+      console.log('三级菜单item::', item)
       const { children } = item
       const moreThirdMore = []
       if (!children || !children.length) return 0

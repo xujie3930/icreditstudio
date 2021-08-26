@@ -99,25 +99,21 @@ export default {
     }
   },
 
-  // watch: {
-  //   $route: {
-  //     immediate: true,
-  //     handler(to) {
-  //       this.initBreadCrumbItems(to)
-  //     }
-  //   }
-  // },
-
   created() {
-    this.curBreadcrumb.push(this.topModules[0])
-    this.initBreadCrumbItems(this.$route)
+    this.initPage()
+    // this.initBreadCrumbItems(this.$route)
   },
 
   methods: {
+    initPage() {
+      this.curBreadcrumb.push(this.topModules[0])
+      this.curBreadcrumb.push(this.topModules[0].children[0])
+      this.$router.push('/')
+    },
+
     initBreadCrumbItems(router) {
-      const breadCrumbItem = [
-        // { path: '/', title: window.__JConfig.baseConfig.projectName }
-      ]
+      console.log(router, 'router')
+      const breadCrumbItem = []
       router.matched.forEach(item => {
         if (item.meta && item.meta.name) {
           breadCrumbItem.push({
@@ -137,25 +133,33 @@ export default {
       this.curBreadcrumb = [curMenu]
       this.workspace = label
       // 自动加载二级菜单的第一个菜单
-      children.length && this.getChildMenus(children[0])
+      if (children.length) {
+        this.getChildMenus(children[0])
+        console.log(children, 'xxxfffggg')
+        const exitShowChild = children[0].children
+          ? children[0].children.filter(item => item.isShow)
+          : []
+        !exitShowChild.length && this.$router.push(children[0].url)
+      }
     },
 
-    // 二级菜单
+    // 二级菜单切换
     getChildMenus(curMenu) {
       const { children: childMenus, ...rest } = curMenu
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
+      // !childMenus[0].children && this.$router.push(childMenus[0].url)
       this.isExistThreeMenus = !!childMenus?.length
       this.threeChildrenMenus = childMenus?.filter(item => item.isShow)
     },
 
-    // 三级菜单更改
+    // 三级菜单切换
     threeMenuChange(curMenu) {
       console.log(curMenu, 'lololo')
       const [firstItem, secondItem] = this.curBreadcrumb
       this.curBreadcrumb = [firstItem, secondItem, curMenu]
     },
 
-    // 四级菜单更改
+    // 四级菜单切换
     fourMenuChange(curMenu) {
       const [firstItem, secondItem, thirdItem] = this.curBreadcrumb
       console.log(curMenu, 'lololo')

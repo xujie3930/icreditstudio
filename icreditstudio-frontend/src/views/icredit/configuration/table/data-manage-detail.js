@@ -1,10 +1,12 @@
 /*
- * @Description: 用户角色成员信息
- * @Date: 2021-08-18
+ * @Author: lizheng
+ * @Description: 数据源详情
+ * @Date: 2021-08-24
  */
+
 export default {
-  refName: 'workspaceSettingDetial',
-  id: 'settingDetial',
+  refName: 'data-manage-detial',
+  id: '',
   isBorder: true,
   hasPage: false,
   group: [
@@ -16,27 +18,32 @@ export default {
     },
     {
       type: 'text',
-      label: '用户',
+      label: '字段名称',
       prop: 'userName'
     },
     {
       type: 'text',
-      label: '角色',
+      label: '字段类型',
       prop: 'orgName'
     },
     {
       type: 'text',
-      label: '功能权限',
+      label: '来源表',
       prop: 'accountIdentifier'
     },
     {
       type: 'text',
-      label: '数据权限',
+      label: '字段中文名称',
       prop: 'telPhone'
     },
     {
       type: 'date',
-      label: '添加时间',
+      label: '关联字典表',
+      prop: 'createTime'
+    },
+    {
+      type: 'date',
+      label: '备注',
       prop: 'createTime'
     }
   ]

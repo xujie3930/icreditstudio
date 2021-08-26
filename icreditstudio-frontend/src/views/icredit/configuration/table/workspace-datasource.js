@@ -103,13 +103,13 @@ export default _this => {
             label: '启用',
             key: 'enabled',
             show: true
-          },
-          {
-            func: ({ row }) => _this.handleDetailClick(row, 'edit'),
-            label: '编辑',
-            key: 'edit',
-            show: true
           }
+          // {
+          //   func: ({ row }) => _this.handleDetailClick(row, 'edit'),
+          //   label: '编辑',
+          //   key: 'edit',
+          //   show: true
+          // }
         ]
       }
     ]

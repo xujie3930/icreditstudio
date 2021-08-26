@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="w100 h100">
     <crud-basic
       ref="crud"
       title="角色列表"
@@ -51,9 +51,11 @@
               check-on-click-node
               @check="orgHandleCheck"
             >
-               <span class="custom-tree-node" slot-scope="{ node }">
-               <span :title="node.label" class="org-tree-label">{{ node.label }}</span>
-               </span>
+              <span class="custom-tree-node" slot-scope="{ node }">
+                <span :title="node.label" class="org-tree-label">{{
+                  node.label
+                }}</span>
+              </span>
             </el-tree>
           </div>
         </div>
@@ -63,7 +65,9 @@
             :titles="['待选用户', '已选用户']"
             :table-loading="tableLoading"
             :table-filter-config="userSetModels.transfer.filterConfig"
-            :left-table-configuration="userSetModels.transfer.leftTableConfiguration"
+            :left-table-configuration="
+              userSetModels.transfer.leftTableConfiguration
+            "
             :left-data.sync="userSetModels.transfer.leftData"
             :right-data.sync="userSetModels.transfer.rightData"
           ></j-transfer-table>
@@ -71,7 +75,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="userSetHandleClose">取 消</el-button>
-        <el-button type="primary" @click="userSetHandleCreateOrUpdate">保 存</el-button>
+        <el-button type="primary" @click="userSetHandleCreateOrUpdate"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
     <!--end-->
@@ -100,9 +106,11 @@
               check-on-click-node
               @check="authHandleCheck"
             >
-               <span class="custom-tree-node" slot-scope="{ node }">
-               <span :title="node.label" class="org-tree-label">{{ node.label }}</span>
-               </span>
+              <span class="custom-tree-node" slot-scope="{ node }">
+                <span :title="node.label" class="org-tree-label">{{
+                  node.label
+                }}</span>
+              </span>
             </el-tree>
           </div>
         </div>
@@ -112,7 +120,9 @@
             :titles="['待选模块', '已选模块']"
             :table-loading="tableLoading"
             :table-filter-config="authSetModels.transfer.filterConfig"
-            :left-table-configuration="authSetModels.transfer.leftTableConfiguration"
+            :left-table-configuration="
+              authSetModels.transfer.leftTableConfiguration
+            "
             :left-data.sync="authSetModels.transfer.leftData"
             :right-data.sync="authSetModels.transfer.rightData"
           ></j-transfer-table>
@@ -120,7 +130,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="authHandleCancel">取 消</el-button>
-        <el-button type="primary" @click="authHandleCreateOrUpdate">保 存</el-button>
+        <el-button type="primary" @click="authHandleCreateOrUpdate"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -128,10 +140,17 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import crud from '@/mixins/crud';
+import crud from '@/mixins/crud'
 import { arrayToTree, deepClone, getObjType } from '@/utils/util'
 import { getAuthList } from '@/api/auth'
-import { setRoleStatus, getChildrenRoles, getUserInfoByRoleId, setRoleToUsers, getResourcesFromRole, setResourcesToRole } from '@/api/role'
+import {
+  setRoleStatus,
+  getChildrenRoles,
+  getUserInfoByRoleId,
+  setRoleToUsers,
+  getResourcesFromRole,
+  setResourcesToRole
+} from '@/api/role'
 import { queryAllOrgs, getUserInfosByOrgIds } from '@/api/user'
 
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-role'
@@ -150,14 +169,14 @@ export default {
       if (getObjType(value) === 'array') {
         const len = value.length
         if (len === 0) {
-          return callback(new Error('上级角色不能为空'));
+          return callback(new Error('上级角色不能为空'))
         } else if (value[value.length - 1] === this.mixinUpdate.id) {
-          return callback(new Error('角色类型不能和上级角色相同'));
+          return callback(new Error('角色类型不能和上级角色相同'))
         } else {
           callback()
         }
       }
-    };
+    }
     return {
       tableLoading: false,
       formOption: formOption(this),
@@ -179,66 +198,74 @@ export default {
           roleRemark: ''
         },
         rule: {
-          roleName: [{
-            required: true,
-            message: '角色名称不能为空',
-            trigger: 'blur'
-          }],
-          deleteFlag: [{
-            required: true,
-            message: '状态不能为空',
-            trigger: 'blur'
-          }],
-          parentId: [{
-            required: true,
-            validator: checkParentId,
-            trigger: 'blur'
-          }]
+          roleName: [
+            {
+              required: true,
+              message: '角色名称不能为空',
+              trigger: 'blur'
+            }
+          ],
+          deleteFlag: [
+            {
+              required: true,
+              message: '状态不能为空',
+              trigger: 'blur'
+            }
+          ],
+          parentId: [
+            {
+              required: true,
+              validator: checkParentId,
+              trigger: 'blur'
+            }
+          ]
         }
       },
       tableConfiguration: tableConfiguration(this),
       // parentTreeData: [], // 存放所有的parentId的同步树数据
       fetchConfig: {
         retrieve: {
-          url: '/role/role/getChildrenRoles',
+          url: '/system/role/role/getChildrenRoles',
           method: 'post'
         },
         lazy: {
-          url: '/role/role/getChildrenRoles',
+          url: '/system/role/role/getChildrenRoles',
           method: 'post'
         },
         create: {
-          url: '/role/role/save',
+          url: '/system/role/role/save',
           method: 'post'
         },
         update: {
-          url: '/role/role/update',
+          url: '/system/role/role/update',
           method: 'post',
           id: 'id'
         },
         delete: {
-          url: '/role/role/delete',
+          url: '/system/role/role/delete',
           method: 'post',
           id: 'id'
         },
         export: {
-          url: '/role/role/exportExcel',
+          url: '/system/role/role/exportExcel',
           method: 'get'
         },
         import: {
-          url: '/role/role/importExcel',
+          url: '/system/role/role/importExcel',
           method: 'get'
         }
       },
       // 权限相关代码
       authDialogFlag: false,
-      authDialogFormItems: [{
-        type: 'checkbox',
-        label: '权限',
-        model: [],
-        ruleProp: 'menus',
-        options: []
-      }],
+      authDialogFormItems: [
+        {
+          type: 'checkbox',
+          label: '权限',
+          model: [],
+          ruleProp: 'menus',
+          options: []
+        }
+      ],
       authDialogFormFunc: [
         {
           btnText: '保存',
@@ -313,22 +340,27 @@ export default {
     })
   },
   created() {
-    getAuthList({ deleteFlag: 'N' })
-      .then(res => {
-        this.authSetModels.tree.authTreeData = arrayToTree(res.data.reduce((pre, cur) => {
+    getAuthList({ deleteFlag: 'N' }).then(res => {
+      this.authSetModels.tree.authTreeData = arrayToTree(
+        res.data.reduce((pre, cur) => {
           cur.operateFlag === '1' && pre.push({ label: cur.name, ...cur })
           return pre
-        }, []), '0')
-      })
-    queryAllOrgs()
-      .then(res => {
-        this.userSetModels.tree.orgTreeData = arrayToTree(res.data.reduce((pre, cur) => {
+        }, []),
+        '0'
+      )
+    })
+    queryAllOrgs().then(res => {
+      this.userSetModels.tree.orgTreeData = arrayToTree(
+        res.data.reduce((pre, cur) => {
           cur.operateFlag === '1' && pre.push({ label: cur.orgName, ...cur })
           return pre
-        }, []), '0')
-      })
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+        }, []),
+        '0'
+      )
+    })
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinSearchFormConfig.retrieveModels.userId = this.userInfo.id || ''
     this.mixinRetrieveTableData()
   },
@@ -341,11 +373,10 @@ export default {
       setRoleStatus({
         id: e.scope.row.id,
         deleteFlag: e.value
+      }).then(() => {
+        this.$notify.success(`${urlObj[e.value]}成功`)
+        this.mixinRetrieveTableData()
       })
-        .then(() => {
-          this.$notify.success(`${urlObj[e.value]}成功`)
-          this.mixinRetrieveTableData()
-        })
     },
     // 配置用户相关代码 start ↓
     // 配置用户
@@ -353,27 +384,30 @@ export default {
       this.userSetDialogFlag = true
       this.mixinUpdate = row.row
       // 获取当前角色的已配置用户数据
-      getUserInfoByRoleId({ roleId: this.mixinUpdate.id })
-        .then(res => {
-          if (res.success) {
-            // 筛选出部门ids,并通过ids查询所有待选项
-            // const orgIdsSet = new Set()
-            // res.data.forEach(e => {
-            //   e.orgIds.forEach(x => {
-            //     orgIdsSet.add(x)
-            //   })
-            // })
-            // const orgIds = [...orgIdsSet]
-            this.$nextTick(() => {
-              this.$refs.orgTree.setCheckedKeys([])
-              this.$refs.userTransfer.init()
-            })
-            const { userSetModels: { transfer: { leftData, rightData } } } = this
-            leftData.splice(0, leftData.length)
-            rightData.splice(0, rightData.length, ...res.data)
-            // this.queryUserLeftTableDataByIds(orgIds)
-          }
-        })
+      getUserInfoByRoleId({ roleId: this.mixinUpdate.id }).then(res => {
+        if (res.success) {
+          // 筛选出部门ids,并通过ids查询所有待选项
+          // const orgIdsSet = new Set()
+          // res.data.forEach(e => {
+          //   e.orgIds.forEach(x => {
+          //     orgIdsSet.add(x)
+          //   })
+          // })
+          // const orgIds = [...orgIdsSet]
+          this.$nextTick(() => {
+            this.$refs.orgTree.setCheckedKeys([])
+            this.$refs.userTransfer.init()
+          })
+          const {
+            userSetModels: {
+              transfer: { leftData, rightData }
+            }
+          } = this
+          leftData.splice(0, leftData.length)
+          rightData.splice(0, rightData.length, ...res.data)
+          // this.queryUserLeftTableDataByIds(orgIds)
+        }
+      })
     },
     queryUserLeftTableDataByIds(checkedKeys) {
       this.tableLoading = true
@@ -382,10 +416,18 @@ export default {
         deleteFlag: this.mixinUpdate.deleteFlag
       })
         .then(res => {
-          const { userSetModels: { transfer: { leftData, rightData } } } = this
+          const {
+            userSetModels: {
+              transfer: { leftData, rightData }
+            }
+          } = this
           const existIds = rightData.map(x => x.id)
           // 穿梭框leftTable赋值(排除右边已有项)
-          leftData.splice(0, leftData.length, ...res.data.filter(x => !existIds.includes(x.id)))
+          leftData.splice(
+            0,
+            leftData.length,
+            ...res.data.filter(x => !existIds.includes(x.id))
+          )
         })
         .finally(() => {
           this.tableLoading = false
@@ -394,7 +436,11 @@ export default {
     orgHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
       if (checkedKeys.length === 0) {
-        const { authSetModels: { transfer: { leftData } } } = this
+        const {
+          authSetModels: {
+            transfer: { leftData }
+          }
+        } = this
         leftData.splice(0, leftData.length)
       } else {
         // 根据部门ID集合，查询各部门用户列表
@@ -406,51 +452,68 @@ export default {
       this.userSetDialogFlag = false
     },
     userSetHandleCreateOrUpdate() {
-      const { userSetModels: { transfer: { rightData } } } = this
+      const {
+        userSetModels: {
+          transfer: { rightData }
+        }
+      } = this
       setRoleToUsers({
         userIds: rightData.map(x => x.id),
         roleId: this.mixinUpdate.id
+      }).then(() => {
+        this.$notify.success('配置用户成功')
+        this.userSetDialogFlag = false
       })
-        .then(() => {
-          this.$notify.success('配置用户成功')
-          this.userSetDialogFlag = false
-        })
     },
     // 配置用户相关代码 end ↑
     // 配置功能相关代码 start ↓
     mixinAuthSet(row) {
       this.mixinUpdate = row.row
-      getResourcesFromRole({ roleId: this.mixinUpdate.id })
-        .then(res => {
-          if (res.success) {
-            // const resourceIds = res.data.map(x => x.id)
-            this.authDialogFlag = true
-            this.$nextTick(() => {
-              // this.$refs.authTree.setCheckedKeys(resourceIds)
-              this.$refs.authTree.setCheckedKeys([])
-              this.$refs.authTransfer.init()
-            })
+      getResourcesFromRole({ roleId: this.mixinUpdate.id }).then(res => {
+        if (res.success) {
+          // const resourceIds = res.data.map(x => x.id)
+          this.authDialogFlag = true
+          this.$nextTick(() => {
+            // this.$refs.authTree.setCheckedKeys(resourceIds)
+            this.$refs.authTree.setCheckedKeys([])
+            this.$refs.authTransfer.init()
+          })
 
-            const { authSetModels: { transfer: { leftData, rightData } } } = this
-            leftData.splice(0, leftData.length)
-            rightData.splice(0, rightData.length, ...res.data)
-            // this.queryAuthLeftTableDataByIds(resourceIds)
-          }
-        })
+          const {
+            authSetModels: {
+              transfer: { leftData, rightData }
+            }
+          } = this
+          leftData.splice(0, leftData.length)
+          rightData.splice(0, rightData.length, ...res.data)
+          // this.queryAuthLeftTableDataByIds(resourceIds)
+        }
+      })
     },
     queryAuthLeftTableDataByIds(ids) {
-      getAuthList({ ids, deleteFlag: 'N' })
-        .then(res => {
-          const { authSetModels: { transfer: { leftData, rightData } } } = this
-          const existIds = rightData.map(x => x.id)
-          // 穿梭框leftTable赋值(排除右边已有项)
-          leftData.splice(0, leftData.length, ...res.data.filter(x => !existIds.includes(x.id)))
-        })
+      getAuthList({ ids, deleteFlag: 'N' }).then(res => {
+        const {
+          authSetModels: {
+            transfer: { leftData, rightData }
+          }
+        } = this
+        const existIds = rightData.map(x => x.id)
+        // 穿梭框leftTable赋值(排除右边已有项)
+        leftData.splice(
+          0,
+          leftData.length,
+          ...res.data.filter(x => !existIds.includes(x.id))
+        )
+      })
     },
     authHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
       if (checkedKeys.length === 0) {
-        const { authSetModels: { transfer: { leftData } } } = this
+        const {
+          authSetModels: {
+            transfer: { leftData }
+          }
+        } = this
         leftData.splice(0, leftData.length)
       } else {
         // 根据模块ID集合，返回各待选模块列表
@@ -458,16 +521,19 @@ export default {
       }
     },
     authHandleCreateOrUpdate() {
-      const { authSetModels: { transfer: { rightData } } } = this
+      const {
+        authSetModels: {
+          transfer: { rightData }
+        }
+      } = this
       setResourcesToRole({
         resourcesIds: rightData.map(x => x.id),
         roleId: this.mixinUpdate.id
+      }).then(() => {
+        this.$notify.success('配置功能成功')
+        this.authDialogFlag = false
+        // this.mixinRetrieveTableData()
       })
-        .then(() => {
-          this.$notify.success('配置功能成功')
-          this.authDialogFlag = false
-          // this.mixinRetrieveTableData()
-        })
     },
     authHandleCancel() {
       this.$refs.authTree.setCheckedKeys([])
@@ -633,12 +699,15 @@ export default {
     retrieveAllChildrenRoles(cb) {
       return getChildrenRoles({ userId: this.userInfo.id })
         .then(res => {
-          const parentTreeData = arrayToTree(res.data.map(e => {
-            return {
-              ...e,
-              disabled: e.operateFlag !== '1'
-            }
-          }), '0')
+          const parentTreeData = arrayToTree(
+            res.data.map(e => {
+              return {
+                ...e,
+                disabled: e.operateFlag !== '1'
+              }
+            }),
+            '0'
+          )
           cb && cb(parentTreeData)
         })
         .catch(err => {
@@ -650,101 +719,101 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  /deep/.el-dialog__body{
-    padding: 10px 20px
-  }
-  .authority-resource {
-    max-height: 700px;
-    overflow-y: auto;
-    border-radius: 10px;
-    background: rgba(249, 249, 249, 1);
+/deep/.el-dialog__body {
+  padding: 10px 20px;
+}
+.authority-resource {
+  max-height: 700px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: rgba(249, 249, 249, 1);
 
-    .el-tree {
-      background: rgba(247, 247, 247, 1);
+  .el-tree {
+    background: rgba(247, 247, 247, 1);
 
-      .el-tree-node__content {
-        height: 50px;
-      }
+    .el-tree-node__content {
+      height: 50px;
+    }
 
-      .el-tree-node__children .el-tree-node {
-        background: rgba(252, 252, 252, 1);
-      }
+    .el-tree-node__children .el-tree-node {
+      background: rgba(252, 252, 252, 1);
+    }
 
-      .el-checkbox__input.is-checked {
-        .el-checkbox__inner {
-          background: #2874ff;
-          border-color: #2874ff;
-        }
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background: #2874ff;
+        border-color: #2874ff;
       }
     }
   }
+}
 
-  /*配置用户和功能弹框相关*/
-  .tree-choose-transfer-box {
-    /*background: rgba(249, 249, 249, 1);*/
-    display: flex;
-    justify-content: space-between;
-    width: 1195px;
-    height: 490px;
-    opacity: 1;
-    border: 1px solid #d9d9d9;
-    border-radius: 10px;
+/*配置用户和功能弹框相关*/
+.tree-choose-transfer-box {
+  /*background: rgba(249, 249, 249, 1);*/
+  display: flex;
+  justify-content: space-between;
+  width: 1195px;
+  height: 490px;
+  opacity: 1;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  margin: 0 auto;
+  padding: 2px;
+  .tree-desc {
+    height: 70px;
+    width: 80px;
     margin: 0 auto;
-    padding: 2px;
-    .tree-desc{
-      height: 70px;
-      width: 80px;
-      margin: 0 auto;
-      line-height: 70px;
+    line-height: 70px;
+    text-align: center;
+    border-bottom: 3px solid #2f54eb;
+    span {
+      opacity: 1;
+      font-size: 18px;
+      font-family: PingFangSC, PingFangSC-Medium;
+      font-weight: 500;
       text-align: center;
-      border-bottom: 3px solid #2f54eb;
-      span{
-        opacity: 1;
-        font-size: 18px;
-        font-family: PingFangSC, PingFangSC-Medium;
-        font-weight: 500;
-        text-align: center;
-        color: #2f54eb;
-        line-height: 25px;
+      color: #2f54eb;
+      line-height: 25px;
+    }
+  }
+  & .left {
+    flex: 1;
+    /*border: 1px solid red;*/
+    & .left-tree {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc(100% - 70px);
+      width: 100%;
+      border-top: 1px solid #e8e8e8;
+      & .left-tree-label {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        /*max-width: 28vw;*/
       }
     }
-    & .left {
-      flex: 1;
-      /*border: 1px solid red;*/
-      & .left-tree {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height:calc(100% - 70px);
-        width: 100%;
-        border-top: 1px solid #e8e8e8;
-        & .left-tree-label {
-          display: inline-block;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          /*max-width: 28vw;*/
-        }
-      }
+  }
+
+  & .right {
+    margin-left: 10px;
+    flex: 3;
+    /*border: 1px solid green;*/
+    & /deep/ .el-transfer-panel {
+      width: auto;
+      height: 100%;
     }
 
-    & .right {
-      margin-left: 10px;
-      flex: 3;
-      /*border: 1px solid green;*/
-      & /deep/ .el-transfer-panel {
-        width: auto;
+    & /deep/ .el-transfer-panel__body {
+      /*width: 345px;*/
+      width: 40vm;
+      height: 440px;
+
+      & .el-transfer-panel__list.is-filterable {
         height: 100%;
       }
-
-      & /deep/ .el-transfer-panel__body {
-        /*width: 345px;*/
-        width: 40vm;
-        height: 440px;
-
-        & .el-transfer-panel__list.is-filterable {
-          height: 100%;
-        }
-      }
     }
   }
+}
 </style>

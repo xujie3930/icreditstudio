@@ -9,15 +9,19 @@
       width="100px"
     >
       <el-menu
+        :default-active="
+          menu.filter(e => e.isShow)[0].name ||
+            menu.filter(e => e.isShow)[0].label
+        "
         :collapse="isCollapse"
-        :default-active="$route.path"
         :background-color="getBaseConfig('menu-color-bg')"
         :active-text-color="getBaseConfig('menu-color-text-active')"
       >
+        <!-- :default-active="$route.path" -->
         <template v-for="item in menu.filter(e => e.isShow)">
           <el-menu-item
             :key="item.name"
-            :index="item.url"
+            :index="item.name"
             class="menu-left-item"
             @click="handleMenuSelected(item)"
           >
@@ -70,7 +74,10 @@ export default {
     ...mapActions('common', ['toggleCollapseActions']),
 
     handleMenuSelected(item) {
-      this.$router.push(item.url)
+      const showChildArr = item.children
+        ? item.children.filter(({ isShow }) => isShow)
+        : []
+      !showChildArr.length && this.$router.push(item.url)
       this.$emit('getChildMenus', item)
     },
 

@@ -1,32 +1,32 @@
 <template>
-  <div class="h100">
-  <crud-basic
-    ref="crud"
-    title="消息列表"
-    :form-items-search="mixinSearchFormItems"
-    :form-func-search="mixinSearchFormFunc"
-    :form-config-search="mixinSearchFormConfig"
-    :form-items-dialog="mixinDialogFormItems"
-    :form-func-dialog="mixinDialogFormFunc"
-    :form-config-dialog="mixinDialogFormConfig"
-    :tableLoading="mixinTableLoading"
-    :table-configuration="tableConfiguration"
-    :table-pagination="mixinTablePagination"
-    :table-data="mixinTableData"
-    :dialog-type="mixinDialogType"
-    :dialog-visible.sync="mixinDialog"
-    :handleSizeChange="mixinHandleSizeChange"
-    :handleCurrentChange="mixinHandleCurrentChange"
-    :handleAdd="mixinHandleAdd"
-    :handleImport="mixinHandleImport"
-    :handleExport="mixinHandleExport"
-    :handleSearch="mixinHandleSearch"
-    :handleReset="mixinHandleReset"
-    :handleUpdate="mixinHandleCreateOrUpdate"
-    :handleCancel="mixinHandleCancel"
-    :handleSelectChange="mixinHandleSelectChange"
-    @handleMultipleDelete="mixinHandleMultipleDelete"
-  ></crud-basic>
+  <div class="h100 w100">
+    <crud-basic
+      ref="crud"
+      title="消息列表"
+      :form-items-search="mixinSearchFormItems"
+      :form-func-search="mixinSearchFormFunc"
+      :form-config-search="mixinSearchFormConfig"
+      :form-items-dialog="mixinDialogFormItems"
+      :form-func-dialog="mixinDialogFormFunc"
+      :form-config-dialog="mixinDialogFormConfig"
+      :tableLoading="mixinTableLoading"
+      :table-configuration="tableConfiguration"
+      :table-pagination="mixinTablePagination"
+      :table-data="mixinTableData"
+      :dialog-type="mixinDialogType"
+      :dialog-visible.sync="mixinDialog"
+      :handleSizeChange="mixinHandleSizeChange"
+      :handleCurrentChange="mixinHandleCurrentChange"
+      :handleAdd="mixinHandleAdd"
+      :handleImport="mixinHandleImport"
+      :handleExport="mixinHandleExport"
+      :handleSearch="mixinHandleSearch"
+      :handleReset="mixinHandleReset"
+      :handleUpdate="mixinHandleCreateOrUpdate"
+      :handleCancel="mixinHandleCancel"
+      :handleSelectChange="mixinHandleSelectChange"
+      @handleMultipleDelete="mixinHandleMultipleDelete"
+    ></crud-basic>
     <el-dialog
       title="选择接收人"
       :close-on-click-modal="false"
@@ -53,9 +53,11 @@
               check-on-click-node
               @check="orgHandleCheck"
             >
-               <span class="custom-tree-node" slot-scope="{ node }">
-               <span :title="node.label" class="org-tree-label">{{ node.label }}</span>
-               </span>
+              <span class="custom-tree-node" slot-scope="{ node }">
+                <span :title="node.label" class="org-tree-label">{{
+                  node.label
+                }}</span>
+              </span>
             </el-tree>
           </div>
         </div>
@@ -65,7 +67,9 @@
             :titles="['请选择人员', '已选人员']"
             :table-loading="tableLoading"
             :table-filter-config="userSetModels.transfer.filterConfig"
-            :left-table-configuration="userSetModels.transfer.leftTableConfiguration"
+            :left-table-configuration="
+              userSetModels.transfer.leftTableConfiguration
+            "
             :left-data.sync="userSetModels.transfer.leftData"
             :right-data.sync="userSetModels.transfer.rightData"
           ></j-transfer-table>
@@ -118,26 +122,30 @@ export default {
           infoContent: ''
         },
         rule: {
-          infoTitle: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
-          infoType: [{ required: true, message: '消息类型不能为空', trigger: 'blur' }]
+          infoTitle: [
+            { required: true, message: '标题不能为空', trigger: 'blur' }
+          ],
+          infoType: [
+            { required: true, message: '消息类型不能为空', trigger: 'blur' }
+          ]
         }
       },
       tableConfiguration: tableConfiguration(this, { INFO_TYPE_ENUMS }),
       fetchConfig: {
         retrieve: {
-          url: '/information/information/infoManagerPage',
+          url: '/system/information/information/infoManagerPage',
           method: 'post'
         },
         create: {
-          url: '/information/information/send',
+          url: '/system/information/information/send',
           method: 'post'
         },
         delete: {
-          url: '/information/information/managerDelInfo',
+          url: '/system/information/information/managerDelInfo',
           method: 'post'
         },
         multipleDelete: {
-          url: '/information/information/managerDelInfo',
+          url: '/system/information/information/managerDelInfo',
           method: 'post'
         }
       },
@@ -176,19 +184,22 @@ export default {
     })
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
-    queryAllOrgs()
-      .then(res => {
-        // const rootParentId = res.data.find(x => x.currOrg)?.parentId || '0'
-        this.userSetModels.tree.orgTreeData = arrayToTree(res.data.map(e => {
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
+    queryAllOrgs().then(res => {
+      // const rootParentId = res.data.find(x => x.currOrg)?.parentId || '0'
+      this.userSetModels.tree.orgTreeData = arrayToTree(
+        res.data.map(e => {
           return {
             label: e.orgName,
             ...e,
             disabled: e.operateFlag !== '1'
           }
-        }), '0')
-      })
+        }),
+        '0'
+      )
+    })
     this.mixinRetrieveTableData()
   },
   methods: {
@@ -196,13 +207,20 @@ export default {
       const { operateTime, ...restParams } = params
       const newParams = {
         startTime: operateTime && operateTime.length ? operateTime[0] : '',
-        endTime: operateTime && operateTime.length ? operateTime[1] + 24 * 60 * 60 * 1000 - 1 : '',
+        endTime:
+          operateTime && operateTime.length
+            ? operateTime[1] + 24 * 60 * 60 * 1000 - 1
+            : '',
         ...restParams
       }
       return newParams
     },
     interceptorsRequestCreate(params) {
-      const { userSetModels: { transfer: { existRightData } } } = this
+      const {
+        userSetModels: {
+          transfer: { existRightData }
+        }
+      } = this
       return {
         ...params,
         senderId: this.userInfo.id || '',
@@ -214,7 +232,9 @@ export default {
         return {
           ...e,
           sendTime: parseInt(e.sendTime),
-          receiverNames: (Array.isArray(e.receiverNames)) ? e.receiverNames.join(';') : e.receiverNames
+          receiverNames: Array.isArray(e.receiverNames)
+            ? e.receiverNames.join(';')
+            : e.receiverNames
         }
       })
     },
@@ -225,8 +245,16 @@ export default {
       this.$nextTick(() => {
         this.$refs.userTransfer.init()
       })
-      const { userSetModels: { transfer: { leftData, rightData } } } = this
-      let { userSetModels: { transfer: { existRightData } } } = this
+      const {
+        userSetModels: {
+          transfer: { leftData, rightData }
+        }
+      } = this
+      let {
+        userSetModels: {
+          transfer: { existRightData }
+        }
+      } = this
       if (!this.mixinDialogFormConfig.models.receiverNames) {
         existRightData = []
       }
@@ -239,10 +267,18 @@ export default {
         orgIds: checkedKeys
       })
         .then(res => {
-          const { userSetModels: { transfer: { leftData, rightData } } } = this
+          const {
+            userSetModels: {
+              transfer: { leftData, rightData }
+            }
+          } = this
           const existIds = rightData.map(x => x.id)
           // 穿梭框leftTable赋值(排除右边已有项)
-          leftData.splice(0, leftData.length, ...res.data.filter(x => !existIds.includes(x.id)))
+          leftData.splice(
+            0,
+            leftData.length,
+            ...res.data.filter(x => !existIds.includes(x.id))
+          )
         })
         .finally(() => {
           this.tableLoading = false
@@ -251,7 +287,11 @@ export default {
     orgHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
       if (checkedKeys.length === 0) {
-        const { userSetModels: { transfer: { leftData } } } = this
+        const {
+          userSetModels: {
+            transfer: { leftData }
+          }
+        } = this
         leftData.splice(0, leftData.length)
       } else {
         // 根据部门ID集合，查询各部门用户列表
@@ -264,9 +304,15 @@ export default {
       // this.mixinDialogFormConfig.models.receiverIds = []
     },
     userSetHandleChoose() {
-      const { userSetModels: { transfer: { rightData, existRightData } } } = this
+      const {
+        userSetModels: {
+          transfer: { rightData, existRightData }
+        }
+      } = this
       existRightData.splice(0, existRightData.length, ...rightData)
-      this.mixinDialogFormItems.find(e => e.ruleProp === 'receiverNames').model = rightData.map(e => e.userName).join(';')
+      this.mixinDialogFormItems.find(
+        e => e.ruleProp === 'receiverNames'
+      ).model = rightData.map(e => e.userName).join(';')
       // this.mixinDialogFormConfig.models.receiverName = rightData.map(e => e.userName).join(';')
       // this.mixinDialogFormConfig.models.receiverIds = rightData.map(e => e.id)
       this.userSetHandleClose()
@@ -276,72 +322,72 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-  /*配置接收用户弹框相关*/
-  .tree-choose-transfer-box {
-    /*background: rgba(249, 249, 249, 1);*/
-    display: flex;
-    justify-content: space-between;
-    width: 1195px;
-    height: 490px;
-    opacity: 1;
-    border: 1px solid #d9d9d9;
-    border-radius: 10px;
+/*配置接收用户弹框相关*/
+.tree-choose-transfer-box {
+  /*background: rgba(249, 249, 249, 1);*/
+  display: flex;
+  justify-content: space-between;
+  width: 1195px;
+  height: 490px;
+  opacity: 1;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  margin: 0 auto;
+  padding: 2px;
+  .tree-desc {
+    height: 70px;
+    width: 100px;
     margin: 0 auto;
-    padding: 2px;
-    .tree-desc{
-      height: 70px;
-      width: 100px;
-      margin: 0 auto;
-      line-height: 70px;
+    line-height: 70px;
+    text-align: center;
+    border-bottom: 3px solid #2f54eb;
+    span {
+      opacity: 1;
+      font-size: 18px;
+      font-family: PingFangSC, PingFangSC-Medium;
+      font-weight: 500;
       text-align: center;
-      border-bottom: 3px solid #2f54eb;
-      span{
-        opacity: 1;
-        font-size: 18px;
-        font-family: PingFangSC, PingFangSC-Medium;
-        font-weight: 500;
-        text-align: center;
-        color: #2f54eb;
-        line-height: 25px;
-      }
+      color: #2f54eb;
+      line-height: 25px;
     }
-    & .left {
-      flex: 1;
-      /*border: 1px solid red;*/
-      & .left-tree {
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height:calc(100% - 70px);
-        width: 100%;
-        border-top: 1px solid #e8e8e8;
-        & .left-tree-label {
-          display: inline-block;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          /*max-width: 28vw;*/
-        }
-      }
-    }
-
-    & .right {
-      margin-left: 10px;
-      flex: 3;
-      /*border: 1px solid green;*/
-      & /deep/ .el-transfer-panel {
-        width: auto;
-        height: 100%;
-      }
-
-      & /deep/ .el-transfer-panel__body {
-        /*width: 345px;*/
-        width: 40vm;
-        height: 440px;
-
-        & .el-transfer-panel__list.is-filterable {
-          height: 100%;
-        }
+  }
+  & .left {
+    flex: 1;
+    /*border: 1px solid red;*/
+    & .left-tree {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc(100% - 70px);
+      width: 100%;
+      border-top: 1px solid #e8e8e8;
+      & .left-tree-label {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        /*max-width: 28vw;*/
       }
     }
   }
+
+  & .right {
+    margin-left: 10px;
+    flex: 3;
+    /*border: 1px solid green;*/
+    & /deep/ .el-transfer-panel {
+      width: auto;
+      height: 100%;
+    }
+
+    & /deep/ .el-transfer-panel__body {
+      /*width: 345px;*/
+      width: 40vm;
+      height: 440px;
+
+      & .el-transfer-panel__list.is-filterable {
+        height: 100%;
+      }
+    }
+  }
+}
 </style>

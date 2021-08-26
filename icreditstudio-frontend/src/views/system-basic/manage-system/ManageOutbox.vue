@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="w100 h100">
     <crud-basic
       ref="crud"
       title="发件列表"
@@ -132,15 +132,15 @@ export default {
       tableConfiguration: tableConfiguration(this, { INFO_TYPE_ENUMS }),
       fetchConfig: {
         retrieve: {
-          url: '/information/information/outBoxPage',
+          url: '/system/information/information/outBoxPage',
           method: 'post'
         },
         create: {
-          url: '/information/information/send',
+          url: '/system/information/information/send',
           method: 'post'
         },
         delete: {
-          url: '/information/information/deleteOutBoxInfo',
+          url: '/system/information/information/deleteOutBoxInfo',
           method: 'post'
         }
       },

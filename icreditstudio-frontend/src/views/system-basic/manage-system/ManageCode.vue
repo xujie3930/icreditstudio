@@ -1,31 +1,33 @@
 <template>
-  <crud-basic
-    ref="crud"
-    title="字典表列表"
-    :form-items-search="mixinSearchFormItems"
-    :form-func-search="mixinSearchFormFunc"
-    :form-config-search="mixinSearchFormConfig"
-    :form-items-dialog="mixinDialogFormItems"
-    :form-func-dialog="mixinDialogFormFunc"
-    :form-config-dialog="mixinDialogFormConfig"
-    :tableLoading="mixinTableLoading"
-    :table-configuration="tableConfiguration"
-    :table-pagination="mixinTablePagination"
-    :table-data="mixinTableData"
-    :dialog-type="mixinDialogType"
-    :dialog-visible.sync="mixinDialog"
-    :handleSizeChange="mixinHandleSizeChange"
-    :handleCurrentChange="mixinHandleCurrentChange"
-    :handleSelectChange="mixinHandleSelectChange"
-    :handleAdd="mixinHandleAdd"
-    :handleImport="mixinHandleImport"
-    :handleExport="mixinHandleExport"
-    :handleSearch="mixinHandleSearch"
-    :handleReset="mixinHandleReset"
-    :handleUpdate="mixinHandleCreateOrUpdate"
-    :handleCancel="mixinHandleCancel"
-    @handleMultipleDelete="mixinHandleMultipleDelete"
-  ></crud-basic>
+  <div class="h100 w100">
+    <crud-basic
+      ref="crud"
+      title="字典表列表"
+      :form-items-search="mixinSearchFormItems"
+      :form-func-search="mixinSearchFormFunc"
+      :form-config-search="mixinSearchFormConfig"
+      :form-items-dialog="mixinDialogFormItems"
+      :form-func-dialog="mixinDialogFormFunc"
+      :form-config-dialog="mixinDialogFormConfig"
+      :tableLoading="mixinTableLoading"
+      :table-configuration="tableConfiguration"
+      :table-pagination="mixinTablePagination"
+      :table-data="mixinTableData"
+      :dialog-type="mixinDialogType"
+      :dialog-visible.sync="mixinDialog"
+      :handleSizeChange="mixinHandleSizeChange"
+      :handleCurrentChange="mixinHandleCurrentChange"
+      :handleSelectChange="mixinHandleSelectChange"
+      :handleAdd="mixinHandleAdd"
+      :handleImport="mixinHandleImport"
+      :handleExport="mixinHandleExport"
+      :handleSearch="mixinHandleSearch"
+      :handleReset="mixinHandleReset"
+      :handleUpdate="mixinHandleCreateOrUpdate"
+      :handleCancel="mixinHandleCancel"
+      @handleMultipleDelete="mixinHandleMultipleDelete"
+    ></crud-basic>
+  </div>
 </template>
 
 <script>
@@ -35,7 +37,7 @@ import { deepClone } from '@/utils/util'
 
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-code'
 import formOption from '@/views/system-basic/configuration/form/manage/manage-code'
-import { setCodeStatus } from '@/api/code';
+import { setCodeStatus } from '@/api/code'
 
 export default {
   name: 'ManageCode',
@@ -72,26 +74,30 @@ export default {
             { required: true, message: '字典值不能为空', trigger: 'blur' }
           ],
           codeSort: [
-            { required: true, message: '排序不能为空', trigger: ['blur', 'change'] }
+            {
+              required: true,
+              message: '排序不能为空',
+              trigger: ['blur', 'change']
+            }
           ]
         }
       },
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/code/code/pageList',
+          url: '/system/code/code/pageList',
           method: 'post'
         },
         create: {
-          url: '/code/code/save',
+          url: '/system/code/code/save',
           method: 'post'
         },
         update: {
-          url: '/code/code/update',
+          url: '/system/code/code/update',
           method: 'post'
         },
         multipleDelete: {
-          url: '/code/code/delete',
+          url: '/system/code/code/delete',
           method: 'post'
         }
       }
@@ -104,18 +110,18 @@ export default {
     })
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinSearchFormConfig.retrieveModels.userId = this.userInfo.id || ''
     this.mixinRetrieveTableData()
   },
   methods: {
     handleStatusChange(e) {
-      setCodeStatus({ id: e.scope.row.id, deleteFlag: e.value })
-        .then(() => {
-          this.$notify.success(`${e.value === 'Y' ? '禁用' : '启用'}成功`)
-          this.mixinRetrieveTableData()
-        })
+      setCodeStatus({ id: e.scope.row.id, deleteFlag: e.value }).then(() => {
+        this.$notify.success(`${e.value === 'Y' ? '禁用' : '启用'}成功`)
+        this.mixinRetrieveTableData()
+      })
     },
     validBeforeMultipleDelete(selection) {
       const validFailure = selection.some(e => e.deleteFlag === 'N')

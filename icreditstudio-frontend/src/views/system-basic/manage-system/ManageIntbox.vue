@@ -70,22 +70,29 @@ export default {
           infoContent: ''
         },
         rule: {
-          infoTitle: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
-          infoType: [{ required: true, message: '消息类型不能为空', trigger: 'blur' }]
+          infoTitle: [
+            { required: true, message: '标题不能为空', trigger: 'blur' }
+          ],
+          infoType: [
+            { required: true, message: '消息类型不能为空', trigger: 'blur' }
+          ]
         }
       },
-      tableConfiguration: tableConfiguration(this, { INFO_TYPE_ENUMS, READ_STATUS_ENUMS }),
+      tableConfiguration: tableConfiguration(this, {
+        INFO_TYPE_ENUMS,
+        READ_STATUS_ENUMS
+      }),
       fetchConfig: {
         retrieve: {
-          url: '/information/information/inBoxPage',
+          url: '/system/information/information/inBoxPage',
           method: 'post'
         },
         delete: {
-          url: '/information/information/deleteUserInfo',
+          url: '/system/information/information/deleteUserInfo',
           method: 'post'
         },
         multipleDelete: {
-          url: '/information/information/deleteUserInfo',
+          url: '/system/information/information/deleteUserInfo',
           method: 'post'
         }
       }
@@ -97,8 +104,9 @@ export default {
     })
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   },
   methods: {
@@ -106,7 +114,10 @@ export default {
       const { operateTime, ...restParams } = params
       const newParams = {
         startTime: operateTime && operateTime.length ? operateTime[0] : '',
-        endTime: operateTime && operateTime.length ? operateTime[1] + 24 * 60 * 60 * 1000 - 1 : '',
+        endTime:
+          operateTime && operateTime.length
+            ? operateTime[1] + 24 * 60 * 60 * 1000 - 1
+            : '',
         ...restParams
       }
       return newParams
@@ -130,23 +141,24 @@ export default {
       userAllReadInfo({
         readStatus: 'ALL',
         infoType: 'ALL'
+      }).then(res => {
+        if (res.success) {
+          this.$notify.success('全部消息已读')
+          this.mixinRetrieveTableData()
+        }
       })
-        .then(res => {
-          if (res.success) {
-            this.$notify.success('全部消息已读')
-            this.mixinRetrieveTableData()
-          }
-        })
     },
     // 查看详情
     async handleView({ row }) {
       const { infoType } = this
-      await queryMessageNoticeInfo({ id: row.id })
-        .then(res => {
-          if (res.success) {
-            this.mixinHandleView({ row: { ...res.data, sendTime: row.sendTime } }, INFO_TYPE_ENUMS[infoType])
-          }
-        })
+      await queryMessageNoticeInfo({ id: row.id }).then(res => {
+        if (res.success) {
+          this.mixinHandleView(
+            { row: { ...res.data, sendTime: row.sendTime } },
+            INFO_TYPE_ENUMS[infoType]
+          )
+        }
+      })
     }
   }
 }

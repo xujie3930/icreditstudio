@@ -43,7 +43,9 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="menuHandleCancel">取 消</el-button>
-        <el-button type="primary" @click="menuHandleCreateOrUpdate">保 存</el-button>
+        <el-button type="primary" @click="menuHandleCreateOrUpdate"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -51,7 +53,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import crud from '@/mixins/crud';
+import crud from '@/mixins/crud'
 import { arrayToTree, deepClone } from '@/utils/util'
 
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-auth'
@@ -93,36 +95,38 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/res/auth/query',
+          url: '/system/res/auth/query',
           method: 'post'
         },
         create: {
-          url: '/res/auth/add',
+          url: '/system/res/auth/add',
           method: 'post'
         },
         update: {
-          url: '/res/auth/edit',
+          url: '/system/res/auth/edit',
           method: 'post'
         },
         delete: {
-          url: '/res/auth/delete',
+          url: '/system/res/auth/delete',
           method: 'post'
         }
       },
       // 菜单权限相关代码
       menuDialogFlag: false,
-      menuDialogFormItems: [{
-        type: 'selectTree',
-        label: '权限',
-        model: [],
-        ruleProp: 'menus',
-        defaultExpandAll: false,
-        multiple: true,
-        treeProps: {
-          label: 'label'
-        },
-        treeData: []
-      }],
+      menuDialogFormItems: [
+        {
+          type: 'selectTree',
+          label: '权限',
+          model: [],
+          ruleProp: 'menus',
+          defaultExpandAll: false,
+          multiple: true,
+          treeProps: {
+            label: 'label'
+          },
+          treeData: []
+        }
+      ],
       menuList: [],
       resourceList: [],
       menuDialogFormFunc: [
@@ -151,19 +155,22 @@ export default {
   },
   created() {
     // const _i = this.menuDialogFormItems.findIndex(e => e.ruleProp === 'menus')
-    getAllAuthResourceList({})
-      .then(res => {
-        this.menuList = res.data
-        this.menuTreeData = arrayToTree(res.data.map(e => {
+    getAllAuthResourceList({}).then(res => {
+      this.menuList = res.data
+      this.menuTreeData = arrayToTree(
+        res.data.map(e => {
           return {
             label: e.name,
             ...e
           }
-        }), '0')
-        // this.menuDialogFormItems[_i].treeData
-      })
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+        }),
+        '0'
+      )
+      // this.menuDialogFormItems[_i].treeData
+    })
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.mixinRetrieveTableData()
   },
   methods: {
@@ -172,15 +179,16 @@ export default {
     },
     mixinSetMenu(row) {
       this.mixinUpdate = row.row
-      getAuthResourceList({ authorizationId: this.mixinUpdate.id })
-        .then(res => {
+      getAuthResourceList({ authorizationId: this.mixinUpdate.id }).then(
+        res => {
           this.menuDialogFormItems[0].model = res.data.map(el => el.resourceId)
           this.resourceList = res.data.map(el => el.resourceId)
           this.menuDialogFlag = true
           this.$nextTick(() => {
             this.$refs.tree.setCheckedKeys(this.resourceList)
           })
-        })
+        }
+      )
     },
     interceptorsRequestCreate(e) {
       return {
@@ -190,16 +198,17 @@ export default {
     },
     menuHandleCreateOrUpdate() {
       // const postMenuList = this.$refs.tree.getCheckedKeys()
-      const postMenuList = this.$refs.tree.getCheckedNodes(false, true).map(e => e.id)
+      const postMenuList = this.$refs.tree
+        .getCheckedNodes(false, true)
+        .map(e => e.id)
       editAuthResource({
         resourceIds: postMenuList,
         authorizationId: this.mixinUpdate.id
+      }).then(() => {
+        this.$notify.success('授予菜单成功')
+        this.menuDialogFlag = false
+        this.mixinRetrieveTableData()
       })
-        .then(() => {
-          this.$notify.success('授予菜单成功')
-          this.menuDialogFlag = false
-          this.mixinRetrieveTableData()
-        })
     },
     getArrChange(arr1, arr2, type) {
       const changeList = []
@@ -238,25 +247,25 @@ export default {
 }
 </script>
 <style lang="scss">
-  .authority-resource {
-    max-height: 700px;
-    overflow-y: auto;
-    border-radius: 10px;
-    background: rgba(249, 249, 249, 1);
-    .el-tree {
-      background: rgba(247, 247, 247, 1);
-      .el-tree-node__content {
-        height: 50px;
-      }
-      .el-tree-node__children .el-tree-node {
-        background: rgba(252, 252, 252, 1);
-      }
-      .el-checkbox__input.is-checked {
-        .el-checkbox__inner {
-          background: #2874ff;
-          border-color: #2874ff;
-        }
+.authority-resource {
+  max-height: 700px;
+  overflow-y: auto;
+  border-radius: 10px;
+  background: rgba(249, 249, 249, 1);
+  .el-tree {
+    background: rgba(247, 247, 247, 1);
+    .el-tree-node__content {
+      height: 50px;
+    }
+    .el-tree-node__children .el-tree-node {
+      background: rgba(252, 252, 252, 1);
+    }
+    .el-checkbox__input.is-checked {
+      .el-checkbox__inner {
+        background: #2874ff;
+        border-color: #2874ff;
       }
     }
   }
+}
 </style>

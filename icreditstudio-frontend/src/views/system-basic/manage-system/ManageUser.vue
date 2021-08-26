@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="w100 h100">
     <crud-basic
       class="user-container"
       ref="crud"
@@ -35,36 +35,41 @@
       :close-on-click-modal="false"
     >
       <div id="roleSetScroll" class="role-set-resource">
-          <div class="role-tree-filter">
-            <el-input
-              placeholder="输入关键字进行过滤"
-              v-model="roleSetModels.tree.filterRoleName">
-            </el-input>
-          </div>
-          <div class="role-tree">
-            <el-tree
-              ref="roleTree"
-              :key="roleSetDialogFlag"
-              :data="roleSetModels.tree.roleTreeData"
-              :filter-node-method="filterRoleTreeNode"
-              default-expand-all
-              node-key="id"
-              show-checkbox
-              check-strictly
-              :props="roleSetModels.tree.defaultOrgProps"
-              :expand-on-click-node="false"
-              check-on-click-node
-              @check="roleHandleCheck"
-            >
-              <span class="custom-tree-node" slot-scope="{ node }">
-              <span :title="node.label" class="role-tree-label">{{ node.label }}</span>
-              </span>
-            </el-tree>
-          </div>
+        <div class="role-tree-filter">
+          <el-input
+            placeholder="输入关键字进行过滤"
+            v-model="roleSetModels.tree.filterRoleName"
+          >
+          </el-input>
+        </div>
+        <div class="role-tree">
+          <el-tree
+            ref="roleTree"
+            :key="roleSetDialogFlag"
+            :data="roleSetModels.tree.roleTreeData"
+            :filter-node-method="filterRoleTreeNode"
+            default-expand-all
+            node-key="id"
+            show-checkbox
+            check-strictly
+            :props="roleSetModels.tree.defaultOrgProps"
+            :expand-on-click-node="false"
+            check-on-click-node
+            @check="roleHandleCheck"
+          >
+            <span class="custom-tree-node" slot-scope="{ node }">
+              <span :title="node.label" class="role-tree-label">{{
+                node.label
+              }}</span>
+            </span>
+          </el-tree>
+        </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleSetHandleClose">取 消</el-button>
-        <el-button type="primary" @click="roleSetHandleCreateOrUpdate">保 存</el-button>
+        <el-button type="primary" @click="roleSetHandleCreateOrUpdate"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
@@ -74,7 +79,13 @@
 import { mapGetters, mapActions } from 'vuex'
 import crud from '@/mixins/crud'
 import { arrayToTree, deepClone, getObjType } from '@/utils/util'
-import { queryAllOrgs, setUserStatus, setUserToRoles, resetPassword, modelExport } from '@/api/user'
+import {
+  queryAllOrgs,
+  setUserStatus,
+  setUserToRoles,
+  resetPassword,
+  modelExport
+} from '@/api/user'
 import { getChildrenRoles, getRoleInfoByUserId } from '@/api/role'
 import fileDownload from 'js-file-download'
 import tableConfiguration from '@/views/system-basic/configuration/table/manage/manage-user'
@@ -123,7 +134,11 @@ export default {
             { pattern: /^1[0-9]{10}$/, message: '请输入正确的手机号码' }
           ],
           orgList: [
-            { required: true, message: '部门不能为空', trigger: ['change', 'blur'] }
+            {
+              required: true,
+              message: '部门不能为空',
+              trigger: ['change', 'blur']
+            }
           ]
         }
       },
@@ -131,27 +146,27 @@ export default {
       DEFAULT_HEAD_IMG_URL,
       fetchConfig: {
         retrieve: {
-          url: '/user/user/pageList',
+          url: '/system/user/user/pageList',
           method: 'post'
         },
         create: {
-          url: '/user/user/save',
+          url: '/system/user/user/save',
           method: 'post'
         },
         update: {
-          url: '/user/user/update',
+          url: '/system/user/user/update',
           method: 'post'
         },
         delete: {
-          url: '/user/user/delete',
+          url: '/system/user/user/delete',
           method: 'post'
         },
         export: {
-          url: '/user/user/exportExcel',
+          url: '/system/user/user/exportExcel',
           method: 'get'
         },
         import: {
-          url: '/user/user/importExcel',
+          url: '/system/user/user/importExcel',
           method: 'get'
         }
       },
@@ -179,23 +194,27 @@ export default {
     })
   },
   watch: {
-    'roleSetModels.tree.filterRoleName': function (val) {
-      this.$refs.roleTree.filter(val);
+    'roleSetModels.tree.filterRoleName': val => {
+      this.$refs.roleTree.filter(val)
     }
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     getChildrenRoles({ userId: this.userInfo.id, deleteFlag: 'N' })
       .then(res => {
-        this.roleSetModels.tree.roleTreeData = arrayToTree(res.data.map(e => {
-          return {
-            label: e.roleName,
-            children: e.sonNum !== '0',
-            disabled: e.operateFlag !== '1',
-            ...e
-          }
-        }), '0')
+        this.roleSetModels.tree.roleTreeData = arrayToTree(
+          res.data.map(e => {
+            return {
+              label: e.roleName,
+              children: e.sonNum !== '0',
+              disabled: e.operateFlag !== '1',
+              ...e
+            }
+          }),
+          '0'
+        )
       })
       .catch(err => {
         console.log('getChildrenRoles -> err', err)
@@ -225,8 +244,8 @@ export default {
     },
     // 过滤查询角色树
     filterRoleTreeNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     roleHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
@@ -239,12 +258,11 @@ export default {
       setUserToRoles({
         roleIds: this.roleSetModels.tree.roleIds,
         userId: this.mixinUpdate.id
+      }).then(() => {
+        this.$notify.success('配置角色成功')
+        this.roleSetHandleClose()
+        this.mixinRetrieveTableData()
       })
-        .then(() => {
-          this.$notify.success('配置角色成功')
-          this.roleSetHandleClose()
-          this.mixinRetrieveTableData()
-        })
     },
     // 配置角色相关代码 end ↑
     interceptorsRequestRetrieve(params) {
@@ -276,14 +294,19 @@ export default {
       queryAllOrgs({ userId: this.userInfo.id, deleteFlag: 'N' })
         .then(res => {
           // const rootParentId = res.data.find(x => x.currOrg)?.parentId || '0'
-          const temp = arrayToTree(res.data.map(e => {
-            return {
-              ...e,
-              disabled: e.operateFlag !== '1'
-            }
-          }), '0')
+          const temp = arrayToTree(
+            res.data.map(e => {
+              return {
+                ...e,
+                disabled: e.operateFlag !== '1'
+              }
+            }),
+            '0'
+          )
           this.formOption.find(e => e.ruleProp === 'orgList').options = temp
-          this.mixinSearchFormItems.find(e => e.ruleProp === 'orgList').options = temp
+          this.mixinSearchFormItems.find(
+            e => e.ruleProp === 'orgList'
+          ).options = temp
         })
         .catch(err => {
           console.log('queryAllOrgs -> err', err)
@@ -310,10 +333,15 @@ export default {
     },
     // 导出前置拦截 搜索条件部门必选
     interceptorsRequestImport(file) {
-      const { mixinSearchFormConfig: { models: { orgList } } } = this
+      const {
+        mixinSearchFormConfig: {
+          models: { orgList }
+        }
+      } = this
       // 校验部门必填
       const orgListArr = this._handleOrgData(orgList)
-      const valid = getObjType(orgListArr) === 'array' && orgListArr.length === 1
+      const valid =
+        getObjType(orgListArr) === 'array' && orgListArr.length === 1
       if (valid) {
         file.append('orgId', orgListArr[0].orgId)
         file.append('orgPath', orgListArr[0].orgPath)
@@ -341,22 +369,28 @@ export default {
       })
     },
     handleStatusChange(e) {
-      setUserStatus({ userId: e.scope.row.id, deleteFlag: e.value })
-        .then(() => {
+      setUserStatus({ userId: e.scope.row.id, deleteFlag: e.value }).then(
+        () => {
           this.$notify.success(`${e.value === 'Y' ? '禁用' : '启用'}成功`)
           this.mixinRetrieveTableData()
-          if (e.scope.row.userName === this.userInfo.userName && e.value === 'Y') {
+          if (
+            e.scope.row.userName === this.userInfo.userName &&
+            e.value === 'Y'
+          ) {
             setTimeout(() => {
               this.logoutAction().then(() => {
-                this.$router.replace({
-                  path: '/login'
-                }).then(() => {
-                  this.$notify.warning('当前用户已被禁用!')
-                })
+                this.$router
+                  .replace({
+                    path: '/login'
+                  })
+                  .then(() => {
+                    this.$notify.warning('当前用户已被禁用!')
+                  })
               })
             }, 1000)
           }
-        })
+        }
+      )
     },
     mixinHandleResetPwd(e) {
       this.$confirm('是否重置密码?', '提示', {
@@ -365,10 +399,9 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          resetPassword({ userIdList: [e.row.id] })
-            .then(() => {
-              this.$notify.success('重置成功')
-            })
+          resetPassword({ userIdList: [e.row.id] }).then(() => {
+            this.$notify.success('重置成功')
+          })
         })
         .catch(err => {
           console.log(err)
@@ -378,31 +411,31 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  /deep/.el-dialog__body{
-    padding: 10px 20px
-  }
-  .role-set-resource {
-    height: 450px;
-    border-radius: 10px;
-    /*background: rgba(249, 249, 249, 1);*/
-    /*display: flex;*/
-    /*justify-content: space-between;*/
-      & .role-tree {
-        margin-top: 5px;
-        overflow-y: scroll;
-        overflow-x: hidden;
-        height:90%;
+/deep/.el-dialog__body {
+  padding: 10px 20px;
+}
+.role-set-resource {
+  height: 450px;
+  border-radius: 10px;
+  /*background: rgba(249, 249, 249, 1);*/
+  /*display: flex;*/
+  /*justify-content: space-between;*/
+  & .role-tree {
+    margin-top: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 90%;
 
-        & .role-tree-label {
-          display: inline-block;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          max-width: 360px;
-        }
-      }
+    & .role-tree-label {
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 360px;
+    }
   }
-  /deep/.user-container .el-table tr td{
-    padding:8px 0 0;
-  }
+}
+/deep/.user-container .el-table tr td {
+  padding: 8px 0 0;
+}
 </style>

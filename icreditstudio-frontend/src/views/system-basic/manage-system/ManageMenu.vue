@@ -1,5 +1,5 @@
 <template>
-  <div class="h100">
+  <div class="h100 w100">
     <crud-basic
       ref="crud"
       title="模块列表"
@@ -35,7 +35,8 @@
         <div class="role-tree-filter">
           <el-input
             placeholder="输入关键字进行过滤"
-            v-model="roleSetModels.tree.filterRoleName">
+            v-model="roleSetModels.tree.filterRoleName"
+          >
           </el-input>
         </div>
         <div class="role-tree">
@@ -53,19 +54,22 @@
             check-on-click-node
             @check="roleHandleCheck"
           >
-              <span class="custom-tree-node" slot-scope="{ node }">
-              <span :title="node.label" class="role-tree-label">{{ node.label }}</span>
-              </span>
+            <span class="custom-tree-node" slot-scope="{ node }">
+              <span :title="node.label" class="role-tree-label">{{
+                node.label
+              }}</span>
+            </span>
           </el-tree>
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button @click="roleSetHandleClose">取 消</el-button>
-        <el-button type="primary" @click="roleSetHandleCreateOrUpdate">保 存</el-button>
+        <el-button type="primary" @click="roleSetHandleCreateOrUpdate"
+          >保 存</el-button
+        >
       </span>
     </el-dialog>
   </div>
-
 </template>
 
 <script>
@@ -97,7 +101,7 @@ const MODULETYPES = {
  * @returns {function(Array, Boolean): Array}
  */
 function hideItems(keys) {
-  return function (arr, flag) {
+  return (arr, flag) => {
     keys.forEach(s => {
       // eslint-disable-next-line no-param-reassign
       arr.find(item => item.ruleProp === s).isHide = flag
@@ -106,7 +110,14 @@ function hideItems(keys) {
   }
 }
 // 当类型为按钮时 需要隐藏的字段
-const hideForTypeIsButton = hideItems(['filePath', 'redirectPath', 'isShow', 'keepAlive', 'sortNumber', 'iconPath'])
+const hideForTypeIsButton = hideItems([
+  'filePath',
+  'redirectPath',
+  'isShow',
+  'keepAlive',
+  'sortNumber',
+  'iconPath'
+])
 // 当类型不为按钮时需要隐藏的字段
 const hideForTypeIsNotButton = hideItems(['authIdentification'])
 
@@ -143,27 +154,27 @@ export default {
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/resources/resources/queryList',
+          url: '/system/resources/resources/queryList',
           method: 'post'
         },
         create: {
-          url: '/resources/resources/save',
+          url: '/system/resources/resources/save',
           method: 'post'
         },
         update: {
-          url: '/resources/resources/update',
+          url: '/system/resources/resources/update',
           method: 'post'
         },
         delete: {
-          url: '/resources/resources/delete',
+          url: '/system/resources/resources/delete',
           method: 'post'
         },
         export: {
-          url: '/resources/resources/exportExcel',
+          url: '/system/resources/resources/exportExcel',
           method: 'get'
         },
         import: {
-          url: '/resources/resources/importExcel',
+          url: '/system/resources/resources/importExcel',
           method: 'get'
         }
       },
@@ -191,24 +202,28 @@ export default {
     })
   },
   watch: {
-    'roleSetModels.tree.filterRoleName': function (val) {
-      this.$refs.roleTree.filter(val);
+    'roleSetModels.tree.filterRoleName': val => {
+      this.$refs.roleTree.filter(val)
     }
   },
   created() {
-    this.mixinSearchFormItems = deepClone(this.formOption)
-      .filter(e => e.isSearch)
+    this.mixinSearchFormItems = deepClone(this.formOption).filter(
+      e => e.isSearch
+    )
     this.formOption.find(e => e.ruleProp === 'iconPath').options = icons
     getChildrenRoles({ userId: this.userInfo.id })
       .then(res => {
-        this.roleSetModels.tree.roleTreeData = arrayToTree(res.data.map(e => {
-          return {
-            label: e.roleName,
-            children: e.sonNum !== '0',
-            disabled: e.operateFlag !== '1',
-            ...e
-          }
-        }), '0')
+        this.roleSetModels.tree.roleTreeData = arrayToTree(
+          res.data.map(e => {
+            return {
+              label: e.roleName,
+              children: e.sonNum !== '0',
+              disabled: e.operateFlag !== '1',
+              ...e
+            }
+          }),
+          '0'
+        )
       })
       .catch(err => {
         console.log('getChildrenRoles -> err', err)
@@ -235,8 +250,8 @@ export default {
     },
     // 过滤查询角色树
     filterRoleTreeNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     roleHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
@@ -249,12 +264,11 @@ export default {
       setRoleToResources({
         roleIds: this.roleSetModels.tree.roleIds,
         resourcesId: this.mixinUpdate.id
+      }).then(() => {
+        this.$notify.success('配置角色成功')
+        this.roleSetHandleClose()
+        this.mixinRetrieveTableData()
       })
-        .then(() => {
-          this.$notify.success('配置角色成功')
-          this.roleSetHandleClose()
-          this.mixinRetrieveTableData()
-        })
     },
     // 配置角色相关代码 end ↑
     interceptorsBeforeEdit(e) {
@@ -266,14 +280,11 @@ export default {
     },
     interceptorsResponseTableData(data) {
       data.forEach(e => {
-        Object.assign(
-          e,
-          {
-            isShowStr: CONSTANT[e.isShow],
-            keepAliveStr: CONSTANT[e.keepAlive],
-            typeStr: MODULETYPES[e.type]
-          }
-        )
+        Object.assign(e, {
+          isShowStr: CONSTANT[e.isShow],
+          keepAliveStr: CONSTANT[e.keepAlive],
+          typeStr: MODULETYPES[e.type]
+        })
       })
       const _first = arrayToTree(data, '0')
       this.formOption.find(e => e.ruleProp === 'parentId').options = _first
@@ -331,27 +342,27 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-  /deep/.el-dialog__body{
-    padding: 10px 20px
-  }
-  .role-set-resource {
-    height: 450px;
-    border-radius: 10px;
-    /*background: rgba(249, 249, 249, 1);*/
-    /*display: flex;*/
-    /*justify-content: space-between;*/
-    & .role-tree {
-      margin-top: 5px;
-      overflow-y: scroll;
-      overflow-x: hidden;
-      height: 90%;
-      & .role-tree-label {
-        display: inline-block;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        max-width: 360px;
-      }
+/deep/.el-dialog__body {
+  padding: 10px 20px;
+}
+.role-set-resource {
+  height: 450px;
+  border-radius: 10px;
+  /*background: rgba(249, 249, 249, 1);*/
+  /*display: flex;*/
+  /*justify-content: space-between;*/
+  & .role-tree {
+    margin-top: 5px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 90%;
+    & .role-tree-label {
+      display: inline-block;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      max-width: 360px;
     }
   }
+}
 </style>

@@ -1,15 +1,12 @@
 /* 基础配置 */
 const baseConfig = {
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://127.0.0.1:13249', // 开发环境
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:13249/', // 开发环境---黄之鸿
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.63:13249', // 开发环境---彭湃
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.4:13249', // 开发环境---彭湃2
+  baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.50:13249',
   // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:17854/', // 开发环境
-  baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:13249', // 测试环境
+  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:13249', // 测试环境
   // 请求超时时间
   timeout: 9000,
   // 项目名称
-  projectName: 'iFrame（金宁汇统一开发框架）',
+  projectName: 'iCredit',
   // 应用id
   applicationId: '641012265471465786',
   // 是否显示控制台文档信息

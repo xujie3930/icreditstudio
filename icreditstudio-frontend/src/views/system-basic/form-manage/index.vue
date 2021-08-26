@@ -82,15 +82,15 @@ export default {
       tableConfiguration: tableConfiguration(this, { STATUS_ENUMS }),
       fetchConfig: {
         retrieve: {
-          url: '/form/definition/pageList',
+          url: '/system/form/definition/pageList',
           method: 'post'
         },
         delete: {
-          url: '/form/definition/delete',
+          url: '/system/form/definition/delete',
           method: 'post'
         },
         multipleDelete: {
-          url: '/form/definition/delete',
+          url: '/system/form/definition/delete',
           method: 'post'
         }
       },
