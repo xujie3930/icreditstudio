@@ -4,7 +4,6 @@ export default _this => {
     id: 'setting',
     isBorder: true,
     hasPage: true,
-    // maxHeight: '550',
     customBtnConfig: [
       {
         label: '新增工作空间',
@@ -59,21 +58,13 @@ export default _this => {
         label: '描述',
         prop: 'descriptor'
       },
-      // {
-      //   type: 'switch',
-      //   label: '是否启用',
-      //   prop: 'deleteFlag',
-      //   width: 100,
-      //   activeValue: 'N',
-      //   inactiveValue: 'Y',
-      //   change: _this.handleStatusChange
-      // },
       {
-        type: 'operation',
+        type: 'slot',
         label: '操作',
         prop: 'operation',
         width: '250px',
         fixed: 'right',
+
         operationList: [
           {
             func: ({ row }) => _this.handleOperateClick(row, 'view'),
@@ -96,7 +87,7 @@ export default _this => {
             func: ({ row }) => _this.handleOperateClick(row, 'enabled'),
             label: '启用',
             key: 'enabled',
-            isHide: ({ row }) => !row.status
+            show: false
           },
           {
             func: _this.mixinHandleEdit,

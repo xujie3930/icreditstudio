@@ -6,7 +6,7 @@ export default {
   refName: 'workspaceSettingDetial',
   id: 'settingDetial',
   isBorder: true,
-  hasPage: true,
+  hasPage: false,
   group: [
     {
       type: 'index',

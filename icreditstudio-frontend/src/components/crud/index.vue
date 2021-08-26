@@ -3,7 +3,12 @@
     <layout-main-basic-container
       :title="title"
       :show-menu="!hideMenu"
-      :custom-btn-config="(tableConfiguration.customBtnConfig&&tableConfiguration.customBtnConfig.length)?tableConfiguration.customBtnConfig:customBtnConfig"
+      :custom-btn-config="
+        tableConfiguration.customBtnConfig &&
+        tableConfiguration.customBtnConfig.length
+          ? tableConfiguration.customBtnConfig
+          : customBtnConfig
+      "
       @handleAdd="handleAdd"
       @handleImport="handleImport"
       @handleExport="handleExport"
@@ -160,21 +165,21 @@ export default {
     handleExport: {
       type: Function,
       default() {
-        return function () {}
+        return () => {}
       }
     },
     // 导入
     handleImport: {
       type: Function,
       default() {
-        return function () {}
+        return () => {}
       }
     },
     // 批量删除
     handleMultipleDelete: {
       type: Function,
       default() {
-        return function () {}
+        return () => {}
       }
     },
     // 查询
@@ -204,7 +209,7 @@ export default {
     handleSelectChange: {
       type: Function,
       default() {
-        return function () {}
+        return () => {}
       }
     }
   },
@@ -251,7 +256,7 @@ export default {
     handleCustomMenuEvent({ options }) {
       const { eventName, selectType } = options
       const len = this.selection.length
-      let validMsg = '';
+      let validMsg = ''
       // 公共校验
       switch (selectType) {
         case 'none':

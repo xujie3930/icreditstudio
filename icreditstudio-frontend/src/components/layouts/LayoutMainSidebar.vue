@@ -9,7 +9,10 @@
       width="100px"
     >
       <el-menu
-        :default-active="menu.filter(e => e.isShow)[0].name"
+        :default-active="
+          menu.filter(e => e.isShow)[0].name ||
+            menu.filter(e => e.isShow)[0].label
+        "
         :collapse="isCollapse"
         :background-color="getBaseConfig('menu-color-bg')"
         :active-text-color="getBaseConfig('menu-color-text-active')"

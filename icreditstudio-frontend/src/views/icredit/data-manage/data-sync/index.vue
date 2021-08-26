@@ -4,7 +4,7 @@
 -->
 
 <template>
-  <div class="data-sync">
+  <div class="data-sync w100">
     <crud-basic
       class="user-container"
       ref="crud"
