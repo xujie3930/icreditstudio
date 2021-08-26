@@ -19,6 +19,8 @@ import java.util.Date;
 @Data
 @Builder
 public class SyncWidetableFieldEntity implements Serializable {
+
+    public static final String WIDE_TABLE_ID = "wide_table_id";
     /**
      * 主键
      */
@@ -73,22 +75,22 @@ public class SyncWidetableFieldEntity implements Serializable {
     /**
      *
      */
-    private String createBy;
+    private String create_user_id;
 
     /**
      *
      */
-    private Date updateTime;
+    private Date last_updateTime;
 
     /**
      *
      */
-    private String updateBy;
+    private String last_update_user_id;
 
     /**
      *
      */
-    private Boolean delFlag;
+    private Boolean delete_flag;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

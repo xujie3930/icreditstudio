@@ -1,5 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedType;
+
 import java.util.List;
 
 /**
@@ -16,7 +18,7 @@ public interface Associated {
      *
      * @return
      */
-    List<AbstractAssociated.AssocType> getAssocTypes();
+    List<AssociatedType> getAssocTypes();
 
     /**
      * 获取关联条件

@@ -1,10 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
-
-import java.util.List;
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 
 /**
  * @author peng
@@ -18,5 +15,5 @@ public interface SyncWidetableService extends IService<SyncWidetableEntity> {
      * @param version
      * @return
      */
-    SyncWidetableEntity getWideTableFields(String taskId, Integer version);
+    SyncWidetableEntity getWideTableField(String taskId, Integer version);
 }

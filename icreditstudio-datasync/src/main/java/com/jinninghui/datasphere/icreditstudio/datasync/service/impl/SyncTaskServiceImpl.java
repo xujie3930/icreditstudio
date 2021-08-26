@@ -5,20 +5,18 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDetailParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncQueryParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncSaveParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.SyncTaskConditionParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncTaskInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuildInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
@@ -34,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +44,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Resource
     private SyncWidetableService syncWidetableService;
+    @Resource
+    private SyncWidetableFieldService syncWidetableFieldService;
+    @Resource
+    private Parser<String, List<FileAssociated>> fileAssociatedParser;
+    @Resource
+    private Parser<String, TaskScheduleInfo> taskScheduleInfoParser;
 
     @Override
     @BusinessParamsValidate
@@ -117,11 +122,53 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String id = byId.getId();
             Integer version = byId.getVersion();
-            SyncWidetableEntity wideTableFields = syncWidetableService.getWideTableFields(id, version);
-            info = new TaskBuildInfo();
-
+            SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(id, version);
+            if (Objects.nonNull(wideTableField)) {
+                info = new TaskBuildInfo();
+                info.setWideTableName(wideTableField.getName());
+                info.setSourceType(wideTableField.getSourceType());
+                info.setPartition(wideTableField.getPartitionField());
+                info.setTargetSource(wideTableField.getTargetUrl());
+                info.setView(fileAssociatedParser.parse(wideTableField.getViewJson()));
+                List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTableField.getId());
+                info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
+            }
         }
         return BusinessResult.success(info);
+    }
+
+    @Override
+    @BusinessParamsValidate
+    public BusinessResult<TaskScheduleInfo> taskScheduleInfo(DataSyncDetailParam param) {
+        SyncTaskEntity byId = getById(param.getTaskId());
+        TaskScheduleInfo info = null;
+        if (Objects.nonNull(byId)) {
+            String taskParamJson = byId.getTaskParamJson();
+            info = taskScheduleInfoParser.parse(taskParamJson);
+        }
+        return BusinessResult.success(info);
+    }
+
+    @Override
+    @BusinessParamsValidate
+    public BusinessResult<DialectAssociated> dialectAssociatedSupport(DataSyncDialectSupportParam param) {
+        DialectAssociated associated = new DialectAssociated();
+        associated.setAssociated(Correlations.findAssocTypes(param.getDialect()));
+        associated.setConditions(Correlations.findAssocConditions(param.getDialect()));
+        return BusinessResult.success(associated);
+    }
+
+    private List<WideTableFieldInfo> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
+        List<WideTableFieldInfo> results = null;
+        if (CollectionUtils.isNotEmpty(entities)) {
+            results = entities.parallelStream()
+                    .map(entity -> {
+                        WideTableFieldInfo info = new WideTableFieldInfo();
+                        BeanCopyUtils.copyProperties(entity, info);
+                        return info;
+                    }).collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
     }
 
     /**

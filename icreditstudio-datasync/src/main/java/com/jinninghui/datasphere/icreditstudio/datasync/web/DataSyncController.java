@@ -4,10 +4,12 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDetailParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDialectSupportParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncQueryParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
@@ -37,6 +39,7 @@ public class DataSyncController {
      * @param request
      * @return
      */
+    @Logable
     @PostMapping("/save")
     public BusinessResult<ImmutablePair<String, String>> save(@RequestBody DataSyncSaveRequest request) {
         DataSyncSaveParam param = new DataSyncSaveParam();
@@ -44,10 +47,18 @@ public class DataSyncController {
         return syncTaskService.save(param);
     }
 
+    /**
+     * 数据源支持的关联类型
+     *
+     * @param request
+     * @return
+     */
+    @Logable
     @PostMapping("/dialectAssociatedSupport")
     public BusinessResult<DialectAssociated> dialectAssociatedSupport(@RequestBody DataSyncDialectSupportRequest request) {
-
-        return null;
+        DataSyncDialectSupportParam param = new DataSyncDialectSupportParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.dialectAssociatedSupport(param);
     }
 
     /**
@@ -55,6 +66,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/getDatasourceCatalogue")
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(@RequestBody DataSyncQueryDatasourceCatalogueRequest request) {
         List<DatasourceCatalogue> results = Lists.newArrayList();
@@ -78,6 +90,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/generateWideTable")
     public BusinessResult<WideTable> generateWideTable(@RequestBody DataSyncGenerateWideTableRequest request) {
         WideTable wt = new WideTable();
@@ -100,6 +113,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/targetSources")
     public BusinessResult<List<DataSource>> targetSources(@RequestBody DataSyncQueryTargetSourceRequest request) {
         List<DataSource> results = Lists.newArrayList();
@@ -116,6 +130,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/associatedDict")
     public BusinessResult<List<Dict>> associatedDict(@RequestBody DataSyncQueryDictRequest request) {
         List<Dict> results = Lists.newArrayList();
@@ -132,6 +147,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/syncTasks")
     public BusinessResult<BusinessPageResult> syncTasks(@RequestBody DataSyncQueryRequest request) {
         DataSyncQueryParam param = new DataSyncQueryParam();
@@ -144,6 +160,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/taskDefineInfo")
     public BusinessResult<TaskDefineInfo> taskDefineInfo(@RequestBody DataSyncDetailRequest request) {
         DataSyncDetailParam param = new DataSyncDetailParam();
@@ -156,6 +173,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/taskBuildInfo")
     public BusinessResult<TaskBuildInfo> taskBuildInfo(@RequestBody DataSyncDetailRequest request) {
         DataSyncDetailParam param = new DataSyncDetailParam();
@@ -168,14 +186,12 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/taskScheduleInfo")
     public BusinessResult<TaskScheduleInfo> taskScheduleInfo(@RequestBody DataSyncDetailRequest request) {
-        TaskScheduleInfo info = new TaskScheduleInfo();
-        info.setMaxConcurrent(2);
-        info.setScheduleType(0);
-        info.setSyncRate(0);
-        info.setSyncCycle(1561651516L);
-        return BusinessResult.success(info);
+        DataSyncDetailParam param = new DataSyncDetailParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.taskScheduleInfo(param);
     }
 
     /**

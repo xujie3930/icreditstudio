@@ -19,7 +19,7 @@ import java.util.Objects;
 @Service
 public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, SyncWidetableEntity> implements SyncWidetableService {
     @Override
-    public SyncWidetableEntity getWideTableFields(String taskId, Integer version) {
+    public SyncWidetableEntity getWideTableField(String taskId, Integer version) {
         SyncWideTableConditionParam build = SyncWideTableConditionParam.builder()
                 .taskId(taskId)
                 .version(version)

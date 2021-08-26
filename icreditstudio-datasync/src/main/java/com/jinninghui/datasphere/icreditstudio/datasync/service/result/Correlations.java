@@ -1,7 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.service.AbstractAssociated;
-
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Peng
  */
 public class Correlations {
-    private Map<String, List<AbstractAssociated.AssocType>> assoc = new ConcurrentHashMap<>();
+    private Map<String, List<AssociatedType>> assoc = new ConcurrentHashMap<>();
     private Map<String, List<String>> conditions = new ConcurrentHashMap<>();
     private static Correlations instance = new Correlations();
 
@@ -21,7 +19,7 @@ public class Correlations {
         return instance;
     }
 
-    public Map<String, List<AbstractAssociated.AssocType>> getAssoc() {
+    public Map<String, List<AssociatedType>> getAssoc() {
         return assoc;
     }
 
@@ -29,7 +27,7 @@ public class Correlations {
         return conditions;
     }
 
-    public static List<AbstractAssociated.AssocType> findAssocTypes(String dialect) {
+    public static List<AssociatedType> findAssocTypes(String dialect) {
         return getInstance().getAssoc().get(dialect);
     }
 

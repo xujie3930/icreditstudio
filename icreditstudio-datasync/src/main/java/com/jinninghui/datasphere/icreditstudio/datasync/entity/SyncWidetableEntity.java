@@ -4,11 +4,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.jinninghui.datasphere.icreditstudio.framework.result.base.BaseEntity;
-import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 数据同步目标表结构信息表
@@ -39,6 +37,11 @@ public class SyncWidetableEntity extends BaseEntity implements Serializable {
     private String sqlStr;
 
     /**
+     * 关联关系json
+     */
+    private String viewJson;
+
+    /**
      * 数据源ID
      */
     private String datasourceId;
@@ -51,6 +54,10 @@ public class SyncWidetableEntity extends BaseEntity implements Serializable {
      * 目标源地址
      */
     private String targetUrl;
+    /**
+     * 目标库名
+     */
+    private String targetSource;
 
     /**
      * 分区字段

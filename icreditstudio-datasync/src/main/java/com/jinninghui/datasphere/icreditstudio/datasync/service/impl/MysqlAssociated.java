@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.AbstractAssociated;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedType;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -13,8 +14,8 @@ import java.util.List;
 public class MysqlAssociated extends AbstractAssociated {
 
     @Override
-    public List<AssocType> getAssocTypes() {
-        return Lists.newArrayList(new AssocType(0, "left join"), new AssocType(1, "inner join"));
+    public List<AssociatedType> getAssocTypes() {
+        return Lists.newArrayList(new AssociatedType(0, "left join"), new AssociatedType(1, "inner join"));
     }
 
     @Override
