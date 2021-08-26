@@ -1,23 +1,35 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
 
+import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDetailParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncQueryParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
  * @author Peng
  */
+@Slf4j
 @RestController
 @RequestMapping("/data/sync")
 public class DataSyncController {
+    @Resource
+    private SyncTaskService syncTaskService;
 
     /**
      * 同步任务定义、同步任务构建、同步任务调度保存
@@ -27,6 +39,14 @@ public class DataSyncController {
      */
     @PostMapping("/save")
     public BusinessResult<ImmutablePair<String, String>> save(@RequestBody DataSyncSaveRequest request) {
+        DataSyncSaveParam param = new DataSyncSaveParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.save(param);
+    }
+
+    @PostMapping("/dialectAssociatedSupport")
+    public BusinessResult<DialectAssociated> dialectAssociatedSupport(@RequestBody DataSyncDialectSupportRequest request) {
+
         return null;
     }
 
@@ -37,7 +57,20 @@ public class DataSyncController {
      */
     @PostMapping("/getDatasourceCatalogue")
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(@RequestBody DataSyncQueryDatasourceCatalogueRequest request) {
-        return null;
+        List<DatasourceCatalogue> results = Lists.newArrayList();
+        DatasourceCatalogue dc = new DatasourceCatalogue();
+        dc.setName("mysql");
+        dc.setDialect("mysql");
+        dc.setUrl("jdbc:mysql://localhost:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true");
+        dc.setDatasourceId("1000000");
+
+        DatasourceCatalogue dc1 = new DatasourceCatalogue();
+        dc1.setName("hive");
+        dc1.setDialect("hive");
+        dc1.setUrl("jdbc:mysql://localhost:3306/datasync");
+        dc.setContent(Lists.newArrayList(dc1));
+        results.add(dc);
+        return BusinessResult.success(results);
     }
 
     /**
@@ -47,7 +80,19 @@ public class DataSyncController {
      */
     @PostMapping("/generateWideTable")
     public BusinessResult<WideTable> generateWideTable(@RequestBody DataSyncGenerateWideTableRequest request) {
-        return null;
+        WideTable wt = new WideTable();
+        wt.setTableName("wide_table123456");
+        wt.setPartitions(Lists.newArrayList("id", "name"));
+        WideTableFieldInfo info = new WideTableFieldInfo();
+        info.setSort(0);
+        info.setFieldName("id");
+        info.setAssociateDict("grand");
+        info.setSourceTable("ge_user");
+        info.setFieldType("string");
+        info.setRemark("主键");
+        info.setFieldChineseName("主键");
+        wt.setFields(Lists.newArrayList(info));
+        return BusinessResult.success(wt);
     }
 
     /**
@@ -57,7 +102,13 @@ public class DataSyncController {
      */
     @PostMapping("/targetSources")
     public BusinessResult<List<DataSource>> targetSources(@RequestBody DataSyncQueryTargetSourceRequest request) {
-        return null;
+        List<DataSource> results = Lists.newArrayList();
+        DataSource ds = new DataSource();
+        ds.setName("data");
+        ds.setUrl("jdbc://");
+        ds.setId("");
+        results.add(ds);
+        return BusinessResult.success(results);
     }
 
     /**
@@ -67,7 +118,13 @@ public class DataSyncController {
      */
     @PostMapping("/associatedDict")
     public BusinessResult<List<Dict>> associatedDict(@RequestBody DataSyncQueryDictRequest request) {
-        return null;
+        List<Dict> results = Lists.newArrayList();
+        Dict dict = new Dict();
+        dict.setName("性别");
+        dict.setKey("grand");
+        dict.setType("nan");
+        results.add(dict);
+        return BusinessResult.success(results);
     }
 
     /**
@@ -76,19 +133,11 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/syncTasks")
-    public BusinessResult<List<SyncTaskInfo>> syncTasks(@RequestBody DataSyncQueryRequest request) {
-        return null;
+    public BusinessResult<BusinessPageResult> syncTasks(@RequestBody DataSyncQueryRequest request) {
+        DataSyncQueryParam param = new DataSyncQueryParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.syncTasks(param);
     }
-
-    /**
-     * 任务详情
-     *
-     * @return
-     */
-    /*@PostMapping("/detailTask")
-    public BusinessResult<> detailTask() {
-
-    }*/
 
     /**
      * 同步任务定义信息
@@ -96,8 +145,10 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/taskDefineInfo")
-    public BusinessResult<TaskDefineInfo> taskDefineInfo() {
-        return null;
+    public BusinessResult<TaskDefineInfo> taskDefineInfo(@RequestBody DataSyncDetailRequest request) {
+        DataSyncDetailParam param = new DataSyncDetailParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.taskDefineInfo(param);
     }
 
     /**
@@ -106,8 +157,10 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/taskBuildInfo")
-    public BusinessResult<TaskBuildInfo> taskBuildInfo() {
-        return null;
+    public BusinessResult<TaskBuildInfo> taskBuildInfo(@RequestBody DataSyncDetailRequest request) {
+        DataSyncDetailParam param = new DataSyncDetailParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.taskBuildInfo(param);
     }
 
     /**
@@ -116,8 +169,13 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/taskScheduleInfo")
-    public BusinessResult<TaskScheduleInfo> taskScheduleInfo() {
-        return null;
+    public BusinessResult<TaskScheduleInfo> taskScheduleInfo(@RequestBody DataSyncDetailRequest request) {
+        TaskScheduleInfo info = new TaskScheduleInfo();
+        info.setMaxConcurrent(2);
+        info.setScheduleType(0);
+        info.setSyncRate(0);
+        info.setSyncCycle(1561651516L);
+        return BusinessResult.success(info);
     }
 
     /**
@@ -126,7 +184,7 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/stop")
-    public BusinessResult<Boolean> stop() {
+    public BusinessResult<Boolean> stop(@RequestBody DataSyncExecRequest request) {
         return null;
     }
 
@@ -136,7 +194,7 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/remove")
-    public BusinessResult<Boolean> remove() {
+    public BusinessResult<Boolean> remove(@RequestBody DataSyncExecRequest request) {
         return null;
     }
 
@@ -146,7 +204,7 @@ public class DataSyncController {
      * @return
      */
     @PostMapping("/enable")
-    public BusinessResult<Boolean> enable() {
+    public BusinessResult<Boolean> enable(@RequestBody DataSyncExecRequest request) {
         return null;
     }
 }

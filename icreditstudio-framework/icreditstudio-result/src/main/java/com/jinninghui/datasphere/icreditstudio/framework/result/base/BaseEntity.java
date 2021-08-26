@@ -1,6 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.framework.result.base;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * Project：business-build
@@ -33,4 +38,39 @@ public class BaseEntity extends BaseObject {
 
     //********************转换方法 end***********************//
 
+    /**
+     * 备注
+     */
+    private String remark;
+
+    /**
+     * 创建时间
+     */
+    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    private Date createTime;
+
+    /**
+     * 创建人
+     */
+    @TableField(value = "create_user_id", fill = FieldFill.INSERT)
+    private String createUserId;
+
+    /**
+     * 更新时间
+     */
+    @TableField(value = "last_update_time", fill = FieldFill.INSERT_UPDATE)
+    private Date lastUpdateTime;
+
+    /**
+     * 更新人
+     */
+    @TableField(value = "last_update_user_id", fill = FieldFill.INSERT_UPDATE)
+    private String lastUpdateUserId;
+
+    /**
+     * 删除标识【0：未删除，1：已删除】
+     */
+    @TableField(value = "delete_flag", fill = FieldFill.INSERT)
+    @TableLogic
+    private Boolean deleteFlag;
 }

@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.WideTableFieldInfo;
 import lombok.Data;
 
 import java.util.List;

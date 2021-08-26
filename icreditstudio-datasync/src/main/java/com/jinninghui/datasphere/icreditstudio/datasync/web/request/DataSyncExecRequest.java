@@ -6,5 +6,6 @@ import lombok.Data;
  * @author Peng
  */
 @Data
-public class CronInfo {
+public class DataSyncExecRequest {
+    private String taskId;
 }

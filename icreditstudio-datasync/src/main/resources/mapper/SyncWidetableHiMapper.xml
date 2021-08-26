@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncWidetableHiMapper">
+
+    <resultMap id="BaseResultMap" type="com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableHiEntity">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="syncTaskId" column="sync_task_id" jdbcType="VARCHAR"/>
+            <result property="sqlStr" column="sql_str" jdbcType="VARCHAR"/>
+            <result property="datasourceId" column="datasource_id" jdbcType="VARCHAR"/>
+            <result property="targetUrl" column="target_url" jdbcType="VARCHAR"/>
+            <result property="partitionStr" column="partition_str" jdbcType="VARCHAR"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="delFlag" column="del_flag" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,sync_task_id,sql_str,
+        datasource_id,target_url,partition_str,
+        name,version,remark,
+        create_time,create_by,update_time,
+        update_by,del_flag
+    </sql>
+</mapper>

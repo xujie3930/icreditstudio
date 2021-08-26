@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
 import lombok.Data;
 
@@ -15,13 +15,13 @@ public class FileAssociated {
      */
     private String dialect;
     /**
-     * 左表ID
+     * 左表名称
      */
-    private String leftSourceId;
+    private String leftSource;
     /**
-     * 右表ID
+     * 右表名称
      */
-    private String rightSourceId;
+    private String rightSource;
     /**
      * 关联类型
      */
