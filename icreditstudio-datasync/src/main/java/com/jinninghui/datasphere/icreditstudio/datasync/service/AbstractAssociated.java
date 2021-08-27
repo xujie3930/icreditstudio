@@ -30,11 +30,4 @@ public abstract class AbstractAssociated implements Associated {
             conditions.put(this.getDialect(), Lists.newArrayList(this.getAssocConditions()));
         }
     }
-/*
-    @Data
-    @AllArgsConstructor
-    public static class AssocType {
-        private Integer code;
-        private String assocType;
-    }*/
 }

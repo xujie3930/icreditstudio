@@ -3,10 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDetailParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncDialectSupportParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncQueryParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
@@ -93,7 +90,7 @@ public class DataSyncController {
     @Logable
     @PostMapping("/generateWideTable")
     public BusinessResult<WideTable> generateWideTable(@RequestBody DataSyncGenerateWideTableRequest request) {
-        WideTable wt = new WideTable();
+        /*WideTable wt = new WideTable();
         wt.setTableName("wide_table123456");
         wt.setPartitions(Lists.newArrayList("id", "name"));
         WideTableFieldInfo info = new WideTableFieldInfo();
@@ -104,8 +101,10 @@ public class DataSyncController {
         info.setFieldType("string");
         info.setRemark("主键");
         info.setFieldChineseName("主键");
-        wt.setFields(Lists.newArrayList(info));
-        return BusinessResult.success(wt);
+        wt.setFields(Lists.newArrayList(info));*/
+        DataSyncGenerateWideTableParam param = new DataSyncGenerateWideTableParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.generateWideTable(param);
     }
 
     /**

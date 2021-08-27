@@ -67,6 +67,9 @@ public class DataSyncSaveRequest {
      * 关联关系
      */
     private List<FileAssociated> view;
+    /**
+     * 宽表字段
+     */
     private List<WideTableFieldInfo> fieldInfos;
     //=============end===================
     //=================同步任务调度============
