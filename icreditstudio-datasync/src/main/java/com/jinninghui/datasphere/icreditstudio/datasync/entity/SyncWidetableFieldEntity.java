@@ -3,7 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Builder;
+import com.jinninghui.datasphere.icreditstudio.framework.result.base.BaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -17,8 +17,7 @@ import java.util.Date;
  */
 @TableName(value = "icredit_sync_widetable_field")
 @Data
-@Builder
-public class SyncWidetableFieldEntity implements Serializable {
+public class SyncWidetableFieldEntity extends BaseEntity implements Serializable {
 
     public static final String WIDE_TABLE_ID = "wide_table_id";
     /**
@@ -27,6 +26,7 @@ public class SyncWidetableFieldEntity implements Serializable {
     @TableId
     private String id;
 
+    private Integer sort;
     /**
      *
      */
@@ -40,7 +40,7 @@ public class SyncWidetableFieldEntity implements Serializable {
     /**
      *
      */
-    private Boolean type;
+    private String type;
 
     /**
      *
@@ -61,36 +61,6 @@ public class SyncWidetableFieldEntity implements Serializable {
      *
      */
     private Integer version;
-
-    /**
-     *
-     */
-    private String remark;
-
-    /**
-     *
-     */
-    private Date createTime;
-
-    /**
-     *
-     */
-    private String create_user_id;
-
-    /**
-     *
-     */
-    private Date last_updateTime;
-
-    /**
-     *
-     */
-    private String last_update_user_id;
-
-    /**
-     *
-     */
-    private Boolean delete_flag;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

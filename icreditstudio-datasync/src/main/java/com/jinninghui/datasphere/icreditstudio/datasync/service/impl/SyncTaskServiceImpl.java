@@ -56,10 +56,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         SyncTaskEntity entity = transferToSyncTaskEntity(param);
-        saveOrUpdate(entity);
+        this.saveOrUpdate(entity);
         param.setTaskId(entity.getId());
-        SyncWidetableEntity entity1 = transferToSyncWidetableEntity(param);
-        syncWidetableService.saveOrUpdate(entity1);
+        SyncWidetableEntity wideTableEntity = transferToSyncWidetableEntity(param);
+        syncWidetableService.saveOrUpdate(wideTableEntity);
+        List<SyncWidetableFieldEntity> syncWideTableFieldEntities = transferToWideTableFields(wideTableEntity.getId(), param);
+        syncWidetableFieldService.saveOrUpdateBatch(syncWideTableFieldEntities);
         return BusinessResult.success(new ImmutablePair("taskId", entity.getId()));
     }
 
@@ -158,6 +160,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return BusinessResult.success(associated);
     }
 
+    @Override
+    public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
+        //TODO
+        return null;
+    }
+
     private List<WideTableFieldInfo> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
         List<WideTableFieldInfo> results = null;
         if (CollectionUtils.isNotEmpty(entities)) {
@@ -166,6 +174,27 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         WideTableFieldInfo info = new WideTableFieldInfo();
                         BeanCopyUtils.copyProperties(entity, info);
                         return info;
+                    }).collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
+    }
+
+    private List<SyncWidetableFieldEntity> transferToWideTableFields(final String wideTableId, DataSyncSaveParam param) {
+        List<SyncWidetableFieldEntity> results = null;
+        List<WideTableFieldInfo> fieldInfos = param.getFieldInfos();
+        if (CollectionUtils.isNotEmpty(fieldInfos)) {
+            results = fieldInfos.parallelStream()
+                    .map(field -> {
+                        SyncWidetableFieldEntity entity = new SyncWidetableFieldEntity();
+                        BeanCopyUtils.copyProperties(field, entity);
+                        entity.setWideTableId(wideTableId);
+                        entity.setSort(field.getSort());
+                        entity.setName(field.getFieldName());
+                        entity.setType(field.getFieldType());
+                        entity.setChinese(field.getFieldChineseName());
+                        entity.setDictKey(field.getAssociateDict());
+                        entity.setSource(field.getSourceTable());
+                        return entity;
                     }).collect(Collectors.toList());
         }
         return Optional.ofNullable(results).orElse(Lists.newArrayList());
