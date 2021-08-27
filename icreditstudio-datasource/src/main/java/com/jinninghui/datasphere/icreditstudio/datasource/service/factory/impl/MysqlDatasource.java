@@ -5,6 +5,8 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.Dataso
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -15,17 +17,20 @@ import java.util.Objects;
 public class MysqlDatasource implements DatasourceSync {
 
     @Override
-    public String syncDDL(Integer type, String uri) throws Exception{
+    public Map<String, String> syncDDL(Integer type, String uri) throws Exception{
+        Map<String, String> map = new HashMap<>();
         String username = getUsername(uri);
         String password = getpassword(uri);
         Connection conn = getConn(type, uri, username, password);
         if (!Objects.nonNull(conn)){
-            return "Unable to get datasource connection";
+            return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet tableResultSet = metaData.getTables(null, null, "%", new String[]{"TABLE"});
         String datasourceInformation = "[";
+        Integer tablesCount = 0;
         while (tableResultSet.next()) {
+            tablesCount ++;
             String tableName = tableResultSet.getString("TABLE_NAME");
             // 获取表字段结构
             ResultSet columnResultSet = metaData.getColumns(null, "%", tableName, "%");
@@ -51,6 +56,8 @@ public class MysqlDatasource implements DatasourceSync {
         }
         datasourceInformation = datasourceInformation.substring(0, datasourceInformation.length()-1);
         datasourceInformation += "]";
-        return datasourceInformation;
+        map.put("datasourceInfo", datasourceInformation);
+        map.put("tablesCount", tablesCount.toString());
+        return map;
     }
 }

@@ -4,6 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.Datasourc
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Map;
 
 public interface DatasourceSync {
     //获取username
@@ -51,5 +52,5 @@ public interface DatasourceSync {
         return connection;
     }
 
-    String syncDDL(Integer type, String uri) throws Exception;
+    Map<String, String> syncDDL(Integer type, String uri) throws Exception;
 }

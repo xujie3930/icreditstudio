@@ -2,13 +2,12 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
@@ -22,11 +21,11 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -98,13 +97,20 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
         IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null){
-            return BusinessResult.success("没有找到数据源信息");
+            return BusinessResult.success("");
         }
+        //开始同步的时间，更新到表中
+        dataEntity.setLastSyncTime(new Date());
+        datasourceMapper.updateById(dataEntity);
         //这里根据不同type类型，连接不同的数据库，同步其表
         DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
         String ddlInfo = null;
+        String key = sequenceService.nextValueString();
+        String hdfsPath;
+        Map<String, String> map;
         try {
-            ddlInfo = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
         } catch (Exception e) {
             return BusinessResult.success(e.getMessage());
         }
@@ -113,10 +119,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         ddlEntity.setId(sequenceService.nextValueString());
         //建立外键关联
         ddlEntity.setDatasourceId(dataEntity.getId());
-        //TODO:这里改为上传到hdfs
+        //这里先存存储hdfs的路径
         ddlEntity.setColumnsInfo(ddlInfo);
         ddlEntity.setCreateTime(new Date());
         ddlSyncMapper.insert(ddlEntity);
-        return BusinessResult.success("同步成功");
+        return BusinessResult.success(map.get("tablesCount").toString());
     }
 }

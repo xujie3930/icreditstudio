@@ -1,21 +1,21 @@
-package com.jinninghui.datasphere.icreditstudio.metadata.utils;
+package com.jinninghui.datasphere.icreditstudio.framework.utils;
 
 /**
  * @author xujie
  * @description hdfs工具类
  * @create 2021-08-27 14:13
  **/
-import java.io.*;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
+
+import java.io.*;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class HDFSUtils {
