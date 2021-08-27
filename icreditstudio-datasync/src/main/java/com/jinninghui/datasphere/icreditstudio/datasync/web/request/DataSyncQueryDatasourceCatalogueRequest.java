@@ -8,6 +8,10 @@ import lombok.Data;
 @Data
 public class DataSyncQueryDatasourceCatalogueRequest {
     /**
+     * 工作空间ID
+     */
+    private String workspaceId;
+    /**
      * 数据源名称
      */
     private String sourceName;

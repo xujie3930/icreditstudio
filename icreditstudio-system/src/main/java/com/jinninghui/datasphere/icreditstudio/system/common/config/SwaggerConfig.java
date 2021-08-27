@@ -31,7 +31,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .groupName("swagger-iframe-backend")
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.hashtech"))
+                .apis(RequestHandlerSelectors.basePackage("com.jinninghui"))
                 .paths(PathSelectors.any())
                 .build()
                 .securitySchemes(security());

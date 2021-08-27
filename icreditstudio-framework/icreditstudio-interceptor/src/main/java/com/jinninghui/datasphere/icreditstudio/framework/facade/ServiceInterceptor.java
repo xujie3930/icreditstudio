@@ -22,7 +22,7 @@ public class ServiceInterceptor{
     private static final Logger logger = LoggerFactory.getLogger(ServiceInterceptor.class);
     private static final int PARAM_LENGTH_MAX = 100;
 
-    @Pointcut("execution(* com.hashtech..service..*(..))")
+    @Pointcut("execution(* com.jinninghui..service..*(..))")
     public void pointcut(){
 
     }
