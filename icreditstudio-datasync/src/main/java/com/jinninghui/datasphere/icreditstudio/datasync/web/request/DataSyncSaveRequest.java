@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.FileAssociated;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -66,7 +66,7 @@ public class DataSyncSaveRequest {
     /**
      * 关联关系
      */
-    private List<FileAssociated> view;
+    private List<AssociatedData> view;
     /**
      * 宽表字段
      */

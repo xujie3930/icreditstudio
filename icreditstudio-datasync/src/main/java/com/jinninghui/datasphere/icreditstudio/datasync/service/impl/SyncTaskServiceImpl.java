@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
@@ -47,7 +49,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Resource
     private SyncWidetableFieldService syncWidetableFieldService;
     @Resource
-    private Parser<String, List<FileAssociated>> fileAssociatedParser;
+    private Parser<String, List<AssociatedData>> fileAssociatedParser;
     @Resource
     private Parser<String, TaskScheduleInfo> taskScheduleInfoParser;
 
@@ -153,11 +155,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     @BusinessParamsValidate
-    public BusinessResult<DialectAssociated> dialectAssociatedSupport(DataSyncDialectSupportParam param) {
-        DialectAssociated associated = new DialectAssociated();
-        associated.setAssociated(Correlations.findAssocTypes(param.getDialect()));
-        associated.setConditions(Correlations.findAssocConditions(param.getDialect()));
-        return BusinessResult.success(associated);
+    public BusinessResult<Associated> dialectAssociatedSupport(DataSyncDialectSupportParam param) {
+        return BusinessResult.success(AssociatedUtil.find(param.getDialect()));
     }
 
     @Override

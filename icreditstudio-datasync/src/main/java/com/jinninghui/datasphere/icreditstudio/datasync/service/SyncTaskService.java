@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
@@ -58,7 +59,7 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @param param
      * @return
      */
-    BusinessResult<DialectAssociated> dialectAssociatedSupport(DataSyncDialectSupportParam param);
+    BusinessResult<Associated> dialectAssociatedSupport(DataSyncDialectSupportParam param);
 
     /**
      * 生成宽表

@@ -1,5 +1,6 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
+package com.jinninghui.datasphere.icreditstudio.datasync.container.vo;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.enums.AssociatedEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,8 +15,7 @@ public class AssociatedType {
     /**
      * 标识【0：左关联，1：内关联，2：全关联】
      */
-    private Integer code;
-
+    private AssociatedEnum type;
     /**
      * 关联关键字
      */

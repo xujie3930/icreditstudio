@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
 
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
@@ -25,7 +26,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/data/sync")
+@RequestMapping("/datasync")
 public class DataSyncController {
     @Resource
     private SyncTaskService syncTaskService;
@@ -52,7 +53,7 @@ public class DataSyncController {
      */
     @Logable
     @PostMapping("/dialectAssociatedSupport")
-    public BusinessResult<DialectAssociated> dialectAssociatedSupport(@RequestBody DataSyncDialectSupportRequest request) {
+    public BusinessResult<Associated> dialectAssociatedSupport(@RequestBody DataSyncDialectSupportRequest request) {
         DataSyncDialectSupportParam param = new DataSyncDialectSupportParam();
         BeanCopyUtils.copyProperties(request, param);
         return syncTaskService.dialectAssociatedSupport(param);
@@ -90,18 +91,6 @@ public class DataSyncController {
     @Logable
     @PostMapping("/generateWideTable")
     public BusinessResult<WideTable> generateWideTable(@RequestBody DataSyncGenerateWideTableRequest request) {
-        /*WideTable wt = new WideTable();
-        wt.setTableName("wide_table123456");
-        wt.setPartitions(Lists.newArrayList("id", "name"));
-        WideTableFieldInfo info = new WideTableFieldInfo();
-        info.setSort(0);
-        info.setFieldName("id");
-        info.setAssociateDict("grand");
-        info.setSourceTable("ge_user");
-        info.setFieldType("string");
-        info.setRemark("主键");
-        info.setFieldChineseName("主键");
-        wt.setFields(Lists.newArrayList(info));*/
         DataSyncGenerateWideTableParam param = new DataSyncGenerateWideTableParam();
         BeanCopyUtils.copyProperties(request, param);
         return syncTaskService.generateWideTable(param);
