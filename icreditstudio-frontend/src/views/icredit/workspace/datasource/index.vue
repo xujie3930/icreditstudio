@@ -103,6 +103,7 @@
 <script>
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
+import workspace from '@/mixins/workspace'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource'
 import formOption from '@/views/icredit/configuration/form/workspace-datasource'
 import Message from '@/views/icredit/components/message'
@@ -111,7 +112,7 @@ import AddDataSourceStepFirst from './add-step-first'
 import API from '@/api/icredit'
 
 export default {
-  mixins: [crud, operate],
+  mixins: [crud, operate, workspace],
   components: { Message, Detail, AddDataSourceStepFirst },
 
   data() {
@@ -139,6 +140,13 @@ export default {
   },
 
   methods: {
+    interceptorsRequestRetrieve(params) {
+      return {
+        workspaceId: this.workspaceId,
+        ...params
+      }
+    },
+
     handleAddDataSource() {
       this.$refs.addStepFirst.open()
     },

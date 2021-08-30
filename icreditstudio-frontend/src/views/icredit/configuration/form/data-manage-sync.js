@@ -5,36 +5,42 @@
 export default [
   {
     type: 'text',
+    label: '工作空间ID',
+    model: '',
+    ruleProp: 'workspaceId',
+    isSearch: false
+  },
+  {
+    type: 'text',
     label: '任务名称',
     model: '',
-    ruleProp: 'userName',
-    isSearch: true,
-    maxlength: 20
+    ruleProp: 'taskName',
+    isSearch: true
   },
   {
     type: 'select',
     label: '任务状态',
-    ruleProp: 'deleteFlag1',
+    ruleProp: 'taskStatus',
     model: '',
     isSearch: true,
     options: [
-      { value: 'N', label: '全部' },
-      { value: 'Y', label: '启用' },
-      { value: 'M', label: '停用' },
-      { value: 'D', label: '草稿' }
+      { value: '3', label: '全部' },
+      { value: '0', label: '启用' },
+      { value: '1', label: '草稿' },
+      { value: '2', label: '停用' }
     ]
   },
   {
     type: 'select',
     label: '执行状态',
-    ruleProp: 'deleteFlag',
+    ruleProp: 'execStatus',
     model: '',
     isSearch: true,
     options: [
-      { value: 'N', label: '全部' },
-      { value: 'Y', label: '成功' },
-      { value: 'M', label: '失败' },
-      { value: 'D', label: '执行中' }
+      { value: '3', label: '全部' },
+      { value: '0', label: '成功' },
+      { value: '1', label: '失败' },
+      { value: '2', label: '执行中' }
     ]
   }
 ]

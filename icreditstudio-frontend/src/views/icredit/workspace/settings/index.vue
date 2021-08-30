@@ -86,10 +86,10 @@ import operate from '@/mixins/operate'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting'
 import formOption from '@/views/icredit/configuration/form/workspace-setting'
 import Dialog from './dialog'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [crud, operate],
-
   components: { Dialog },
 
   data() {
@@ -103,11 +103,22 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('user', ['userInfo'])
+  },
+
   created() {
     this.mixinRetrieveTableData()
   },
 
   methods: {
+    interceptorsRequestRetrieve(params) {
+      return {
+        userId: this.userInfo.id,
+        ...params
+      }
+    },
+
     handleAddWorkspace() {
       this.$router.push('/workspace/detail')
     },

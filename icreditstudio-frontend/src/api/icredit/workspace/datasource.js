@@ -21,7 +21,7 @@ const datasourceSync = params => getAction(`/datasource/sync/${params}`)
 
 // testing connection of datasource module
 const datasourceTestLink = params =>
-  getAction('/datasource/testConnect', params)
+  postAction('/datasource/testConnect', params)
 
 export default {
   datasourceAdd,

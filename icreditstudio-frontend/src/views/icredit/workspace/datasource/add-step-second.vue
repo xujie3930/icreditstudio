@@ -41,6 +41,7 @@
         ></el-input>
       </el-form-item>
 
+      <!-- 半结构化以及本地文件 -->
       <template v-if="['semiStructured', 'doc'].includes(dataType)">
         <el-form-item
           v-if="dataType === 'semiStructured'"
@@ -122,6 +123,7 @@
         <el-col :span="12">
           <el-form-item label="密码" prop="password">
             <el-input
+              show-password
               v-model="dataSourceForm.password"
               placeholder="请输入数据源连接密码"
             ></el-input>
@@ -218,18 +220,18 @@ export default {
         name: [
           { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
         ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
+        databaseName: [
+          { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
+        ip: [
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
         ],
-        file: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
+        port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        position: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ]
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        status: [{ required: true, message: '请选择是否启用', trigger: 'blur' }]
       }
     }
   },
@@ -269,7 +271,7 @@ export default {
         if (valid) {
           API.datasourceTestLink(params)
             .then(({ success, data }) => {
-              if (success) {
+              if (success && data) {
                 console.log(data)
                 this.$message.success('测试连接成功')
               } else {
@@ -296,23 +298,29 @@ export default {
         status,
         descriptor,
         type: databaseTypeMapping[this.dataType],
-        spaceId: '',
+        spaceId: '880416721515675648',
         uri: this.completeUri()
       }
-      this.btnLoading = true
-      API.datasourceAdd(params)
-        .then(({ success, data }) => {
-          if (success) {
-            console.log(data)
-            this.$notify.success({
-              title: '操作结果',
-              message: '数据源新增成功！'
+      this.$refs.dataSourceForm.validate(valid => {
+        if (valid) {
+          this.btnLoading = true
+          API.datasourceAdd(params)
+            .then(({ success, data }) => {
+              if (success) {
+                console.log(data)
+                this.$notify.success({
+                  title: '操作结果',
+                  message: '数据源新增成功！'
+                })
+                this.handleClose()
+                this.$router.push('/workspace/datasource')
+              }
             })
-          }
-        })
-        .finally(() => {
-          this.btnLoading = false
-        })
+            .finally(() => {
+              this.btnLoading = false
+            })
+        }
+      })
     }
   }
 }

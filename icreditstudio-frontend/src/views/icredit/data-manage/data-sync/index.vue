@@ -32,6 +32,60 @@
       :handleCancel="mixinHandleCancel"
       @handleAddSyncTask="handleAddSyncTask"
     >
+      <template #content>
+        <j-table
+          v-loading="mixinTableLoading"
+          :table-configuration="tableConfiguration"
+          :table-pagination="mixinTablePagination"
+          :table-data="mixinTableData"
+          @handleSizeChange="mixinHandleSizeChange"
+          @handleCurrentChange="mixinHandleCurrentChange"
+        >
+          <!-- 任务状态 -->
+          <template #taskStatusColumn="{row: {taskStatus}}">
+            <span :style="{ color: taskStatusMapping[taskStatus || 0].color }">
+              {{ taskStatusMapping[taskStatus || 0].label }}
+            </span>
+          </template>
+
+          <!-- 执行状态 -->
+          <template #execStatusColumn="{row: {execStatus}}">
+            <span :style="{ color: execStatusMapping[execStatus || 0].color }">
+              {{ execStatusMapping[execStatus || 0].label }}
+            </span>
+          </template>
+
+          <!-- 操作按钮 -->
+          <template #operationColumn="{row}">
+            <div v-if="!row.status">
+              <el-button type="text" @click="handleOperateClick(row, 'View')">
+                查看
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleOperateClick(row, 'Disabled')"
+              >
+                停用
+              </el-button>
+            </div>
+
+            <div v-else>
+              <el-button type="text" @click="handleOperateClick(row, 'Delete')">
+                删除
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleOperateClick(row, 'Enabled')"
+              >
+                启用
+              </el-button>
+              <el-button type="text" @click="handleOperateClick(row, 'Edit')">
+                编辑
+              </el-button>
+            </div>
+          </template>
+        </j-table>
+      </template>
     </crud-basic>
 
     <Message ref="operateMessage" />
@@ -41,69 +95,47 @@
 
 <script>
 import crud from '@/mixins/crud'
+import operate from '@/mixins/operate'
+import workspace from '@/mixins/workspace'
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-sync'
 import formOption from '@/views/icredit/configuration/form/data-manage-sync'
 import Message from '@/views/icredit/components/message'
 import Detail from './detail'
 
 export default {
-  mixins: [crud],
+  mixins: [crud, operate, workspace],
   components: { Message, Detail },
 
   data() {
     return {
       isSyncClick: false,
       sliderVal: 100,
+
+      // 表格与表单参数
       formOption,
       mixinSearchFormConfig: {
         models: {
-          userName: '',
-          accountIdentifier: '',
-          telPhone: '',
-          orgList: []
-        },
-        retrieveModels: {
-          userId: ''
-        }
-      },
-      mixinDialogFormConfig: {
-        models: {
-          userName: '',
-          userCode: '',
-          userBirth: '',
-          sortNumber: '',
-          telPhone: '',
-          accountIdentifier: '',
-          userGender: '',
-          deleteFlag: 'N',
-          orgList: [],
-          userRemark: ''
-        },
-        rule: {
-          userName: [
-            { required: true, message: '用户姓名不能为空', trigger: 'blur' }
-          ],
-          accountIdentifier: [
-            { required: true, message: '账号不能为空', trigger: 'blur' }
-          ],
-          telPhone: [
-            { pattern: /^1[0-9]{10}$/, message: '请输入正确的手机号码' }
-          ],
-          orgList: [
-            {
-              required: true,
-              message: '部门不能为空',
-              trigger: ['change', 'blur']
-            }
-          ]
+          workspaceId: '',
+          taskName: '',
+          taskStatus: '',
+          execStatus: ''
         }
       },
       tableConfiguration: tableConfiguration(this),
-      fetchConfig: {
-        retrieve: {
-          url: '/system/user/user/pageList',
-          method: 'post'
-        }
+      fetchConfig: { retrieve: { url: '/datasync/syncTasks', method: 'post' } },
+
+      // 任务状态值映射
+      taskStatusMapping: {
+        0: { label: '启用', color: '#52c41a' },
+        1: { label: '草稿', color: '#999' },
+        2: { label: '停用', color: '#ff4d4f' }
+      },
+
+      // 执行状态值映射
+      execStatusMapping: {
+        0: { label: '成功', color: '#52c41a' },
+        1: { label: '失败', color: '#ff4d4f' },
+        2: { label: '执行中', color: '#faad14' }
       }
     }
   },

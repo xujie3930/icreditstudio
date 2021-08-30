@@ -161,7 +161,7 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
     this.$refs.detailForm.resetFields()
     this.initPage()
   },

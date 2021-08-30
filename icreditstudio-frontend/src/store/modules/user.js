@@ -7,7 +7,9 @@ import {
   SET_PERMISSION_LIST,
   SET_MESSAGE_NOTICE_INFO,
   SET_SYSTEM_SETTING,
-  SET_USER_SHORTMENU
+  SET_USER_SHORTMENU,
+  SET_WRKSPACE_LIST,
+  SET_WRKSPACE_ID
 } from '@/store/mutation-types'
 import { arrayToTree } from 'utils/util'
 import { login, logout } from '@/api/login'
@@ -23,7 +25,9 @@ const states = () => ({
   permissionList: [],
   info: {},
   messageNoticeInfo: {},
-  shortMenus: [] // 快捷菜单列表
+  shortMenus: [], // 快捷菜单列表
+  workspaceList: [], // 工作空间下拉框
+  workspaceId: null // 当前选中工作空间ID
 })
 
 const getters = {
@@ -32,7 +36,8 @@ const getters = {
   userInfo: state => state.userInfo,
   messageNoticeInfo: state => state.messageNoticeInfo,
   systemSetting: state => state.systemSetting,
-  shortMenus: state => state.shortMenus
+  shortMenus: state => state.shortMenus,
+  workspaceList: state => state.workspaceList
 }
 
 const mutations = {
@@ -56,6 +61,12 @@ const mutations = {
   },
   [SET_USER_SHORTMENU](state, shortMenus) {
     state.shortMenus = shortMenus
+  },
+  [SET_WRKSPACE_LIST](state, list) {
+    state.workspaceList = list
+  },
+  [SET_WRKSPACE_ID](state, id) {
+    state.workspaceId = id
   }
 }
 
@@ -88,9 +99,17 @@ const actions = {
     return new Promise((resolve, reject) => {
       queryPermissionsByUser()
         .then(({ data }) => {
-          const { menus, userInfo, authList, setting, shortMenus } = data
+          const {
+            menus,
+            userInfo,
+            authList,
+            setting,
+            shortMenus,
+            workspaceList
+          } = data
           const _menusTree = arrayToTree(menus || [], '0')
           if (_menusTree && _menusTree.length > 0) {
+            commit(SET_WRKSPACE_LIST, workspaceList)
             commit(SET_USERINFO, userInfo || {})
             commit(SET_AUTH, authList)
             commit(SET_PERMISSION_LIST, _menusTree)
@@ -99,7 +118,11 @@ const actions = {
             font(setting.fontSize || DEFAULT_FONT_SIZE) // 设置系统字体字号
             theme(setting.cssId || DEFAULT_CSS_ID) // 设置系统主题
           } else {
-            reject(new Error('getPermissionList: permissions must be a non-null array !'))
+            reject(
+              new Error(
+                'getPermissionList: permissions must be a non-null array !'
+              )
+            )
           }
           commit(SET_USERINFO, userInfo || {})
           resolve(data)
