@@ -119,7 +119,7 @@ export default {
         opType === 'Delete' ? { id } : { id, status: status ? 0 : 1 }
       const methodName =
         opType === 'Delete' ? 'workspaceDelete' : 'workspaceUpdate'
-      this[`handle${opType}Click`](methodName, params)
+      this[`handle${opType}Click`](methodName, params, 'tipDialog')
     },
 
     handleOperateClick(row, opType) {
@@ -133,7 +133,7 @@ export default {
           })
           break
         case 'Enabled':
-          this.handleEnabledClick('workspaceUpdate', params)
+          this.handleEnabledClick('workspaceUpdate', params, 'tipDialog')
           break
         case 'Edit':
           this.$router.push({ path: '/workspace/detail', query: { id } })

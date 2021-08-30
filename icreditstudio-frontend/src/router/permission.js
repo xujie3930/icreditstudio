@@ -83,43 +83,53 @@ router.beforeEach((to, from, next) => {
     if (to.path === '/login') {
       next({ path: INDEX_MAIN_PAGE_PATH }) // TODO
       NProgress.done()
-    } else if (store.getters['user/permissionList'].length === 0) {
+    } else if (!store.getters['user/permissionList'].length) {
       store
         .dispatch('user/getPermissionListAction')
-        .then(async res => {
-          const menuData = res.menus
-          if (menuData === null || menuData === '' || menuData === undefined) {
-            return
-          }
+        .then(async ({ menus, shortMenus }) => {
+          if (!menus) return
+
           // 将 isShow 和 keepAlive 的值 转为boolean
-          menuData.forEach(item => {
+          menus.forEach(item => {
             Object.assign(item, {
               isShow: getBooleanByType(item.isShow),
+              deleteFlag: getBooleanByType(item.deleteFlag),
               keepAlive: item.keepAlive && getBooleanByType(item.keepAlive)
             })
           })
+
+          shortMenus.forEach(item => {
+            Object.assign(item, {
+              isShow: getBooleanByType(item.isShow),
+              deleteFlag: getBooleanByType(item.deleteFlag),
+              keepAlive: item.keepAlive && getBooleanByType(item.keepAlive)
+            })
+          })
+
           // 渲染模块
-          const _modules = filterMenuWithoutModule(res.menus)
-          const _moduleData = renderModules(_modules)
-          const _short_modules = filterMenuWithoutModule(res.shortMenus)
-          const _short_moduleData = renderModules(_short_modules)
+          const _modules = filterMenuWithoutModule(menus)
+          const moduleData = renderModules(_modules)
+          // const shortModules = filterMenuWithoutModule(shortMenus)
+          // const shortmoduleData = renderModules(shortModules)
+
           await store.dispatch(
             'permission/updateTopModules',
-            _moduleData.topModules
+            moduleData.topModules
           ) // 模块数组
           await store.dispatch(
             'permission/updateModuleMenus',
-            store.getters['user/systemSetting'].enableCustomMenu === 'Y'
-              ? _short_moduleData.menusForModule
-              : _moduleData.menusForModule
+            // store.getters['user/systemSetting'].enableCustomMenu === 'Y'
+            //   ? shortmoduleData.menusForModule
+            //   : moduleData.menusForModule
+            moduleData.menusForModule
           ) // 模块对应的菜单
           // 默认选中第一个模块
-          const index = _moduleData.topModules.findIndex(
+          const index = moduleData.topModules.findIndex(
             item => item.children && item.children.length
           )
           store.commit(
             `permission/${SET_ACTIVE_MODULE_ID}`,
-            _moduleData.topModules[index > 0 ? index : 0].id
+            moduleData.topModules[index > 0 ? index : 0].id
           )
           const constRoutes = generateIndexRouter(_modules)
           // 添加主界面路由

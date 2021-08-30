@@ -5,7 +5,9 @@
  */
 
 import settingApi from './setting'
+import datasourceApi from './datasource'
 
 export default {
-  ...settingApi
+  ...settingApi,
+  ...datasourceApi
 }

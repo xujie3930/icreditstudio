@@ -40,12 +40,11 @@
           'quick-menu',
           isShowQuickMenu === 'Y' ? 'shortmenu-open' : 'shortmenu-close'
         ]"
-        :style="{
-          color: shortMenus.length
-            ? getSystemTheme(systemSetting.cssId)
-            : 'unset'
-        }"
+        :style="{ color: '#fff' }"
       />
+      <!-- color: shortMenus.length
+            ? getSystemTheme(systemSetting.cssId)
+            : 'unset' -->
 
       <el-popover
         style="margin-right: 30px;cursor: pointer"

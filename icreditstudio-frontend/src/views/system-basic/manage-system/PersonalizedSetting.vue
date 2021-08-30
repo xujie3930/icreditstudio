@@ -5,7 +5,7 @@
 -->
 
 <template>
-  <div class="params-wrap" :loading="loading">
+  <div class="params-wrap w100" :loading="loading">
     <div class="params-wrap-content">
       <!-- 基本设置 -->
       <div class="base">

@@ -4,7 +4,7 @@
  * @Date: 2021-06-17
 -->
 <template>
-  <div class="params-wrap">
+  <div class="params-wrap w100">
     <div class="params-wrap-content" v-loading="loading">
       <!-- 基本设置 -->
       <div class="base">

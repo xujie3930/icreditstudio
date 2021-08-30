@@ -9,16 +9,12 @@
       width="100px"
     >
       <el-menu
-        :default-active="
-          menu.filter(e => e.isShow)[0].name ||
-            menu.filter(e => e.isShow)[0].label
-        "
+        :default-active="defalutActived"
         :collapse="isCollapse"
         :background-color="getBaseConfig('menu-color-bg')"
         :active-text-color="getBaseConfig('menu-color-text-active')"
       >
-        <!-- :default-active="$route.path" -->
-        <template v-for="item in menu.filter(e => e.isShow)">
+        <template v-for="item in menu.filter(e => e.isShow && !e.deleteFlag)">
           <el-menu-item
             :key="item.name"
             :index="item.name"
@@ -54,22 +50,30 @@ export default {
       default: () => []
     }
   },
+
   data() {
     return {
       DEFAULT_LOGO_IMG
     }
   },
+
   filters: {
     base64UrlFilter(url) {
       return base64UrlFilter(url)
     }
   },
+
   computed: {
     ...mapGetters({
       isCollapse: 'common/isCollapse',
       systemSetting: 'user/systemSetting'
-    })
+    }),
+
+    defalutActived() {
+      return this.menu.filter(e => e.isShow && !e.deleteFlag)[0]?.name
+    }
   },
+
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
 

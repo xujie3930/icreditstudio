@@ -12,45 +12,72 @@
     @onClose="handleClose"
     @onConfirm="handleConfirm"
   >
+    <!-- 查看详情 -->
     <el-form
       v-if="opType === 'view'"
-      :model="ruleForm"
+      :model="detialForm"
       :rules="rules"
-      ref="ruleForm"
+      ref="detialForm"
       label-width="100px"
       :class="[opType === 'view' ? 'form-detail' : '']"
     >
       <template>
-        <el-form-item label="数据源名称" prop="name">
-          <span class="label-text"> 输入自定义数据源名称</span>
+        <el-form-item label="数据源名称" :rules="[{ required: true }]">
+          <span class="label-text"> {{ detailData.name }}</span>
         </el-form-item>
 
-        <el-form-item label="数据库名" prop="name">
-          <span class="label-text"> 请输入数据库名</span>
+        <el-form-item label="数据库名" :rules="[{ required: true }]">
+          <span class="label-text"> {{ detailData.databaseName }}</span>
         </el-form-item>
 
-        <el-form-item label="IP" prop="name">
-          <span class="label-text"> IPIPIP </span>
-        </el-form-item>
-        <el-form-item label="端口" prop="name">
-          <span class="label-text"> 请输入端口</span>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="IP" :rules="[{ required: true }]">
+              <span class="label-text">
+                {{ detailData.ipPort.split(':')[0] }}
+              </span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="端口" :rules="[{ required: true }]">
+              <span class="label-text">
+                {{ detailData.ipPort.split(':')[1] }}
+              </span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="用户" :rules="[{ required: true }]">
+              <span class="label-text">{{ detailData.username }}</span>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="密码" :rules="[{ required: true }]">
+              <span class="label-text">{{ detailData.password }}</span>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item label="启用" :rules="[{ required: true }]">
+          <span class="label-text">
+            {{ detailData.status ? '否' : '是' }}
+          </span>
         </el-form-item>
 
-        <el-form-item label="启用" prop="resource">
-          <span class="label-text"> 是 </span>
-        </el-form-item>
-
-        <el-form-item label="数据源描述" prop="desc">
-          <span class="label-text"> 请输入数据源描述</span>
+        <el-form-item label="数据源描述">
+          <span class="label-text"> {{ detailData.descriptor }}</span>
         </el-form-item>
       </template>
     </el-form>
 
+    <!-- 新增或编辑 -->
     <el-form
       v-else
-      :model="ruleForm"
+      :model="detialForm"
       :rules="rules"
-      ref="ruleForm"
+      ref="detialForm "
       label-width="100px"
       :class="[opType === 'view' ? 'form-detail' : '']"
     >
@@ -59,14 +86,14 @@
           <el-input
             show-word-limit
             :maxlength="15"
-            v-model="ruleForm.name"
+            v-model="detialForm.name"
             placeholder="请输入自定义数据源名称"
           ></el-input>
         </el-form-item>
 
         <el-form-item label="数据库名" prop="name">
           <el-input
-            v-model="ruleForm.name"
+            v-model="detialForm.name"
             placeholder="请输入数据库名"
           ></el-input>
         </el-form-item>
@@ -74,14 +101,14 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="IP" prop="name">
-              <el-input v-model="ruleForm.name" placeholder="请输入IP">
+              <el-input v-model="detialForm.name" placeholder="请输入IP">
               </el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="端口" prop="name">
               <el-input
-                v-model="ruleForm.name"
+                v-model="detialForm.name"
                 placeholder="请输入端口"
               ></el-input>
             </el-form-item>
@@ -89,7 +116,7 @@
         </el-row>
 
         <el-form-item label="启用" prop="resource">
-          <el-radio-group v-model="ruleForm.resource">
+          <el-radio-group v-model="detialForm.resource">
             <el-radio label="是"></el-radio>
             <el-radio label="否"></el-radio>
           </el-radio-group>
@@ -100,7 +127,7 @@
             show-word-limit
             :maxlength="250"
             type="textarea"
-            v-model="ruleForm.desc"
+            v-model="detialForm.desc"
             placeholder="请输入数据源描述"
           ></el-input>
         </el-form-item>
@@ -118,16 +145,8 @@ export default {
     return {
       opType: 'view',
       dialogVisible: false,
-      ruleForm: {
-        name: 'weweewewewe',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
+      detailData: { ipPort: '' },
+      detialForm: {},
       rules: {
         name: [
           { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
@@ -147,9 +166,33 @@ export default {
   },
 
   methods: {
-    open({ row, opType }) {
-      console.log(row, 'row')
+    open({ opType, data = {} }) {
       this.opType = opType
+      this.detailData = data
+      if (opType === 'view') {
+        const paramsObj = {}
+        const [beforeStr, afterStr] = this.detailData.uri.split('?')
+
+        // 处理查询参数
+        afterStr.split('&').forEach(item => {
+          const [key, val] = item.split('=')
+          paramsObj[key] = val
+        })
+
+        // 处理uri类型以及IP以及端口号
+        const [databaseType, ipPort, databaseName] = beforeStr
+          .split('/')
+          .filter(item => item && item.trim())
+
+        Object.assign(this.detailData, {
+          databaseType,
+          ipPort,
+          databaseName,
+          ...paramsObj
+        })
+
+        console.log(this.detailData, 'ddddd')
+      }
       this.$refs.baseDialog.open()
     },
 

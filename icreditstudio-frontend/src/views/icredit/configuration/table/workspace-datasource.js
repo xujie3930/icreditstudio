@@ -1,10 +1,20 @@
+const dataType = {
+  1: 'MySQL',
+  2: 'Oracle',
+  3: 'progresql',
+  4: 'SqlServer',
+  5: 'SFTP',
+  6: 'FTP',
+  7: 'hive',
+  8: 'MongoDB'
+}
+
 export default _this => {
   return {
-    refName: 'workspace-setting',
-    id: 'setting',
+    refName: 'workspace-datascource',
+    id: '',
     isBorder: true,
     hasPage: true,
-    // maxHeight: '550',
     customBtnConfig: [
       {
         label: '新增数据源',
@@ -26,49 +36,45 @@ export default _this => {
       {
         type: 'text',
         label: '数据源类型',
-        prop: 'userName'
+        prop: 'type',
+        width: 100,
+        formatter: row => dataType[row.type]
       },
       {
         type: 'text',
         label: '数据源自定义名称',
-        prop: 'orgName'
+        prop: 'name'
       },
       {
         type: 'text',
         label: '连接信息',
-        prop: 'accountIdentifier'
+        prop: 'uri',
+        width: 300
       },
       {
         type: 'text',
         label: '是否启用',
-        prop: 'telPhone'
+        prop: 'status',
+        formatter: row => (row.status ? '否' : '是'),
+        width: 80
       },
       {
-        type: 'date',
+        type: 'text',
         label: '最近一次同步时间',
-        prop: 'createTime'
+        prop: 'lastSyncTime'
       },
       {
-        type: 'date',
+        type: 'slot',
         label: '最近一次同步状态',
-        prop: 'createTime'
+        prop: 'lastSyncStatus'
       },
       {
-        type: 'date',
+        type: 'text',
         label: '描述信息',
-        prop: 'createTime'
+        prop: 'descriptor'
       },
-      // {
-      //   type: 'switch',
-      //   label: '是否启用',
-      //   prop: 'deleteFlag',
-      //   width: 100,
-      //   activeValue: 'N',
-      //   inactiveValue: 'Y',
-      //   change: _this.handleStatusChange
-      // },
       {
-        type: 'operation',
+        type: 'slot',
         label: '操作',
         prop: 'operation',
         width: '250px',
@@ -77,8 +83,7 @@ export default _this => {
           {
             func: ({ row }) => _this.handleDetailClick(row, 'view'),
             label: '查看',
-            key: 'view',
-            show: true
+            key: 'view'
           },
           {
             func: ({ row }) => _this.handleSyncClick(row, 'sync'),
@@ -103,13 +108,13 @@ export default _this => {
             label: '启用',
             key: 'enabled',
             show: true
+          },
+          {
+            func: ({ row }) => _this.handleDetailClick(row, 'edit'),
+            label: '编辑',
+            key: 'edit',
+            show: true
           }
-          // {
-          //   func: ({ row }) => _this.handleDetailClick(row, 'edit'),
-          //   label: '编辑',
-          //   key: 'edit',
-          //   show: true
-          // }
         ]
       }
     ]
