@@ -11,7 +11,11 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWor
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -23,6 +27,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspaceUserMapper, IcreditWorkspaceUserEntity> implements IcreditWorkspaceUserService {
+
+    @Autowired
+    private IcreditWorkspaceUserMapper workspaceUserMapper;
 
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceUserEntityPageRequest pageRequest) {
@@ -36,5 +43,11 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
                 wrapper
         );
         return BusinessPageResult.build(page, pageRequest);
+    }
+
+    @Override
+    public List<Map<String, String>> getWorkspaceByUserId(String id) {
+        List<Map<String, String>> list = workspaceUserMapper.getWorkspaceByUserId(id);
+        return list;
     }
 }

@@ -14,6 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterfac
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.web.request.OrgEntityQueryRequest;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.web.request.RoleEntityQueryRequest;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.common.code.CommonConstant;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.feign.UserWorkspaceFeignClient;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.service.InterfacesService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.service.OrganizationService;
@@ -87,6 +88,9 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
     @Autowired
     private SystemSettingsService systemSettingsService;
 
+    @Autowired
+    private UserWorkspaceFeignClient workspaceFeignClient;
+
     @Override
     public BusinessResult<AuthResult> getAuth(UserAuthParams userAuthParams) throws IOException {
 
@@ -129,6 +133,7 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
             List<RoleEntity> roleEntities = new ArrayList<>();
             // 用户角色信息 去除禁用的角色信息
             if (isAdmin(userAuthParams.getUserId())) {
+                authResult.setWorkspaceCreateAuth(true);
                 roleEntities = roleService.list(new QueryWrapper<RoleEntity>().in("id", roleIdList));
             } else {
                 roleEntities =
@@ -208,6 +213,12 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
         // 给用户信息赋值
         authResult.setUserInfo(userEntityAuthResult);
 
+        //查询用户所有的工作空间并赋值
+        String userId = userAuthParams.getUserId();
+        BusinessResult<List<Map<String, String>>> workspaceList = workspaceFeignClient.getWorkspaceListByUserId(userId);
+        if (workspaceList.isSuccess() &CollectionUtils.isNotEmpty(workspaceList.getData())){
+            authResult.setWorkspaceList(workspaceList.getData());
+        }
         return BusinessResult.success(authResult);
     }
 

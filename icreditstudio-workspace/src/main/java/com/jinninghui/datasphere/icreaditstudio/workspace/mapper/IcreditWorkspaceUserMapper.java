@@ -2,6 +2,10 @@ package com.jinninghui.datasphere.icreaditstudio.workspace.mapper;
 
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,4 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface IcreditWorkspaceUserMapper extends BaseMapper<IcreditWorkspaceUserEntity> {
 
+    List<Map<String, String>> getWorkspaceByUserId(@Param("id") String id);
 }

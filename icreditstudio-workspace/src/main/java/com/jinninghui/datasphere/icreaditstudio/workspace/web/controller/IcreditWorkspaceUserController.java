@@ -7,10 +7,10 @@ import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -35,6 +35,13 @@ public class IcreditWorkspaceUserController {
     public BusinessResult<BusinessPageResult> userPageList(@RequestBody IcreditWorkspaceUserEntityPageRequest pageRequest){
         BusinessPageResult page = workspaceUserService.queryPage(pageRequest);
         return BusinessResult.success(page);
+    }
+
+
+    @GetMapping("/getWorkspaceByUserId/{id}")
+    @Logable
+    public BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable("id") String id){
+        return BusinessResult.success(workspaceUserService.getWorkspaceByUserId(id));
     }
 
 }

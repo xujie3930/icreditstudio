@@ -4,6 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.resources.e
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hzh
@@ -23,4 +24,8 @@ public class AuthResult {
     List<ResourcesEntity> shortMenus;
 
     UserSettings setting;
+
+    List<Map<String, String>>workspaceList;
+
+    private Boolean workspaceCreateAuth = false;
 }
