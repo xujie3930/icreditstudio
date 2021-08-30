@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableValidator
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
+@EnableFeignClients
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
 public class WorkspaceApplication {
     public static void main(String[] args) {

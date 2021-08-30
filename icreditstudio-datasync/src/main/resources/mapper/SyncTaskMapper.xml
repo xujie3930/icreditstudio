@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="workspaceId" column="workspace_id" jdbcType="VARCHAR"/>
+            <result property="taskName" column="task_name" jdbcType="VARCHAR"/>
+            <result property="taskStatus" column="task_status" jdbcType="BOOLEAN"/>
+            <result property="createMode" column="create_mode" jdbcType="BOOLEAN"/>
+            <result property="collectMode" column="collect_mode" jdbcType="BOOLEAN"/>
+            <result property="syncMode" column="sync_mode" jdbcType="BOOLEAN"/>
+            <result property="execStatus" column="exec_status" jdbcType="BOOLEAN"/>
+            <result property="lastSchedulingTime" column="last_scheduling_time" jdbcType="TIMESTAMP"/>
+            <result property="taskDescribe" column="task_describe" jdbcType="VARCHAR"/>
+            <result property="taskParamJson" column="task_param_json" jdbcType="VARCHAR"/>
+            <result property="version" column="version" jdbcType="INTEGER"/>
+            <result property="scheduleId" column="schedule_id" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="createUserId" column="create_user_id" jdbcType="VARCHAR"/>
+            <result property="lastUpdateTime" column="last_update_time" jdbcType="TIMESTAMP"/>
+            <result property="lastUpdateUserId" column="last_update_user_id" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,workspace_id,task_name,
+        task_status,create_mode,collect_mode,
+        sync_mode,exec_status,last_scheduling_time,
+        task_describe,task_param_json,version,
+        schedule_id,remark,create_time,
+        create_by,update_time,update_by,
+        del_flag
+    </sql>
+    <select id=""
+</mapper>

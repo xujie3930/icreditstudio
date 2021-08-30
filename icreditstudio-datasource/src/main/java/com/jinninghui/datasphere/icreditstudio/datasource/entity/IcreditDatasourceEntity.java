@@ -66,6 +66,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 最后一次同步时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date lastSyncTime;
 
     /**

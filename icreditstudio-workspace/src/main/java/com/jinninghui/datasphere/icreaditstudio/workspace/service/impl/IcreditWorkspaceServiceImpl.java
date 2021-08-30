@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
+import com.jinninghui.datasphere.icreaditstudio.workspace.feign.SystemFeignClient;
+import com.jinninghui.datasphere.icreaditstudio.workspace.feign.request.FeignUserEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
@@ -42,6 +44,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Autowired
     private SequenceService sequenceService;
 
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
     @Override
     @BusinessParamsValidate
@@ -51,6 +55,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
         defEntity.setCreateTime(new Date());
+        FeignUserEntityPageRequest request = new FeignUserEntityPageRequest();
+        request.setUserName("xujie");
+        BusinessResult<BusinessPageResult> resp = systemFeignClient.pageList(request, "111");
         return BusinessResult.success(save(defEntity));
     }
 

@@ -17,6 +17,12 @@ spring:
           uri: lb://uaa #服务名不要用下划线
           predicates:
             - Path=/system/**
+        - id: datasource # 我们⾃定义的路由 ID，保持唯⼀
+            #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+
+          uri: lb://datasource # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/datasource/**
 
   application:
     name: api-gateway

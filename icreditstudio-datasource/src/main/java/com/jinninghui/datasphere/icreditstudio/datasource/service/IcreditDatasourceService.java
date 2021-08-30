@@ -27,5 +27,5 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
 
     BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request);
 
-    BusinessResult<Boolean> syncById(String id);
+    BusinessResult<String> syncById(String id);
 }

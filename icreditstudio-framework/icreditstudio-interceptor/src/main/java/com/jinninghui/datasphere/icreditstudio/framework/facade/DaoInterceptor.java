@@ -22,7 +22,7 @@ public class DaoInterceptor {
     private static final Logger logger = LoggerFactory.getLogger(DaoInterceptor.class);
     private static final int PARAM_LENGTH_MAX = 100;
 
-    @Pointcut("execution(* com.hashtech..data..*(..))")
+    @Pointcut("execution(* com.jinninghui..mapper..*(..))")
     public void pointcut(){
 
     }
