@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableDiscoveryClient
 @SpringBootApplication
 @EnableSequenceService
-@EnableValidator
+//@EnableValidator
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象

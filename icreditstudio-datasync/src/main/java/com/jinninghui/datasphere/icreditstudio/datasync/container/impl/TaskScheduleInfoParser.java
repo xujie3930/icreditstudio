@@ -1,7 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
+package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

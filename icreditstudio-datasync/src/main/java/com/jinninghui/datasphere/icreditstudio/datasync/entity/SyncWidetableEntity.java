@@ -3,7 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jinninghui.datasphere.icreditstudio.framework.result.base.BaseEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.SyncBaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,7 +16,7 @@ import java.io.Serializable;
  */
 @TableName(value = "icredit_sync_widetable")
 @Data
-public class SyncWidetableEntity extends BaseEntity implements Serializable {
+public class SyncWidetableEntity extends SyncBaseEntity implements Serializable {
 
     public static final String SYNC_TASK_ID = "sync_task_id";
     public static final String VERSION = "version";

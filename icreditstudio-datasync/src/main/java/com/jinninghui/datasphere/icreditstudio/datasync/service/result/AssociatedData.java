@@ -8,12 +8,8 @@ import java.util.List;
  * @author Peng
  */
 @Data
-public class FileAssociated {
+public class AssociatedData {
 
-    /**
-     * 方言
-     */
-    private String dialect;
     /**
      * 左表名称
      */
