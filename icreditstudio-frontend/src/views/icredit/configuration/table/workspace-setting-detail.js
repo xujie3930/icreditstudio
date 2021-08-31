@@ -7,6 +7,7 @@ export default {
   id: 'settingDetial',
   isBorder: true,
   hasPage: false,
+  maxHeight: 250,
   group: [
     {
       type: 'index',
@@ -17,27 +18,28 @@ export default {
     {
       type: 'text',
       label: '用户',
-      prop: 'userName'
+      prop: 'username'
     },
     {
       type: 'text',
       label: '角色',
-      prop: 'orgName'
+      prop: 'userRole'
     },
     {
       type: 'text',
       label: '功能权限',
-      prop: 'accountIdentifier'
+      prop: 'functionalAuthority'
     },
     {
       type: 'text',
       label: '数据权限',
-      prop: 'telPhone'
+      prop: 'dataAuthority'
     },
     {
       type: 'date',
       label: '添加时间',
-      prop: 'createTime'
+      prop: 'createTime',
+      format: 'yyyy-MM-dd'
     }
   ]
 }

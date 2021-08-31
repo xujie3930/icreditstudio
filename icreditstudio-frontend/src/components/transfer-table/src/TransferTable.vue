@@ -7,7 +7,10 @@
           <span v-if="showTableLength">{{ elLeftData.length }}</span>
         </div>
         <div class="transfer-table-filter">
-          <el-input :placeholder="tableFilterConfig.placeholder || '请输入'" v-model="leftFilter">
+          <el-input
+            :placeholder="tableFilterConfig.placeholder || '请输入'"
+            v-model="leftFilter"
+          >
           </el-input>
         </div>
         <div class="table-container">
@@ -15,17 +18,39 @@
             ref="leftTable"
             v-loading="tableLoading"
             :table-configuration="leftTableConfiguration"
-            :table-data=" elLeftData | filterTableList(tableFilterConfig.prop, leftFilter)"
+            :table-data="
+              elLeftData | filterTableList(tableFilterConfig.prop, leftFilter)
+            "
             @selection-change="_handleSelectChange($event, 'left')"
           ></j-table>
         </div>
       </el-col>
-      <el-col :span="2" align="center" class="btn-group"
-              :style="{ marginTop: elLeftData.length || elLeftData.length ? '250px' : '100px' }">
-        <el-button circle class="btn" size="mini" type="primary" icon="el-icon-caret-left"
-                   :disabled="!rightSelected.length" @click="transToLeft"/>
-        <el-button circle class="btn" size="mini" type="primary" icon="el-icon-caret-right"
-                   :disabled="!leftSelected.length" @click="transToRight"/>
+      <el-col
+        :span="2"
+        align="center"
+        class="btn-group"
+        :style="{
+          marginTop: elLeftData.length || elLeftData.length ? '250px' : '100px'
+        }"
+      >
+        <el-button
+          circle
+          class="btn"
+          size="mini"
+          type="primary"
+          icon="el-icon-caret-left"
+          :disabled="!rightSelected.length"
+          @click="transToLeft"
+        />
+        <el-button
+          circle
+          class="btn"
+          size="mini"
+          type="primary"
+          icon="el-icon-caret-right"
+          :disabled="!leftSelected.length"
+          @click="transToRight"
+        />
       </el-col>
       <el-col :span="11" align="left">
         <div class="table-desc">
@@ -33,14 +58,19 @@
           <span v-if="showTableLength">{{ elRightData.length }}</span>
         </div>
         <div class="transfer-table-filter">
-          <el-input :placeholder="tableFilterConfig.placeholder || '请输入'" v-model="rightFilter"></el-input>
+          <el-input
+            :placeholder="tableFilterConfig.placeholder || '请输入'"
+            v-model="rightFilter"
+          ></el-input>
         </div>
         <div class="table-container">
           <j-table
             ref="rightTable"
             v-loading="tableLoading"
             :table-configuration="rightTableConfiguration"
-            :table-data=" elRightData | filterTableList(tableFilterConfig.prop, rightFilter)"
+            :table-data="
+              elRightData | filterTableList(tableFilterConfig.prop, rightFilter)
+            "
             @selection-change="_handleSelectChange($event, 'right')"
           ></j-table>
         </div>
@@ -111,8 +141,12 @@ export default {
     init() {
       this.leftFilter = ''
       this.rightFilter = ''
-      this.$refs.leftTable.$refs[this.leftTableConfiguration.refName].clearSelection()
-      this.$refs.rightTable.$refs[[this.rightTableConfiguration.refName]].clearSelection()
+      this.$refs.leftTable.$refs[
+        this.leftTableConfiguration.refName
+      ].clearSelection()
+      this.$refs.rightTable.$refs[
+        [this.rightTableConfiguration.refName]
+      ].clearSelection()
       const { leftData, rightData } = this
       this.elLeftData = leftData
       this.elRightData = rightData
@@ -141,7 +175,9 @@ export default {
       this.elLeftData = this.elLeftData.filter(
         item => !leftSelected.some(s => s === item)
       )
-      this.$refs.leftTable.$refs[this.leftTableConfiguration.refName].clearSelection()
+      this.$refs.leftTable.$refs[
+        this.leftTableConfiguration.refName
+      ].clearSelection()
       this.updateData()
     },
     transToLeft() {
@@ -150,7 +186,9 @@ export default {
       this.elRightData = this.elRightData.filter(
         item => !rightSelected.some(s => s === item)
       )
-      this.$refs.rightTable.$refs[[this.rightTableConfiguration.refName]].clearSelection()
+      this.$refs.rightTable.$refs[
+        [this.rightTableConfiguration.refName]
+      ].clearSelection()
       this.updateData()
     }
   }
@@ -158,52 +196,52 @@ export default {
 </script>
 
 <style scoped lang="scss">
-  .scroll-box {
-    height: auto;
-  }
+.scroll-box {
+  height: auto;
+}
 
-  .table-desc {
-    height: 70px;
-    opacity: 1;
-    font-size: 18px;
-    font-family: PingFangSC, PingFangSC-Medium;
+.table-desc {
+  height: 70px;
+  opacity: 1;
+  font-size: 18px;
+  font-family: PingFangSC, PingFangSC-Medium;
+  font-weight: 500;
+  text-align: center;
+  color: #323232;
+  margin: 0 auto;
+  line-height: 70px;
+
+  span {
     font-weight: 500;
     text-align: center;
     color: #323232;
-    margin: 0 auto;
-    line-height: 70px;
-
-    span {
-      font-weight: 500;
-      text-align: center;
-      color: #323232;
-      opacity: 1;
-      font-size: 18px;
-      font-family: PingFangSC, PingFangSC-Medium;
-      line-height: 25px;
-    }
+    opacity: 1;
+    font-size: 18px;
+    font-family: PingFangSC, PingFangSC-Medium;
+    line-height: 25px;
   }
+}
 
-  .transfer-table-filter {
-    margin-bottom: 5px;
+.transfer-table-filter {
+  margin-bottom: 5px;
+}
+
+.btn-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .btn {
+    margin: 16px 0;
   }
+}
 
-  .btn-group {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+/deep/ .el-table--border th {
+  border-right: none;
+}
 
-    .btn {
-      margin: 16px 0;
-    }
-  }
-
-  /deep/ .el-table--border th {
-    border-right: none;
-  }
-
-  /deep/ .el-table--border td {
-    border-right: none;
-  }
+/deep/ .el-table--border td {
+  border-right: none;
+}
 </style>

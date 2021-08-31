@@ -21,7 +21,7 @@
               class="logo-list"
               :key="list.logo"
               v-for="list in item"
-              @click="handleSelectClick(key)"
+              @click="handleSelectClick(key, list.name)"
             >
               <j-svg class="logo-icon" :name="list.name" />
               <h3 class="logo-text">{{ list.logo }}</h3>
@@ -31,7 +31,7 @@
       </div>
     </el-dialog>
 
-    <AddStepSecond ref="addStep" />
+    <AddStepSecond ref="addStep" @on-confirm="handleConfirm" />
   </div>
 </template>
 
@@ -52,26 +52,31 @@ export default {
         blockChain: '区块链'
       },
       logoList: {
+        //  关系型数据库
         relational: [
           { logo: 'MySQL', name: 'mysql' },
           { logo: 'oracle', name: 'oracle' },
           { logo: 'postgresql', name: 'postgresql' },
-          { logo: 'SqlServers', name: 'sql-server' }
+          { logo: 'SqlServers', name: 'sqlserver' }
         ],
+        // 半结构化数据库
         semiStructured: [
           { logo: 'FTP', name: 'ftp' },
           { logo: 'SFTP', name: 'sftp' },
           { logo: 'HDFS', name: 'hdfs' }
         ],
+        // NOSQL
         noSql: [
           { logo: 'MongoDB', name: 'mongodb' },
           { logo: 'Elasticsearch', name: 'elasticsearch' }
         ],
+        // 本地文件
         doc: [
           { logo: 'EXCEL', name: 'excel' },
           { logo: 'TXT', name: 'txt' },
           { logo: 'CSV', name: 'csv' }
         ],
+        // 区块链
         blockChain: [{ logo: '区块链', name: 'chain' }]
       }
     }
@@ -90,6 +95,10 @@ export default {
       if (type === 'blockChain') return
       this.close()
       this.$refs.addStep.open(type)
+    },
+
+    handleConfirm(success) {
+      this.$emit('on-confirm', success)
     }
   }
 }

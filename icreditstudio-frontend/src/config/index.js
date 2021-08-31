@@ -1,8 +1,12 @@
+/*
+ * @Author: lizheng
+ * @Description:
+ * @Date: 2021-08-16
+ */
 /* 基础配置 */
 const baseConfig = {
   baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.50:13249',
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:17854/', // 开发环境
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.30:13249', // 测试环境
+  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.4:13249',
   // 请求超时时间
   timeout: 9000,
   // 项目名称

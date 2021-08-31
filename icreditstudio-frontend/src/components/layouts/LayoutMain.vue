@@ -135,9 +135,8 @@ export default {
       // 自动加载二级菜单的第一个菜单
       if (children.length) {
         this.getChildMenus(children[0])
-        console.log(children, 'xxxfffggg')
         const exitShowChild = children[0].children
-          ? children[0].children.filter(item => item.isShow)
+          ? children[0].children.filter(item => item.isShow && !item.deleteFlag)
           : []
         !exitShowChild.length && this.$router.push(children[0].url)
       }
@@ -145,11 +144,13 @@ export default {
 
     // 二级菜单切换
     getChildMenus(curMenu) {
-      const { children: childMenus, ...rest } = curMenu
+      const { children: childMenus = [], ...rest } = curMenu
+      const showMenuArr = childMenus.filter(
+        item => item.isShow && !item.deleteFlag
+      )
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
-      // !childMenus[0].children && this.$router.push(childMenus[0].url)
-      this.isExistThreeMenus = !!childMenus?.length
-      this.threeChildrenMenus = childMenus?.filter(item => item.isShow)
+      this.isExistThreeMenus = !!showMenuArr.length
+      this.threeChildrenMenus = showMenuArr
     },
 
     // 三级菜单切换

@@ -86,10 +86,10 @@ import operate from '@/mixins/operate'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting'
 import formOption from '@/views/icredit/configuration/form/workspace-setting'
 import Dialog from './dialog'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [crud, operate],
-
   components: { Dialog },
 
   data() {
@@ -103,11 +103,22 @@ export default {
     }
   },
 
+  computed: {
+    ...mapGetters('user', ['userInfo'])
+  },
+
   created() {
     this.mixinRetrieveTableData()
   },
 
   methods: {
+    interceptorsRequestRetrieve(params) {
+      return {
+        userId: this.userInfo.id,
+        ...params
+      }
+    },
+
     handleAddWorkspace() {
       this.$router.push('/workspace/detail')
     },
@@ -119,7 +130,7 @@ export default {
         opType === 'Delete' ? { id } : { id, status: status ? 0 : 1 }
       const methodName =
         opType === 'Delete' ? 'workspaceDelete' : 'workspaceUpdate'
-      this[`handle${opType}Click`](methodName, params)
+      this[`handle${opType}Click`](methodName, params, 'tipDialog')
     },
 
     handleOperateClick(row, opType) {
@@ -133,7 +144,7 @@ export default {
           })
           break
         case 'Enabled':
-          this.handleEnabledClick('workspaceUpdate', params)
+          this.handleEnabledClick('workspaceUpdate', params, 'tipDialog')
           break
         case 'Edit':
           this.$router.push({ path: '/workspace/detail', query: { id } })

@@ -7,7 +7,7 @@ export default [
   {
     type: 'select',
     label: '数据源类型',
-    ruleProp: 'deleteFlag',
+    ruleProp: 'type',
     model: '',
     isSearch: true,
     options: [
@@ -27,14 +27,13 @@ export default [
     type: 'text',
     label: '数据源自定义名称',
     model: '',
-    ruleProp: 'userName',
-    isSearch: true,
-    maxlength: 20
+    ruleProp: 'name',
+    isSearch: true
   },
   {
     type: 'select',
     label: '是否启用',
-    ruleProp: '',
+    ruleProp: 'status',
     model: '',
     isSearch: true,
     options: [

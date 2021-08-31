@@ -20,7 +20,12 @@
         <slot v-if="footer" name="customFooter" />
         <div v-else>
           <el-button size="mini" @click="close">取 消</el-button>
-          <el-button size="mini" type="primary" @click="confirm">
+          <el-button
+            size="mini"
+            type="primary"
+            :loading="btnLoading"
+            @click="confirm"
+          >
             确 定
           </el-button>
         </div>
@@ -32,7 +37,7 @@
 <script>
 export default {
   data() {
-    return { dialogVisible: false }
+    return { dialogVisible: false, btnLoading: false }
   },
 
   props: {
@@ -74,11 +79,12 @@ export default {
 
     close() {
       this.dialogVisible = false
+      this.btnLoading = false
       this.$emit('on-close')
     },
 
     confirm() {
-      this.close()
+      this.btnLoading = true
       this.$emit('on-confirm')
     }
   }

@@ -21,13 +21,14 @@
         class="workspace-select"
         size="mini"
         placeholder="请选择"
-        v-model="workspaceValue"
+        v-model="workspaceId"
+        @change="workspaceIdChange"
       >
         <el-option
-          v-for="item in workspaceOptions"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
+          v-for="item in workspaceList || []"
+          :key="item.id"
+          :label="item.name"
+          :value="item.id"
         >
         </el-option>
       </el-select>
@@ -40,12 +41,11 @@
           'quick-menu',
           isShowQuickMenu === 'Y' ? 'shortmenu-open' : 'shortmenu-close'
         ]"
-        :style="{
-          color: shortMenus.length
-            ? getSystemTheme(systemSetting.cssId)
-            : 'unset'
-        }"
+        :style="{ color: '#fff' }"
       />
+      <!-- color: shortMenus.length
+            ? getSystemTheme(systemSetting.cssId)
+            : 'unset' -->
 
       <el-popover
         style="margin-right: 30px;cursor: pointer"
@@ -109,7 +109,7 @@ import { base64UrlFilter } from '@/utils/util'
 import { getSystemTheme } from '@/utils/theme'
 // import LayoutHeaderSlot from '@/components/layout/LayoutHeaderSlot'
 import { pollingUnreadInfos } from '@/api/message'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { SET_ACTIVE_MODULE_ID } from '@/store/mutation-types'
 import { DEFAULT_HEAD_IMG_URL } from '@/config/constant'
 import { settingUserShortMenuStatus } from '@/api/system'
@@ -136,13 +136,7 @@ export default {
   data() {
     this.getSystemTheme = getSystemTheme
     return {
-      workspaceValue: 'default',
-      workspaceOptions: [
-        { value: 'default', label: '默认工作空间' },
-        { value: 'shuiwu', label: '水务工作空间' },
-        { value: 'test', label: '测试工作空间' }
-      ],
-
+      workspaceId: null,
       isShowQuickMenu: 'N',
       activeModule: '',
       count: 1,
@@ -164,14 +158,32 @@ export default {
     }
   },
 
+  watch: {
+    workspaceList: {
+      deep: true,
+      immediate: true,
+      handler(nVal) {
+        localStorage.setItem('workspaceId', null)
+        if (nVal.length) {
+          const { id } = nVal[0]
+          this.workspaceId = id
+          localStorage.setItem('workspaceId', id)
+          this.setWorkspaceId(id)
+        }
+      }
+    }
+  },
+
   computed: {
     ...mapGetters({
+      workspaceList: 'user/workspaceList',
       userInfo: 'user/userInfo',
       isCollapse: 'common/isHeaderCollapse',
       messageNoticeInfo: 'user/messageNoticeInfo',
       systemSetting: 'user/systemSetting',
       shortMenus: 'user/shortMenus'
     }),
+
     title() {
       return window.__JConfig.baseConfig.projectName
     }
@@ -188,6 +200,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations('user', { setWorkspaceId: 'SET_WRKSPACE_ID' }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
     ...mapActions('user', [
       'logoutAction',
@@ -195,6 +208,12 @@ export default {
       'setIsShowQuickMenu',
       'getPermissionListAction'
     ]),
+
+    workspaceIdChange(id) {
+      console.log(id, 'ididiidid')
+      localStorage.setItem('workspaceId', id)
+      this.setWorkspaceId(id)
+    },
 
     // 点击展示快捷菜单
     handleShowShortMenu() {

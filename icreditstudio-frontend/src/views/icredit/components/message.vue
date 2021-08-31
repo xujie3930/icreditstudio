@@ -5,7 +5,12 @@
 -->
 
 <template>
-  <BaseDialog ref="baseDialog" width="480px" :title="title">
+  <BaseDialog
+    ref="baseDialog"
+    width="480px"
+    :title="title"
+    @on-confirm="confirm"
+  >
     <div class="content">
       {{ beforeOperateMsg }}
       <span class="color-text">{{ name }}</span>
@@ -22,6 +27,8 @@ export default {
 
   data() {
     return {
+      row: {},
+      opType: '',
       title: '',
       name: '',
       afterOperateMsg: '',
@@ -32,8 +39,10 @@ export default {
 
   methods: {
     open(options) {
-      const { title, name, afterOperateMsg, beforeOperateMsg } = options
-      this.name = name
+      const { title, row, opType, afterOperateMsg, beforeOperateMsg } = options
+      this.name = row.name
+      this.opType = opType
+      this.row = row
       this.title = title
       this.afterOperateMsg = afterOperateMsg
       this.beforeOperateMsg = beforeOperateMsg
@@ -41,9 +50,14 @@ export default {
       this.$refs.baseDialog.open()
     },
 
-    handleConfirm() {
+    close() {
+      this.$refs.baseDialog.close()
       this.dialogVisible = false
-      this.$emit('on-confirm')
+    },
+
+    confirm() {
+      this.dialogVisible = false
+      this.$emit('on-confirm', this.opType, this.row)
     }
   }
 }

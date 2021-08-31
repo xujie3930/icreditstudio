@@ -32,83 +32,106 @@
       :handleCancel="mixinHandleCancel"
       @handleAddDataSource="handleAddDataSource"
     >
+      <template #content>
+        <j-table
+          v-loading="mixinTableLoading"
+          :table-configuration="tableConfiguration"
+          :table-pagination="mixinTablePagination"
+          :table-data="mixinTableData"
+          @handleSizeChange="mixinHandleSizeChange"
+          @handleCurrentChange="mixinHandleCurrentChange"
+        >
+          <!-- 最近一次同步状态 -->
+          <template #lastSyncStatusColumn="{row}">
+            <span
+              :style="{ color: !row.lastSyncStatus ? '#52c41a' : '#ff4d4f' }"
+            >
+              {{ !row.lastSyncStatus ? '成功' : '失败' }}
+            </span>
+          </template>
+
+          <!-- 操作按钮 -->
+          <template #operationColumn="{row}">
+            <div v-if="!row.status">
+              <el-button type="text" @click="handleOperateClick(row, 'View')">
+                查看
+              </el-button>
+              <el-button type="text" @click="handleSyncClick(row, 'Sync')">
+                同步
+              </el-button>
+              <el-button type="text" @click="handleDisabledBtnClick(row)">
+                停用
+              </el-button>
+            </div>
+
+            <div v-else>
+              <el-button type="text" @click="handleOperateClick(row, 'Edit')">
+                编辑
+              </el-button>
+              <el-button type="text" @click="handleOperateClick(row, 'Delete')">
+                删除
+              </el-button>
+              <el-button
+                type="text"
+                @click="handleOperateClick(row, 'Enabled')"
+              >
+                启用
+              </el-button>
+            </div>
+          </template>
+        </j-table>
+      </template>
     </crud-basic>
 
     <div class="source-slider" v-if="isSyncClick">
-      <div class="bar"></div>
-      <div class="text">同步成功，新增10张表</div>
+      <div :class="[isSyncStatus ? '' : 'red-bar', 'bar']"></div>
+      <div :class="[isSyncStatus ? '' : 'red-text', 'text']">
+        {{
+          isSyncStatus
+            ? `100% 同步成功，新增${syncDataCount}张表！`
+            : '0% 同步失败，请重试！'
+        }}
+      </div>
     </div>
 
-    <Dialog ref="dataSourceDialog" />
+    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
     <Detail ref="dataSourceDetail" :footer="true" />
-    <AddDataSourceStepFirst ref="addStepFirst" />
+    <AddDataSourceStepFirst
+      ref="addStepFirst"
+      @confirm="addDatasourceCallback"
+    />
   </div>
 </template>
 
 <script>
 import crud from '@/mixins/crud'
+import operate from '@/mixins/operate'
+import workspace from '@/mixins/workspace'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource'
 import formOption from '@/views/icredit/configuration/form/workspace-datasource'
-import Dialog from './tip-dialog'
+import Message from '@/views/icredit/components/message'
 import Detail from './detail'
 import AddDataSourceStepFirst from './add-step-first'
+import API from '@/api/icredit'
 
 export default {
-  mixins: [crud],
-  components: { Dialog, Detail, AddDataSourceStepFirst },
+  mixins: [crud, operate, workspace],
+  components: { Message, Detail, AddDataSourceStepFirst },
 
   data() {
     return {
+      timerId: null,
       isSyncClick: false,
-      sliderVal: 100,
+      isSyncStatus: true,
+      syncDataCount: 0,
       formOption,
       mixinSearchFormConfig: {
-        models: {
-          userName: '',
-          accountIdentifier: '',
-          telPhone: '',
-          orgList: []
-        },
-        retrieveModels: {
-          userId: ''
-        }
-      },
-      mixinDialogFormConfig: {
-        models: {
-          userName: '',
-          userCode: '',
-          userBirth: '',
-          sortNumber: '',
-          telPhone: '',
-          accountIdentifier: '',
-          userGender: '',
-          deleteFlag: 'N',
-          orgList: [],
-          userRemark: ''
-        },
-        rule: {
-          userName: [
-            { required: true, message: '用户姓名不能为空', trigger: 'blur' }
-          ],
-          accountIdentifier: [
-            { required: true, message: '账号不能为空', trigger: 'blur' }
-          ],
-          telPhone: [
-            { pattern: /^1[0-9]{10}$/, message: '请输入正确的手机号码' }
-          ],
-          orgList: [
-            {
-              required: true,
-              message: '部门不能为空',
-              trigger: ['change', 'blur']
-            }
-          ]
-        }
+        models: { name: '', type: '', status: '' }
       },
       tableConfiguration: tableConfiguration(this),
       fetchConfig: {
         retrieve: {
-          url: '/workspace/pageList',
+          url: '/datasource/pageList',
           method: 'post'
         }
       }
@@ -120,6 +143,13 @@ export default {
   },
 
   methods: {
+    interceptorsRequestRetrieve(params) {
+      return {
+        workspaceId: this.workspaceId,
+        ...params
+      }
+    },
+
     handleAddDataSource() {
       this.$refs.addStepFirst.open()
     },
@@ -128,38 +158,79 @@ export default {
       console.log(row, 'row')
     },
 
-    // 查看操作
-    handleDetailClick(row, opType) {
-      console.log('row', row)
-      this.$refs.dataSourceDetail.open({ row, opType })
-    },
-
-    // 启用
-    handleEnabledClick(row) {
-      console.log(row)
-      this.$message.success({
-        type: 'success',
-        offset: 200,
-        center: true,
-        duration: 1500,
-        message: '启用成功！'
-      })
-      // 调用接口
+    // 停用
+    handleDisabledBtnClick(row) {
+      const options = {
+        row,
+        opType: 'Disabled',
+        title: '数据源停用',
+        beforeOperateMsg: '当前数据源有工作流（',
+        afterOperateMsg: '）在调度，请先下线工作流后再停用。'
+      }
+      this.$refs.operateMessage.open(options)
     },
 
     // 同步
     handleSyncClick(row) {
-      console.log(row)
       this.isSyncClick = true
-      // 调用接口
-      setTimeout(() => {
-        this.isSyncClick = false
-      }, 3000)
+      this.timerId = null
+      this.isSyncStatus = true
+      this.syncDataCount = 0
+      API.datasourceSync(row.id)
+        .then(({ success, data }) => {
+          if (success) {
+            this.syncDataCount = data
+            this.$notify.success({
+              title: '操作提示',
+              message: '数据源同步成功！'
+            })
+          }
+        })
+        .catch(() => {
+          this.isSyncStatus = false
+        })
+        .finally(() => {
+          this.timerId = setTimeout(() => {
+            this.isSyncClick = false
+          }, 2500)
+        })
     },
 
+    // 操作列
     handleOperateClick(row, opType) {
-      console.log(row, 'row', opType)
-      this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
+      const { id, status } = row
+      const params = { id, status: status ? 0 : 1 }
+      switch (opType) {
+        case 'View':
+          this.handleEditClick('datasourceDetail', id)
+          break
+        case 'Enabled':
+          this.handleEnabledClick('datasourceUpdate', params)
+          break
+        default:
+          this.$refs.operateMessage.open(opType, row)
+          break
+      }
+    },
+
+    // 弹窗提示回调函数
+    messageOperateCallback(opType, row) {
+      const { id, status } = row
+      const params =
+        opType === 'Delete' ? { id } : { id, status: status ? 0 : 1 }
+      const methodName =
+        opType === 'Delete' ? 'datasourceDelete' : 'datasourceUpdate'
+      this[`handle${opType}Click`](methodName, params, 'operateMessage')
+    },
+
+    // 添加数据源的回调
+    addDatasourceCallback(success) {
+      success && this.mixinRetrieveTableData()
+    },
+
+    // 查看详情
+    mixinDetailInfo(data) {
+      this.$refs.dataSourceDetail.open({ data, opType: 'view' })
     }
   }
 }
@@ -189,10 +260,18 @@ export default {
       background-color: #52c41a;
     }
 
+    .red-bar {
+      background-color: #ff4d4f;
+    }
+
     .text {
       display: inline-block;
       margin-left: 10px;
       color: #52c41a;
+    }
+
+    .red-text {
+      color: #ff4d4f;
     }
   }
 

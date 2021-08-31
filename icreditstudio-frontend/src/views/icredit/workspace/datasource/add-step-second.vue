@@ -33,23 +33,24 @@
       <el-form-item
         v-if="dataType === 'relational'"
         label="数据库名"
-        prop="name"
+        prop="databaseName"
       >
         <el-input
-          v-model="dataSourceForm.name"
+          v-model="dataSourceForm.databaseName"
           placeholder="请输入数据库名"
         ></el-input>
       </el-form-item>
 
+      <!-- 半结构化以及本地文件 -->
       <template v-if="['semiStructured', 'doc'].includes(dataType)">
         <el-form-item
           v-if="dataType === 'semiStructured'"
           label="数据源路径"
-          prop="name"
+          prop="uri"
         >
           <el-input
-            v-model="dataSourceForm.name"
-            placeholder="请输入数据库名"
+            v-model="dataSourceForm.uri"
+            placeholder="请输入数据源路径"
           ></el-input>
         </el-form-item>
 
@@ -58,10 +59,10 @@
           label="文件格式"
           prop="resource"
         >
-          <el-radio-group v-model="dataSourceForm.resource">
-            <el-radio label="TXT"></el-radio>
-            <el-radio label="XLS"></el-radio>
-            <el-radio label="CSV"></el-radio>
+          <el-radio-group v-model="dataSourceForm.docType">
+            <el-radio label="TXT">TXT</el-radio>
+            <el-radio label="XLS">XLS</el-radio>
+            <el-radio label="CSV">CSV</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -81,9 +82,9 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="分隔符" prop="name">
+        <el-form-item label="分隔符" prop="separator">
           <el-input
-            v-model="dataSourceForm.name"
+            v-model="dataSourceForm.separator"
             placeholder="请输入分隔符"
           ></el-input>
         </el-form-item>
@@ -91,18 +92,18 @@
 
       <el-row v-if="dataType !== 'doc'">
         <el-col :span="12">
-          <el-form-item label="IP" prop="name">
+          <el-form-item label="IP" prop="ip">
             <el-input
-              v-model="dataSourceForm.name"
+              v-model="dataSourceForm.ip"
               placeholder="请输入数据源连接IP"
             >
             </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="端口" prop="name">
+          <el-form-item label="端口" prop="port">
             <el-input
-              v-model="dataSourceForm.name"
+              v-model="dataSourceForm.port"
               placeholder="请输入端口"
             ></el-input>
           </el-form-item>
@@ -111,37 +112,38 @@
 
       <el-row v-if="dataType !== 'doc'">
         <el-col :span="12">
-          <el-form-item label="用户名" prop="name">
+          <el-form-item label="用户名" prop="username">
             <el-input
-              v-model="dataSourceForm.name"
+              v-model="dataSourceForm.username"
               placeholder="请输入数据源连接用户名"
             >
             </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="密码" prop="name">
+          <el-form-item label="密码" prop="password">
             <el-input
-              v-model="dataSourceForm.name"
+              show-password
+              v-model="dataSourceForm.password"
               placeholder="请输入数据源连接密码"
             ></el-input>
           </el-form-item>
         </el-col>
       </el-row>
 
-      <el-form-item label="启用" prop="resource">
-        <el-radio-group v-model="dataSourceForm.resource">
-          <el-radio label="是"></el-radio>
-          <el-radio label="否"></el-radio>
+      <el-form-item label="启用" prop="status">
+        <el-radio-group v-model="dataSourceForm.status">
+          <el-radio label="0">是</el-radio>
+          <el-radio label="1">否</el-radio>
         </el-radio-group>
       </el-form-item>
 
-      <el-form-item label="数据源描述" prop="desc">
+      <el-form-item label="数据源描述" prop="descriptor">
         <el-input
           show-word-limit
           :maxlength="250"
           type="textarea"
-          v-model="dataSourceForm.desc"
+          v-model="dataSourceForm.descriptor"
           placeholder="请输入数据源描述"
         ></el-input>
       </el-form-item>
@@ -164,11 +166,17 @@
         size="mini"
         type="primary"
         v-if="dataType !== 'doc'"
+        :loading="testBtnLoading"
         @click="handleTestLink"
       >
         测试连接
       </el-button>
-      <el-button size="mini" type="primary" @click="handleConfirm">
+      <el-button
+        size="mini"
+        type="primary"
+        :loading="btnLoading"
+        @click="handleConfirm"
+      >
         确 定
       </el-button>
     </div>
@@ -177,6 +185,14 @@
 
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
+import API from '@/api/icredit'
+
+const databaseTypeMapping = {
+  mysql: 1,
+  oralce: 2,
+  psotgresql: 3,
+  sqlserver: 4
+}
 
 export default {
   components: { BaseDialog },
@@ -184,6 +200,8 @@ export default {
   data() {
     return {
       dataType: '',
+      btnLoading: false,
+      testBtnLoading: false,
       positionOptions: [
         { label: '第一行', value: 1 },
         { label: '第二行', value: 2 },
@@ -192,32 +210,28 @@ export default {
       dialogVisible: false,
       dataSourceForm: {
         name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: '',
-        file: '',
-        position: ''
+        databaseName: '',
+        ip: '',
+        port: '',
+        username: '',
+        password: ''
       },
       rules: {
         name: [
           { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
         ],
-        region: [
-          { required: true, message: '请选择活动区域', trigger: 'change' }
+        databaseName: [
+          { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
-        resource: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
+        ip: [
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
         ],
-        file: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
+        port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' }
         ],
-        position: [
-          { required: true, message: '请选择活动资源', trigger: 'change' }
-        ]
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+        status: [{ required: true, message: '请选择是否启用', trigger: 'blur' }]
       }
     }
   },
@@ -233,14 +247,42 @@ export default {
       this.$refs.baseDialog.open()
     },
 
+    completeUri() {
+      const databaseType = 'mysql'
+      const { ip, port, databaseName, username, password } = this.dataSourceForm
+      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&username=${username}&password=${password}`
+    },
+
     // 上一步
     handlePrevious() {
       this.handleClose()
       this.$parent.open()
+      this.$refs.dataSourceForm.resetFields()
     },
 
+    // 测试链接
     handleTestLink() {
-      this.$message.success('测试连接成功')
+      this.testBtnLoading = true
+      const params = {
+        type: databaseTypeMapping[this.dataType],
+        uri: this.completeUri()
+      }
+      this.$refs.dataSourceForm.validate(valid => {
+        if (valid) {
+          API.datasourceTestLink(params)
+            .then(({ success, data }) => {
+              if (success && data) {
+                console.log(data)
+                this.$message.success('测试连接成功')
+              } else {
+                this.$message.error(data)
+              }
+            })
+            .finally(() => {
+              this.testBtnLoading = false
+            })
+        }
+      })
     },
 
     handleClose() {
@@ -248,7 +290,40 @@ export default {
     },
 
     handleConfirm() {
-      this.$emit('on-confirm')
+      const { status, name, descriptor } = this.dataSourceForm
+      console.log(this.dataSourceForm, 'lplplp')
+      const params = {
+        name,
+        status,
+        descriptor,
+        type: databaseTypeMapping[this.dataType],
+        spaceId: '880416721515675648',
+        uri: this.completeUri()
+      }
+      this.$refs.dataSourceForm.validate(valid => {
+        if (valid) {
+          this.btnLoading = true
+          API.datasourceAdd(params)
+            .then(({ success, data }) => {
+              if (success) {
+                console.log(data)
+                this.$notify.success({
+                  title: '操作结果',
+                  message: '数据源新增成功！'
+                })
+                this.handleClose()
+                this.$router.push('/workspace/datasource')
+                this.$emit('on-confirm', true)
+              }
+            })
+            .catch(() => {
+              this.$emit('on-confirm', false)
+            })
+            .finally(() => {
+              this.btnLoading = false
+            })
+        }
+      })
     }
   }
 }

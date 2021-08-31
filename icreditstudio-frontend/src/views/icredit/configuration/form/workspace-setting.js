@@ -1,3 +1,8 @@
+/*
+ * @Description: 空间设置列表页面搜索表单
+ * @Date: 2021-08-17
+ */
+
 export default [
   {
     type: 'text',
@@ -8,20 +13,15 @@ export default [
     maxlength: 20
   },
   {
-    type: 'select',
-    label: '创建人',
+    type: 'text',
+    label: '更新人',
     ruleProp: 'createUser',
     model: '',
-    isSearch: true,
-    options: [
-      { value: 'All', label: '全部' },
-      { value: 'Admin', label: 'admin' },
-      { value: 'zhangsan', label: '张三' }
-    ]
+    isSearch: true
   },
   {
     type: 'date',
-    label: '创建时间',
+    label: '更新时间',
     model: '',
     ruleProp: 'createTime',
     isSearch: true,

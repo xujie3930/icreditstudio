@@ -34,7 +34,7 @@ export default {
           if (success) {
             this.$notify.success({
               title: '操作结果',
-              message: '工作空间启用成功！'
+              message: '启用成功！'
             })
             this.mixinRetrieveTableData()
           }
@@ -43,15 +43,15 @@ export default {
     },
 
     // 停用操作
-    handleDisabledClick(methodName, params) {
+    handleDisabledClick(methodName, params, dialogName) {
       API[methodName](params)
         .then(({ success }) => {
           if (success) {
             this.$notify.success({
               title: '操作结果',
-              message: '工作空间停用成功！'
+              message: '停用成功！'
             })
-            this.$refs.tipDialog.close()
+            dialogName && this.$refs[dialogName].close()
             this.mixinRetrieveTableData()
           }
         })

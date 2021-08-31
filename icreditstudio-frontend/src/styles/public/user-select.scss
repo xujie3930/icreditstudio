@@ -1,0 +1,68 @@
+/*配置用户和功能弹框相关*/
+.tree-choose-transfer-box {
+  /*background: rgba(249, 249, 249, 1);*/
+  display: flex;
+  justify-content: space-between;
+  width: 1195px;
+  height: 490px;
+  opacity: 1;
+  border: 1px solid #d9d9d9;
+  border-radius: 10px;
+  margin: 0 auto;
+  padding: 2px;
+  .tree-desc {
+    height: 70px;
+    width: 80px;
+    margin: 0 auto;
+    line-height: 70px;
+    text-align: center;
+    border-bottom: 3px solid #2f54eb;
+    span {
+      opacity: 1;
+      font-size: 18px;
+      font-family: PingFangSC, PingFangSC-Medium;
+      font-weight: 500;
+      text-align: center;
+      color: #2f54eb;
+      line-height: 25px;
+    }
+  }
+  & .left {
+    flex: 1;
+    /*border: 1px solid red;*/
+    & .left-tree {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: calc(100% - 70px);
+      width: 100%;
+      border-top: 1px solid #e8e8e8;
+      & .left-tree-label {
+        display: inline-block;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        /*max-width: 28vw;*/
+      }
+    }
+  }
+
+  & .right {
+    margin-left: 10px;
+    flex: 3;
+    /*border: 1px solid green;*/
+    & /deep/ .el-transfer-panel {
+      width: auto;
+      height: 100%;
+    }
+
+    & /deep/ .el-transfer-panel__body {
+      /*width: 345px;*/
+      width: 40vm;
+      height: 440px;
+
+      & .el-transfer-panel__list.is-filterable {
+        height: 100%;
+      }
+    }
+  }
+}
