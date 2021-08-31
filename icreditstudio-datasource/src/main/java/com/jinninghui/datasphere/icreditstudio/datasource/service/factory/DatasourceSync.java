@@ -52,5 +52,5 @@ public interface DatasourceSync {
         return connection;
     }
 
-    Map<String, String> syncDDL(Integer type, String uri) throws Exception;
+    Map<String, String> syncDDL(Integer category, Integer type, String uri) throws Exception;
 }

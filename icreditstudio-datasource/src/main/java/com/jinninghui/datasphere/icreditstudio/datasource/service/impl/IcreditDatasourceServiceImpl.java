@@ -112,7 +112,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         String hdfsPath;
         Map<String, String> map;
         try {
-            map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            map = datasource.syncDDL(dataEntity.getCategory(), dataEntity.getType(), dataEntity.getUri());
             //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
         } catch (Exception e) {
             return BusinessResult.success(e.getMessage());
