@@ -1,5 +1,5 @@
 /*
- * @Description: 数据源管理-接口URL
+ * @Description: 工作空间管理-接口URL
  * @Date: 2021-08-26
  */
 import { postAction, getAction } from '@/api'
@@ -23,11 +23,20 @@ const datasourceSync = params => getAction(`/datasource/sync/${params}`)
 const datasourceTestLink = params =>
   postAction('/datasource/testConnect', params)
 
+// 判断是否有重复工作空间
+const verifyWorkspaceName = params => postAction('/workspace/hasExist', params)
+
+// 负责人模糊查询
+const getUserFluzzyQuery = params =>
+  postAction('/system/user/user/queryUserRoleByLikeName', params)
+
 export default {
   datasourceAdd,
   datasourceDelete,
   datasourceUpdate,
   datasourceDetail,
   datasourceSync,
-  datasourceTestLink
+  datasourceTestLink,
+  verifyWorkspaceName,
+  getUserFluzzyQuery
 }

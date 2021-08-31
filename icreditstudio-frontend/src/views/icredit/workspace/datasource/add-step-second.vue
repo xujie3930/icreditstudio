@@ -291,7 +291,6 @@ export default {
 
     handleConfirm() {
       const { status, name, descriptor } = this.dataSourceForm
-      this.$emit('on-confirm')
       console.log(this.dataSourceForm, 'lplplp')
       const params = {
         name,
@@ -314,7 +313,11 @@ export default {
                 })
                 this.handleClose()
                 this.$router.push('/workspace/datasource')
+                this.$emit('on-confirm', true)
               }
+            })
+            .catch(() => {
+              this.$emit('on-confirm', false)
             })
             .finally(() => {
               this.btnLoading = false

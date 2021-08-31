@@ -31,7 +31,7 @@
       </div>
     </el-dialog>
 
-    <AddStepSecond ref="addStep" />
+    <AddStepSecond ref="addStep" @on-confirm="handleConfirm" />
   </div>
 </template>
 
@@ -95,6 +95,10 @@ export default {
       if (type === 'blockChain') return
       this.close()
       this.$refs.addStep.open(type)
+    },
+
+    handleConfirm(success) {
+      this.$emit('on-confirm', success)
     }
   }
 }

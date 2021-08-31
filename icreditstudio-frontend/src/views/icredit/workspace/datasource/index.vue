@@ -96,7 +96,10 @@
 
     <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
     <Detail ref="dataSourceDetail" :footer="true" />
-    <AddDataSourceStepFirst ref="addStepFirst" />
+    <AddDataSourceStepFirst
+      ref="addStepFirst"
+      @confirm="addDatasourceCallback"
+    />
   </div>
 </template>
 
@@ -218,6 +221,11 @@ export default {
       const methodName =
         opType === 'Delete' ? 'datasourceDelete' : 'datasourceUpdate'
       this[`handle${opType}Click`](methodName, params, 'operateMessage')
+    },
+
+    // 添加数据源的回调
+    addDatasourceCallback(success) {
+      success && this.mixinRetrieveTableData()
     },
 
     // 查看详情

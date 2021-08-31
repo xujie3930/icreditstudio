@@ -35,7 +35,14 @@
               type="text"
               placeholder="请输入工作空间名称"
               size="small"
-            ></el-input>
+              @blur="verifyWorkspaceName"
+            >
+              <i
+                v-if="veifyNameLoading"
+                slot="suffix"
+                class="el-icon-loading"
+              ></i>
+            </el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -78,15 +85,18 @@
               style="width: 100%"
               filterable
               clearable
+              remote
               size="small"
-              placeholder="请选择"
+              placeholder="请输入负责人名称进行查询"
               v-model="detailForm.director"
+              :loading="userSelectLoading"
+              :remote-method="getUsersFuzzySearch"
             >
               <el-option
-                v-for="item in userOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="(item, idx) in userOptions"
+                :key="`${item.roleId}-${idx}`"
+                :label="item.name"
+                :value="item.roleId"
               >
               </el-option>
             </el-select>
@@ -94,13 +104,21 @@
         </el-col>
       </el-row>
 
+      <el-form-item v-if="opType !== 'view'">
+        <el-button type="primary" @click="handleUserSelect">
+          {{
+            id && detailForm.director ? '点击修改成员信息' : '点击添加成员信息'
+          }}
+        </el-button>
+      </el-form-item>
+
       <el-row>
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
             <j-table
               ref="table"
               v-loading="tableLoading"
-              :table-data="tableData"
+              :table-data="detailForm.memberList"
               :table-configuration="tableConfiguration"
             ></j-table>
           </el-form-item>
@@ -120,6 +138,12 @@
         确定
       </el-button>
     </div>
+
+    <UserSelect
+      ref="usersSelect"
+      @on-cancel="userSelectCallback"
+      @on-confirm="userSelectCallback"
+    />
   </div>
 </template>
 
@@ -127,37 +151,48 @@
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting-detail'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
-
 import API from '@/api/icredit'
+import UserSelect from './users-select.vue'
+import { debounce } from 'lodash'
 
 export default {
   mixins: [crud, operate],
+  components: { UserSelect },
+
   data() {
+    this.getUsersFuzzySearch = debounce(this.getUsersFuzzySearch, 500)
     return {
       id: null,
+      userSelectLoading: false,
       tableLoading: false,
       tableConfiguration,
       tableData: [],
       opType: '',
       btnLoading: false,
+      veifyNameLoading: false,
+      timerId: null,
+
+      // 工作空间表单
       detailForm: {
+        name: '',
         status: 0,
-        director: []
+        descriptor: '',
+        director: [],
+        memberList: []
       },
       detailRules: {
+        name: [
+          { required: true, message: '必填项不能为空', trigger: 'blur' },
+          { validator: this.verifyWorkspaceName, trigger: 'blur' }
+        ],
         status: [
-          { required: true, message: '必填项不问为空', trigger: 'change' }
+          { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
         director: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ]
       },
-      userOptions: [
-        { value: 'admin', label: 'admin' },
-        { value: 'zhangsan', label: '张三' },
-        { value: 'monkeyCode', label: 'monkeyCode' },
-        { value: 'lisi', label: '里斯' }
-      ]
+      userOptions: []
     }
   },
 
@@ -174,6 +209,36 @@ export default {
       this.id && this.handleEditClick('workspaceDetail', this.id)
     },
 
+    handleUserSelect() {
+      this.detailForm.director
+        ? this.$refs.usersSelect.open(this.detailForm.director)
+        : this.$refs.detailForm.validateField('director')
+    },
+
+    // 选择负责人
+    userSelectCallback({ opType, users }) {
+      this.$refs.usersSelect.close()
+      if (opType === 'confirm') {
+        this.detailForm.memberList = users.map(item => {
+          const {
+            id: userId,
+            userName: username,
+            roleName: userRole,
+            functionalAuthority,
+            dataAuthority
+          } = item
+          return {
+            userId,
+            username,
+            userRole,
+            functionalAuthority,
+            dataAuthority,
+            createTime: new Date().getTime()
+          }
+        })
+      }
+    },
+
     // 编辑操作数据回显
     mixinDetailInfo(data) {
       this.detailForm = data
@@ -183,8 +248,14 @@ export default {
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {
+          const { memberList, ...restParams } = this.detailForm
+          const newMemberList = memberList.map(
+            ({ createTime, ...item }) => item
+          )
+          const params = { memberList: newMemberList, ...restParams }
+
           this.btnLoading = true
-          API[`workspace${this.id ? 'Update' : 'Add'}`](this.detailForm)
+          API[`workspace${this.id ? 'Update' : 'Add'}`](params)
             .then(({ success }) => {
               if (success) {
                 this.$notify.success({
@@ -199,6 +270,35 @@ export default {
             })
         }
       })
+    },
+
+    // 负责人查询模糊搜索
+    getUsersFuzzySearch(name) {
+      this.userSelectLoading = true
+      API.getUserFluzzyQuery({ name })
+        .then(({ success, data }) => {
+          if (success) {
+            this.userOptions = data
+          }
+        })
+        .finally(() => {
+          this.userSelectLoading = false
+        })
+    },
+
+    // 验证是否已经存在工作空间名称
+    verifyWorkspaceName(rule, value, cb) {
+      this.timerId = null
+      this.veifyNameLoading = true
+      API.verifyWorkspaceName({ name: value })
+        .then(({ success, data }) => {
+          success && data ? cb(new Error('该名称已存在，请重新输入')) : cb()
+        })
+        .finally(() => {
+          this.timerId = setTimeout(() => {
+            this.veifyNameLoading = false
+          }, 300)
+        })
     }
   }
 }
@@ -210,7 +310,8 @@ export default {
   background: #fff;
   width: 100%;
   height: calc(100vh - 126px);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   .back-icon {
     margin: 20px 0 0 20px;
@@ -260,11 +361,8 @@ export default {
   }
 
   .footer-btn {
-    position: absolute;
-    bottom: 20px;
-    left: 45%;
     text-align: center;
-    margin-top: 20px;
+    margin: 20px 0;
 
     .btn {
       width: 150px;
