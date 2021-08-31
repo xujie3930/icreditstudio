@@ -940,6 +940,15 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         return BusinessResult.success(true);
     }
 
+    @Override
+    public List<LikeQueryUserRoleListResult> queryUserRoleByName(LikeQueryUserRoleRequest params) {
+        if (StringUtils.isEmpty(params.getName())) {
+            return new ArrayList<>();
+        }
+
+        return userDao.queryUserRoleByName(params);
+    }
+
     private void deleteAccountToken(List<UserAccountEntity> accounts) {
         if (CollectionUtils.isNotEmpty(accounts)) {
             accounts.parallelStream()

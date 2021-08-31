@@ -39,9 +39,9 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
 
         List<ResourcesEntity> resources = roleService.findResourcesByUserId(userId);
-        if (!containsUrl(requestURI, resources)) {
+        /*if (!containsUrl(requestURI, resources)) {
             throw new AppException("50009115");
-        }
+        }*/
         return HandlerInterceptor.super.preHandle(request, response, handler);
     }
 

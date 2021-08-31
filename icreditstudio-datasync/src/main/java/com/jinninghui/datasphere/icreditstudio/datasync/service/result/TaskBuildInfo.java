@@ -32,7 +32,7 @@ public class TaskBuildInfo {
     /**
      * 关联关系
      */
-    private List<FileAssociated> view;
+    private List<AssociatedData> view;
     /**
      * 宽表列表
      */

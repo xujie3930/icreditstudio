@@ -270,4 +270,30 @@
     </select>
 
 
+    <select id="queryUserRoleByName" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserRoleListResult">
+
+        SELECT
+            t.ID,
+            t.USER_NAME NAME,
+            r.ROLE_ID ROLE_ID
+        FROM
+            ge_user t
+                LEFT JOIN ge_user_role_map r ON t.ID = r.USER_ID
+        WHERE
+            t.USER_NAME LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        UNION
+        SELECT
+            t.ID,
+            a.ACCOUNT_IDENTIFIER NAME,
+            r.ROLE_ID ROLE_ID
+        FROM
+            ge_user t
+                LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
+                LEFT JOIN ge_user_role_map r ON t.ID = r.USER_ID
+        WHERE
+            a.ACCOUNT_IDENTIFIER LIKE  concat('%' , #{name, jdbcType=VARCHAR} , '%')
+
+    </select>
+
+
 </mapper>

@@ -18,4 +18,6 @@ import java.util.Map;
 public interface IcreditWorkspaceUserMapper extends BaseMapper<IcreditWorkspaceUserEntity> {
 
     List<Map<String, String>> getWorkspaceByUserId(@Param("id") String id);
+
+    List<IcreditWorkspaceUserEntity> getUserListById(String id);
 }

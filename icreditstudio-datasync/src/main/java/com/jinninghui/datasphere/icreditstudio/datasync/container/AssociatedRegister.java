@@ -1,18 +1,13 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service;
+package com.jinninghui.datasphere.icreditstudio.datasync.container;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedType;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedType;
 
 import java.util.List;
 
 /**
  * @author Peng
  */
-public interface Associated {
-    /**
-     * 注册
-     */
-    void register();
-
+public interface AssociatedRegister extends Register {
     /**
      * 获取类型
      *

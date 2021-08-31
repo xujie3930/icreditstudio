@@ -26,6 +26,7 @@ public class IcreditWorkspaceEntity implements Serializable {
     public static final String NAME = "NAME";
     public static final String CREATE_USER = "CREATE_USER";
     public static final String CREATE_TIME  = "CREATE_TIME";
+    public static final String ID  = "ID";
 
     /**
      * 主键id

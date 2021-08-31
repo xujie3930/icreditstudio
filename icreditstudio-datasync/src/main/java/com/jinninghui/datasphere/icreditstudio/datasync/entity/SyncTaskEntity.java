@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jinninghui.datasphere.icreditstudio.framework.result.base.BaseEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.SyncBaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,7 +16,7 @@ import java.util.Date;
  */
 @Data
 @TableName(value = "icredit_sync_task")
-public class SyncTaskEntity extends BaseEntity implements Serializable {
+public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
     public static final String WORKSPACE_ID = "workspace_id";
     public static final String TASK_NAME = "task_name";
     public static final String TASK_STATUS = "task_status";

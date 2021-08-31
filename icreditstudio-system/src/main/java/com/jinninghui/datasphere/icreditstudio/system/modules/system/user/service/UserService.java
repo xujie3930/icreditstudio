@@ -8,10 +8,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserImportEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserListResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserEntityInfoResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserEntityResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserOrgListResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.*;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.*;
@@ -89,5 +86,7 @@ public interface UserService extends IService<UserEntity> {
     BusinessResult<Boolean> delete(UserEntityDelParam param);
 
     BusinessResult<Boolean> status(UserChangeStatusParam param);
+
+    List<LikeQueryUserRoleListResult> queryUserRoleByName(LikeQueryUserRoleRequest params);
 }
 

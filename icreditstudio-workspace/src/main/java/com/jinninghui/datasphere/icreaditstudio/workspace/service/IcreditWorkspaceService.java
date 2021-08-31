@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditW
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest;
+import com.jinninghui.datasphere.icreaditstudio.workspace.web.result.WorkspaceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
@@ -26,4 +27,6 @@ public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity
     BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest);
 
     BusinessResult<Boolean> hasExit(WorkspaceHasExistRequest request);
+
+    WorkspaceDetailResult getDetailById(String id);
 }

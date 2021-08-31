@@ -4,6 +4,8 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author xujie
@@ -21,4 +23,5 @@ public class IcreditWorkspaceSaveRequest {
     private int status = 0;//空间状态
     private String director;//负责人
     private String createUser;//创建人
+    private List<WorkspaceMember> memberList = new ArrayList<>();
 }
