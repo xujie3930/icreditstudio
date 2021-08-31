@@ -6,14 +6,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
@@ -162,7 +163,23 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
         //TODO
-        return null;
+        AssociatedFormatterVo vo = new AssociatedFormatterVo();
+        vo.setDialect("mysql");
+        vo.setDatabase("datasync");
+        vo.setSourceTables(Lists.newArrayList("test", "hello"));
+        List<AssociatedData> dataList = Lists.newArrayList();
+        AssociatedData test = new AssociatedData();
+        test.setLeftSource("test");
+        test.setRightSource("hello");
+        test.setAssociatedType(AssociatedEnum.LEFT_JOIN.getCode());
+        test.setConditions(Lists.newArrayList(new AssociatedCondition("id", "=", "id")
+                , new AssociatedCondition("name", ">", "name")));
+        dataList.add(test);
+        vo.setAssoc(dataList);
+        String s = AssociatedUtil.wideTableSql(vo);
+        WideTable wideTable = new WideTable();
+        wideTable.setTableName(s);
+        return BusinessResult.success(wideTable);
     }
 
     private List<WideTableFieldInfo> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
