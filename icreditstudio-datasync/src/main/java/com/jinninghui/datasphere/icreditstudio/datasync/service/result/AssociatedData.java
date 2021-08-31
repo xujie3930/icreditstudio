@@ -11,9 +11,17 @@ import java.util.List;
 public class AssociatedData {
 
     /**
+     * 左表库
+     */
+    private String leftSourceDatabase;
+    /**
      * 左表名称
      */
     private String leftSource;
+    /**
+     * 右表库
+     */
+    private String rightSourceDatabase;
     /**
      * 右表名称
      */

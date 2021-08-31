@@ -19,10 +19,10 @@ public class MysqlDatasource implements DatasourceSync {
     @Override
     public Map<String, String> syncDDL(Integer category, Integer type, String uri) throws Exception{
         Map<String, String> map = new HashMap<>();
-        String username = getUsername(uri);
-        String password = getpassword(uri);
+        String username = DatasourceSync.getUsername(uri);
+        String password = DatasourceSync.getpassword(uri);
         Connection conn = getConn(category, type, uri, username, password);
-        if (!Objects.nonNull(conn)){
+        if (!Objects.nonNull(conn)) {
             return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();
@@ -30,11 +30,11 @@ public class MysqlDatasource implements DatasourceSync {
         String datasourceInformation = "[";
         Integer tablesCount = 0;
         while (tableResultSet.next()) {
-            tablesCount ++;
+            tablesCount++;
             String tableName = tableResultSet.getString("TABLE_NAME");
             // 获取表字段结构
             ResultSet columnResultSet = metaData.getColumns(null, "%", tableName, "%");
-            String tableInformation = "{tableName:" + tableName +",tableColumn:[";
+            String tableInformation = "{tableName:" + tableName + ",tableColumn:[";
             while (columnResultSet.next()) {
                 // 字段名称
                 String columnName = columnResultSet.getString("COLUMN_NAME");
@@ -50,11 +50,11 @@ public class MysqlDatasource implements DatasourceSync {
                 tableInformation += columnInformation;
             }
             //去掉最后一个字符，然后加上中括号"]"
-            tableInformation = tableInformation.substring(0, tableInformation.length()-1);
+            tableInformation = tableInformation.substring(0, tableInformation.length() - 1);
             tableInformation += "]},";
             datasourceInformation += tableInformation;
         }
-        datasourceInformation = datasourceInformation.substring(0, datasourceInformation.length()-1);
+        datasourceInformation = datasourceInformation.substring(0, datasourceInformation.length() - 1);
         datasourceInformation += "]";
         map.put("datasourceInfo", datasourceInformation);
         map.put("tablesCount", tablesCount.toString());

@@ -1,5 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,6 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
@@ -20,6 +23,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFie
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
@@ -33,6 +37,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.ResultSetMetaData;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -162,24 +167,44 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
-        //TODO
         AssociatedFormatterVo vo = new AssociatedFormatterVo();
-        vo.setDialect("mysql");
-        vo.setDatabase("datasync");
-        vo.setSourceTables(Lists.newArrayList("test", "hello"));
-        List<AssociatedData> dataList = Lists.newArrayList();
-        AssociatedData test = new AssociatedData();
-        test.setLeftSource("test");
-        test.setRightSource("hello");
-        test.setAssociatedType(AssociatedEnum.LEFT_JOIN.getCode());
-        test.setConditions(Lists.newArrayList(new AssociatedCondition("id", "=", "id")
-                , new AssociatedCondition("name", ">", "name")));
-        dataList.add(test);
-        vo.setAssoc(dataList);
-        String s = AssociatedUtil.wideTableSql(vo);
-        WideTable wideTable = new WideTable();
-        wideTable.setTableName(s);
+        vo.setDialect(param.getDialect());
+        vo.setSourceTables(param.getSourceTables());
+        vo.setAssoc(param.getView());
+        String sql = AssociatedUtil.wideTableSql(vo);
+        WideTable wideTable = null;
+        try {
+            wideTable = new WideTable();
+            wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
+            ConnectionInfo info = getConnectionInfo(param.getWorkspaceId(), param.getDatasourceId());
+
+            ResultSetMetaData metaData = AssociatedUtil.getResultSetMetaData(info, sql);
+            int columnCount = metaData.getColumnCount();
+            List<WideTableFieldInfo> fieldInfos = Lists.newArrayList();
+            for (int i = 1; i <= columnCount; i++) {
+                WideTableFieldInfo fieldInfo = new WideTableFieldInfo();
+                fieldInfo.setSort(i);
+                fieldInfo.setFieldName(metaData.getColumnName(i));
+                fieldInfo.setFieldType(HiveMapJdbcTypeEnum.find(metaData.getColumnTypeName(i)).getHiveType());
+                fieldInfo.setSourceTable(metaData.getTableName(i));
+                fieldInfo.setFieldChineseName(null);
+                fieldInfos.add(fieldInfo);
+            }
+            wideTable.setFields(fieldInfos);
+        } catch (Exception e) {
+            log.error("识别宽表失败", e);
+            new AppException("识别宽表失败");
+        }
         return BusinessResult.success(wideTable);
+    }
+
+    private ConnectionInfo getConnectionInfo(String workspaceId, String datasourceId) {
+        ConnectionInfo info = new ConnectionInfo();
+        info.setDriverClass("com.mysql.cj.jdbc.Driver");
+        info.setUrl("jdbc:mysql://localhost:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true");
+        info.setUsername("root");
+        info.setPassword("root@0000");
+        return info;
     }
 
     private List<WideTableFieldInfo> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {

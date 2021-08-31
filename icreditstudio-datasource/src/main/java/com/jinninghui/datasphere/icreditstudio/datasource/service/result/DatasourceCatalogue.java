@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
+package com.jinninghui.datasphere.icreditstudio.datasource.service.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

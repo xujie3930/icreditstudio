@@ -2,16 +2,20 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
+import java.util.List;
+
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author xujie
@@ -28,4 +32,12 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
     BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request);
 
     BusinessResult<String> syncById(String id);
+
+    /**
+     * 数据源目录列表
+     *
+     * @param param
+     * @return
+     */
+    BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param);
 }

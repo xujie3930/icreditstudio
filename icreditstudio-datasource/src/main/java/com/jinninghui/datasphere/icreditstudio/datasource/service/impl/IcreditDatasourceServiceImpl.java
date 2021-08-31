@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
@@ -10,8 +11,11 @@ import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncM
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceConditionParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -19,18 +23,18 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author xujie
@@ -67,7 +71,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(pageRequest.getWorkspaceId())){
+        if (StringUtils.isNotBlank(pageRequest.getWorkspaceId())) {
             wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getWorkspaceId());
         }
         if (StringUtils.isNotBlank(pageRequest.getName())) {
@@ -96,10 +100,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<String> syncById(String id){
+    public BusinessResult<String> syncById(String id) {
         //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
         IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
-        if (dataEntity == null){
+        if (dataEntity == null) {
             return BusinessResult.success("");
         }
         //开始同步的时间，更新到表中
@@ -127,5 +131,32 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         ddlEntity.setCreateTime(new Date());
         ddlSyncMapper.insert(ddlEntity);
         return BusinessResult.success(map.get("tablesCount").toString());
+    }
+
+    @Override
+    public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .workspaceId(param.getWorkspaceId())
+                .category(param.getCategory())
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+        List<DatasourceCatalogue> results = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(list)) {
+            //数据源ID
+            Set<String> sourceIds = list.parallelStream().filter(Objects::nonNull).map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
+        }
+        return BusinessResult.success(results);
+    }
+
+    private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
+        QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(param.getWorkspaceId())) {
+            wrapper.eq(IcreditDatasourceEntity.SPACE_ID, param.getWorkspaceId());
+        }
+        if (Objects.nonNull(param.getCategory())) {
+            wrapper.eq(IcreditDatasourceEntity.CATEGORY, param.getCategory());
+        }
+        return wrapper;
     }
 }

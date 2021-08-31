@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * @author Peng
  */
-public interface AssociatedRegister extends Register {
+public interface AssociatedRegister extends DialectKeyRegister {
     /**
      * 获取类型
      *
@@ -21,11 +21,4 @@ public interface AssociatedRegister extends Register {
      * @return
      */
     List<String> getAssocConditions();
-
-    /**
-     * 获取方言
-     *
-     * @return
-     */
-    String getDialect();
 }
