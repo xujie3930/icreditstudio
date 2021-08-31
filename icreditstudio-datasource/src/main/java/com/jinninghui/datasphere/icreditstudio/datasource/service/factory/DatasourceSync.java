@@ -26,8 +26,8 @@ public interface DatasourceSync {
         }
         return password;
     }
-    default String testConn(Integer type, String uri) {
-        String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
+    default String testConn(Integer category, Integer type, String uri) {
+        String driver = DatasourceTypeEnum.findDatasourceTypeByType(category, type).getDriver();
         String username = getUsername(uri);
         String password = getpassword(uri);
         try {
@@ -40,8 +40,8 @@ public interface DatasourceSync {
         }
     }
 
-    default Connection getConn(Integer type, String uri, String username, String password) {
-        String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
+    default Connection getConn(Integer category, Integer type, String uri, String username, String password) {
+        String driver = DatasourceTypeEnum.findDatasourceTypeByType(category, type).getDriver();
         Connection connection;
         try {
             Class.forName(driver);

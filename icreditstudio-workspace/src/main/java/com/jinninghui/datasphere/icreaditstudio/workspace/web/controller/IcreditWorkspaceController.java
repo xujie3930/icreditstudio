@@ -94,10 +94,7 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceEntityPageRequest pageRequest){
-        if (StringUtils.isBlank(pageRequest.getUserId())){
-            pageRequest.setUserId(userId);
-        }
+    public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditWorkspaceEntityPageRequest pageRequest){
         BusinessPageResult page = workspaceService.queryPage(pageRequest);
         return BusinessResult.success(page);
     }

@@ -40,6 +40,11 @@ public class IcreditDatasourceEntity implements Serializable {
     private String spaceId;
 
     /**
+     * 数据源分类
+     */
+    private Integer category;
+
+    /**
      * 数据源类型
      */
     private Integer type;

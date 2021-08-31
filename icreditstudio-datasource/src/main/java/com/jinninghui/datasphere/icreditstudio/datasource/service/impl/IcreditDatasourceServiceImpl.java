@@ -89,8 +89,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request) {
-        DatasourceSync datasource = DatasourceFactory.getDatasource(request.getType());
-        String resp = datasource.testConn(request.getType(), request.getUri());
+        DatasourceSync datasource = DatasourceFactory.getDatasource(request.getCategory(), request.getType());
+        String resp = datasource.testConn(request.getCategory(), request.getType(), request.getUri());
         return BusinessResult.success(resp);
     }
 
@@ -106,7 +106,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         dataEntity.setLastSyncTime(new Date());
         datasourceMapper.updateById(dataEntity);
         //这里根据不同type类型，连接不同的数据库，同步其表
-        DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
+        DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getCategory(), dataEntity.getType());
         String ddlInfo = null;
         String key = sequenceService.nextValueString();
         String hdfsPath;

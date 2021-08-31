@@ -9,6 +9,7 @@ import lombok.Data;
  **/
 @Data
 public class IcreditDatasourceTestConnectRequest {
+    private Integer category;//数据源分类
     private Integer type;//数据源类型
     private String uri;//连接信息串
 }

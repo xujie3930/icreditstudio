@@ -69,6 +69,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
                 BeanCopyUtils.copyProperties(member, entity);
                 entity.setId(sequenceService.nextValueString());
                 entity.setSpaceId(defEntity.getId());
+                //TODO:这块改为根据userId获取
+                entity.setCreateUser("admin");
                 entity.setCreateTime(date);
                 workspaceUserService.save(entity);
             }
