@@ -7,7 +7,7 @@ spring:
         server-addr: 192.168.0.30:8848
         file-extension: yml
   datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    url: "jdbc:mysql://127.0.0.1:3306/datasource?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'root'
     password: 'root'
   redis:

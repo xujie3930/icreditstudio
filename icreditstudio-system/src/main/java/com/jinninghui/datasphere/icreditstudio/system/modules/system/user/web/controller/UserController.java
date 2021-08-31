@@ -15,10 +15,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserImportEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserListResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserEntityInfoResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserEntityResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.UserOrgListResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.*;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -217,6 +214,13 @@ public class UserController extends BaseController<UserEntity, UserService> {
     public BusinessResult<List<LikeQueryUserListResult>> queryUserInfoByLikeName(@RequestBody LikeQueryUserInfoRequest params) {
 
         return BusinessResult.success(userService.queryUserInfoByName(params));
+    }
+
+
+    @RequestMapping(value = {"/queryUserRoleByLikeName"}, method = {RequestMethod.POST})
+    public BusinessResult<List<LikeQueryUserRoleListResult>> queryUserRoleByLikeName(@RequestBody LikeQueryUserRoleRequest params) {
+
+        return BusinessResult.success(userService.queryUserRoleByName(params));
     }
 
     /**

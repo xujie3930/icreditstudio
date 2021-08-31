@@ -6,11 +6,9 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterfac
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.LikeQueryUserInfoRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.OrgUserRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserEntityPageRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserInfoRequest;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserListResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserRoleListResult;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -44,4 +42,6 @@ public interface UserDao extends BaseMapper<UserEntity> {
      * @return
      */
     List<LikeQueryUserListResult> queryUserInfoByName(LikeQueryUserInfoRequest params);
+
+    List<LikeQueryUserRoleListResult> queryUserRoleByName(LikeQueryUserRoleRequest params);
 }

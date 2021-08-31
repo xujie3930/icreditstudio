@@ -1,32 +1,19 @@
-package com.jinninghui.datasphere.icreaditstudio.workspace.entity;
+package com.jinninghui.datasphere.icreaditstudio.workspace.web.result;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceMember;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
- * <p>
- * 
- * </p>
- *
  * @author xujie
- * @since 2021-08-20
- */
+ * @description 工作空间详情返回前端result
+ * @create 2021-08-31 15:19
+ **/
 @Data
-@EqualsAndHashCode(callSuper = false)
-@TableName("icredit_workspace")
-public class IcreditWorkspaceEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    public static final String NAME = "NAME";
-    public static final String CREATE_USER = "CREATE_USER";
-    public static final String CREATE_TIME  = "CREATE_TIME";
-    public static final String ID  = "ID";
+public class WorkspaceDetailResult {
 
     /**
      * 主键id
@@ -79,4 +66,9 @@ public class IcreditWorkspaceEntity implements Serializable {
      * 更新人
      */
     private String updateUser;
+
+    /**
+     * 工作空间成员列表
+     */
+    private List<WorkspaceMember> memberList;
 }

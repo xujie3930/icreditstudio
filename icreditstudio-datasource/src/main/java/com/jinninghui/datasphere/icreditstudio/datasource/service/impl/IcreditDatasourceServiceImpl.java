@@ -67,6 +67,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(pageRequest.getWorkspaceId())){
+            wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getWorkspaceId());
+        }
         if (StringUtils.isNotBlank(pageRequest.getName())) {
             wrapper.like(IcreditDatasourceEntity.NAME, pageRequest.getName());
         }

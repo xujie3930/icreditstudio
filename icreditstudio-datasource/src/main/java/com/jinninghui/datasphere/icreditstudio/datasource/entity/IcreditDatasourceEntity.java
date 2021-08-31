@@ -27,6 +27,7 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String TYPE  = "TYPE";
     public static final String STATUS  = "STATUS";
     public static final String CREATE_TIME  = "CREATE_TIME";
+    public static final String SPACE_ID  = "SPACE_ID";
 
     /**
      * 主键id

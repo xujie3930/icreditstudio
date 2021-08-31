@@ -50,4 +50,8 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
         List<Map<String, String>> list = workspaceUserMapper.getWorkspaceByUserId(id);
         return list;
     }
+
+    public List<IcreditWorkspaceUserEntity> queryMemberListByWorkspaceId(String id) {
+        return workspaceUserMapper.getUserListById(id);
+    }
 }

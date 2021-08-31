@@ -20,4 +20,26 @@
         </where>
          limit 1
     </select>
+
+    <select id="queryPage"
+            resultType="com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity">
+        select w.id, w.status, w.del_flag, w.descriptor, w.director, w.name, w.create_time, w.create_user, w.update_time, w.update_user
+        from icredit_workspace w, icredit_workspace_user u
+        <where>
+            <if test="request.name != null and request.name != '' ">
+                AND w.name like concat ('%', #{request.name}, '%')
+            </if>
+            <if test="request.createUser != null and request.createUser != '' ">
+                AND w.create_user =  #{request.createUser}
+            </if>
+            <if test="request.updateTime != null">
+                AND w.update_time =  #{request.updateTime}
+            </if>
+            <if test="request.userId != null and request.userId != ''">
+                AND u.user_id =  #{request.userId}
+            </if>
+        </where>
+        and w.id = u.space_id
+        order by w.create_time
+    </select>
 </mapper>
