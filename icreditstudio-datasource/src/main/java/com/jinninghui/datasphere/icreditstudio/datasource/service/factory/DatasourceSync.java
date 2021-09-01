@@ -8,20 +8,21 @@ import java.util.Map;
 
 public interface DatasourceSync {
     //获取username
-    default String getUsername(String uri){
+    static String getUsername(String uri) {
         //根据uri获取username
         String temp = uri.substring(uri.indexOf("username=") + "username=".length());
         String username = temp.substring(0, temp.indexOf("&"));
         return username;
     }
+
     //获取password
-    default String getpassword(String uri){
+    static String getpassword(String uri) {
         //根据uri获取password
         String temp = uri.substring(uri.indexOf("password=") + "password=".length());
         String password;
-        if (!temp.endsWith("&")){
+        if (!temp.endsWith("&")) {
             password = temp;
-        }else {
+        } else {
             password = temp.substring(0, temp.indexOf("&"));
         }
         return password;

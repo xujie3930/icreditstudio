@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xujie
@@ -24,10 +24,11 @@ public class IcreditDatasourceEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String NAME = "NAME";
-    public static final String TYPE  = "TYPE";
-    public static final String STATUS  = "STATUS";
-    public static final String CREATE_TIME  = "CREATE_TIME";
-    public static final String SPACE_ID  = "SPACE_ID";
+    public static final String TYPE = "TYPE";
+    public static final String STATUS = "STATUS";
+    public static final String CREATE_TIME = "CREATE_TIME";
+    public static final String SPACE_ID = "SPACE_ID";
+    public static final String CATEGORY = "category";
 
     /**
      * 主键id
@@ -38,9 +39,8 @@ public class IcreditDatasourceEntity implements Serializable {
      * 工作空间id
      */
     private String spaceId;
-
     /**
-     * 数据源分类
+     * 类别
      */
     private Integer category;
 
@@ -72,7 +72,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 最后一次同步时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastSyncTime;
 
     /**
@@ -88,7 +88,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -99,7 +99,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**

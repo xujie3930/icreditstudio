@@ -6,6 +6,9 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSync
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  *  服务实现类
@@ -16,5 +19,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper, IcreditDdlSyncEntity> implements IcreditDdlSyncService {
-
+    @Override
+    public Map<String, List<IcreditDdlSyncEntity>> categoryLatelyDdlSyncs(String datasourceId) {
+        return null;
+    }
 }

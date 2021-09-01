@@ -11,11 +11,4 @@ public interface Formatter<S> {
      * @return
      */
     String format(S s);
-
-    /**
-     * 格式化模板
-     *
-     * @return
-     */
-    String template();
 }

@@ -11,7 +11,6 @@ import java.util.List;
 @Data
 public class AssociatedFormatterVo {
     private String dialect;
-    private String database;
-    private List<String> sourceTables;
+    private List<TableInfo> sourceTables;
     private List<AssociatedData> assoc;
 }
