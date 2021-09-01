@@ -12,19 +12,21 @@ export default {
 
   methods: {
     // 删除操作
-    handleDeleteClick(methodName, params) {
+    handleDeleteClick(methodName, params, dialogName) {
       API[methodName](params)
         .then(({ success }) => {
           if (success) {
-            this.$refs.tipDialog.close()
+            dialogName && this.$refs[dialogName].close()
             this.$notify.success({
               title: '操作结果',
-              message: '工作空间删除成功！'
+              message: '删除成功！'
             })
             this.mixinRetrieveTableData()
           }
         })
-        .finally(() => {})
+        .finally(() => {
+          dialogName && this.$refs[dialogName].btnLoadingClose()
+        })
     },
 
     // 启用操作
@@ -55,20 +57,29 @@ export default {
             this.mixinRetrieveTableData()
           }
         })
-        .finally()
+        .finally(() => {
+          dialogName && this.$refs[dialogName].btnLoadingClose()
+        })
     },
 
     // 编辑操作
-    handleEditClick(methodName, params) {
+    handleEditClick(methodName, params, opType, dialogName) {
       this.detailLoading = true
+      this[`btn${opType}Loading`] = true
+      console.log(this.$refs[dialogName], 'vvv')
+      if (dialogName) {
+        this.$refs[dialogName].detailLoading = true
+        this.$refs[dialogName].$refs.baseDialog.open()
+      }
       API[methodName](params)
         .then(({ success, data }) => {
           if (success) {
-            this.mixinDetailInfo(data)
+            this.mixinDetailInfo(data, opType)
           }
         })
         .finally(() => {
           this.detailLoading = false
+          this[`btn${opType}Loading`] = false
         })
     },
 

@@ -91,10 +91,10 @@ export default {
       this.visible = false
     },
 
-    handleSelectClick(type) {
+    handleSelectClick(type, name) {
       if (type === 'blockChain') return
       this.close()
-      this.$refs.addStep.open(type)
+      this.$refs.addStep.open(type, name)
     },
 
     handleConfirm(success) {

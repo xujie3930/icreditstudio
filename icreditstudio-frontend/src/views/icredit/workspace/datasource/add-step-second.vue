@@ -8,9 +8,9 @@
   <BaseDialog
     footer
     ref="baseDialog"
-    title="新增数据源"
     width="600px"
     top="20vh"
+    :title="title"
     @onClose="handleClose"
     @onConfirm="handleConfirm"
   >
@@ -19,6 +19,7 @@
       :rules="rules"
       ref="dataSourceForm"
       label-width="100px"
+      v-loading="detailLoading"
     >
       <el-form-item label="数据源名称" prop="name">
         <el-input
@@ -133,8 +134,8 @@
 
       <el-form-item label="启用" prop="status">
         <el-radio-group v-model="dataSourceForm.status">
-          <el-radio label="0">是</el-radio>
-          <el-radio label="1">否</el-radio>
+          <el-radio :label="0">是</el-radio>
+          <el-radio :label="1">否</el-radio>
         </el-radio-group>
       </el-form-item>
 
@@ -161,7 +162,12 @@
     </el-form>
 
     <div style="text-align:center" slot="customFooter">
-      <el-button size="mini" @click="handlePrevious">上一步</el-button>
+      <el-button size="mini" v-if="opType === 'Add'" @click="handlePrevious">
+        上一步
+      </el-button>
+      <el-button v-if="opType !== 'Add'" size="mini" @click="handleClose">
+        取消
+      </el-button>
       <el-button
         size="mini"
         type="primary"
@@ -184,14 +190,24 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import { uriSplit } from '@/utils/util'
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
 
 const databaseTypeMapping = {
   mysql: 1,
-  oralce: 2,
+  oracle: 2,
   psotgresql: 3,
   sqlserver: 4
+}
+
+const dataTypeMapping = {
+  relational: 1,
+  semiStructured: 2,
+  noSql: 3,
+  doc: 4,
+  blockChain: 5
 }
 
 export default {
@@ -199,8 +215,12 @@ export default {
 
   data() {
     return {
+      title: '新增数据源',
+      opType: '',
       dataType: '',
+      databaseType: '',
       btnLoading: false,
+      detailLoading: false,
       testBtnLoading: false,
       positionOptions: [
         { label: '第一行', value: 1 },
@@ -236,21 +256,34 @@ export default {
     }
   },
 
-  props: {
-    title: String
+  computed: {
+    ...mapState('user', ['workspaceId'])
   },
 
   methods: {
-    open(type) {
-      console.log(type)
+    open(type, name) {
+      this.title = '新增数据源'
+      this.opType = 'Add'
       this.dataType = type
+      this.databaseType = name
       this.$refs.baseDialog.open()
     },
 
+    // 编辑状态下打开弹窗
+    openEdit(options) {
+      const { data, opType } = options
+      this.title = '编辑数据源'
+      this.opType = opType
+      this.detailLoading = false
+      this.dataSourceForm = uriSplit(data.uri, data)
+      // this.$refs.baseDialog.open()
+    },
+
+    // 拼凑成数据库驱动URI
     completeUri() {
-      const databaseType = 'mysql'
+      const databaseType = this.databaseType || 'mysql'
       const { ip, port, databaseName, username, password } = this.dataSourceForm
-      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&username=${username}&password=${password}`
+      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${password}`
     },
 
     // 上一步
@@ -264,7 +297,7 @@ export default {
     handleTestLink() {
       this.testBtnLoading = true
       const params = {
-        type: databaseTypeMapping[this.dataType],
+        type: databaseTypeMapping[this.databaseType],
         uri: this.completeUri()
       }
       this.$refs.dataSourceForm.validate(valid => {
@@ -287,29 +320,33 @@ export default {
 
     handleClose() {
       this.$refs.baseDialog.close()
+      this.$refs.dataSourceForm.resetFields()
     },
 
+    // 提交新增或编辑数据源表单
     handleConfirm() {
-      const { status, name, descriptor } = this.dataSourceForm
-      console.log(this.dataSourceForm, 'lplplp')
+      const { status, name, descriptor, id } = this.dataSourceForm
       const params = {
         name,
         status,
         descriptor,
-        type: databaseTypeMapping[this.dataType],
-        spaceId: '880416721515675648',
+        category: dataTypeMapping[this.dataType],
+        type: databaseTypeMapping[this.databaseType],
+        spaceId: this.workspaceId,
         uri: this.completeUri()
       }
+      this.opType === 'Edit' && (params.id = id)
       this.$refs.dataSourceForm.validate(valid => {
         if (valid) {
           this.btnLoading = true
-          API.datasourceAdd(params)
-            .then(({ success, data }) => {
+          API[`datasource${this.opType === 'Edit' ? 'Update' : 'Add'}`](params)
+            .then(({ success }) => {
               if (success) {
-                console.log(data)
                 this.$notify.success({
                   title: '操作结果',
-                  message: '数据源新增成功！'
+                  message: `数据源${
+                    this.opType === 'Edit' ? '编辑' : '新增'
+                  }成功！`
                 })
                 this.handleClose()
                 this.$router.push('/workspace/datasource')
