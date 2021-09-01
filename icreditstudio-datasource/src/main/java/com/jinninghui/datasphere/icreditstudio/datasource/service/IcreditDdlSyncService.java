@@ -1,10 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service;
 
-import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
@@ -17,8 +21,20 @@ import java.util.Map;
 public interface IcreditDdlSyncService extends IService<IcreditDdlSyncEntity> {
     /**
      * 最新的ddl
-     * @param datasourceId
+     *
+     * @param datasourceIds
      * @return
      */
-    Map<String, List<IcreditDdlSyncEntity>> categoryLatelyDdlSyncs(String datasourceId);
+    Map<String, Optional<IcreditDdlSyncEntity>> categoryLatelyDdlSyncs(Collection<String> datasourceIds);
+
+    /**
+     * 解析表名称
+     *
+     * @param columnsInfo
+     * @return
+     */
+    static List<String> parseColumnsTableName(String columnsInfo) {
+//        JSONArray.parseArray(columnsInfo).toJavaList()
+        return Lists.newArrayList();
+    }
 }

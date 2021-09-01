@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
@@ -24,11 +27,13 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,10 +48,12 @@ import java.util.stream.Collectors;
 @Service
 public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceMapper, IcreditDatasourceEntity> implements IcreditDatasourceService {
 
-    @Autowired
+    @Resource
     private IcreditDdlSyncMapper ddlSyncMapper;
-    @Autowired
+    @Resource
     private IcreditDatasourceMapper datasourceMapper;
+    @Resource
+    private IcreditDdlSyncService icreditDdlSyncService;
 
     @Autowired
     private SequenceService sequenceService;
@@ -131,10 +138,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         ddlEntity.setCreateTime(new Date());
         //TODO：这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
         IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
-        if (oldEntity == null){
+        if (oldEntity == null) {
             ddlSyncMapper.insert(ddlEntity);
-        }else {
-            if (!oldEntity.getColumnsInfo().equals(ddlEntity.getColumnsInfo())){
+        } else {
+            if (!oldEntity.getColumnsInfo().equals(ddlEntity.getColumnsInfo())) {
                 ddlEntity.setVersion(oldEntity.getVersion() + 1);
                 ddlSyncMapper.insert(ddlEntity);
             }
@@ -150,12 +157,51 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
-        List<DatasourceCatalogue> results = Lists.newArrayList();
+        List<DatasourceCatalogue> results = null;
         if (CollectionUtils.isNotEmpty(list)) {
             //数据源ID
             Set<String> sourceIds = list.parallelStream().filter(Objects::nonNull).map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
+            //数据源最新同步表
+            Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(sourceIds);
+            //数据源信息
+            results = list.stream()
+                    .filter(Objects::nonNull)
+                    .map(icreditDatasourceEntity -> {
+                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                        catalogue.setDatasourceId(icreditDatasourceEntity.getId());
+                        catalogue.setName(icreditDatasourceEntity.getName());
+                        catalogue.setUrl(icreditDatasourceEntity.getUri());
+                        catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getCategory(), icreditDatasourceEntity.getType()).getDesc());
+                        return catalogue;
+                    }).collect(Collectors.toList());
+            if (MapUtils.isNotEmpty(stringOptionalMap)) {
+                Map<String, List<String>> catalogueTablas = Maps.newHashMap();
+                stringOptionalMap.forEach((k, v) -> {
+                    v.ifPresent(icreditDdlSyncEntity -> {
+                        String columnsInfo = icreditDdlSyncEntity.getColumnsInfo();
+                        List<String> tableNames = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
+                        catalogueTablas.put(k, tableNames);
+                    });
+                });
+                results.stream()
+                        .forEach(datasourceCatalogue -> {
+                            String datasourceId = datasourceCatalogue.getDatasourceId();
+                            List<String> tableNames = catalogueTablas.get(datasourceId);
+                            List<DatasourceCatalogue> content = Optional.ofNullable(tableNames).orElse(Lists.newArrayList())
+                                    .parallelStream()
+                                    .map(s -> {
+                                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                                        catalogue.setDatasourceId(datasourceId);
+                                        catalogue.setUrl(datasourceCatalogue.getUrl());
+                                        catalogue.setDialect(datasourceCatalogue.getDialect());
+                                        catalogue.setName(s);
+                                        return catalogue;
+                                    }).collect(Collectors.toList());
+                            datasourceCatalogue.setContent(content);
+                        });
+            }
         }
-        return BusinessResult.success(results);
+        return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
