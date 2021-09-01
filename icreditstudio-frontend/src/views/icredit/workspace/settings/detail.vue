@@ -148,6 +148,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting-detail'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
@@ -194,6 +195,10 @@ export default {
       },
       userOptions: []
     }
+  },
+
+  computed: {
+    ...mapGetters({ userInfo: 'user/userInfo' })
   },
 
   mounted() {
@@ -248,11 +253,16 @@ export default {
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {
+          const { id: userId, userName: username } = this.userInfo
           const { memberList, ...restParams } = this.detailForm
           const newMemberList = memberList.map(
             ({ createTime, ...item }) => item
           )
-          const params = { memberList: newMemberList, ...restParams }
+          const params = {
+            memberList: newMemberList,
+            createUser: { userId, username },
+            ...restParams
+          }
 
           this.btnLoading = true
           API[`workspace${this.id ? 'Update' : 'Add'}`](params)
