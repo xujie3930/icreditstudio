@@ -127,7 +127,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         //建立外键关联
         ddlEntity.setDatasourceId(dataEntity.getId());
         //这里先存存储hdfs的路径
-        ddlEntity.setColumnsInfo(map.get("datasourceInfo").toString());
+        ddlEntity.setColumnsInfo(map.get("datasourceInfo"));
         ddlEntity.setCreateTime(new Date());
         //TODO：这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
         IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
