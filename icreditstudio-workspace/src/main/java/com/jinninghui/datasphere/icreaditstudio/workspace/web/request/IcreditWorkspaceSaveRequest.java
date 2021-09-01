@@ -22,6 +22,6 @@ public class IcreditWorkspaceSaveRequest {
     private String descriptor;//空间描述
     private int status = 0;//空间状态
     private String director;//负责人
-    private String createUser;//创建人
+    private WorkspaceMember createUser;//创建人
     private List<WorkspaceMember> memberList = new ArrayList<>();
 }

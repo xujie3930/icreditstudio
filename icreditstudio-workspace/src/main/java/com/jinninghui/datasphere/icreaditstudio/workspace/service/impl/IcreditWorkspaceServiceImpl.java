@@ -1,14 +1,10 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity;
-import com.jinninghui.datasphere.icreaditstudio.workspace.feign.SystemFeignClient;
-import com.jinninghui.datasphere.icreaditstudio.workspace.feign.request.FeignUserEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper;
-import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceUserMapper;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
@@ -50,27 +46,35 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Autowired
     private SequenceService sequenceService;
 
-    @Autowired
-    private SystemFeignClient systemFeignClient;
-
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param) {
         Date date = new Date();
+        String createUserName = param.getCreateUser().getUsername();
         IcreditWorkspaceEntity defEntity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
+        defEntity.setCreateUser(createUserName);
         defEntity.setCreateTime(date);
+        //保存工作空间信息
         save(defEntity);
+        //保存创建人信息
+        IcreditWorkspaceUserEntity createUser = new IcreditWorkspaceUserEntity();
+        BeanCopyUtils.copyProperties(param.getCreateUser(), createUser);
+        createUser.setId(sequenceService.nextValueString());
+        createUser.setSpaceId(defEntity.getId());
+        createUser.setCreateUser(createUserName);
+        createUser.setCreateTime(date);
+        workspaceUserService.save(createUser);
+        //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())){
             for (WorkspaceMember member : param.getMemberList()) {
                 IcreditWorkspaceUserEntity entity = new IcreditWorkspaceUserEntity();
                 BeanCopyUtils.copyProperties(member, entity);
                 entity.setId(sequenceService.nextValueString());
                 entity.setSpaceId(defEntity.getId());
-                //TODO:这块改为根据userId获取
-                entity.setCreateUser("admin");
+                entity.setCreateUser(createUserName);
                 entity.setCreateTime(date);
                 workspaceUserService.save(entity);
             }
