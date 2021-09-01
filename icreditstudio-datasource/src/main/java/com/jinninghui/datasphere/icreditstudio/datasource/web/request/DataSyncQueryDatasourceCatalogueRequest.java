@@ -20,8 +20,8 @@ public class DataSyncQueryDatasourceCatalogueRequest {
      */
     private String tableName;
     /**
-     * 数据源类型
+     * 数据源类型【0:】
      */
     @NotNull(message = "")
-    private Integer category;
+    private Integer sourceType;
 }
