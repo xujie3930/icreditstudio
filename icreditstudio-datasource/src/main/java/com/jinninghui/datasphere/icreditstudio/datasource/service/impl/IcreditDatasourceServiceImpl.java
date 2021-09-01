@@ -16,10 +16,8 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasou
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceConditionParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
@@ -230,6 +228,20 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         return result;
     }
 
+    @Override
+    public BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param) {
+        IcreditDatasourceEntity byId = getById(param.getDatasourceId());
+        ConnectionInfo info = null;
+        if (Objects.nonNull(byId)) {
+            info = new ConnectionInfo();
+            info.setDriverClass(DatasourceTypeEnum.findDatasourceTypeByType(byId.getCategory(), byId.getType()).getDriver());
+            info.setUsername(DatasourceSync.getUsername(byId.getUri()));
+            info.setPassword(DatasourceSync.getpassword(byId.getUri()));
+            info.setUrl(DatasourceSync.getConnUrl(byId.getUri()));
+        }
+        return BusinessResult.success(info);
+    }
+
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(param.getWorkspaceId())) {
@@ -237,6 +249,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (Objects.nonNull(param.getCategory())) {
             wrapper.eq(IcreditDatasourceEntity.CATEGORY, param.getCategory());
+        }
+        if (StringUtils.isNotBlank(param.getDatasourceId())) {
+            wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());
         }
         return wrapper;
     }

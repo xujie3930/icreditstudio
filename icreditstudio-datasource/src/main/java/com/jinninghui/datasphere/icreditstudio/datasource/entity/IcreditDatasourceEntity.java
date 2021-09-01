@@ -23,6 +23,7 @@ public class IcreditDatasourceEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String ID = "id";
     public static final String NAME = "NAME";
     public static final String TYPE = "TYPE";
     public static final String STATUS = "STATUS";
