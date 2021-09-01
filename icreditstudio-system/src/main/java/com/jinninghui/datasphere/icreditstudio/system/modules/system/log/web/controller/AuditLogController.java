@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 
- *
  * @author 1
  */
 @RestController
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AuditLogController extends BaseController<AuditLogEntity, AuditLogService> {
 
     @Autowired
-    private   AuditLogService auditLogService;
+    private AuditLogService auditLogService;
 
     /**
      * 分页查询列表
@@ -39,7 +37,7 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @ApiOperation(value = "分页查询列表", notes = "分页查询列表", httpMethod = "POST")
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityPageRequest pageRequest) {
 
         BusinessPageResult page = auditLogService.queryPage(pageRequest);
 
@@ -55,7 +53,7 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @GetMapping("/info/{id}")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<AuditLogEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<AuditLogEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         AuditLogEntity auditLog = auditLogService.getById(id);
 
@@ -69,11 +67,11 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @PostMapping("/save")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<AuditLogEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityRequest request){
+    public BusinessResult<AuditLogEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityRequest request) {
 
         AuditLogEntity auditLog = BeanCopyUtils.copyProperties(request, AuditLogEntity.class);
 
-		auditLogService.save(auditLog);
+        auditLogService.save(auditLog);
 
         return BusinessResult.success(auditLog);
     }
@@ -85,11 +83,11 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @PostMapping("/update")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<AuditLogEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityRequest request){
+    public BusinessResult<AuditLogEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody AuditLogEntityRequest request) {
 
         AuditLogEntity auditLog = BeanCopyUtils.copyProperties(request, AuditLogEntity.class);
 
-		auditLogService.updateById(auditLog);
+        auditLogService.updateById(auditLog);
 
         return BusinessResult.success(auditLog);
     }
@@ -101,7 +99,7 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @PostMapping("/delete")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody AuditLogEntityDelRequest params){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody AuditLogEntityDelRequest params) {
 
         auditLogService.removeByIds(params.getIds());
 
@@ -115,9 +113,9 @@ public class AuditLogController extends BaseController<AuditLogEntity, AuditLogS
     @GetMapping(value = "/exportExcel")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, AuditLogEntity auditLog) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, AuditLogEntity auditLog) {
 
-        return super.exportExcel(request,response, auditLog, AuditLogEntity.class, "auditLog");
+        return super.exportExcel(request, response, auditLog, AuditLogEntity.class, "auditLog");
     }
 
     /**

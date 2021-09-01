@@ -75,7 +75,7 @@ public class LogAspect extends BaseComponent {
                 });
             });
             if (t instanceof RuntimeException) {
-                throw  (RuntimeException) t;
+                throw (RuntimeException) t;
             }
             return t;
         }

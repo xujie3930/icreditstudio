@@ -1,7 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.system.modules.uaa.web.request;
 
 /**
- *
  * @author EDZ
  */
 public class PlatFromLoginRequest {

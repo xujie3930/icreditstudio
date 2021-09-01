@@ -7,8 +7,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
- * 
- *
  * @author 1
  */
 @Data

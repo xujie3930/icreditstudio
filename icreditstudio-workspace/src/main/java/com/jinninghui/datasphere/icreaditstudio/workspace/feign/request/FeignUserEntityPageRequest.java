@@ -8,8 +8,6 @@ import lombok.Data;
 import java.util.Set;
 
 /**
- *
- *
  * @author hzh
  */
 @Data
@@ -31,13 +29,13 @@ public class FeignUserEntityPageRequest extends BusinessBasePageForm {
      */
     @ApiModelProperty(value = "用户状态")
     private String deleteFlag;
-   /**
+    /**
      * 角色id
      */
     @ApiModelProperty(value = "角色id")
     @ExcelProperty(value = "角色id")
     private String roleId;
-   /**
+    /**
      * 部门id
      */
     @ApiModelProperty(value = "部门id")

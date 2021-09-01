@@ -29,8 +29,8 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String STATUS = "STATUS";
     public static final String CREATE_TIME = "CREATE_TIME";
     public static final String SPACE_ID = "SPACE_ID";
-    public static final String CATEGORY = "category";
-    public static final String DEL_FLAG = "del_flag";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String DEL_FLAG = "DEL_FLAG";
 
     /**
      * 主键id
@@ -67,7 +67,7 @@ public class IcreditDatasourceEntity implements Serializable {
     private Integer status;
 
     /**
-     * 是否删除:0-否，1-删除
+     * 是否删除:N-否，Y-删除
      */
     private String delFlag;
 

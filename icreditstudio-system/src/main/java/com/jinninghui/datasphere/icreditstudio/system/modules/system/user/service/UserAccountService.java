@@ -10,17 +10,16 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.re
 import java.util.Set;
 
 /**
- *
- *
  * @author hzh
  */
 public interface UserAccountService extends IService<UserAccountEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(UserAccountEntityPageRequest pageRequest);
 
     void resetPassword(Set<String> asList, String token);

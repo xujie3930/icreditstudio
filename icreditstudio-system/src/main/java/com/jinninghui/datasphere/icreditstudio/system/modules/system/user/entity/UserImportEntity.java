@@ -11,15 +11,13 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
- *
- *
  * @author hzh
  */
 @Data
 //@TableName("ge_user")
 @ExcelIgnoreUnannotated
 public class UserImportEntity implements Serializable {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     @ExcelProperty(value = "用户姓名")
     private String userName;
@@ -30,9 +28,9 @@ public class UserImportEntity implements Serializable {
     @ExcelProperty(value = "账号")
     private String loginUsername;
 
-  @ExcelProperty(value = "生日")
-  @Pattern(regexp = "^\\d{4}-\\d{1,2}-\\d{1,2}", message = "50009364")
-  private String userBirth;
+    @ExcelProperty(value = "生日")
+    @Pattern(regexp = "^\\d{4}-\\d{1,2}-\\d{1,2}", message = "50009364")
+    private String userBirth;
 
     @ExcelProperty(value = "排序")
     private Integer sortNumber;
@@ -44,9 +42,9 @@ public class UserImportEntity implements Serializable {
     @ExcelProperty(value = "性别", converter = GenderConverter.class)
     private String userGender;
 
-   /* @ExcelProperty(value = "状态")
-    private String status;
-*/
+    /* @ExcelProperty(value = "状态")
+     private String status;
+ */
     @ExcelProperty(value = "部门")
     private String orgName;
 
@@ -54,7 +52,7 @@ public class UserImportEntity implements Serializable {
     private String deleteFlag;
 
     //@ExcelProperty(value = "角色名")
-	private String roleName;
+    private String roleName;
 
     @ExcelProperty(value = "备注")
     private String userRemark;

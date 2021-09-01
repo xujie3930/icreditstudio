@@ -3,8 +3,9 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserRoleMapDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserRoleMapEntity" id="userRoleMapMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserRoleMapEntity"
+               id="userRoleMapMap">
         <result property="id" column="ID"/>
         <result property="userId" column="USER_ID"/>
         <result property="roleId" column="ROLE_ID"/>
@@ -14,5 +15,20 @@
         <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
     </resultMap>
 
+    <select id="getRoleIds" resultType="map">
+        select
+        USER_ID USER_ID,
+        ROLE_ID ROLE_ID
+        from ge_user_role_map
+        <where>
+            <if test="ids != null and ids.size()>0">
+                and user_id in
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+
+    </select>
 
 </mapper>

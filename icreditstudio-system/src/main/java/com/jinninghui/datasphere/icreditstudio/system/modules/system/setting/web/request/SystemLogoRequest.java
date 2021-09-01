@@ -12,12 +12,12 @@ import lombok.Data;
  */
 @Data
 public class SystemLogoRequest {
-  @ApiModelProperty(value = "系统设置id")
-  private String id;
+    @ApiModelProperty(value = "系统设置id")
+    private String id;
 
-  @NotBlank(message = "10000000")
-  private String userId;
+    @NotBlank(message = "10000000")
+    private String userId;
 
-  @NotBlank(message = "10000000")
-  private String logo;
+    @NotBlank(message = "10000000")
+    private String logo;
 }

@@ -22,7 +22,7 @@ import java.util.List;
 public class UaaInterfaceUserAuthServiceImpl implements InterfaceUserAuthService {
 
     @Autowired
-    private  AllInterfacesService allInterfacesService;
+    private AllInterfacesService allInterfacesService;
 
     @Override
     public BusinessResult<List<InterfaceUserAuthResult>> getUserAuthInterfaceIdList(InterfaceUserAuthParam interfaceUserAuthParam) {

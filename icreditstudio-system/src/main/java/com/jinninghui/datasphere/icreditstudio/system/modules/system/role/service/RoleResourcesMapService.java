@@ -12,17 +12,16 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 
- *
  * @author hzh
  */
 public interface RoleResourcesMapService extends IService<RoleResourcesMapEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(RoleResourcesMapEntityPageRequest pageRequest);
 
     BusinessResult<List<RoleResourcesMapEntityResult>> resource(RoleResourcesMapParam param);

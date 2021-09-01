@@ -10,4 +10,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @author 1
  */
 @Mapper
-public interface ShortcutMenuMapper extends BaseMapper<ShortcutMenuEntity> {}
+public interface ShortcutMenuMapper extends BaseMapper<ShortcutMenuEntity> {
+}

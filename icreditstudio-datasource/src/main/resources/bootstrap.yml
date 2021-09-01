@@ -75,7 +75,7 @@ sequence:
 #国密加密ECB 模式
 sm4:
   secretKey: JeF8U9wHFOMfs2Y8
-ribbon:   # uaa调用os服务，进行超时设置，否则调试时报错，时间扩大了10倍
-  ReadTimeout : 500000
-  SocketTimeout : 50000
+ribbon: # uaa调用os服务，进行超时设置，否则调试时报错，时间扩大了10倍
+  ReadTimeout: 500000
+  SocketTimeout: 50000
   ConnectTimeout: 500000

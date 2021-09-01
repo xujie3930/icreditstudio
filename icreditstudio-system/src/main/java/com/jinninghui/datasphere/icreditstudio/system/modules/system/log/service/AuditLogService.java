@@ -7,17 +7,16 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.log.web.req
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 
 /**
- * 
- *
  * @author 1
  */
 public interface AuditLogService extends IService<AuditLogEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(AuditLogEntityPageRequest pageRequest);
 
     AuditLogEntity log(AuditLogEntitySaveParam param);

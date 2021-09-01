@@ -13,9 +13,8 @@ import javax.validation.constraints.NotBlank;
 public class IcreditDatasourceUpdateRequest {
     @NotBlank(message = "主键id不能为空")
     private String id;//主键id
-    private int type;//数据源类型
     private String name;//数据源名称
-    private String uri ;//连接信息
+    private String uri;//连接信息
     private int status = 0;//是否启用：0-启用，1-非启用
     private String descriptor;//数据源描述
 }

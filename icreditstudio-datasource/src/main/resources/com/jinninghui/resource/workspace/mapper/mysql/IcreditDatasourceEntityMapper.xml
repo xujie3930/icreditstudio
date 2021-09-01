@@ -8,9 +8,24 @@
         WHERE ID = #{id}
     </update>
 
-    <select id="selectById" resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
+    <select id="selectById"
+            resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
         select *
         from icredit_datasource
-        where ID = #{id} limit 1
+        where ID = #{id}
+        limit 1
+    </select>
+
+    <select id="hasExit"
+            parameterType="com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest"
+            resultType="java.lang.Boolean">
+        select 1
+        from icredit_datasource
+        <where>
+            <if test="name != null and name != '' ">
+                AND name = #{name}
+            </if>
+        </where>
+        limit 1
     </select>
 </mapper>

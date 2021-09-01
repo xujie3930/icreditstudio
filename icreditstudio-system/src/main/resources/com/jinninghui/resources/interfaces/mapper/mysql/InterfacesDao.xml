@@ -3,8 +3,9 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.mapper.InterfacesDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.entity.InterfacesEntity" id="interfacesMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.entity.InterfacesEntity"
+               id="interfacesMap">
         <result property="interfaceId" column="interface_id"/>
         <result property="uri" column="uri"/>
         <result property="method" column="method"/>
@@ -18,40 +19,38 @@
     <select id="getUserAuthInterfaceIdList"
             resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.InterfaceAuthResult">
 
-        SELECT
-            t.id interfaceId,
-            t.URL uri
-        FROM
-            ge_resources t
-                LEFT JOIN ge_role_resources_map a ON t.ID = a.RESOURCES_ID
-                LEFT JOIN ge_user_role_map b ON a.ROLE_ID = b.ROLE_ID
-        WHERE
-            t.TYPE = 'B'
+        SELECT t.id  interfaceId,
+               t.URL uri
+        FROM ge_resources t
+                 LEFT JOIN ge_role_resources_map a ON t.ID = a.RESOURCES_ID
+                 LEFT JOIN ge_user_role_map b ON a.ROLE_ID = b.ROLE_ID
+        WHERE t.TYPE = 'B'
           AND b.USER_ID = #{userId}
 
     </select>
-    <select id="exportExcel" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.web.result.InterfacesInfoExpert">
+    <select id="exportExcel"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.interfaces.web.result.InterfacesInfoExpert">
         SELECT
-            t.interface_id,
-            t.uri,
-            t.method,
-            t.module,
-            t.NAME,
-            t.remark,
-            t.need_auth,
-            CASE
-                t.need_auth
-                WHEN 1 THEN
-                    '是' ELSE '否'
-                END needAuthName,
-            t.support_auth_type,
-            CASE
-                t.uri_type
-                WHEN '1' THEN
-                    '通配符' ELSE '接口地址'
-                END uri_type
+        t.interface_id,
+        t.uri,
+        t.method,
+        t.module,
+        t.NAME,
+        t.remark,
+        t.need_auth,
+        CASE
+        t.need_auth
+        WHEN 1 THEN
+        '是' ELSE '否'
+        END needAuthName,
+        t.support_auth_type,
+        CASE
+        t.uri_type
+        WHEN '1' THEN
+        '通配符' ELSE '接口地址'
+        END uri_type
         FROM
-            ge_interfaces t
+        ge_interfaces t
 
         <where>
             <if test="name != null and name != ''">

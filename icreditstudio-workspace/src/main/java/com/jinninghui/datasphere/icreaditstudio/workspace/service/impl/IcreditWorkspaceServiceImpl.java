@@ -68,7 +68,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         createUser.setCreateTime(date);
         workspaceUserService.save(createUser);
         //保存用户列表信息
-        if (!CollectionUtils.isEmpty(param.getMemberList())){
+        if (!CollectionUtils.isEmpty(param.getMemberList())) {
             for (WorkspaceMember member : param.getMemberList()) {
                 IcreditWorkspaceUserEntity entity = new IcreditWorkspaceUserEntity();
                 BeanCopyUtils.copyProperties(member, entity);

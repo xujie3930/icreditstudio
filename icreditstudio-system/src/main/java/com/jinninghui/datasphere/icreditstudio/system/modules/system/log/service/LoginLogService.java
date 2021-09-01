@@ -9,17 +9,16 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import java.util.List;
 
 /**
- * 
- *
  * @author 1
  */
 public interface LoginLogService extends IService<LoginLogEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(LoginLogEntityPageRequest pageRequest);
 
     LoginLogEntity log(LoginLogEntitySaveParam param);

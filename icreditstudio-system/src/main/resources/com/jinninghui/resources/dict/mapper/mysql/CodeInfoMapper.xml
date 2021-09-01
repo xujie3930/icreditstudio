@@ -4,10 +4,11 @@
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.mapper.CodeInfoMapper">
 
 
-    <select id="getInfoByKey" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult">
-      SELECT code_remark AS label,code_value AS value
-      FROM ge_code_info
-      WHERE code_type = #{key}
+    <select id="getInfoByKey"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult">
+        SELECT code_remark AS label, code_value AS value
+        FROM ge_code_info
+        WHERE code_type = #{key}
     </select>
 
 </mapper>

@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xujie
@@ -25,8 +25,8 @@ public class IcreditWorkspaceEntity implements Serializable {
 
     public static final String NAME = "NAME";
     public static final String CREATE_USER = "CREATE_USER";
-    public static final String CREATE_TIME  = "CREATE_TIME";
-    public static final String ID  = "ID";
+    public static final String CREATE_TIME = "CREATE_TIME";
+    public static final String ID = "ID";
 
     /**
      * 主键id
@@ -61,7 +61,7 @@ public class IcreditWorkspaceEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -72,7 +72,7 @@ public class IcreditWorkspaceEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**

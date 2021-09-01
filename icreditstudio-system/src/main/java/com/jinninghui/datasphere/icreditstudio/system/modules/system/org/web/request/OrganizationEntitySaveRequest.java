@@ -16,7 +16,7 @@ public class OrganizationEntitySaveRequest {
     @Length(max = 20, message = "50009339")
     private String orgName;
     @NotBlank(message = "10000000")
-    @Length(min = 0,max = 20,message = "50009339")
+    @Length(min = 0, max = 20, message = "50009339")
     private String orgCode;
     @NotBlank(message = "10000000")
     private String orgAddress;

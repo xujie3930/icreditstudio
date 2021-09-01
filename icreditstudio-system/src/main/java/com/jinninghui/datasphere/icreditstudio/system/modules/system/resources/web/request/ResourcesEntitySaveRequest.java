@@ -45,7 +45,7 @@ public class ResourcesEntitySaveRequest {
     /**
      * 备注
      */
-    @Length(max = 200,  message = "50000011")
+    @Length(max = 200, message = "50000011")
     private String remark;
     /**
      * 排序
@@ -65,6 +65,6 @@ public class ResourcesEntitySaveRequest {
 
     private String needAuth;
 
-    @Length(max = 200,  message = "50000011")
+    @Length(max = 200, message = "50000011")
     private String authIdentification;
 }

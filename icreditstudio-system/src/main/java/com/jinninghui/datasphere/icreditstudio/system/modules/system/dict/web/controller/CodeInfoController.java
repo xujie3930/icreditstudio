@@ -135,7 +135,7 @@ public class CodeInfoController extends BaseController<CodeInfoEntity, CodeInfoS
     }
 
     @GetMapping("/getInfoByKey")
-    public BusinessResult<List<CodeInfoResult>> getInfoByKey(@RequestParam("key") String key){
+    public BusinessResult<List<CodeInfoResult>> getInfoByKey(@RequestParam("key") String key) {
         List<CodeInfoResult> codeInfos = codeInfoService.getInfoByKey(key);
         return BusinessResult.success(codeInfos);
     }

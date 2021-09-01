@@ -47,7 +47,7 @@ public interface OrganizationService extends IService<OrganizationEntity> {
     List<SelectInfoResult> getAllOrgInfo();
 
 
-    BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, OrganizationEntity organization,String userId);
+    BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, OrganizationEntity organization, String userId);
 
 
     BusinessResult<?> importExcel(HttpServletRequest request, HttpServletResponse response, Class<OrganizationEntityExpert> organizationEntityExpertClass);

@@ -8,8 +8,10 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditD
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
@@ -50,4 +52,8 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      * @return
      */
     BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param);
+
+    BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request);
+
+    DatasourceDetailResult getDetailById(String id);
 }

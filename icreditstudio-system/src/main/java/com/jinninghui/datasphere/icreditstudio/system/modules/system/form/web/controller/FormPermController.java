@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 
- *
  * @author 1
  */
 @RestController
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FormPermController extends BaseController<FormPermEntity, FormPermService> {
 
     @Autowired
-    private   FormPermService formPermService;
+    private FormPermService formPermService;
 
     /**
      * 分页查询列表
@@ -39,7 +37,7 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @PostMapping("/pageList")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormPermEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormPermEntityPageRequest pageRequest) {
 
         BusinessPageResult page = formPermService.queryPage(pageRequest);
 
@@ -54,7 +52,7 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @GetMapping("/info/{formId}")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormPermEntity> info(@ApiParam(name = "formId", value = "主键", required = true) @PathVariable("formId") String formId){
+    public BusinessResult<FormPermEntity> info(@ApiParam(name = "formId", value = "主键", required = true) @PathVariable("formId") String formId) {
 
         FormPermEntity formPerm = formPermService.getById(formId);
 
@@ -68,11 +66,11 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @PostMapping("/save")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormPermEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormPermEntityRequest request){
+    public BusinessResult<FormPermEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormPermEntityRequest request) {
 
         FormPermEntity formPerm = BeanCopyUtils.copyProperties(request, FormPermEntity.class);
 
-		formPermService.save(formPerm);
+        formPermService.save(formPerm);
 
         return BusinessResult.success(formPerm);
     }
@@ -84,11 +82,11 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @PostMapping("/update")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormPermEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormPermEntityRequest request){
+    public BusinessResult<FormPermEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormPermEntityRequest request) {
 
         FormPermEntity formPerm = BeanCopyUtils.copyProperties(request, FormPermEntity.class);
 
-		formPermService.updateById(formPerm);
+        formPermService.updateById(formPerm);
 
         return BusinessResult.success(formPerm);
     }
@@ -100,7 +98,7 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @PostMapping("/delete")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody FormPermEntityDelRequest params){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody FormPermEntityDelRequest params) {
 
         formPermService.removeByIds(params.getIds());
 
@@ -114,9 +112,9 @@ public class FormPermController extends BaseController<FormPermEntity, FormPermS
     @GetMapping(value = "/exportExcel")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, FormPermEntity formPerm) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, FormPermEntity formPerm) {
 
-        return super.exportExcel(request,response, formPerm, FormPermEntity.class, "formPerm");
+        return super.exportExcel(request, response, formPerm, FormPermEntity.class, "formPerm");
     }
 
     /**

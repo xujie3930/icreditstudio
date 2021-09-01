@@ -15,8 +15,6 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- *
- *
  * @author hzh
  */
 @Mapper
@@ -38,6 +36,7 @@ public interface UserDao extends BaseMapper<UserEntity> {
 
     /**
      * 模糊查询用户 姓名账号或者手机号
+     *
      * @param params name
      * @return
      */
