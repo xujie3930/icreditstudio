@@ -138,10 +138,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         ddlEntity.setCreateTime(new Date());
         //TODO：这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
         IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
-        if (oldEntity == null){
+        if (oldEntity == null) {
             ddlSyncMapper.insert(ddlEntity);
-        }else {
-            if (!oldEntity.getColumnsInfo().equals(ddlEntity.getColumnsInfo())){
+        } else {
+            if (!oldEntity.getColumnsInfo().equals(ddlEntity.getColumnsInfo())) {
                 ddlEntity.setVersion(oldEntity.getVersion() + 1);
                 ddlSyncMapper.insert(ddlEntity);
             }
@@ -157,14 +157,14 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
-        List<DatasourceCatalogue> results = Lists.newArrayList();
+        List<DatasourceCatalogue> results = null;
         if (CollectionUtils.isNotEmpty(list)) {
             //数据源ID
             Set<String> sourceIds = list.parallelStream().filter(Objects::nonNull).map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
             //数据源最新同步表
             Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(sourceIds);
             //数据源信息
-            List<DatasourceCatalogue> collect = list.stream()
+            results = list.stream()
                     .filter(Objects::nonNull)
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
@@ -183,9 +183,25 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                         catalogueTablas.put(k, tableNames);
                     });
                 });
+                results.stream()
+                        .forEach(datasourceCatalogue -> {
+                            String datasourceId = datasourceCatalogue.getDatasourceId();
+                            List<String> tableNames = catalogueTablas.get(datasourceId);
+                            List<DatasourceCatalogue> content = Optional.ofNullable(tableNames).orElse(Lists.newArrayList())
+                                    .parallelStream()
+                                    .map(s -> {
+                                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                                        catalogue.setDatasourceId(datasourceId);
+                                        catalogue.setUrl(datasourceCatalogue.getUrl());
+                                        catalogue.setDialect(datasourceCatalogue.getDialect());
+                                        catalogue.setName(s);
+                                        return catalogue;
+                                    }).collect(Collectors.toList());
+                            datasourceCatalogue.setContent(content);
+                        });
             }
         }
-        return BusinessResult.success(results);
+        return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
