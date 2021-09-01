@@ -55,7 +55,7 @@ public class AllInterfaceController {
     public BusinessResult<List<InterfaceAuthResult>> getUserAuthInterfaceIdList(@RequestHeader(value = "x-userid") String userId) {
         InterfaceAuthParam param = new InterfaceAuthParam();
         param.setUserId(userId);
-        List<InterfaceAuthResult> s =  allInterfacesService.getUserAuthInterfaceIdList(param);
+        List<InterfaceAuthResult> s = allInterfacesService.getUserAuthInterfaceIdList(param);
 
         return BusinessResult.success(s);
     }
@@ -141,7 +141,6 @@ public class AllInterfaceController {
 
         return BusinessResult.success(selectInfoResult);
     }
-
 
 
 }

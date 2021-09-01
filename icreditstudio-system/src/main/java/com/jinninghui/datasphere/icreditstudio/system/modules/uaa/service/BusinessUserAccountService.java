@@ -18,6 +18,7 @@ public interface BusinessUserAccountService {
 
     /**
      * 校验用户角色是否有效
+     *
      * @param userId 用户id
      * @return
      */
@@ -25,6 +26,7 @@ public interface BusinessUserAccountService {
 
     /**
      * 校验用户部门是否有效
+     *
      * @param userId 用户id
      * @return
      */

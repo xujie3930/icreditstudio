@@ -5,8 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.form.entity
 import org.apache.ibatis.annotations.Mapper;
 
 /**
- * 
- *
  * @author 1
  */
 @Mapper

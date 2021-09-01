@@ -33,7 +33,7 @@ public class UserController {
     /**
      * 用户退出登录
      */
-    @Log(type = Log.Type.LOGIN,operateType = Log.OperateType.LOGOUT)
+    @Log(type = Log.Type.LOGIN, operateType = Log.OperateType.LOGOUT)
     @PostMapping("Session/logout")
     @ApiOperation(value = "用户退出登录", notes = "用户退出登录", httpMethod = "POST")
     @Logable

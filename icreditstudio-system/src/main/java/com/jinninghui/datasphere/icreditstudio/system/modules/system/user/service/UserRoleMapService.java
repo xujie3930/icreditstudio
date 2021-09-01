@@ -6,17 +6,16 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserRoleMapEntityPageRequest;
 
 /**
- * 
- *
  * @author hzh
  */
 public interface UserRoleMapService extends IService<UserRoleMapEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(UserRoleMapEntityPageRequest pageRequest);
 }
 

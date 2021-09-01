@@ -3,7 +3,7 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.mapper.RoleDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity" id="roleMap">
         <result property="id" column="ID"/>
         <result property="roleName" column="ROLE_NAME"/>
@@ -17,115 +17,112 @@
         <result property="lastUpdateTime" column="LAST_UPDATE_TIME"/>
         <result property="lastUpdateUserId" column="LAST_UPDATE_USER_ID"/>
     </resultMap>
-    <select id="getRoleInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
-        SELECT
-            t.ID,
-            t.ROLE_NAME,
-            t.ROLE_CODE,
-            t.PARENT_ID,
-            t.SORT_NUMBER,
-            t.ROLE_REMARK,
-            t.DELETE_FLAG,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID
-        FROM
-            ge_role t
-                LEFT JOIN ge_user_role_map a ON t.ID = a.ROLE_ID
-        WHERE
-            a.USER_ID =  #{userId}
+    <select id="getRoleInfoByUserId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
+        SELECT t.ID,
+               t.ROLE_NAME,
+               t.ROLE_CODE,
+               t.PARENT_ID,
+               t.SORT_NUMBER,
+               t.ROLE_REMARK,
+               t.DELETE_FLAG,
+               t.CREATE_TIME,
+               t.CREATE_USER_ID,
+               t.LAST_UPDATE_TIME,
+               t.LAST_UPDATE_USER_ID
+        FROM ge_role t
+                 LEFT JOIN ge_user_role_map a ON t.ID = a.ROLE_ID
+        WHERE a.USER_ID = #{userId}
 
     </select>
-    <select id="getAllRoleInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
-        SELECT
-            t.id ,
-            t.ROLE_NAME name
-        FROM
-            ge_role t
+    <select id="getAllRoleInfo"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
+        SELECT t.id,
+               t.ROLE_NAME name
+        FROM ge_role t
         where t.DELETE_FLAG = 'N'
         ORDER BY t.SORT_NUMBER
     </select>
-    <select id="getChildrenByParentId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
+    <select id="getChildrenByParentId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
         select
-            r.id ,
-            r.roleName,
-            r.parentId,
-            r.roleRemark,
-            r.createTime,
-            r.deleteFlag,
-            r.sonNum,
-            1 as operateFlag
+        r.id ,
+        r.roleName,
+        r.parentId,
+        r.roleRemark,
+        r.createTime,
+        r.deleteFlag,
+        r.sonNum,
+        1 as operateFlag
         from
-                (SELECT
-                    t.id ,
-                    t.ROLE_NAME as roleName,
-                    t.parent_id as parentId,
-                    t.ROLE_REMARK as roleRemark,
-                    t.CREATE_TIME as createTime,
-                    t.DELETE_FLAG as deleteFlag,
-                    COUNT(son.id) as sonNum
-                FROM
-                    ge_role t left join ge_role son on son.PARENT_ID = t.id
-                where 1=1
-                <if test="parentId !=null and parentId != '' ">
-                    and  t.parent_id=#{parentId}
-                </if>
-                <if test="roleName !=null and roleName != '' ">
-                    AND t.ROLE_NAME like concat('%' , #{roleName} , '%')
-                </if>
-                <if test="deleteFlag !=null and deleteFlag != '' ">
-                     and  t.DELETE_FLAG =#{deleteFlag}
-                </if>
-                group by t.id
-              ) as r
-        <if test="userId !=null and userId != '' "> ,
-              ge_user_role_map ma
+        (SELECT
+        t.id ,
+        t.ROLE_NAME as roleName,
+        t.parent_id as parentId,
+        t.ROLE_REMARK as roleRemark,
+        t.CREATE_TIME as createTime,
+        t.DELETE_FLAG as deleteFlag,
+        COUNT(son.id) as sonNum
+        FROM
+        ge_role t left join ge_role son on son.PARENT_ID = t.id
         where 1=1
-        and ma.USER_ID =#{userId}
-        and ma.ROLE_ID =r.id
+        <if test="parentId !=null and parentId != '' ">
+            and t.parent_id=#{parentId}
+        </if>
+        <if test="roleName !=null and roleName != '' ">
+            AND t.ROLE_NAME like concat('%' , #{roleName} , '%')
+        </if>
+        <if test="deleteFlag !=null and deleteFlag != '' ">
+            and t.DELETE_FLAG =#{deleteFlag}
+        </if>
+        group by t.id
+        ) as r
+        <if test="userId !=null and userId != '' ">,
+            ge_user_role_map ma
+            where 1=1
+            and ma.USER_ID =#{userId}
+            and ma.ROLE_ID =r.id
         </if>
         ORDER BY r.createTime desc
     </select>
     <select id="isAdmin" resultType="java.lang.Integer">
-        SELECT
-            count(t.ID) count
-        FROM
-            ge_user t
-            left join ge_user_role_map a on t.ID = a.USER_ID
-            left join ge_role b on b.ID = a.ROLE_ID
+        SELECT count(t.ID) count
+        FROM ge_user t
+                 left join ge_user_role_map a on t.ID = a.USER_ID
+                 left join ge_role b on b.ID = a.ROLE_ID
         where t.ID = #{userId}
           and b.ROLE_CODE = #{roleCode}
 
     </select>
-    <select id="getUserInfoByRoleId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
+    <select id="getUserInfoByRoleId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
         SELECT
-            t.ID,
-            t.USER_NAME,
-            t.USER_CODE,
-            t.USER_GENDER,
-            t.USER_BIRTH,
-            t.ID_CARD,
-            t.ENTRY_TIME,
-            t.DEPARTURE_TIME,
-            t.E_MAIL,
-            t.USER_POSITION,
-            t.TEL_PHONE,
-            t.SORT_NUMBER,
-            t.DELETE_FLAG,
-            t.PICTURE_PATH,
-            t.USER_REMARK,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_THREE,
-            t.EXTEND_FOUR
+        t.ID,
+        t.USER_NAME,
+        t.USER_CODE,
+        t.USER_GENDER,
+        t.USER_BIRTH,
+        t.ID_CARD,
+        t.ENTRY_TIME,
+        t.DEPARTURE_TIME,
+        t.E_MAIL,
+        t.USER_POSITION,
+        t.TEL_PHONE,
+        t.SORT_NUMBER,
+        t.DELETE_FLAG,
+        t.PICTURE_PATH,
+        t.USER_REMARK,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_THREE,
+        t.EXTEND_FOUR
         FROM
-            ge_user t
-                LEFT JOIN ge_user_role_map a ON t.ID = a.USER_ID
+        ge_user t
+        LEFT JOIN ge_user_role_map a ON t.ID = a.USER_ID
         <where>
             <if test="roleId !=null and roleId != '' ">
                 AND a.ROLE_ID = #{roleId, jdbcType=VARCHAR}
@@ -135,6 +132,22 @@
             </if>
         </where>
 
+
+    </select>
+
+    <select id="getRoleNameByRoleIds" resultType="map">
+        select
+        id ROLE_ID,
+        ROLE_NAME ROLE_NAME
+        from ge_role
+        <where>
+            <if test="ids != null and ids.size()>0">
+                and id in
+                <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
 
     </select>
 

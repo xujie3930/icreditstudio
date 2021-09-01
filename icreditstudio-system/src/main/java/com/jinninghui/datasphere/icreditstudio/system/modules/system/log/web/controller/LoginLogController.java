@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 
- *
  * @author 1
  */
 @RestController
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class LoginLogController extends BaseController<LoginLogEntity, LoginLogService> {
 
     @Autowired
-    private   LoginLogService loginLogService;
+    private LoginLogService loginLogService;
 
     /**
      * 分页查询列表
@@ -40,7 +38,7 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @PostMapping("/pageList")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityPageRequest pageRequest) {
 
         BusinessPageResult page = loginLogService.queryPage(pageRequest);
 
@@ -55,7 +53,7 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @GetMapping("/info/{id}")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<LoginLogEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<LoginLogEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         LoginLogEntity loginLog = loginLogService.getById(id);
 
@@ -69,11 +67,11 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @PostMapping("/save")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<LoginLogEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityRequest request){
+    public BusinessResult<LoginLogEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityRequest request) {
 
         LoginLogEntity loginLog = BeanCopyUtils.copyProperties(request, LoginLogEntity.class);
 
-		loginLogService.save(loginLog);
+        loginLogService.save(loginLog);
 
         return BusinessResult.success(loginLog);
     }
@@ -85,11 +83,11 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @PostMapping("/update")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<LoginLogEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityRequest request){
+    public BusinessResult<LoginLogEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody LoginLogEntityRequest request) {
 
         LoginLogEntity loginLog = BeanCopyUtils.copyProperties(request, LoginLogEntity.class);
 
-		loginLogService.updateById(loginLog);
+        loginLogService.updateById(loginLog);
 
         return BusinessResult.success(loginLog);
     }
@@ -101,7 +99,7 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @PostMapping("/delete")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody LoginLogEntityDelRequest params){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody LoginLogEntityDelRequest params) {
 
         loginLogService.removeByIds(params.getIds());
 
@@ -115,9 +113,9 @@ public class LoginLogController extends BaseController<LoginLogEntity, LoginLogS
     @GetMapping(value = "/exportExcel")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, LoginLogEntity loginLog) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, LoginLogEntity loginLog) {
 
-        return super.exportExcel(request,response, loginLog, LoginLogEntity.class, "loginLog");
+        return super.exportExcel(request, response, loginLog, LoginLogEntity.class, "loginLog");
     }
 
     /**

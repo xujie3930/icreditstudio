@@ -18,7 +18,7 @@ public class UaaCodeBean {
         FAIL("UAA01", "系统内部错误"),
         NOT_EXSIT_TOKEN("UAA23", "令牌不存在"),
         NOT_EXIST_USER("UAA27", "无此账户"),
-        PWD_OR_ACCOUNT_ERROR("UAA29","用户名或密码错误"),
+        PWD_OR_ACCOUNT_ERROR("UAA29", "用户名或密码错误"),
         TOO_FREQUENTLY_REQUEST("UAA43", "验证码请求过于频繁"),
         INVALID_INTERFACE_ROLE("UAA47", "接口的角色鉴权不通过"),
         INVALID_AUTHCODE("UAA48", "验证码非法"),
@@ -51,7 +51,7 @@ public class UaaCodeBean {
         public static UaaCode find(String code) {
             if (StringUtils.isNotBlank(code)) {
                 for (UaaCode value : UaaCode.values()) {
-                    if (code.equals(value.getCode())){
+                    if (code.equals(value.getCode())) {
                         return value;
                     }
                 }

@@ -5,9 +5,9 @@
 
 
     <update id="updateStatusByIds" parameterType="java.util.List">
-      UPDATE ge_form_definition
-      SET FORM_STATUS = #{status}
-      WHERE ID IN
+        UPDATE ge_form_definition
+        SET FORM_STATUS = #{status}
+        WHERE ID IN
         <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>

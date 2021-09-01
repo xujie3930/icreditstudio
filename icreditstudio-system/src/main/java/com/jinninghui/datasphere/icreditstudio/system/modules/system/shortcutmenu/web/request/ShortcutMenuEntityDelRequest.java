@@ -13,7 +13,9 @@ import lombok.Data;
 @Data
 public class ShortcutMenuEntityDelRequest {
 
-  /** id集合 */
-  @ApiModelProperty(value = "id集合")
-  private List<String> ids;
+    /**
+     * id集合
+     */
+    @ApiModelProperty(value = "id集合")
+    private List<String> ids;
 }

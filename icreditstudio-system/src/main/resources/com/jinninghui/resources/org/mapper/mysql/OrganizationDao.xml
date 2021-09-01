@@ -3,8 +3,9 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.mapper.OrganizationDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity" id="organizationMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity"
+               id="organizationMap">
         <result property="id" column="ID"/>
         <result property="orgCode" column="ORG_CODE"/>
         <result property="orgName" column="ORG_NAME"/>
@@ -25,118 +26,117 @@
         <result property="extendFour" column="EXTEND_FOUR"/>
         <result property="extendThree" column="EXTEND_THREE"/>
     </resultMap>
-    <select id="getOrgInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.OrganizationInfoResult">
-        SELECT
-            t.ID,
-            t.ORG_CODE,
-            t.ORG_NAME,
-            t.PARENT_ID,
-            t.ORG_ADDRESS,
-            t.ICON_PATH,
-            t.SORT_NUMBER,
-            t.LINK_MAN_NAME,
-            t.LINK_MAN_TEL,
-            t.ORG_REMARK,
-            t.DELETE_FLAG,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_FOUR,
-            t.EXTEND_THREE,
-            a.ORG_PATH
-        FROM
-            ge_organization t
-                LEFT JOIN ge_user_org_map a ON t.ID = a.ORG_ID
-        WHERE
-            a.USER_ID =  #{userId}
+    <select id="getOrgInfoByUserId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.OrganizationInfoResult">
+        SELECT t.ID,
+               t.ORG_CODE,
+               t.ORG_NAME,
+               t.PARENT_ID,
+               t.ORG_ADDRESS,
+               t.ICON_PATH,
+               t.SORT_NUMBER,
+               t.LINK_MAN_NAME,
+               t.LINK_MAN_TEL,
+               t.ORG_REMARK,
+               t.DELETE_FLAG,
+               t.CREATE_TIME,
+               t.CREATE_USER_ID,
+               t.LAST_UPDATE_TIME,
+               t.LAST_UPDATE_USER_ID,
+               t.EXTEND_ONE,
+               t.EXTEND_TWO,
+               t.EXTEND_FOUR,
+               t.EXTEND_THREE,
+               a.ORG_PATH
+        FROM ge_organization t
+                 LEFT JOIN ge_user_org_map a ON t.ID = a.ORG_ID
+        WHERE a.USER_ID = #{userId}
     </select>
-    <select id="getAllOrgTreeInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectTreeInfoResult">
+    <select id="getAllOrgTreeInfo"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectTreeInfoResult">
         SELECT
-            t.id ,
-            t.ORG_NAME name
+        t.id ,
+        t.ORG_NAME name
         FROM
-            ge_organization t
-            <where>
-                 t.DELETE_FLAG = 'N'
-                <choose>
-                    <when test="parentId != null and parentId != '' ">
-                        AND t.PARENT_ID =  #{parentId, jdbcType=VARCHAR}
-                    </when >
+        ge_organization t
+        <where>
+            t.DELETE_FLAG = 'N'
+            <choose>
+                <when test="parentId != null and parentId != '' ">
+                    AND t.PARENT_ID = #{parentId, jdbcType=VARCHAR}
+                </when>
 
-                    <otherwise>
-                        AND t.PARENT_ID  IS NULL
-                    </otherwise>
-                </choose>
-            </where>
+                <otherwise>
+                    AND t.PARENT_ID IS NULL
+                </otherwise>
+            </choose>
+        </where>
         ORDER BY t.SORT_NUMBER
 
     </select>
-    <select id="getAllOrgInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
-        SELECT
-            t.id ,
-            t.ORG_NAME name
-        FROM
-            ge_organization t
-            where t.DELETE_FLAG = 'N'
+    <select id="getAllOrgInfo"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
+        SELECT t.id,
+               t.ORG_NAME name
+        FROM ge_organization t
+        where t.DELETE_FLAG = 'N'
         ORDER BY t.SORT_NUMBER
 
     </select>
-    <select id="queryOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntityExpert">
+    <select id="queryOrgInfoByParams"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntityExpert">
 
         SELECT
-            g.ORG_NAME,
-            g.ORG_CODE,
-            g.ORG_ADDRESS,
-            g.LINK_MAN_NAME,
-            g.LINK_MAN_TEL,
-            ge.ORG_NAME  parentName
+        g.ORG_NAME,
+        g.ORG_CODE,
+        g.ORG_ADDRESS,
+        g.LINK_MAN_NAME,
+        g.LINK_MAN_TEL,
+        ge.ORG_NAME parentName
         FROM
-            ge_organization g
-                left join ge_organization ge on g.PARENT_ID = ge.ID
+        ge_organization g
+        left join ge_organization ge on g.PARENT_ID = ge.ID
         <where>
             <if test="orgName !=null and orgName != '' ">
                 AND g.ORG_NAME like concat('%' , #{orgName, jdbcType=VARCHAR} , '%')
             </if>
 
-           <if test="orgCode !=null and orgCode != '' ">
+            <if test="orgCode !=null and orgCode != '' ">
                 AND g.ORG_CODE like concat('%' , #{orgCode, jdbcType=VARCHAR} , '%')
             </if>
-          <if test="linkManTel !=null and linkManTel != '' ">
+            <if test="linkManTel !=null and linkManTel != '' ">
                 AND g.LINK_MAN_TEL like concat('%' , #{linkManTel, jdbcType=VARCHAR} , '%')
             </if>
 
         </where>
 
 
-
     </select>
-    <select id="getChildrenOrgInfoByParams" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
+    <select id="getChildrenOrgInfoByParams"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
         SELECT
-            t.ID,
-            t.ORG_CODE,
-            t.ORG_NAME,
-            t.PARENT_ID,
-            t.ORG_ADDRESS,
-            t.ICON_PATH,
-            t.SORT_NUMBER,
-            t.LINK_MAN_NAME,
-            t.LINK_MAN_TEL,
-            t.ORG_REMARK,
-            t.DELETE_FLAG,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_FOUR,
-            t.EXTEND_THREE
+        t.ID,
+        t.ORG_CODE,
+        t.ORG_NAME,
+        t.PARENT_ID,
+        t.ORG_ADDRESS,
+        t.ICON_PATH,
+        t.SORT_NUMBER,
+        t.LINK_MAN_NAME,
+        t.LINK_MAN_TEL,
+        t.ORG_REMARK,
+        t.DELETE_FLAG,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_FOUR,
+        t.EXTEND_THREE
         FROM
-            ge_organization t
-                LEFT JOIN ge_organization a ON t.PARENT_ID = a.ID
+        ge_organization t
+        LEFT JOIN ge_organization a ON t.PARENT_ID = a.ID
 
         <where>
             <if test="orgId !=null and orgId != '' ">
@@ -145,7 +145,7 @@
             <if test="orgCode !=null and orgCode != '' ">
                 AND a.ORG_CODE = #{orgCode, jdbcType=VARCHAR}
             </if>
-           <if test="deleteFlag !=null and deleteFlag != '' ">
+            <if test="deleteFlag !=null and deleteFlag != '' ">
                 AND t.DELETE_FLAG = #{deleteFlag, jdbcType=VARCHAR}
             </if>
         </where>

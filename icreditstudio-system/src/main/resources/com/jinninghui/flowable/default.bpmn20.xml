@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.flowable.org/processdef">
-  <process id="Process_746420141381648384" name="默认流程文件" isExecutable="true">
-    <startEvent id="Event_1ok04tp" />
-    <endEvent id="Event_0c36jhd" />
-    <sequenceFlow id="Flow_061vebn" sourceRef="Event_1ok04tp" targetRef="Event_0c36jhd" />
-  </process>
-  <bpmndi:BPMNDiagram id="BPMNDiagram_Process_746420141381648384">
-    <bpmndi:BPMNPlane id="BPMNPlane_Process_746420141381648384" bpmnElement="Process_746420141381648384">
-      <bpmndi:BPMNEdge id="BPMNEdge_Flow_061vebn" bpmnElement="Flow_061vebn">
-        <omgdi:waypoint x="690" y="87" />
-        <omgdi:waypoint x="690" y="582" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="BPMNShape_Event_1ok04tp" bpmnElement="Event_1ok04tp">
-        <omgdc:Bounds x="672" y="52" width="35" height="35" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="BPMNShape_Event_0c36jhd" bpmnElement="Event_0c36jhd">
-        <omgdc:Bounds x="672" y="582" width="35" height="35" />
-      </bpmndi:BPMNShape>
-    </bpmndi:BPMNPlane>
-  </bpmndi:BPMNDiagram>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+             xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.flowable.org/processdef">
+    <process id="Process_746420141381648384" name="默认流程文件" isExecutable="true">
+        <startEvent id="Event_1ok04tp"/>
+        <endEvent id="Event_0c36jhd"/>
+        <sequenceFlow id="Flow_061vebn" sourceRef="Event_1ok04tp" targetRef="Event_0c36jhd"/>
+    </process>
+    <bpmndi:BPMNDiagram id="BPMNDiagram_Process_746420141381648384">
+        <bpmndi:BPMNPlane id="BPMNPlane_Process_746420141381648384" bpmnElement="Process_746420141381648384">
+            <bpmndi:BPMNEdge id="BPMNEdge_Flow_061vebn" bpmnElement="Flow_061vebn">
+                <omgdi:waypoint x="690" y="87"/>
+                <omgdi:waypoint x="690" y="582"/>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNShape id="BPMNShape_Event_1ok04tp" bpmnElement="Event_1ok04tp">
+                <omgdc:Bounds x="672" y="52" width="35" height="35"/>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape id="BPMNShape_Event_0c36jhd" bpmnElement="Event_0c36jhd">
+                <omgdc:Bounds x="672" y="582" width="35" height="35"/>
+            </bpmndi:BPMNShape>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
 </definitions>

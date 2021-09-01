@@ -20,8 +20,6 @@ import java.util.Arrays;
 
 
 /**
- *
- *
  * @author hzh
  */
 @RestController
@@ -29,14 +27,15 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class UserRoleMapController extends BaseController<UserRoleMapEntity, UserRoleMapService> {
 
-    private final  UserRoleMapService userRoleMapService;
+    private final UserRoleMapService userRoleMapService;
     private final SequenceService sequenceService;
+
     /**
      * 分页查询列表
      */
     @ApiOperation(value = "分页查询列表", notes = "分页查询列表", httpMethod = "POST")
     @PostMapping("/pageList")
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityPageRequest pageRequest) {
 
         BusinessPageResult page = userRoleMapService.queryPage(pageRequest);
 
@@ -49,7 +48,7 @@ public class UserRoleMapController extends BaseController<UserRoleMapEntity, Use
      */
     @ApiOperation(value = "信息", notes = "信息", httpMethod = "GET")
     @GetMapping("/info/{id}")
-    public BusinessResult<UserRoleMapEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<UserRoleMapEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         UserRoleMapEntity userRoleMap = userRoleMapService.getById(id);
 
@@ -61,12 +60,12 @@ public class UserRoleMapController extends BaseController<UserRoleMapEntity, Use
      */
     @ApiOperation(value = "保存", notes = "保存", httpMethod = "POST")
     @PostMapping("/save")
-    public BusinessResult<UserRoleMapEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityRequest request){
+    public BusinessResult<UserRoleMapEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityRequest request) {
 
         UserRoleMapEntity userRoleMap = BeanCopyUtils.copyProperties(request, UserRoleMapEntity.class);
 
         userRoleMap.setId(String.valueOf(sequenceService.nextValue(null)));
-		userRoleMapService.save(userRoleMap);
+        userRoleMapService.save(userRoleMap);
 
         return BusinessResult.success(userRoleMap);
     }
@@ -76,11 +75,11 @@ public class UserRoleMapController extends BaseController<UserRoleMapEntity, Use
      */
     @ApiOperation(value = "修改", notes = "修改", httpMethod = "POST")
     @PostMapping("/update")
-    public BusinessResult<UserRoleMapEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityRequest request){
+    public BusinessResult<UserRoleMapEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody UserRoleMapEntityRequest request) {
 
         UserRoleMapEntity userRoleMap = BeanCopyUtils.copyProperties(request, UserRoleMapEntity.class);
 
-		userRoleMapService.updateById(userRoleMap);
+        userRoleMapService.updateById(userRoleMap);
 
         return BusinessResult.success(userRoleMap);
     }
@@ -90,7 +89,7 @@ public class UserRoleMapController extends BaseController<UserRoleMapEntity, Use
      */
     @ApiOperation(value = "删除", notes = "删除", httpMethod = "POST")
     @PostMapping("/delete")
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody String[] ids){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody String[] ids) {
 
         userRoleMapService.removeByIds(Arrays.asList(ids));
 
@@ -102,9 +101,9 @@ public class UserRoleMapController extends BaseController<UserRoleMapEntity, Use
      */
     @ApiOperation(value = "导出excel", notes = "导出excel", httpMethod = "GET")
     @GetMapping(value = "/exportExcel")
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, UserRoleMapEntity userRoleMap) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, UserRoleMapEntity userRoleMap) {
 
-        return super.exportExcel(request,response, userRoleMap, UserRoleMapEntity.class, "userRoleMap");
+        return super.exportExcel(request, response, userRoleMap, UserRoleMapEntity.class, "userRoleMap");
     }
 
     /**

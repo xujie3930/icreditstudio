@@ -234,7 +234,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         ConnectionInfo info = null;
         if (Objects.nonNull(byId)) {
             info = new ConnectionInfo();
-            info.setDriverClass(DatasourceTypeEnum.findDatasourceTypeByType(byId.getCategory(), byId.getType()).getDriver());
+            info.setDriverClass(DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDriver());
             info.setUsername(DatasourceSync.getUsername(byId.getUri()));
             info.setPassword(DatasourceSync.getpassword(byId.getUri()));
             info.setUrl(DatasourceSync.getConnUrl(byId.getUri()));

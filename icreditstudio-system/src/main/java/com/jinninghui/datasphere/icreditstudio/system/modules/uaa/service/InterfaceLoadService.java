@@ -8,12 +8,11 @@ import java.util.List;
  * interface服务接口
  *
  * @author Administrator
- *
  */
 public interface InterfaceLoadService {
 
-	List<Interface> loadInterface();
+    List<Interface> loadInterface();
 
-	List<String> loadButtonMenuUrlList();
+    List<String> loadButtonMenuUrlList();
 
 }

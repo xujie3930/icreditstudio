@@ -11,16 +11,16 @@ import java.util.regex.Pattern;
  */
 public class ExcelConvertUtil {
 
-  public static final String BIRTH_PATTERN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
+    public static final String BIRTH_PATTERN = "^\\d{4}-\\d{1,2}-\\d{1,2}";
 
 
-  public static boolean userBirthExamine(String birth) {
-    if (StringUtils.isNotBlank(birth)) {
-      Pattern regexp = Pattern.compile(BIRTH_PATTERN);
-      if (regexp.matcher(birth).matches()) {
-        return true;
-      }
+    public static boolean userBirthExamine(String birth) {
+        if (StringUtils.isNotBlank(birth)) {
+            Pattern regexp = Pattern.compile(BIRTH_PATTERN);
+            if (regexp.matcher(birth).matches()) {
+                return true;
+            }
+        }
+        return false;
     }
-    return false;
-  }
 }

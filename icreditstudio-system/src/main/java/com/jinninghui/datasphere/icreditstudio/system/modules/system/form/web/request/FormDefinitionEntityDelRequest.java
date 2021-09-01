@@ -11,7 +11,7 @@ import lombok.Data;
  * @author 1
  */
 @Data
-public class FormDefinitionEntityDelRequest  {
+public class FormDefinitionEntityDelRequest {
 
     /**
      * id集合

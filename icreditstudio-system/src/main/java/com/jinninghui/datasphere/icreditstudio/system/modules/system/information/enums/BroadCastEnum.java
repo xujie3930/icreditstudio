@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum BroadCastEnum {
-    Y("Y","广播消息"),
-    N("N","普通消息");
+    Y("Y", "广播消息"),
+    N("N", "普通消息");
     private String code;
     private String desc;
 }

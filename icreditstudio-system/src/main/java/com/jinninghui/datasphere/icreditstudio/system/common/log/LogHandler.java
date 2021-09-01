@@ -18,7 +18,7 @@ public interface LogHandler<T> {
      * @param method
      * @param o
      */
-    void post(HttpServletRequest request,Method method, Object o, T t);
+    void post(HttpServletRequest request, Method method, Object o, T t);
 
     /**
      * 方法调用异常
@@ -26,5 +26,5 @@ public interface LogHandler<T> {
      * @param method
      * @param t
      */
-    void ex(HttpServletRequest request,Method method, Throwable th, T t);
+    void ex(HttpServletRequest request, Method method, Throwable th, T t);
 }

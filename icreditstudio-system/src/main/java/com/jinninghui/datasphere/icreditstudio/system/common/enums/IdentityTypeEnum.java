@@ -12,7 +12,7 @@ public enum IdentityTypeEnum {
     PHONE("3", "phone"),
     WECHAT("4", "wechat"),
     QQ("5", "qq"),
-    DEFAULT("1","username");
+    DEFAULT("1", "username");
     private String code;
     private String desc;
 

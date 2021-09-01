@@ -17,12 +17,12 @@ public class InformationOutBoxPageRequest extends BusinessBasePageForm {
     /**
      * 消息标题
      */
-    @Length(max = 200,message = "50009368")
+    @Length(max = 200, message = "50009368")
     private String infoTitle;
     /**
      * 接收人姓名
      */
-    @Length(max = 20,message = "50008003")
+    @Length(max = 20, message = "50008003")
     private String receiverName;
     /**
      * 消息类型

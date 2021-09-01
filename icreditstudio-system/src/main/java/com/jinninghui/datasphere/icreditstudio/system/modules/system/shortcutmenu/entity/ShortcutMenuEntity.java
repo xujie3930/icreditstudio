@@ -24,36 +24,50 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 @ExcelIgnoreUnannotated
 @HeadFontStyle(fontHeightInPoints = 12)
 @ContentStyle(
-    horizontalAlignment = HorizontalAlignment.CENTER,
-    borderTop = BorderStyle.THIN,
-    borderBottom = BorderStyle.THIN,
-    borderLeft = BorderStyle.THIN,
-    borderRight = BorderStyle.THIN)
+        horizontalAlignment = HorizontalAlignment.CENTER,
+        borderTop = BorderStyle.THIN,
+        borderBottom = BorderStyle.THIN,
+        borderLeft = BorderStyle.THIN,
+        borderRight = BorderStyle.THIN)
 public class ShortcutMenuEntity implements Serializable {
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  /** */
-  @TableId(type = IdType.INPUT)
-  @ApiModelProperty(value = "ID")
-  private String id;
-  /** */
-  @ApiModelProperty(value = "用户id")
-  @ExcelProperty(value = "用户id")
-  private String userId;
-  /** */
-  @ApiModelProperty(value = "菜单id")
-  @ExcelProperty(value = "菜单id")
-  private String resourceId;
-  /** */
-  @ApiModelProperty(value = "创建时间")
-  private Long createTime;
-  /** */
-  @ApiModelProperty(value = "创建人")
-  private String createUserId;
-  /** */
-  @ApiModelProperty(value = "最新更改时间")
-  private Long lastUpdateTime;
-  /** */
-  @ApiModelProperty(value = "最新修改人")
-  private String lastUpdateUserId;
+    /**
+     *
+     */
+    @TableId(type = IdType.INPUT)
+    @ApiModelProperty(value = "ID")
+    private String id;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "用户id")
+    @ExcelProperty(value = "用户id")
+    private String userId;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "菜单id")
+    @ExcelProperty(value = "菜单id")
+    private String resourceId;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "创建时间")
+    private Long createTime;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "创建人")
+    private String createUserId;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "最新更改时间")
+    private Long lastUpdateTime;
+    /**
+     *
+     */
+    @ApiModelProperty(value = "最新修改人")
+    private String lastUpdateUserId;
 }

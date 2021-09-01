@@ -26,11 +26,13 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.service
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.ExpertInfoResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.OrganizationInfoResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.mapper.RoleDao;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.service.RoleService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.service.result.RoleEntityInfoResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.web.request.RoleEntityQueryParam;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.*;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserDao;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserRoleMapDao;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserAccountService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserOrgMapService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserRoleMapService;
@@ -90,6 +92,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
     private TokenService tokenService;
     @Autowired
     private SessionService sessionService;
+    @Autowired
+    private UserRoleMapDao userRoleMapDao;
+    @Autowired
+    private RoleDao roleDao;
 
     @Value("${account.defaultPassword}")
     private String defaultPassword;
@@ -546,7 +552,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                 if (!b) {
                     throw new AppException("50009352");
                 }
-                if(StringUtils.isBlank(user.getUserBirth())){
+                if (StringUtils.isBlank(user.getUserBirth())) {
                     continue;
                 }
                 boolean e = ExcelConvertUtil.userBirthExamine(user.getUserBirth());
@@ -719,6 +725,23 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             if (!DeleteFlagEnum.ALL.getCode().equals(deleteFlag.getCode())) {
                 wrapper.eq(UserEntity.DELETE_FLAG, deleteFlag.getCode());
             }
+            //根据userIds查询所有的roleIds,key:userId,value:roleId
+            List<Map<String, String>> roleIdMapTemp = userRoleMapDao.getRoleIds(ids);
+            Map<String, String> roleIdMap = new HashMap();
+            for (Map<String, String> m : roleIdMapTemp) {
+                roleIdMap.put(m.get("userId"), m.get("roleId"));
+            }
+            /*Map<String, String> roleIdMap = roleIdMapTemp.stream().collect(
+                    Collectors.toMap(s->s.get("userId"), s -> s.get("roleId")));*/
+            Set<String> roleIds = getAllRoleIds(roleIdMap);
+            //根据roleIds查询所有的roleName,key:roleId,value:roleName
+            List<Map<String, String>> roleNameTemp = roleDao.getRoleNameByRoleIds(roleIds);
+            /*Map<String, String> roleName = roleNameTemp.stream().collect(
+                    Collectors.toMap(s->s.get("roleId"), s -> s.get("roleName")));*/
+            Map<String, String> roleName = new HashMap();
+            for (Map<String, String> m : roleNameTemp) {
+                roleName.put(m.get("roleId"), m.get("roleName"));
+            }
             List<UserEntity> userEntities = userDao.selectList(wrapper);
             List<UserOrgMapEntity> allUserOrgMap = userOrgMapService.list(new QueryWrapper<>());
             List<OrganizationEntity> organizationEntities = organizationService.list(new QueryWrapper<>());
@@ -748,11 +771,24 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                                 log.error(e.getMessage(), e);
                             }
                         }
+                        String roleId = roleIdMap.get(userEntity.getId());
+                        result.setRoleId(roleId);
+                        result.setRoleName(roleName.get(roleId));
                         return result;
                     }).collect(Collectors.toList());
 
         }
         return infoResults;
+    }
+
+    private Set<String> getAllRoleIds(Map<String, String> roleIdMap) {
+        Iterator it = roleIdMap.entrySet().iterator();
+        Set<String> set = new HashSet<>();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            set.add((String) entry.getValue());
+        }
+        return set;
     }
 
     /**

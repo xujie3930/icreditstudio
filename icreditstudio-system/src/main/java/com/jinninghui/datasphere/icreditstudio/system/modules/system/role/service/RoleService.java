@@ -85,8 +85,10 @@ public interface RoleService extends IService<RoleEntity> {
     BusinessResult<Boolean> setResourcesToRole(ResourcesToRoleSaveParam param);
 
     BusinessResult<List<RoleEntityResult>> getCurrAndSonRoles(CurrAndSonRoleQueryParam param);
+
     /**
      * 取得用户当前角色及子角色
+     *
      * @param userId
      * @return
      */

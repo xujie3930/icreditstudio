@@ -3,8 +3,9 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserOrgMapDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserOrgMapEntity" id="userOrgMapMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserOrgMapEntity"
+               id="userOrgMapMap">
         <result property="id" column="ID"/>
         <result property="userId" column="USER_ID"/>
         <result property="orgId" column="ORG_ID"/>

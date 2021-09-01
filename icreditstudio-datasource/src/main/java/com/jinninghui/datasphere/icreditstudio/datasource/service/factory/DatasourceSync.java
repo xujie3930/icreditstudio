@@ -53,8 +53,8 @@ public interface DatasourceSync {
         return null;
     }
 
-    default String testConn(Integer category, Integer type, String uri) {
-        String driver = DatasourceTypeEnum.findDatasourceTypeByType(category, type).getDriver();
+    default String testConn(Integer type, String uri) {
+        String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         String username = getUsername(uri);
         String password = getpassword(uri);
         try {
@@ -67,8 +67,8 @@ public interface DatasourceSync {
         }
     }
 
-    default Connection getConn(Integer category, Integer type, String uri, String username, String password) {
-        String driver = DatasourceTypeEnum.findDatasourceTypeByType(category, type).getDriver();
+    default Connection getConn(Integer type, String uri, String username, String password) {
+        String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         Connection connection;
         try {
             Class.forName(driver);
@@ -79,5 +79,5 @@ public interface DatasourceSync {
         return connection;
     }
 
-    Map<String, String> syncDDL(Integer category, Integer type, String uri) throws Exception;
+    Map<String, String> syncDDL(Integer type, String uri) throws Exception;
 }

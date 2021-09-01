@@ -2,9 +2,12 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper">
 
-    <select id="selectMaxVersionByDatasourceId" parameterType="java.lang.String" resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity">
+    <select id="selectMaxVersionByDatasourceId" parameterType="java.lang.String"
+            resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity">
         select *
         from icredit_ddl_sync
-        where datasource_id = #{id} order by version desc limit 1
+        where datasource_id = #{id}
+        order by version desc
+        limit 1
     </select>
 </mapper>
