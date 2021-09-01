@@ -9,8 +9,16 @@ import lombok.Data;
 @Data
 @Builder
 public class IcreditDatasourceConditionParam {
+    /**
+     * 工作空间ID
+     */
     private String workspaceId;
-
+    /**
+     * 分类
+     */
     private Integer category;
-
+    /**
+     * 数据源ID
+     */
+    private String datasourceId;
 }

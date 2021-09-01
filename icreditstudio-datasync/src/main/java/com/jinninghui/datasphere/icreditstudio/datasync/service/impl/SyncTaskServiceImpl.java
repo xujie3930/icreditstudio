@@ -17,6 +17,8 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
@@ -33,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +61,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private Parser<String, List<AssociatedData>> fileAssociatedParser;
     @Resource
     private Parser<String, TaskScheduleInfo> taskScheduleInfoParser;
+    @Autowired
+    private DatasourceFeign datasourceFeign;
 
     @Override
     @BusinessParamsValidate
@@ -176,7 +181,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         try {
             wideTable = new WideTable();
             wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
-            ConnectionInfo info = getConnectionInfo(param.getWorkspaceId(), param.getDatasourceId());
+            ConnectionInfo info = getConnectionInfo(param.getDatasourceId());
 
             ResultSetMetaData metaData = AssociatedUtil.getResultSetMetaData(info, sql);
             int columnCount = metaData.getColumnCount();
@@ -193,18 +198,20 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             wideTable.setFields(fieldInfos);
         } catch (Exception e) {
             log.error("识别宽表失败", e);
-            new AppException("识别宽表失败");
+            throw new AppException("识别宽表失败");
         }
         return BusinessResult.success(wideTable);
     }
 
-    private ConnectionInfo getConnectionInfo(String workspaceId, String datasourceId) {
-        ConnectionInfo info = new ConnectionInfo();
-        info.setDriverClass("com.mysql.cj.jdbc.Driver");
-        info.setUrl("jdbc:mysql://localhost:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true");
-        info.setUsername("root");
-        info.setPassword("root@0000");
-        return info;
+    private ConnectionInfo getConnectionInfo(String datasourceId) {
+        FeignConnectionInfoRequest build = FeignConnectionInfoRequest.builder()
+                .datasourceId(datasourceId)
+                .build();
+        BusinessResult<ConnectionInfo> connectionInfo = datasourceFeign.getConnectionInfo(build);
+        if (connectionInfo.isSuccess() && Objects.nonNull(connectionInfo.getData())) {
+            return connectionInfo.getData();
+        }
+        throw new AppException("60000006");
     }
 
     private List<WideTableFieldInfo> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {

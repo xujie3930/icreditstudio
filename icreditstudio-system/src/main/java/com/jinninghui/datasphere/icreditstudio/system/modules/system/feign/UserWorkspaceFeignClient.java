@@ -2,9 +2,9 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.feign;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +14,7 @@ import java.util.Map;
  * @description iCreditBanner类
  * @create 2021-08-19 14:17
  **/
+@Component
 @FeignClient("workspace")
 public interface UserWorkspaceFeignClient {
 

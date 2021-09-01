@@ -20,6 +20,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000003("60000003", "数据源ID为空"),
         RESOURCE_CODE_60000004("60000004", "数据源方言为空"),
         RESOURCE_CODE_60000005("60000005", "数据源表为空"),
+        RESOURCE_CODE_60000006("60000006", "未获取数据源连接"),
         ;
 
         public final String code;

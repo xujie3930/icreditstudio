@@ -60,30 +60,6 @@ public class DataSyncController {
     }
 
     /**
-     * 数据源目录
-     *
-     * @return
-     */
-    @Logable
-    @PostMapping("/getDatasourceCatalogue")
-    public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(@RequestBody DataSyncQueryDatasourceCatalogueRequest request) {
-        List<DatasourceCatalogue> results = Lists.newArrayList();
-        DatasourceCatalogue dc = new DatasourceCatalogue();
-        dc.setName("mysql");
-        dc.setDialect("mysql");
-        dc.setUrl("jdbc:mysql://localhost:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true");
-        dc.setDatasourceId("1000000");
-
-        DatasourceCatalogue dc1 = new DatasourceCatalogue();
-        dc1.setName("hive");
-        dc1.setDialect("hive");
-        dc1.setUrl("jdbc:mysql://localhost:3306/datasync");
-        dc.setContent(Lists.newArrayList(dc1));
-        results.add(dc);
-        return BusinessResult.success(results);
-    }
-
-    /**
      * 生成宽表
      *
      * @return

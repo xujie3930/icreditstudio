@@ -3,9 +3,11 @@ package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.ConnectionInfoParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
@@ -114,6 +116,19 @@ public class IcreditDatasourceController {
         DataSyncQueryDatasourceCatalogueParam param = new DataSyncQueryDatasourceCatalogueParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.getDatasourceCatalogue(param);
+    }
+
+    /**
+     * 获取连接信息
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/getConnectionInfo")
+    BusinessResult<ConnectionInfo> getConnectionInfo(@RequestBody ConnectionInfoRequest request) {
+        ConnectionInfoParam param = new ConnectionInfoParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.getConnectionInfo(param);
     }
 }
 

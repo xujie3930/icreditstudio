@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
