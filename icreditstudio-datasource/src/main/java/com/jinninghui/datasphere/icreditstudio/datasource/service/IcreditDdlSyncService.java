@@ -1,13 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableISyncnfo;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -33,7 +34,14 @@ public interface IcreditDdlSyncService extends IService<IcreditDdlSyncEntity> {
      * @return
      */
     static List<String> parseColumnsTableName(String columnsInfo) {
-//        JSONArray.parseArray(columnsInfo).toJavaList()
-        return Lists.newArrayList();
+        List<String> results = null;
+        List<TableISyncnfo> tableISyncnfos = JSONArray.parseArray(columnsInfo).toJavaList(TableISyncnfo.class);
+        if (CollectionUtils.isNotEmpty(tableISyncnfos)) {
+            results = tableISyncnfos.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(TableISyncnfo::getTableName)
+                    .collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
     }
 }

@@ -3,6 +3,8 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.param;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
+
 /**
  * @author Peng
  */
@@ -16,7 +18,7 @@ public class IcreditDatasourceConditionParam {
     /**
      * 分类
      */
-    private Integer category;
+    private Set<Integer> category;
     /**
      * 数据源ID
      */

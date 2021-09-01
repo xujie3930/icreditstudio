@@ -30,6 +30,7 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String CREATE_TIME = "CREATE_TIME";
     public static final String SPACE_ID = "SPACE_ID";
     public static final String CATEGORY = "category";
+    public static final String DEL_FLAG = "del_flag";
 
     /**
      * 主键id

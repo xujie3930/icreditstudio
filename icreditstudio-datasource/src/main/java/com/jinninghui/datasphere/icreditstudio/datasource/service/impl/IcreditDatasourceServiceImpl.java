@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
@@ -151,7 +152,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
-                .category(param.getCategory())
+                .category(Sets.newHashSet(param.getSourceType()))
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
@@ -167,8 +168,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        catalogue.setName(icreditDatasourceEntity.getName());
-                        catalogue.setUrl(icreditDatasourceEntity.getUri());
+                        catalogue.setName(DatasourceSync.getDatabaseName(icreditDatasourceEntity.getUri()));
+                        catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getCategory(), icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());
@@ -193,6 +194,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                                         catalogue.setUrl(datasourceCatalogue.getUrl());
                                         catalogue.setDialect(datasourceCatalogue.getDialect());
                                         catalogue.setName(s);
+                                        if (s.equals(param.getTableName())) {
+                                            catalogue.setSelect(true);
+                                        }
                                         return catalogue;
                                     }).collect(Collectors.toList());
                             datasourceCatalogue.setContent(content);
@@ -221,12 +225,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (StringUtils.isNotBlank(param.getWorkspaceId())) {
             wrapper.eq(IcreditDatasourceEntity.SPACE_ID, param.getWorkspaceId());
         }
-        if (Objects.nonNull(param.getCategory())) {
-            wrapper.eq(IcreditDatasourceEntity.CATEGORY, param.getCategory());
+        if (CollectionUtils.isNotEmpty(param.getCategory())) {
+            wrapper.in(IcreditDatasourceEntity.CATEGORY, param.getCategory());
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());
         }
+        wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, "N");
         return wrapper;
     }
 }

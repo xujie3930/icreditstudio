@@ -26,6 +26,10 @@ public class DatasourceCatalogue {
      */
     private String url;
     /**
+     * 选中状态
+     */
+    private boolean select;
+    /**
      * 数据源ID
      */
     private String datasourceId;
