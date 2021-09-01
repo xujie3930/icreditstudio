@@ -76,9 +76,9 @@ public class IcreditDdlSyncEntity implements Serializable {
     private Integer version;
 
     /**
-     * 是否删除:0-否，1-删除
+     * 是否删除:N-否，Y-删除
      */
-    private String delFlag;
+    private String delFlag = "N";
 
     /**
      * 备注
