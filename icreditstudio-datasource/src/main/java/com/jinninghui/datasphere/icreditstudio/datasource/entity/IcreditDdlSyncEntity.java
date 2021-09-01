@@ -22,7 +22,7 @@ import lombok.EqualsAndHashCode;
 public class IcreditDdlSyncEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    public static final String DATASOURCE_ID = "datasource_id";
     /**
      * 主键id
      */

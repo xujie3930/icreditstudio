@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
@@ -24,11 +27,13 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,10 +48,12 @@ import java.util.stream.Collectors;
 @Service
 public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceMapper, IcreditDatasourceEntity> implements IcreditDatasourceService {
 
-    @Autowired
+    @Resource
     private IcreditDdlSyncMapper ddlSyncMapper;
-    @Autowired
+    @Resource
     private IcreditDatasourceMapper datasourceMapper;
+    @Resource
+    private IcreditDdlSyncService icreditDdlSyncService;
 
     @Autowired
     private SequenceService sequenceService;
@@ -145,6 +152,29 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (CollectionUtils.isNotEmpty(list)) {
             //数据源ID
             Set<String> sourceIds = list.parallelStream().filter(Objects::nonNull).map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
+            //数据源最新同步表
+            Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(sourceIds);
+            //数据源信息
+            List<DatasourceCatalogue> collect = list.stream()
+                    .filter(Objects::nonNull)
+                    .map(icreditDatasourceEntity -> {
+                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                        catalogue.setDatasourceId(icreditDatasourceEntity.getId());
+                        catalogue.setName(icreditDatasourceEntity.getName());
+                        catalogue.setUrl(icreditDatasourceEntity.getUri());
+                        catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getCategory(), icreditDatasourceEntity.getType()).getDesc());
+                        return catalogue;
+                    }).collect(Collectors.toList());
+            if (MapUtils.isNotEmpty(stringOptionalMap)) {
+                Map<String, List<String>> catalogueTablas = Maps.newHashMap();
+                stringOptionalMap.forEach((k, v) -> {
+                    v.ifPresent(icreditDdlSyncEntity -> {
+                        String columnsInfo = icreditDdlSyncEntity.getColumnsInfo();
+                        List<String> tableNames = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
+                        catalogueTablas.put(k, tableNames);
+                    });
+                });
+            }
         }
         return BusinessResult.success(results);
     }
