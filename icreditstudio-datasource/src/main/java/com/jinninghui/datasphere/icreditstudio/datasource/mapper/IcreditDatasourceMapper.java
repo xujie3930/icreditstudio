@@ -2,11 +2,12 @@ package com.jinninghui.datasphere.icreditstudio.datasource.mapper;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author xujie
@@ -17,4 +18,6 @@ public interface IcreditDatasourceMapper extends BaseMapper<IcreditDatasourceEnt
     void updateStatusById(@Param("id") String id);
 
     IcreditDatasourceEntity selectById(@Param("id") String id);
+
+    Boolean hasExit(DataSourceHasExistRequest request);
 }

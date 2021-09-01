@@ -17,6 +17,6 @@ public class WorkspaceMember {
     private String userRole;//用户角色
     private String functionalAuthority;//功能权限
     private String dataAuthority;//数据权限
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;//创建时间
 }

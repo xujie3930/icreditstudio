@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasource.entity;
+package com.jinninghui.datasphere.icreditstudio.datasource.web.result;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -18,18 +20,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("icredit_datasource")
-public class IcreditDatasourceEntity implements Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    public static final String NAME = "NAME";
-    public static final String TYPE = "TYPE";
-    public static final String STATUS = "STATUS";
-    public static final String CREATE_TIME = "CREATE_TIME";
-    public static final String SPACE_ID = "SPACE_ID";
-    public static final String CATEGORY = "CATEGORY";
-    public static final String DEL_FLAG = "DEL_FLAG";
+public class DatasourceDetailResult implements Serializable {
 
     /**
      * 主键id
@@ -113,5 +104,8 @@ public class IcreditDatasourceEntity implements Serializable {
      */
     private String remark;
 
-
+    /**
+     * 工作流列表
+     */
+    private List<WorkFlowResult> workFlowList = new ArrayList<>();
 }

@@ -14,7 +14,7 @@ import java.util.Map;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author xujie
@@ -32,7 +32,7 @@ public class IcreditWorkspaceUserController {
      */
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> userPageList(@RequestBody IcreditWorkspaceUserEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> userPageList(@RequestBody IcreditWorkspaceUserEntityPageRequest pageRequest) {
         BusinessPageResult page = workspaceUserService.queryPage(pageRequest);
         return BusinessResult.success(page);
     }
@@ -40,7 +40,7 @@ public class IcreditWorkspaceUserController {
 
     @GetMapping("/getWorkspaceByUserId/{id}")
     @Logable
-    public BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable("id") String id){
+    public BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable("id") String id) {
         return BusinessResult.success(workspaceUserService.getWorkspaceByUserId(id));
     }
 

@@ -8,6 +8,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditD
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -31,6 +32,16 @@ public class IcreditDatasourceController {
 
     @Autowired
     private IcreditDatasourceService datasourceService;
+
+
+    /**
+     * 判断数据源是否重复存在
+     */
+    @PostMapping("/hasExist")
+    @Logable
+    public BusinessResult<Boolean> info(@RequestBody DataSourceHasExistRequest request) {
+        return datasourceService.hasExit(request);
+    }
 
 
     /**
@@ -73,9 +84,9 @@ public class IcreditDatasourceController {
      */
     @GetMapping("/info/{id}")
     @Logable
-    public BusinessResult<IcreditDatasourceEntity> info(@PathVariable("id") String id) {
-        IcreditDatasourceEntity workspaceEntity = datasourceService.getById(id);
-        return BusinessResult.success(workspaceEntity);
+    public BusinessResult<DatasourceDetailResult> info(@PathVariable("id") String id) {
+        DatasourceDetailResult detail = datasourceService.getDetailById(id);
+        return BusinessResult.success(detail);
     }
 
     /**
@@ -83,7 +94,8 @@ public class IcreditDatasourceController {
      */
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditDatasourceEntityPageRequest pageRequest) {
+    public BusinessResult<BusinessPageResult> pageList(@RequestHeader(value = "x-userid") String userId,
+                                                       @RequestBody IcreditDatasourceEntityPageRequest pageRequest) {
         BusinessPageResult page = datasourceService.queryPage(pageRequest);
         return BusinessResult.success(page);
     }

@@ -12,7 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author xujie

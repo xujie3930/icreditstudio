@@ -16,7 +16,7 @@ public class IcreditDatasourceSaveRequest {
     private int category;//数据源分类（1-关系型，2-半结构化，3-NoSql,4-本地文件，5-区块链）
     private int type;//数据源类型
     private String name;//数据源名称
-    private String uri ;//连接信息
+    private String uri;//连接信息
     private int status = 0;//是否启用：0-启用，1-非启用
     private String descriptor;//数据源描述
 }

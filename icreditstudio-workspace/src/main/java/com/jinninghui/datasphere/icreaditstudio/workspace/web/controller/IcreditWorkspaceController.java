@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author xujie
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/workspace")
-public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceEntity, IcreditWorkspaceService>{
+public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceEntity, IcreditWorkspaceService> {
 
     @Autowired
     private IcreditWorkspaceService workspaceService;
@@ -40,7 +40,7 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/hasExist")
     @Logable
-    public BusinessResult<Boolean> info(@RequestBody WorkspaceHasExistRequest request){
+    public BusinessResult<Boolean> info(@RequestBody WorkspaceHasExistRequest request) {
         return workspaceService.hasExit(request);
     }
 
@@ -84,7 +84,7 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @GetMapping("/info/{id}")
     @Logable
-    public BusinessResult<WorkspaceDetailResult> info(@PathVariable("id") String id){
+    public BusinessResult<WorkspaceDetailResult> info(@PathVariable("id") String id) {
         WorkspaceDetailResult result = workspaceService.getDetailById(id);
         return BusinessResult.success(result);
     }
@@ -94,7 +94,7 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditWorkspaceEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditWorkspaceEntityPageRequest pageRequest) {
         BusinessPageResult page = workspaceService.queryPage(pageRequest);
         return BusinessResult.success(page);
     }

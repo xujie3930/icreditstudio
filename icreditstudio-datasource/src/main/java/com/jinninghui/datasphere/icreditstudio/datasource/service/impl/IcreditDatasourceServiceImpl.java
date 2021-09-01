@@ -5,9 +5,11 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceDelFlagEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
+import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
@@ -19,8 +21,10 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditD
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
@@ -28,6 +32,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +63,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Autowired
     private SequenceService sequenceService;
 
+    @Autowired
+    private SystemFeignClient systemFeignClient;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
@@ -78,8 +86,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(pageRequest.getWorkspaceId())) {
-            wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getWorkspaceId());
+        BusinessResult<Boolean> result = systemFeignClient.isAdmin();
+        //非管理员，查询未删除的数据
+        if (result.isSuccess() && !result.getData()){
+            wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
+        }
+        if (StringUtils.isNotBlank(pageRequest.getSpaceId())) {
+            wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getSpaceId());
         }
         if (StringUtils.isNotBlank(pageRequest.getName())) {
             wrapper.like(IcreditDatasourceEntity.NAME, pageRequest.getName());
@@ -100,8 +113,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request) {
-        DatasourceSync datasource = DatasourceFactory.getDatasource(request.getCategory(), request.getType());
-        String resp = datasource.testConn(request.getCategory(), request.getType(), request.getUri());
+        DatasourceSync datasource = DatasourceFactory.getDatasource(request.getType());
+        String resp = datasource.testConn(request.getType(), request.getUri());
         return BusinessResult.success(resp);
     }
 
@@ -117,13 +130,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         dataEntity.setLastSyncTime(new Date());
         datasourceMapper.updateById(dataEntity);
         //这里根据不同type类型，连接不同的数据库，同步其表
-        DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getCategory(), dataEntity.getType());
+        DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
         String ddlInfo = null;
         String key = sequenceService.nextValueString();
         String hdfsPath;
         Map<String, String> map;
         try {
-            map = datasource.syncDDL(dataEntity.getCategory(), dataEntity.getType(), dataEntity.getUri());
+            map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
             //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
         } catch (Exception e) {
             return BusinessResult.success(e.getMessage());
@@ -171,7 +184,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
                         catalogue.setName(icreditDatasourceEntity.getName());
                         catalogue.setUrl(icreditDatasourceEntity.getUri());
-                        catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getCategory(), icreditDatasourceEntity.getType()).getDesc());
+                        catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());
             if (MapUtils.isNotEmpty(stringOptionalMap)) {
@@ -202,6 +215,19 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             }
         }
         return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
+    }
+
+    @Override
+    public BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request) {
+        boolean hasExit = BooleanUtils.isTrue(datasourceMapper.hasExit(request));
+        return BusinessResult.success(hasExit);
+    }
+
+    @Override
+    public DatasourceDetailResult getDetailById(String id) {
+        IcreditDatasourceEntity entity = getById(id);
+        DatasourceDetailResult result = BeanCopyUtils.copyProperties(entity, new DatasourceDetailResult());
+        return result;
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {

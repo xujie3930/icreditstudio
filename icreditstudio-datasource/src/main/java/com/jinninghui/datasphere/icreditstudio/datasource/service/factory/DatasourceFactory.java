@@ -10,11 +10,13 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl.M
  **/
 public class DatasourceFactory {
 
-    public static DatasourceSync getDatasource(Integer category, Integer type){
-        DatasourceTypeEnum datasourceTypeEnum = DatasourceTypeEnum.findDatasourceTypeByType(category, type);
-        switch (datasourceTypeEnum){
-            case MYSQL: return new MysqlDatasource();
-            default: return new MysqlDatasource();
+    public static DatasourceSync getDatasource(Integer type) {
+        DatasourceTypeEnum datasourceTypeEnum = DatasourceTypeEnum.findDatasourceTypeByType(type);
+        switch (datasourceTypeEnum) {
+            case MYSQL:
+                return new MysqlDatasource();
+            default:
+                return new MysqlDatasource();
         }
     }
 }

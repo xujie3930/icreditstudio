@@ -18,11 +18,11 @@ import java.util.*;
 public class MysqlDatasource implements DatasourceSync {
 
     @Override
-    public Map<String, String> syncDDL(Integer category, Integer type, String uri) throws Exception{
+    public Map<String, String> syncDDL(Integer type, String uri) throws Exception {
         Map<String, String> map = new HashMap<>();
         String username = DatasourceSync.getUsername(uri);
         String password = DatasourceSync.getpassword(uri);
-        Connection conn = getConn(category, type, uri, username, password);
+        Connection conn = getConn(type, uri, username, password);
         if (!Objects.nonNull(conn)) {
             return map;
         }
