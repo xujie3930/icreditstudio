@@ -21,7 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor).addPathPatterns("/**")
                 .excludePathPatterns(Lists.newArrayList(
-                        "/uaa/**", "/interfaces","/tokenAuth","/resources/initAuth"))
+                        "/uaa/**", "/interfaces", "/tokenAuth", "/resources/initAuth"))
                 .excludePathPatterns("/doc.html").excludePathPatterns("/webjars/**");
         registry.addInterceptor(disabledInterceptor).addPathPatterns("/**");
         WebMvcConfigurer.super.addInterceptors(registry);

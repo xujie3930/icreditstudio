@@ -4,13 +4,16 @@
 
     <select id="getWorkspaceByUserId" parameterType="java.lang.String" resultType="map">
         select w.id, w.name
-        from icredit_workspace_user u, icredit_workspace w
-        where u.space_id = w.id and u.user_id = #{id};
+        from icredit_workspace_user u,
+             icredit_workspace w
+        where u.space_id = w.id
+          and u.user_id = #{id};
     </select>
 
-    <select id="getUserListById" parameterType="java.lang.String" resultType="com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity">
+    <select id="getUserListById" parameterType="java.lang.String"
+            resultType="com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity">
         select *
         from icredit_workspace_user
-        where space_id =  #{id};
+        where space_id = #{id};
     </select>
 </mapper>

@@ -20,8 +20,6 @@ import java.util.Arrays;
 
 
 /**
- *
- *
  * @author hzh
  */
 @RestController
@@ -29,14 +27,15 @@ import java.util.Arrays;
 @RequiredArgsConstructor
 public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserOrgMapService> {
 
-    private final  UserOrgMapService userOrgMapService;
+    private final UserOrgMapService userOrgMapService;
     private final SequenceService sequenceService;
+
     /**
      * 分页查询列表
      */
     @ApiOperation(value = "分页查询列表", notes = "分页查询列表", httpMethod = "POST")
     @PostMapping("/pageList")
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityPageRequest pageRequest) {
 
         BusinessPageResult page = userOrgMapService.queryPage(pageRequest);
 
@@ -49,7 +48,7 @@ public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserO
      */
     @ApiOperation(value = "信息", notes = "信息", httpMethod = "GET")
     @GetMapping("/info/{id}")
-    public BusinessResult<UserOrgMapEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<UserOrgMapEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         UserOrgMapEntity userOrgMap = userOrgMapService.getById(id);
 
@@ -61,12 +60,12 @@ public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserO
      */
     @ApiOperation(value = "保存", notes = "保存", httpMethod = "POST")
     @PostMapping("/save")
-    public BusinessResult<UserOrgMapEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityRequest request){
+    public BusinessResult<UserOrgMapEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityRequest request) {
 
         UserOrgMapEntity userOrgMap = BeanCopyUtils.copyProperties(request, UserOrgMapEntity.class);
 
         userOrgMap.setId(String.valueOf(sequenceService.nextValue(null)));
-		userOrgMapService.save(userOrgMap);
+        userOrgMapService.save(userOrgMap);
 
         return BusinessResult.success(userOrgMap);
     }
@@ -76,11 +75,11 @@ public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserO
      */
     @ApiOperation(value = "修改", notes = "修改", httpMethod = "POST")
     @PostMapping("/update")
-    public BusinessResult<UserOrgMapEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityRequest request){
+    public BusinessResult<UserOrgMapEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody UserOrgMapEntityRequest request) {
 
         UserOrgMapEntity userOrgMap = BeanCopyUtils.copyProperties(request, UserOrgMapEntity.class);
 
-		userOrgMapService.updateById(userOrgMap);
+        userOrgMapService.updateById(userOrgMap);
 
         return BusinessResult.success(userOrgMap);
     }
@@ -90,7 +89,7 @@ public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserO
      */
     @ApiOperation(value = "删除", notes = "删除", httpMethod = "POST")
     @PostMapping("/delete")
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody String[] ids){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody String[] ids) {
 
         userOrgMapService.removeByIds(Arrays.asList(ids));
 
@@ -102,9 +101,9 @@ public class UserOrgMapController extends BaseController<UserOrgMapEntity, UserO
      */
     @ApiOperation(value = "导出excel", notes = "导出excel", httpMethod = "GET")
     @GetMapping(value = "/exportExcel")
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, UserOrgMapEntity userOrgMap) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, UserOrgMapEntity userOrgMap) {
 
-        return super.exportExcel(request,response, userOrgMap, UserOrgMapEntity.class, "userOrgMap");
+        return super.exportExcel(request, response, userOrgMap, UserOrgMapEntity.class, "userOrgMap");
     }
 
     /**

@@ -7,8 +7,6 @@ import lombok.Data;
 import java.util.List;
 
 /**
- *
- *
  * @author hzh
  */
 @Data
@@ -31,7 +29,7 @@ public class UserEntityExportRequest {
     @ApiModelProperty(value = "用户状态")
     @ExcelProperty(value = "用户状态")
     private String deleteFlag;
-   /**
+    /**
      * 角色id
      */
     @ApiModelProperty(value = "角色id")

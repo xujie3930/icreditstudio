@@ -26,10 +26,12 @@ public interface AllInterfacesService {
      * 根据用户id 获取用户接口权限
      */
     List<InterfaceAuthResult> getUserAuthInterfaceIdList(InterfaceAuthParam param);
+
     /**
      * 判断是否是超级管理员
      */
     boolean isAdmin(String userId);
+
     /**
      * 获取所有有效角色信息
      */

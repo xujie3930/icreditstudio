@@ -110,7 +110,7 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
     }
 
     @Override
-    public List<CodeInfoResult> getInfoByKey(String key){
+    public List<CodeInfoResult> getInfoByKey(String key) {
         return codeInfoMapper.getInfoByKey(key);
     }
 

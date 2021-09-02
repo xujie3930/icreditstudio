@@ -6,8 +6,6 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 
 /**
- *
- *
  * @author hzh
  */
 @Data

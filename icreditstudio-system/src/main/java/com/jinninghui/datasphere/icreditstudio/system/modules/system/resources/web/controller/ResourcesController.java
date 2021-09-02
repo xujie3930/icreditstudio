@@ -178,7 +178,7 @@ public class ResourcesController extends BaseController<ResourcesEntity, Resourc
     }
 
 
-    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE,extend = "模块")
+    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE, extend = "模块")
     @PostMapping("/setRoleToResources")
     public BusinessResult<Boolean> setResourcesToRole(@RequestBody RolesToResourceSaveRequest request) {
         RolesToResourceSaveParam param = new RolesToResourceSaveParam();

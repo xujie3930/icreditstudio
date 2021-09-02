@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 
- *
  * @author 1
  */
 @RestController
@@ -30,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 public class FormHiElementController extends BaseController<FormHiElementEntity, FormHiElementService> {
 
     @Autowired
-    private   FormHiElementService formHiElementService;
+    private FormHiElementService formHiElementService;
 
     /**
      * 分页查询列表
@@ -39,7 +37,7 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @PostMapping("/pageList")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityPageRequest pageRequest) {
 
         BusinessPageResult page = formHiElementService.queryPage(pageRequest);
 
@@ -54,7 +52,7 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @GetMapping("/info/{id}")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiElementEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<FormHiElementEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         FormHiElementEntity formHiElement = formHiElementService.getById(id);
 
@@ -68,11 +66,11 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @PostMapping("/save")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiElementEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityRequest request){
+    public BusinessResult<FormHiElementEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityRequest request) {
 
         FormHiElementEntity formHiElement = BeanCopyUtils.copyProperties(request, FormHiElementEntity.class);
 
-		formHiElementService.save(formHiElement);
+        formHiElementService.save(formHiElement);
 
         return BusinessResult.success(formHiElement);
     }
@@ -84,11 +82,11 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @PostMapping("/update")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiElementEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityRequest request){
+    public BusinessResult<FormHiElementEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormHiElementEntityRequest request) {
 
         FormHiElementEntity formHiElement = BeanCopyUtils.copyProperties(request, FormHiElementEntity.class);
 
-		formHiElementService.updateById(formHiElement);
+        formHiElementService.updateById(formHiElement);
 
         return BusinessResult.success(formHiElement);
     }
@@ -100,7 +98,7 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @PostMapping("/delete")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody FormHiElementEntityDelRequest params){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "删除ID", value = "传入json格式", required = true) @RequestBody FormHiElementEntityDelRequest params) {
 
         formHiElementService.removeByIds(params.getIds());
 
@@ -114,9 +112,9 @@ public class FormHiElementController extends BaseController<FormHiElementEntity,
     @GetMapping(value = "/exportExcel")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, FormHiElementEntity formHiElement) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, FormHiElementEntity formHiElement) {
 
-        return super.exportExcel(request,response, formHiElement, FormHiElementEntity.class, "formHiElement");
+        return super.exportExcel(request, response, formHiElement, FormHiElementEntity.class, "formHiElement");
     }
 
     /**

@@ -9,7 +9,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
  */
 public interface SessionService {
 
-	void logout(String token);
+    void logout(String token);
 
     BusinessResult<OperateLoginResponse> backstageUserLogin(String username, String password, String application);
 

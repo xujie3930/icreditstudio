@@ -28,7 +28,6 @@ public class MobileUtil {
      * 中国大陆手机号码校验
      *
      * @param phone
-     *
      * @return
      */
     public static boolean checkPhone(String phone) {
@@ -44,7 +43,6 @@ public class MobileUtil {
      * 中国移动手机号码校验
      *
      * @param phone
-     *
      * @return
      */
     public static boolean checkChinaMobile(String phone) {
@@ -61,7 +59,6 @@ public class MobileUtil {
      * 中国联通手机号码校验
      *
      * @param phone
-     *
      * @return
      */
     public static boolean checkChinaUnicom(String phone) {
@@ -78,7 +75,6 @@ public class MobileUtil {
      * 中国电信手机号码校验
      *
      * @param phone
-     *
      * @return
      */
     public static boolean checkChinaTelecom(String phone) {
@@ -95,7 +91,6 @@ public class MobileUtil {
      * 隐藏手机号中间四位
      *
      * @param phone
-     *
      * @return java.lang.String
      */
     public static String hideMiddleMobile(String phone) {

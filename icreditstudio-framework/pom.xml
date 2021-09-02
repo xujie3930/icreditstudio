@@ -37,6 +37,7 @@
         <mybatisplus.version>3.0.7.1</mybatisplus.version>
         <easyexcel.version>2.2.6</easyexcel.version>
         <mysql.version>8.0.17</mysql.version>
+        <hutool.version>5.7.9</hutool.version>
     </properties>
 
     <dependencyManagement>
@@ -285,7 +286,11 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

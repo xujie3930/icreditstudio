@@ -13,16 +13,16 @@ import java.util.List;
  * @author jidonglin
  */
 @Component
-public class UaaStartupRunner implements CommandLineRunner{
-	@Autowired
-	private InterfaceService interfaceService;
-	
-	@Override
-	public void run(String... arg0) throws Exception {
-		// TODO Auto-generated method stub
-		//项目启动查询interface表中的所有数据并且缓存到进程缓存
-		List<Interface> interfaceList = interfaceService.loadInterface();
-		interfaceService.setCachedInterfaceList(interfaceList);
-	}
+public class UaaStartupRunner implements CommandLineRunner {
+    @Autowired
+    private InterfaceService interfaceService;
+
+    @Override
+    public void run(String... arg0) throws Exception {
+        // TODO Auto-generated method stub
+        //项目启动查询interface表中的所有数据并且缓存到进程缓存
+        List<Interface> interfaceList = interfaceService.loadInterface();
+        interfaceService.setCachedInterfaceList(interfaceList);
+    }
 
 }

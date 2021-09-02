@@ -11,6 +11,6 @@ public class PhotoSaveRequest {
     private String userId;
     @NotBlank(message = "10000000")
     private String photo;
-//    @NotBlank(message = "10000000")
+    //    @NotBlank(message = "10000000")
     private String accountIdentifier;
 }

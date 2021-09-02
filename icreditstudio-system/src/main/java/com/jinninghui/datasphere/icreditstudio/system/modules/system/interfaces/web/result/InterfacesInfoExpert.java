@@ -22,7 +22,7 @@ import java.io.Serializable;
 @HeadFontStyle(fontHeightInPoints = 20)
 @ColumnWidth(25)
 @ContentStyle(horizontalAlignment = HorizontalAlignment.CENTER, borderTop = BorderStyle.THIN, borderBottom = BorderStyle.THIN, borderLeft = BorderStyle.THIN, borderRight = BorderStyle.THIN)
-public class InterfacesInfoExpert  implements Serializable {
+public class InterfacesInfoExpert implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -80,7 +80,7 @@ public class InterfacesInfoExpert  implements Serializable {
     private Integer needAuth;
 
     /**
-     *  导入校验的错误信息
+     * 导入校验的错误信息
      */
     @ApiModelProperty(value = "导入校验的错误信息")
     private String errorMsg;

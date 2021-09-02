@@ -9,35 +9,35 @@
 
         SELECT id, NAME
         FROM
-            (
-                SELECT  a.ID, a.ROLE_NAME NAME FROM ge_role a
-                UNION ALL
-                SELECT  b.ID,  b.ORG_NAME NAME FROM ge_organization b
-                UNION ALL
-                SELECT  c.ID,  c.USER_NAME NAME FROM ge_user c
-            ) t
+        (
+        SELECT a.ID, a.ROLE_NAME NAME FROM ge_role a
+        UNION ALL
+        SELECT b.ID, b.ORG_NAME NAME FROM ge_organization b
+        UNION ALL
+        SELECT c.ID, c.USER_NAME NAME FROM ge_user c
+        ) t
 
-            <where>
+        <where>
 
-                <if test="ids != null and ids.size() > 0">
-                    AND t.id IN
-                    <foreach collection="ids" item="item" open="(" separator="," close=")">
-                        #{item, jdbcType=VARCHAR}
-                    </foreach>
-                </if>
+            <if test="ids != null and ids.size() > 0">
+                AND t.id IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
 
-            </where>
+        </where>
 
     </select>
     <select id="getFlowableApproveUserInfoByGroupIds"
             resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
         SELECT DISTINCT
-            a.id,
-            a.USER_NAME NAME
+        a.id,
+        a.USER_NAME NAME
         FROM
-            ge_user a
-                LEFT JOIN ge_user_role_map b ON a.ID = b.USER_ID
-                LEFT JOIN ge_user_org_map c ON a.ID = c.USER_ID
+        ge_user a
+        LEFT JOIN ge_user_role_map b ON a.ID = b.USER_ID
+        LEFT JOIN ge_user_org_map c ON a.ID = c.USER_ID
         <where>
             <if test="ids != null and ids.size() > 0">
                 (
@@ -55,7 +55,7 @@
                 <foreach collection="ids" item="item" open="(" separator="," close=")">
                     #{item, jdbcType=VARCHAR}
                 </foreach>
-                 )
+                )
             </if>
 
         </where>
@@ -64,61 +64,61 @@
     <select id="getFlowableApproveGroupInfoByUserIds"
             resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
         SELECT
-            a.id,
-            a.ROLE_NAME NAME
+        a.id,
+        a.ROLE_NAME NAME
         FROM
-            ge_role a
-                LEFT JOIN ge_user_role_map b ON a.ID = b.ROLE_ID
-            <where>
-                <if test="ids != null and ids.size() > 0">
-                    AND b.USER_ID IN
-                    <foreach collection="ids" item="item" open="(" separator="," close=")">
-                        #{item, jdbcType=VARCHAR}
-                    </foreach>
-                </if>
-            </where>
+        ge_role a
+        LEFT JOIN ge_user_role_map b ON a.ID = b.ROLE_ID
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                AND b.USER_ID IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
         UNION ALL
         SELECT
-            d.id,
-            d.ORG_NAME NAME
+        d.id,
+        d.ORG_NAME NAME
         FROM
-            ge_organization d
-                LEFT JOIN ge_user_org_map e ON d.ID = e.ORG_ID
-            <where>
-                <if test="ids != null and ids.size() > 0">
-                    AND e.USER_ID IN
-                    <foreach collection="ids" item="item" open="(" separator="," close=")">
-                        #{item, jdbcType=VARCHAR}
-                    </foreach>
-                </if>
-            </where>
+        ge_organization d
+        LEFT JOIN ge_user_org_map e ON d.ID = e.ORG_ID
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                AND e.USER_ID IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
         UNION ALL
         SELECT
-            f.id,
-            f.USER_NAME NAME
+        f.id,
+        f.USER_NAME NAME
         FROM
         ge_user f
 
-            <where>
-                <if test="ids != null and ids.size() > 0">
-                    AND f.ID IN
-                    <foreach collection="ids" item="item" open="(" separator="," close=")">
-                        #{item, jdbcType=VARCHAR}
-                    </foreach>
-                </if>
-            </where>
+        <where>
+            <if test="ids != null and ids.size() > 0">
+                AND f.ID IN
+                <foreach collection="ids" item="item" open="(" separator="," close=")">
+                    #{item, jdbcType=VARCHAR}
+                </foreach>
+            </if>
+        </where>
 
 
     </select>
     <select id="getFlowableUserGroupMapByUserIds"
             resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.UserGroupMapResult">
         SELECT
-            b.ID,
-            b.USER_ID,
-            b.ROLE_ID groupId
+        b.ID,
+        b.USER_ID,
+        b.ROLE_ID groupId
         FROM
-            ge_user_role_map b
-                LEFT JOIN ge_user c ON c.ID = b.USER_ID
+        ge_user_role_map b
+        LEFT JOIN ge_user c ON c.ID = b.USER_ID
 
         <where>
             <if test="ids != null and ids.size() > 0">
@@ -130,12 +130,12 @@
         </where>
         UNION ALL
         SELECT
-            b.ID,
-            b.USER_ID,
-            b.ORG_ID groupId
+        b.ID,
+        b.USER_ID,
+        b.ORG_ID groupId
         FROM
-            ge_user_org_map b
-                LEFT JOIN ge_user c ON c.ID = b.USER_ID
+        ge_user_org_map b
+        LEFT JOIN ge_user c ON c.ID = b.USER_ID
         <where>
             <if test="ids != null and ids.size() > 0">
                 AND b.USER_ID IN
@@ -146,9 +146,9 @@
         </where>
         UNION ALL
         SELECT
-            b.ID,
-            b.ID USER_ID,
-            b.ID  groupId
+        b.ID,
+        b.ID USER_ID,
+        b.ID groupId
         FROM
         ge_user b
         <where>
@@ -165,12 +165,12 @@
             resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.UserGroupMapResult">
 
         SELECT
-            b.ID,
-            b.USER_ID,
-            b.ROLE_ID  groupId
+        b.ID,
+        b.USER_ID,
+        b.ROLE_ID groupId
         FROM
-            ge_user_role_map b
-                LEFT JOIN ge_user c ON c.ID = b.USER_ID
+        ge_user_role_map b
+        LEFT JOIN ge_user c ON c.ID = b.USER_ID
         <where>
             <if test="ids != null and ids.size() > 0">
                 AND b.ROLE_ID IN
@@ -181,12 +181,12 @@
         </where>
         UNION ALL
         SELECT
-            b.ID,
-            b.USER_ID,
-            b.ORG_ID groupId
+        b.ID,
+        b.USER_ID,
+        b.ORG_ID groupId
         FROM
-            ge_user_org_map b
-                LEFT JOIN ge_user c ON c.ID = b.USER_ID
+        ge_user_org_map b
+        LEFT JOIN ge_user c ON c.ID = b.USER_ID
         <where>
             <if test="ids != null and ids.size() > 0">
                 AND b.ORG_ID IN
@@ -197,9 +197,9 @@
         </where>
         UNION ALL
         SELECT
-            b.ID,
-            b.ID USER_ID,
-            b.ID groupId
+        b.ID,
+        b.ID USER_ID,
+        b.ID groupId
         FROM
         ge_user b
         <where>
@@ -212,7 +212,8 @@
         </where>
 
     </select>
-    <select id="getRoleInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
+    <select id="getRoleInfoByUserId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
         SELECT
         g.*
         FROM
@@ -221,16 +222,17 @@
         LEFT JOIN ge_user u ON m.USER_ID = u.id
         <where>
             <if test="userId != null and userId != '' ">
-                AND  u.ID = #{userId}
+                AND u.ID = #{userId}
             </if>
             <if test="deleteFlag != null and deleteFlag != '' ">
-                AND u.DELETE_FLAG =  #{deleteFlag}
+                AND u.DELETE_FLAG = #{deleteFlag}
             </if>
         </where>
 
 
     </select>
-    <select id="getOrgInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
+    <select id="getOrgInfoByUserId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
         SELECT
         g.*
         FROM
@@ -240,10 +242,10 @@
 
         <where>
             <if test="userId != null and userId != '' ">
-                AND  u.ID = #{userId}
+                AND u.ID = #{userId}
             </if>
             <if test="deleteFlag != null and deleteFlag != '' ">
-                AND u.DELETE_FLAG =  #{deleteFlag}
+                AND u.DELETE_FLAG = #{deleteFlag}
             </if>
         </where>
 

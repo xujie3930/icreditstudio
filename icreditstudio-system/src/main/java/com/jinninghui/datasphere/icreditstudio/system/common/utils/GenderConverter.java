@@ -8,6 +8,7 @@ import com.alibaba.excel.metadata.property.ExcelContentProperty;
 
 /**
  * EasyExcel自定义性别转换器
+ *
  * @author EDZ
  */
 public class GenderConverter implements Converter<String> {
@@ -28,10 +29,10 @@ public class GenderConverter implements Converter<String> {
     @Override
     public String convertToJavaData(CellData cellData, ExcelContentProperty excelContentProperty, GlobalConfiguration globalConfiguration) throws Exception {
         String stringValue = cellData.getStringValue();
-        if (MALE.equals(stringValue)){
+        if (MALE.equals(stringValue)) {
             return "1";
         }
-        if(FEMALE.equals(stringValue)) {
+        if (FEMALE.equals(stringValue)) {
             return "0";
         }
         return null;

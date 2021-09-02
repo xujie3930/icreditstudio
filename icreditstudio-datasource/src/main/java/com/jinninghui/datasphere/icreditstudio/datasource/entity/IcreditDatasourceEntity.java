@@ -10,7 +10,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xujie
@@ -23,11 +23,14 @@ public class IcreditDatasourceEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String ID = "id";
     public static final String NAME = "NAME";
-    public static final String TYPE  = "TYPE";
-    public static final String STATUS  = "STATUS";
-    public static final String CREATE_TIME  = "CREATE_TIME";
-    public static final String SPACE_ID  = "SPACE_ID";
+    public static final String TYPE = "TYPE";
+    public static final String STATUS = "STATUS";
+    public static final String CREATE_TIME = "CREATE_TIME";
+    public static final String SPACE_ID = "SPACE_ID";
+    public static final String CATEGORY = "CATEGORY";
+    public static final String DEL_FLAG = "DEL_FLAG";
 
     /**
      * 主键id
@@ -38,6 +41,10 @@ public class IcreditDatasourceEntity implements Serializable {
      * 工作空间id
      */
     private String spaceId;
+    /**
+     * 类别
+     */
+    private Integer category;
 
     /**
      * 数据源类型
@@ -60,14 +67,14 @@ public class IcreditDatasourceEntity implements Serializable {
     private Integer status;
 
     /**
-     * 是否删除:0-否，1-删除
+     * 是否删除:N-否，Y-删除
      */
     private String delFlag;
 
     /**
      * 最后一次同步时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastSyncTime;
 
     /**
@@ -83,7 +90,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -94,7 +101,7 @@ public class IcreditDatasourceEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**

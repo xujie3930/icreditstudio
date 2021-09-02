@@ -294,7 +294,7 @@ public class TokenServiceImpl implements TokenService {
         businessToken.setUseTimes(businessToken.getUseTimes() + 1);
         businessToken.setUpdateDate(new Date());
         // 更新缓存中的令牌
-        redisTemplate.opsForValue().set(uaaKey +businessToken, businessToken, expireTime, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(uaaKey + businessToken, businessToken, expireTime, TimeUnit.MINUTES);
         return businessToken;
     }
 }

@@ -3,9 +3,14 @@ package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.ConnectionInfoParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -13,9 +18,11 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * <p>
- *  前端控制器
+ * 前端控制器
  * </p>
  *
  * @author xujie
@@ -27,6 +34,16 @@ public class IcreditDatasourceController {
 
     @Autowired
     private IcreditDatasourceService datasourceService;
+
+
+    /**
+     * 判断数据源是否重复存在
+     */
+    @PostMapping("/hasExist")
+    @Logable
+    public BusinessResult<Boolean> info(@RequestBody DataSourceHasExistRequest request) {
+        return datasourceService.hasExit(request);
+    }
 
 
     /**
@@ -69,17 +86,18 @@ public class IcreditDatasourceController {
      */
     @GetMapping("/info/{id}")
     @Logable
-    public BusinessResult<IcreditDatasourceEntity> info(@PathVariable("id") String id){
-        IcreditDatasourceEntity workspaceEntity = datasourceService.getById(id);
-        return BusinessResult.success(workspaceEntity);
+    public BusinessResult<DatasourceDetailResult> info(@PathVariable("id") String id) {
+        DatasourceDetailResult detail = datasourceService.getDetailById(id);
+        return BusinessResult.success(detail);
     }
 
     /**
-     *分页查询数据源列表
+     * 分页查询数据源列表
      */
     @PostMapping("/pageList")
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@RequestBody IcreditDatasourceEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@RequestHeader(value = "x-userid") String userId,
+                                                       @RequestBody IcreditDatasourceEntityPageRequest pageRequest) {
         BusinessPageResult page = datasourceService.queryPage(pageRequest);
         return BusinessResult.success(page);
     }
@@ -89,14 +107,40 @@ public class IcreditDatasourceController {
      */
     @PostMapping("/testConnect")
     @Logable
-    public BusinessResult<String> testConnect(@RequestBody IcreditDatasourceTestConnectRequest request){
+    public BusinessResult<String> testConnect(@RequestBody IcreditDatasourceTestConnectRequest request) {
         return datasourceService.testConn(request);
     }
 
     @GetMapping("/sync/{id}")
     @Logable
-    public BusinessResult<String> sync(@PathVariable("id") String id){
+    public BusinessResult<String> sync(@PathVariable("id") String id) {
         return datasourceService.syncById(id);
+    }
+
+    /**
+     * 数据源目录
+     *
+     * @return
+     */
+    @Logable
+    @PostMapping("/getDatasourceCatalogue")
+    public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(@RequestBody DataSyncQueryDatasourceCatalogueRequest request) {
+        DataSyncQueryDatasourceCatalogueParam param = new DataSyncQueryDatasourceCatalogueParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.getDatasourceCatalogue(param);
+    }
+
+    /**
+     * 获取连接信息
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/getConnectionInfo")
+    BusinessResult<ConnectionInfo> getConnectionInfo(@RequestBody ConnectionInfoRequest request) {
+        ConnectionInfoParam param = new ConnectionInfoParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.getConnectionInfo(param);
     }
 }
 

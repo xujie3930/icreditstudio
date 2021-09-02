@@ -3,8 +3,9 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.mapper.RoleResourcesMapDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleResourcesMapEntity" id="roleResourcesMapMap">
+    <!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleResourcesMapEntity"
+               id="roleResourcesMapMap">
         <result property="id" column="ID"/>
         <result property="roleId" column="ROLE_ID"/>
         <result property="resourcesId" column="RESOURCES_ID"/>

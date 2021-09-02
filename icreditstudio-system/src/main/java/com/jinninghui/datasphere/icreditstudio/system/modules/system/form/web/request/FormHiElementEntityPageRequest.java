@@ -4,8 +4,6 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.base.BusinessBas
 import lombok.Data;
 
 /**
- * 
- *
  * @author 1
  */
 @Data

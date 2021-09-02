@@ -1,13 +1,10 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.feign;
 
-import com.jinninghui.datasphere.icreaditstudio.workspace.feign.request.FeignUserEntityPageRequest;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import feign.hystrix.FallbackFactory;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * @author xujie
@@ -17,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 @FeignClient("uaa")
 public interface SystemFeignClient {
 
-    @PostMapping("/system/user/user/pageList")
-    BusinessResult<BusinessPageResult> pageList(@RequestBody FeignUserEntityPageRequest pageRequest,
-                                                @RequestHeader(value = "x-userid") String loginUserId);
+    /**
+     * 判断是否是超级管理员
+     */
+    @RequestMapping(value = {"/system/resources/isAdmin"}, method = {RequestMethod.POST})
+    @ApiOperation(value = "判断是否是超级管理员", notes = "判断是否是超级管理员", httpMethod = "POST")
+    BusinessResult<Boolean> isAdmin();
 }

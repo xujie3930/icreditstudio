@@ -3,11 +3,11 @@ package com.jinninghui.datasphere.icreditstudio.datasync.container;
 /**
  * @author Peng
  */
-public interface FormatterTemplate<T> {
+public interface DialectKeyRegister extends Register {
     /**
-     * 获取模板
+     * 方言字符串
      *
      * @return
      */
-    T getTemplate();
+    String getDialect();
 }

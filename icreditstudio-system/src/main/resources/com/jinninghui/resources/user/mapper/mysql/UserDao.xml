@@ -3,7 +3,7 @@
 
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity" id="userMap">
         <result property="id" column="ID"/>
         <result property="userName" column="USER_NAME"/>
@@ -29,34 +29,35 @@
         <result property="extendThree" column="EXTEND_THREE"/>
         <result property="extendFour" column="EXTEND_FOUR"/>
     </resultMap>
-    <select id="queryPage" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
+    <select id="queryPage"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
         SELECT
         DISTINCT
-            t.ID,
-            t.USER_NAME,
-            t.USER_CODE,
-            t.USER_GENDER,
-            t.USER_BIRTH,
-            t.ID_CARD,
-            t.ENTRY_TIME,
-            t.DEPARTURE_TIME,
-            t.E_MAIL,
-            t.USER_POSITION,
-            t.TEL_PHONE,
-            t.SORT_NUMBER,
-            t.DELETE_FLAG,
-            t.PICTURE_PATH,
-            t.USER_REMARK,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_THREE,
-            t.EXTEND_FOUR
+        t.ID,
+        t.USER_NAME,
+        t.USER_CODE,
+        t.USER_GENDER,
+        t.USER_BIRTH,
+        t.ID_CARD,
+        t.ENTRY_TIME,
+        t.DEPARTURE_TIME,
+        t.E_MAIL,
+        t.USER_POSITION,
+        t.TEL_PHONE,
+        t.SORT_NUMBER,
+        t.DELETE_FLAG,
+        t.PICTURE_PATH,
+        t.USER_REMARK,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_THREE,
+        t.EXTEND_FOUR
         FROM
-            ge_user t
+        ge_user t
 
         left join ge_user_org_map a on t.ID = a.USER_ID
         left join ge_user_org_map b on b.ORG_ID = a.ORG_ID
@@ -64,13 +65,13 @@
         <where>
 
             <if test="userQuery.userId != null and userQuery.userId != ''">
-                AND b.USER_ID =  #{userQuery.userId, jdbcType=VARCHAR}
+                AND b.USER_ID = #{userQuery.userId, jdbcType=VARCHAR}
             </if>
             <if test="userQuery.roleId != null and userQuery.roleId != ''">
-                AND c.ROLE_ID =  #{userQuery.roleId, jdbcType=VARCHAR}
+                AND c.ROLE_ID = #{userQuery.roleId, jdbcType=VARCHAR}
             </if>
             <if test="userQuery.orgId != null and userQuery.orgId != ''">
-                AND b.ORG_ID =  #{userQuery.orgId, jdbcType=VARCHAR}
+                AND b.ORG_ID = #{userQuery.orgId, jdbcType=VARCHAR}
             </if>
             <if test="userQuery.userName != null and userQuery.userName != ''">
                 AND t.USER_NAME like concat('%' , #{userQuery.userName, jdbcType=VARCHAR} , '%')
@@ -79,7 +80,7 @@
                 AND t.TEL_PHONE like concat('%' , #{userQuery.telPhone, jdbcType=VARCHAR} , '%')
             </if>
             <if test="userQuery.deleteFlag != null and userQuery.deleteFlag != ''">
-                AND t.DELETE_FLAG =  #{userQuery.deleteFlag, jdbcType=VARCHAR}
+                AND t.DELETE_FLAG = #{userQuery.deleteFlag, jdbcType=VARCHAR}
             </if>
 
         </where>
@@ -87,42 +88,42 @@
         order by t.SORT_NUMBER asc,t.CREATE_TIME desc
 
     </select>
-    <select id="getAllUserInfo" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
-        SELECT
-            t.id ,
-            t.USER_NAME name
-        FROM
-            ge_user t
+    <select id="getAllUserInfo"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.SelectInfoResult">
+        SELECT t.id,
+               t.USER_NAME name
+        FROM ge_user t
 
         where t.DELETE_FLAG = 'N'
 
         ORDER BY t.SORT_NUMBER
 
     </select>
-    <select id="getOrgInfoByUsrId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
+    <select id="getOrgInfoByUsrId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity">
         SELECT
-            t.ID,
-            t.ORG_CODE,
-            t.ORG_NAME,
-            t.PARENT_ID,
-            t.ORG_ADDRESS,
-            t.ICON_PATH,
-            t.SORT_NUMBER,
-            t.LINK_MAN_NAME,
-            t.LINK_MAN_TEL,
-            t.ORG_REMARK,
-            t.DELETE_FLAG,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_FOUR,
-            t.EXTEND_THREE
+        t.ID,
+        t.ORG_CODE,
+        t.ORG_NAME,
+        t.PARENT_ID,
+        t.ORG_ADDRESS,
+        t.ICON_PATH,
+        t.SORT_NUMBER,
+        t.LINK_MAN_NAME,
+        t.LINK_MAN_TEL,
+        t.ORG_REMARK,
+        t.DELETE_FLAG,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_FOUR,
+        t.EXTEND_THREE
         FROM
-            ge_organization t
-                LEFT JOIN ge_user_org_map a ON t.ID = a.ORG_ID
+        ge_organization t
+        LEFT JOIN ge_user_org_map a ON t.ID = a.ORG_ID
         <where>
             <if test="userId !=null and userId != '' ">
                 AND a.USER_ID = #{userId, jdbcType=VARCHAR}
@@ -134,35 +135,36 @@
         </where>
 
     </select>
-    <select id="getUserInfoByOrgId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
+    <select id="getUserInfoByOrgId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
         SELECT
-            t.ID,
-            t.USER_NAME,
-            t.USER_CODE,
-            t.USER_GENDER,
-            t.USER_BIRTH,
-            t.ID_CARD,
-            t.ENTRY_TIME,
-            t.DEPARTURE_TIME,
-            t.E_MAIL,
-            t.USER_POSITION,
-            t.TEL_PHONE,
-            t.SORT_NUMBER,
-            t.DELETE_FLAG,
-            t.PICTURE_PATH,
-            t.USER_REMARK,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID,
-            t.EXTEND_ONE,
-            t.EXTEND_TWO,
-            t.EXTEND_THREE,
-            t.EXTEND_FOUR
+        t.ID,
+        t.USER_NAME,
+        t.USER_CODE,
+        t.USER_GENDER,
+        t.USER_BIRTH,
+        t.ID_CARD,
+        t.ENTRY_TIME,
+        t.DEPARTURE_TIME,
+        t.E_MAIL,
+        t.USER_POSITION,
+        t.TEL_PHONE,
+        t.SORT_NUMBER,
+        t.DELETE_FLAG,
+        t.PICTURE_PATH,
+        t.USER_REMARK,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID,
+        t.EXTEND_ONE,
+        t.EXTEND_TWO,
+        t.EXTEND_THREE,
+        t.EXTEND_FOUR
         FROM
-            ge_user t
-                LEFT JOIN ge_user_org_map a ON t.ID = a.USER_ID
-                LEFT JOIN ge_organization b ON a.ORG_ID = b.ID
+        ge_user t
+        LEFT JOIN ge_user_org_map a ON t.ID = a.USER_ID
+        LEFT JOIN ge_organization b ON a.ORG_ID = b.ID
         <where>
             <if test="orgId !=null and orgId != '' ">
                 AND b.ID = #{orgId, jdbcType=VARCHAR}
@@ -177,7 +179,8 @@
         </where>
 
     </select>
-    <select id="getOrgChildUserInfoByOrgId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
+    <select id="getOrgChildUserInfoByOrgId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity">
         SELECT DISTINCT
         t.ID,
         t.USER_NAME,
@@ -220,22 +223,23 @@
         </where>
 
     </select>
-    <select id="getRoleInfoByUserId" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
+    <select id="getRoleInfoByUserId"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity">
         SELECT
-            t.ID,
-            t.ROLE_NAME,
-            t.ROLE_CODE,
-            t.PARENT_ID,
-            t.SORT_NUMBER,
-            t.ROLE_REMARK,
-            t.DELETE_FLAG,
-            t.CREATE_TIME,
-            t.CREATE_USER_ID,
-            t.LAST_UPDATE_TIME,
-            t.LAST_UPDATE_USER_ID
+        t.ID,
+        t.ROLE_NAME,
+        t.ROLE_CODE,
+        t.PARENT_ID,
+        t.SORT_NUMBER,
+        t.ROLE_REMARK,
+        t.DELETE_FLAG,
+        t.CREATE_TIME,
+        t.CREATE_USER_ID,
+        t.LAST_UPDATE_TIME,
+        t.LAST_UPDATE_USER_ID
         FROM
-            ge_role t
-                LEFT JOIN ge_user_role_map a ON a.ROLE_ID = t.ID
+        ge_role t
+        LEFT JOIN ge_user_role_map a ON a.ROLE_ID = t.ID
         <where>
             <if test="userId !=null and userId != '' ">
                 AND a.USER_ID = #{userId, jdbcType=VARCHAR}
@@ -247,51 +251,37 @@
         </where>
 
     </select>
-    <select id="queryUserInfoByName" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserListResult">
+    <select id="queryUserInfoByName"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserListResult">
 
-        SELECT
-            t.ID,
-            t.USER_NAME NAME
-        FROM
-            ge_user t
-        WHERE
-            t.USER_NAME LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
-           OR t.TEL_PHONE LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        SELECT t.ID,
+               t.USER_NAME NAME
+        FROM ge_user t
+        WHERE t.USER_NAME LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
+           OR t.TEL_PHONE LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
         UNION
-        SELECT
-            t.ID,
-            a.ACCOUNT_IDENTIFIER NAME
-        FROM
-            ge_user t
-                LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
-        WHERE
-            a.ACCOUNT_IDENTIFIER LIKE  concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        SELECT t.ID,
+               a.ACCOUNT_IDENTIFIER NAME
+        FROM ge_user t
+                 LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
+        WHERE a.ACCOUNT_IDENTIFIER LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
 
     </select>
 
 
-    <select id="queryUserRoleByName" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserRoleListResult">
+    <select id="queryUserRoleByName"
+            resultType="com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.LikeQueryUserRoleListResult">
 
-        SELECT
-            t.ID,
-            t.USER_NAME NAME,
-            r.ROLE_ID ROLE_ID
-        FROM
-            ge_user t
-                LEFT JOIN ge_user_role_map r ON t.ID = r.USER_ID
-        WHERE
-            t.USER_NAME LIKE concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        SELECT t.ID,
+               t.USER_NAME NAME
+        FROM ge_user t
+        WHERE t.USER_NAME LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
         UNION
-        SELECT
-            t.ID,
-            a.ACCOUNT_IDENTIFIER NAME,
-            r.ROLE_ID ROLE_ID
-        FROM
-            ge_user t
-                LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
-                LEFT JOIN ge_user_role_map r ON t.ID = r.USER_ID
-        WHERE
-            a.ACCOUNT_IDENTIFIER LIKE  concat('%' , #{name, jdbcType=VARCHAR} , '%')
+        SELECT t.ID,
+               a.ACCOUNT_IDENTIFIER NAME
+        FROM ge_user t
+                 LEFT JOIN ge_user_account a ON t.ID = a.USER_ID
+        WHERE a.ACCOUNT_IDENTIFIER LIKE concat('%', #{name, jdbcType=VARCHAR}, '%')
 
     </select>
 

@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,7 +11,7 @@ import lombok.EqualsAndHashCode;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author xujie
@@ -22,7 +23,7 @@ import lombok.EqualsAndHashCode;
 public class IcreditDdlSyncEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    public static final String DATASOURCE_ID = "datasource_id";
     /**
      * 主键id
      */
@@ -51,7 +52,7 @@ public class IcreditDdlSyncEntity implements Serializable {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
 
     /**
@@ -62,7 +63,7 @@ public class IcreditDdlSyncEntity implements Serializable {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -76,9 +77,9 @@ public class IcreditDdlSyncEntity implements Serializable {
     private Integer version;
 
     /**
-     * 是否删除:0-否，1-删除
+     * 是否删除:N-否，Y-删除
      */
-    private String delFlag;
+    private String delFlag = "N";
 
     /**
      * 备注

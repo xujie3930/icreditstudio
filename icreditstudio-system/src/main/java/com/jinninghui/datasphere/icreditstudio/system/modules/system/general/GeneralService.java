@@ -70,6 +70,7 @@ public interface GeneralService {
 
 
     UserLoginInfo getCurrUserLoginInfo();
+
     /**
      * 根据用户主键id获取用户信息
      *
@@ -195,6 +196,7 @@ public interface GeneralService {
 
     /**
      * 根据字典名称取得值
+     *
      * @param name
      * @return
      */
@@ -202,6 +204,7 @@ public interface GeneralService {
 
     /**
      * 保持审计日志
+     *
      * @param param
      * @return
      */

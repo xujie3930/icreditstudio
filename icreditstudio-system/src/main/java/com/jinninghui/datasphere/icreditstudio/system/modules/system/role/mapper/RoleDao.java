@@ -9,12 +9,13 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.web.re
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.web.request.RoleUserQueryParam;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
- *
- *
  * @author hzh
  */
 @Mapper
@@ -32,4 +33,5 @@ public interface RoleDao extends BaseMapper<RoleEntity> {
 
     List<UserEntity> getUserInfoByRoleId(RoleUserQueryParam request);
 
+    List<Map<String, String>> getRoleNameByRoleIds(@Param("ids") Set<String> roleIds);
 }

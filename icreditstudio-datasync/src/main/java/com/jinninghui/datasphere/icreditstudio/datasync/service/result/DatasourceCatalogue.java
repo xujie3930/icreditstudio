@@ -1,6 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
@@ -8,6 +10,8 @@ import java.util.List;
  * @author Peng
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DatasourceCatalogue {
     /**
      * 名称

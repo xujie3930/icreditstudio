@@ -6,17 +6,16 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.form.web.re
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 
 /**
- * 
- *
  * @author 1
  */
 public interface FormHiElementService extends IService<FormHiElementEntity> {
 
     /**
-    *  分页查询
-    * @param pageRequest
-    * @return
-    */
+     * 分页查询
+     *
+     * @param pageRequest
+     * @return
+     */
     BusinessPageResult queryPage(FormHiElementEntityPageRequest pageRequest);
 }
 

@@ -2,6 +2,10 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.setting.we
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.base.BusinessBasePageForm;
 import lombok.Data;
-/** @author 1 */
+
+/**
+ * @author 1
+ */
 @Data
-public class SystemSettingsEntityPageRequest extends BusinessBasePageForm {}
+public class SystemSettingsEntityPageRequest extends BusinessBasePageForm {
+}

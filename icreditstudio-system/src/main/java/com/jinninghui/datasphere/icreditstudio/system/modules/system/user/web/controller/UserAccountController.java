@@ -138,7 +138,7 @@ public class UserAccountController extends BaseController<UserAccountEntity, Use
     /**
      * 修改密码
      */
-    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE,extend = "账户")
+    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE, extend = "账户")
     @ApiOperation(value = "修改密码", notes = "修改密码", httpMethod = "POST")
     @PostMapping("/changePassword")
     public BusinessResult<?> changePassword(@ApiParam(name = "修改密码", value = "传入json格式", required = true) @RequestBody UserAccountRequestParams userParams) {

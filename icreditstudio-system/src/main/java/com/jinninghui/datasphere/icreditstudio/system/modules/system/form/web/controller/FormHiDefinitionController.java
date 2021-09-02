@@ -21,8 +21,6 @@ import javax.servlet.http.HttpServletResponse;
 
 
 /**
- * 
- *
  * @author 1
  */
 @RestController
@@ -40,7 +38,7 @@ public class FormHiDefinitionController extends BaseController<FormHiDefinitionE
     @PostMapping("/pageList")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityPageRequest pageRequest){
+    public BusinessResult<BusinessPageResult> pageList(@ApiParam(name = "查询条件对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityPageRequest pageRequest) {
 
         BusinessPageResult page = formHiDefinitionService.queryPage(pageRequest);
 
@@ -55,7 +53,7 @@ public class FormHiDefinitionController extends BaseController<FormHiDefinitionE
     @GetMapping("/info/{id}")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiDefinitionEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id){
+    public BusinessResult<FormHiDefinitionEntity> info(@ApiParam(name = "id", value = "主键", required = true) @PathVariable("id") String id) {
 
         FormHiDefinitionEntity formHiDefintion = formHiDefinitionService.getById(id);
 
@@ -69,11 +67,11 @@ public class FormHiDefinitionController extends BaseController<FormHiDefinitionE
     @PostMapping("/save")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiDefinitionEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityRequest request){
+    public BusinessResult<FormHiDefinitionEntity> save(@ApiParam(name = "保存对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityRequest request) {
 
         FormHiDefinitionEntity formHiDefintion = BeanCopyUtils.copyProperties(request, FormHiDefinitionEntity.class);
 
-		formHiDefinitionService.save(formHiDefintion);
+        formHiDefinitionService.save(formHiDefintion);
 
         return BusinessResult.success(formHiDefintion);
     }
@@ -85,23 +83,24 @@ public class FormHiDefinitionController extends BaseController<FormHiDefinitionE
     @PostMapping("/update")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<FormHiDefinitionEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityRequest request){
+    public BusinessResult<FormHiDefinitionEntity> update(@ApiParam(name = "修改对象", value = "传入json格式", required = true) @RequestBody FormHiDefinitionEntityRequest request) {
 
         FormHiDefinitionEntity formHiDefintion = BeanCopyUtils.copyProperties(request, FormHiDefinitionEntity.class);
 
-		formHiDefinitionService.updateById(formHiDefintion);
+        formHiDefinitionService.updateById(formHiDefintion);
 
         return BusinessResult.success(formHiDefintion);
     }
 
     /**
      * 根绝 id 删除表单定义历史  -- 逻辑删除，将状态修改为 "已删除"
+     *
      * @param id
      * @return
      */
     @ApiOperation(value = "删除", notes = "删除", httpMethod = "POST")
     @PostMapping("/delete")
-    public BusinessResult<Boolean> delete(@ApiParam(name = "id", value = "主键", required = true) @RequestParam("id") String id){
+    public BusinessResult<Boolean> delete(@ApiParam(name = "id", value = "主键", required = true) @RequestParam("id") String id) {
         return formHiDefinitionService.deleteHiFormById(id);
     }
 
@@ -112,9 +111,9 @@ public class FormHiDefinitionController extends BaseController<FormHiDefinitionE
     @GetMapping(value = "/exportExcel")
     @BusinessParamsValidate
     @Logable
-    public BusinessResult<?> exportExcel(HttpServletRequest request,HttpServletResponse response, FormHiDefinitionEntity formHiDefintion) {
+    public BusinessResult<?> exportExcel(HttpServletRequest request, HttpServletResponse response, FormHiDefinitionEntity formHiDefintion) {
 
-        return super.exportExcel(request,response, formHiDefintion, FormHiDefinitionEntity.class, "formHiDefintion");
+        return super.exportExcel(request, response, formHiDefintion, FormHiDefinitionEntity.class, "formHiDefintion");
     }
 
     /**

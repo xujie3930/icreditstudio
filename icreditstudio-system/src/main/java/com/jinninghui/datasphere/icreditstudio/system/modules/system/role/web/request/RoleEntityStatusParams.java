@@ -4,5 +4,5 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.role.web.r
 /**
  * @author hzh
  */
-public class RoleEntityStatusParams extends RoleEntityStatusRequest{
+public class RoleEntityStatusParams extends RoleEntityStatusRequest {
 }

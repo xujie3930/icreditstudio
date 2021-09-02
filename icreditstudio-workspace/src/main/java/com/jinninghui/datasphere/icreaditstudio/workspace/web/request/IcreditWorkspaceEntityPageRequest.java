@@ -8,15 +8,13 @@ import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
- * 
- *
  * @author 1
  */
 @Data
 public class IcreditWorkspaceEntityPageRequest extends BusinessBasePageForm {
     private String name;//工作空间名称
     private String createUser;//创建人
-    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;//创建时间
     private String userId;//用户id
 }

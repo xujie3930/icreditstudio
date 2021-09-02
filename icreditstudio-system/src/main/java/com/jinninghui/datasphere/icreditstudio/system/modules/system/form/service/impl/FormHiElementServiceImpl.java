@@ -24,7 +24,7 @@ public class FormHiElementServiceImpl extends ServiceImpl<FormHiElementMapper, F
         IPage<FormHiElementEntity> page = this.page(
                 new Query<FormHiElementEntity>().getPage(pageRequest),
                 new QueryWrapper<FormHiElementEntity>()
-            
+
         );
 
         return BusinessPageResult.build(page, pageRequest);

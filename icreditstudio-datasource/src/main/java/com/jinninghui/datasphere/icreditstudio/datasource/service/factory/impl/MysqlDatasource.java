@@ -1,13 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncnfo;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableISyncnfo;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author xujie
@@ -17,46 +18,44 @@ import java.util.Objects;
 public class MysqlDatasource implements DatasourceSync {
 
     @Override
-    public Map<String, String> syncDDL(Integer type, String uri) throws Exception{
+    public Map<String, String> syncDDL(Integer type, String uri) throws Exception {
         Map<String, String> map = new HashMap<>();
-        String username = getUsername(uri);
-        String password = getpassword(uri);
+        String username = DatasourceSync.getUsername(uri);
+        String password = DatasourceSync.getpassword(uri);
         Connection conn = getConn(type, uri, username, password);
-        if (!Objects.nonNull(conn)){
+        if (!Objects.nonNull(conn)) {
             return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet tableResultSet = metaData.getTables(null, null, "%", new String[]{"TABLE"});
-        String datasourceInformation = "[";
+        List<TableISyncnfo> tableList = new ArrayList<>();
         Integer tablesCount = 0;
         while (tableResultSet.next()) {
-            tablesCount ++;
+            tablesCount++;
+            TableISyncnfo table = new TableISyncnfo();
             String tableName = tableResultSet.getString("TABLE_NAME");
+            table.setTableName(tableName);
+            List<ColumnSyncnfo> columnList = table.getColumnList();
             // 获取表字段结构
             ResultSet columnResultSet = metaData.getColumns(null, "%", tableName, "%");
-            String tableInformation = "{tableName:" + tableName +",tableColumn:[";
             while (columnResultSet.next()) {
+                ColumnSyncnfo row = new ColumnSyncnfo();
                 // 字段名称
                 String columnName = columnResultSet.getString("COLUMN_NAME");
-                String columnInformation = "{field:" + columnName + ",";
+                row.setField(columnName);
                 // 数据类型
                 String columnType = columnResultSet.getString("TYPE_NAME");
                 // 字段长度
                 int datasize = columnResultSet.getInt("COLUMN_SIZE");
-                columnInformation += "type:" + columnType + "(" + datasize + ")" + ",";
+                row.setType(columnType + "(" + datasize + ")");
                 // 描述
                 String remarks = columnResultSet.getString("REMARKS");
-                columnInformation += "remarks:" + remarks + "},";
-                tableInformation += columnInformation;
+                row.setRemark(remarks);
+                columnList.add(row);
             }
-            //去掉最后一个字符，然后加上中括号"]"
-            tableInformation = tableInformation.substring(0, tableInformation.length()-1);
-            tableInformation += "]},";
-            datasourceInformation += tableInformation;
+            tableList.add(table);
         }
-        datasourceInformation = datasourceInformation.substring(0, datasourceInformation.length()-1);
-        datasourceInformation += "]";
-        map.put("datasourceInfo", datasourceInformation);
+        map.put("datasourceInfo", JSONObject.toJSONString(tableList));
         map.put("tablesCount", tablesCount.toString());
         return map;
     }

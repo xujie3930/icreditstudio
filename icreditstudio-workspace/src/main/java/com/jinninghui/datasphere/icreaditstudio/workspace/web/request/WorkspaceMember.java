@@ -1,9 +1,6 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author xujie
@@ -17,6 +14,5 @@ public class WorkspaceMember {
     private String userRole;//用户角色
     private String functionalAuthority;//功能权限
     private String dataAuthority;//数据权限
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
-    private Date createTime;//创建时间
+    private Long createTime;//创建时间
 }

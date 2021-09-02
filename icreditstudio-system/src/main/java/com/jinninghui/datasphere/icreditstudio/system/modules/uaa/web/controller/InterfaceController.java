@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 	接口控制器
- * @author jidonglin
+ * 接口控制器
  *
+ * @author jidonglin
  */
 @RestController
 public class InterfaceController {
-	@Autowired
-	private InterfaceService interfaceService;
-	
-	@Logable(businessTag = "getAllInterface")
-	@GetMapping(value = "/interfaces")
-	public List<Interface> getAllInterface(){
-		return interfaceService.loadInterface();
+    @Autowired
+    private InterfaceService interfaceService;
 
-	}
+    @Logable(businessTag = "getAllInterface")
+    @GetMapping(value = "/interfaces")
+    public List<Interface> getAllInterface() {
+        return interfaceService.loadInterface();
+
+    }
 
 }
 

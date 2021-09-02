@@ -3,6 +3,9 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.setting.we
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.setting.entity.SystemSettingsEntity;
 import lombok.Data;
 
-/** @author 1 */
+/**
+ * @author 1
+ */
 @Data
-public class SystemSettingsEntityRequest extends SystemSettingsEntity {}
+public class SystemSettingsEntityRequest extends SystemSettingsEntity {
+}

@@ -16,5 +16,5 @@ public class IcreditDatasourceEntityPageRequest extends BusinessBasePageForm {
     private Integer type;//数据源类型
     private Integer status;//是否启用：0-启用，1-非启用
     @NotBlank(message = "工作空间不能为空")
-    private String workspaceId;//工作空间id
+    private String spaceId;//工作空间id
 }

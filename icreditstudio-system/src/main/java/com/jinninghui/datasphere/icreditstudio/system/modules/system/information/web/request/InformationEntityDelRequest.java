@@ -6,12 +6,10 @@ import lombok.Data;
 import java.util.List;
 
 /**
- * 
- *
  * @author 1
  */
 @Data
-public class InformationEntityDelRequest  {
+public class InformationEntityDelRequest {
 
     /**
      * id集合

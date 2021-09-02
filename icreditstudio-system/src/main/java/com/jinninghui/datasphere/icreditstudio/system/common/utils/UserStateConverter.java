@@ -8,6 +8,7 @@ import com.alibaba.excel.metadata.property.ExcelContentProperty;
 
 /**
  * EasyExcel自定义状态转换器
+ *
  * @author EDZ
  */
 public class UserStateConverter implements Converter<String> {
@@ -28,10 +29,10 @@ public class UserStateConverter implements Converter<String> {
     @Override
     public String convertToJavaData(CellData cellData, ExcelContentProperty excelContentProperty, GlobalConfiguration globalConfiguration) throws Exception {
         String stringValue = cellData.getStringValue();
-        if (ENABLE.equals(stringValue)){
+        if (ENABLE.equals(stringValue)) {
             return "N";
         }
-        if(DISABLE.equals(stringValue)){
+        if (DISABLE.equals(stringValue)) {
             return "Y";
         }
         return null;

@@ -14,7 +14,7 @@ import java.sql.SQLException;
 
 /**
  * 用以mysql中json格式的字段，进行转换的自定义转换器，转换为实体类的JSONObject属性
- *
+ * <p>
  * MappedTypes注解中的类代表此转换器可以自动转换为的java对象 MappedJdbcTypes注解中设置的是对应的jdbctype
  */
 @MappedTypes(JSONObject.class)
@@ -23,6 +23,7 @@ public class JsonTypeHandler extends BaseTypeHandler<JSONObject> {
 
     /**
      * 设置非空参数
+     *
      * @param ps
      * @param i
      * @param parameter
@@ -36,6 +37,7 @@ public class JsonTypeHandler extends BaseTypeHandler<JSONObject> {
 
     /**
      * 根据列名，获取可以为空的结果
+     *
      * @param rs
      * @param columnName
      * @return
@@ -49,6 +51,7 @@ public class JsonTypeHandler extends BaseTypeHandler<JSONObject> {
 
     /**
      * 根据列索引，获取可以为空的结果
+     *
      * @param rs
      * @param columnIndex
      * @return

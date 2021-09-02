@@ -28,22 +28,22 @@ public class FormHiDefinitionServiceImpl extends ServiceImpl<FormHiDefintionMapp
         IPage<FormHiDefinitionEntity> page = this.page(
                 new Query<FormHiDefinitionEntity>().getPage(pageRequest),
                 new QueryWrapper<FormHiDefinitionEntity>()
-            
+
         );
 
         return BusinessPageResult.build(page, pageRequest);
     }
 
     @Override
-    public BusinessResult<Boolean> deleteHiFormById(String id){
+    public BusinessResult<Boolean> deleteHiFormById(String id) {
         formHiDefintionMapper.updateHiFormStatusById(id, FormStatusEnum.C.getCode());
         return BusinessResult.success(true);
     }
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateStatusByFormDefiIds(List<String> formIds){
-        formHiDefintionMapper.updateStatusByFormDefiIds(formIds,FormStatusEnum.C.getCode());
+    public void updateStatusByFormDefiIds(List<String> formIds) {
+        formHiDefintionMapper.updateStatusByFormDefiIds(formIds, FormStatusEnum.C.getCode());
     }
 
 }

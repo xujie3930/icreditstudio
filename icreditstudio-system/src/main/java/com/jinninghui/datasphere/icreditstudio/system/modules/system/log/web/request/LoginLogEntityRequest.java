@@ -5,8 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.log.entity.
 import lombok.Data;
 
 /**
- * 
- *
  * @author 1
  */
 @Data

@@ -7,8 +7,8 @@ import java.util.Date;
 
 /**
  * 缓存token实体类，API网关，Uaa共用
- * @author jidonglin
  *
+ * @author jidonglin
  */
 public class BusinessToken extends CommonOuterResponse implements Serializable {
     /**
@@ -96,12 +96,12 @@ public class BusinessToken extends CommonOuterResponse implements Serializable {
     private String roles;
 
     /**
-     * 	客户类型编码
+     * 客户类型编码
      */
     private String customerTypeCode;
 
     /**
-     * 	角色ID，目前暂时一个用户就一个角色
+     * 角色ID，目前暂时一个用户就一个角色
      */
     private Long roleId;
 
@@ -323,19 +323,19 @@ public class BusinessToken extends CommonOuterResponse implements Serializable {
         this.roles = roles;
     }
 
-	public String getCustomerTypeCode() {
-		return customerTypeCode;
-	}
+    public String getCustomerTypeCode() {
+        return customerTypeCode;
+    }
 
-	public void setCustomerTypeCode(String customerTypeCode) {
-		this.customerTypeCode = customerTypeCode;
-	}
+    public void setCustomerTypeCode(String customerTypeCode) {
+        this.customerTypeCode = customerTypeCode;
+    }
 
-	public Long getRoleId() {
-		return roleId;
-	}
+    public Long getRoleId() {
+        return roleId;
+    }
 
-	public void setRoleId(Long roleId) {
-		this.roleId = roleId;
-	}
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
 }

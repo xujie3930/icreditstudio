@@ -7,8 +7,6 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.information
 import java.util.List;
 
 /**
- * 
- *
  * @author 1
  */
 public interface InfoReceiverService extends IService<InfoReceiverEntity> {

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableDiscoveryClient
 @SpringBootApplication()
 @EnableSequenceService
-@EnableValidator
+//@EnableValidator
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableFeignClients

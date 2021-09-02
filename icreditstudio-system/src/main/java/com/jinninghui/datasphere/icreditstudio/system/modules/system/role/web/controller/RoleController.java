@@ -257,7 +257,7 @@ public class RoleController extends BaseController<RoleEntity, RoleService> {
         return roleService.getResourcesFromRole(param);
     }
 
-    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE,extend = "角色")
+    @Log(type = Log.Type.AUDIT, operateType = Log.OperateType.UPDATE, extend = "角色")
     @PostMapping("/setResourcesToRole")
     public BusinessResult<Boolean> setResourcesToRole(@RequestBody ResourcesToRoleSaveRequest request) {
 

@@ -25,7 +25,7 @@ public class AuthResult {
 
     UserSettings setting;
 
-    List<Map<String, String>>workspaceList;
+    List<Map<String, String>> workspaceList;
 
     private Boolean workspaceCreateAuth = false;
 }

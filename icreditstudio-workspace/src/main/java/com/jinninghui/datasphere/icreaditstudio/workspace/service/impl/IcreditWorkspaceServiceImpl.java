@@ -1,14 +1,11 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity;
 import com.jinninghui.datasphere.icreaditstudio.workspace.feign.SystemFeignClient;
-import com.jinninghui.datasphere.icreaditstudio.workspace.feign.request.FeignUserEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper;
-import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceUserMapper;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
@@ -44,12 +41,10 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
 
     @Autowired
     private IcreditWorkspaceMapper workspaceMapper;
-
     @Autowired
     private IcreditWorkspaceUserServiceImpl workspaceUserService;
     @Autowired
     private SequenceService sequenceService;
-
     @Autowired
     private SystemFeignClient systemFeignClient;
 
@@ -58,17 +53,24 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param) {
         Date date = new Date();
+        String createUserName = param.getCreateUser().getUsername();
         IcreditWorkspaceEntity defEntity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
+        defEntity.setCreateUser(createUserName);
         defEntity.setCreateTime(date);
+        defEntity.setUpdateTime(date);
+        defEntity.setUpdateUser(createUserName);
+        //保存工作空间信息
         save(defEntity);
-        if (!CollectionUtils.isEmpty(param.getMemberList())){
+        //保存用户列表信息
+        if (!CollectionUtils.isEmpty(param.getMemberList())) {
             for (WorkspaceMember member : param.getMemberList()) {
                 IcreditWorkspaceUserEntity entity = new IcreditWorkspaceUserEntity();
                 BeanCopyUtils.copyProperties(member, entity);
                 entity.setId(sequenceService.nextValueString());
                 entity.setSpaceId(defEntity.getId());
+                entity.setCreateUser(createUserName);
                 entity.setCreateTime(date);
                 workspaceUserService.save(entity);
             }
@@ -86,6 +88,11 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest) {
         Page<IcreditWorkspaceEntity> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+        BusinessResult<Boolean> result = systemFeignClient.isAdmin();
+        //管理员，可以查询所有数据
+        if (result.isSuccess() && result.getData()){
+            pageRequest.setUserId("");
+        }
         return BusinessPageResult.build(page.setRecords(workspaceMapper.queryPage(page, pageRequest)), pageRequest);
     }
 
@@ -100,8 +107,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         WorkspaceDetailResult result = new WorkspaceDetailResult();
         IcreditWorkspaceEntity entity = getById(id);
         BeanCopyUtils.copyProperties(entity, result);
+        result.setCreateTime(entity.getCreateTime().getTime());
+        result.setUpdateTime(entity.getUpdateTime().getTime());
         List<IcreditWorkspaceUserEntity> memberList = workspaceUserService.queryMemberListByWorkspaceId(id);
-        List<WorkspaceMember> collect = memberList.stream().map(user -> BeanCopyUtils.copyProperties(user, new WorkspaceMember())).collect(Collectors.toList());
+        List<WorkspaceMember> collect = memberList.stream().map(user -> {
+            WorkspaceMember member = BeanCopyUtils.copyProperties(user, new WorkspaceMember());
+            member.setCreateTime(user.getCreateTime().getTime());
+            return member;
+        }).collect(Collectors.toList());
         result.setMemberList(collect);
         return result;
     }

@@ -62,7 +62,7 @@ public class UserOrgMapServiceImpl extends ServiceImpl<UserOrgMapDao, UserOrgMap
         List<UserOrgMapEntity> result = Lists.newArrayList();
         if (CollectionUtils.isNotEmpty(userIds)) {
             QueryWrapper<UserOrgMapEntity> wrapper = new QueryWrapper<>();
-            wrapper.in(UserOrgMapEntity.USER_ID,userIds);
+            wrapper.in(UserOrgMapEntity.USER_ID, userIds);
             result = list(wrapper);
         }
         return result;

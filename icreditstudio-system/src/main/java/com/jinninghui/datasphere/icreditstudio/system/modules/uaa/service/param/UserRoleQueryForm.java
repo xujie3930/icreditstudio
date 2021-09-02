@@ -10,6 +10,7 @@ public class UserRoleQueryForm implements Serializable {
     private static final long serialVersionUID = -7485135356674520338L;
     private String applicationId;
     private String userId;
+
     public UserRoleQueryForm() {
     }
 

@@ -5,16 +5,16 @@
 
 
     <update id="updateStatusByFormDefiIds" parameterType="java.util.List">
-      UPDATE ge_form_hi_definition
-      SET FORM_STATUS = #{status}
-      WHERE ID IN(
+        UPDATE ge_form_hi_definition
+        SET FORM_STATUS = #{status}
+        WHERE ID IN(
         SELECT ID
         FROM ge_form_definition
         WHERE ID IN
         <foreach collection="formIds" index="index" item="formId" open="(" separator="," close=")">
             #{formId}
         </foreach>
-      )
+        )
     </update>
 
     <update id="updateHiFormStatusById">
