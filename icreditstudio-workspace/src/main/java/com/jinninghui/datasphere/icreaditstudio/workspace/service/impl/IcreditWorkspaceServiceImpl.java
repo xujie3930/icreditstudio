@@ -59,16 +59,10 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         defEntity.setId(sequenceService.nextValueString());
         defEntity.setCreateUser(createUserName);
         defEntity.setCreateTime(date);
+        defEntity.setUpdateTime(date);
+        defEntity.setUpdateUser(createUserName);
         //保存工作空间信息
         save(defEntity);
-        //保存创建人信息
-        IcreditWorkspaceUserEntity createUser = new IcreditWorkspaceUserEntity();
-        BeanCopyUtils.copyProperties(param.getCreateUser(), createUser);
-        createUser.setId(sequenceService.nextValueString());
-        createUser.setSpaceId(defEntity.getId());
-        createUser.setCreateUser(createUserName);
-        createUser.setCreateTime(date);
-        workspaceUserService.save(createUser);
         //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())) {
             for (WorkspaceMember member : param.getMemberList()) {
