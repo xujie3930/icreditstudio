@@ -113,8 +113,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         WorkspaceDetailResult result = new WorkspaceDetailResult();
         IcreditWorkspaceEntity entity = getById(id);
         BeanCopyUtils.copyProperties(entity, result);
+        result.setCreateTime(entity.getCreateTime().getTime());
+        result.setUpdateTime(entity.getUpdateTime().getTime());
         List<IcreditWorkspaceUserEntity> memberList = workspaceUserService.queryMemberListByWorkspaceId(id);
-        List<WorkspaceMember> collect = memberList.stream().map(user -> BeanCopyUtils.copyProperties(user, new WorkspaceMember())).collect(Collectors.toList());
+        List<WorkspaceMember> collect = memberList.stream().map(user -> {
+            WorkspaceMember member = BeanCopyUtils.copyProperties(user, new WorkspaceMember());
+            member.setCreateTime(user.getCreateTime().getTime());
+            return member;
+        }).collect(Collectors.toList());
         result.setMemberList(collect);
         return result;
     }

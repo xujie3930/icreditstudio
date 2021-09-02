@@ -1,10 +1,8 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.web.result;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceMember;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -48,8 +46,7 @@ public class WorkspaceDetailResult {
     /**
      * 创建时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date createTime;
+    private Long createTime;
 
     /**
      * 创建人
@@ -59,8 +56,7 @@ public class WorkspaceDetailResult {
     /**
      * 更新时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date updateTime;
+    private Long updateTime;
 
     /**
      * 更新人
