@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity;
+import com.jinninghui.datasphere.icreaditstudio.workspace.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
@@ -40,11 +41,12 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
 
     @Autowired
     private IcreditWorkspaceMapper workspaceMapper;
-
     @Autowired
     private IcreditWorkspaceUserServiceImpl workspaceUserService;
     @Autowired
     private SequenceService sequenceService;
+    @Autowired
+    private SystemFeignClient systemFeignClient;
 
     @Override
     @BusinessParamsValidate
@@ -92,6 +94,11 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest) {
         Page<IcreditWorkspaceEntity> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+        BusinessResult<Boolean> result = systemFeignClient.isAdmin();
+        //管理员，可以查询所有数据
+        if (result.isSuccess() && result.getData()){
+            pageRequest.setUserId("");
+        }
         return BusinessPageResult.build(page.setRecords(workspaceMapper.queryPage(page, pageRequest)), pageRequest);
     }
 
