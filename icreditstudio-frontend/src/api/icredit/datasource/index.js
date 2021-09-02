@@ -3,4 +3,9 @@
  * @Description: datasource-management
  * @Date: 2021-08-25
  */
-export default {}
+
+import dataSyncApi from './data-sync'
+
+export default {
+  ...dataSyncApi
+}

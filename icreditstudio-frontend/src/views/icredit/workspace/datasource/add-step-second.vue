@@ -28,7 +28,10 @@
           :maxlength="15"
           v-model="dataSourceForm.name"
           placeholder="请输入自定义数据源名称"
-        ></el-input>
+          @blur="verifyDatasourceName"
+        >
+          <i v-if="veifyNameLoading" slot="suffix" class="el-icon-loading"></i>
+        </el-input>
       </el-form-item>
 
       <el-form-item
@@ -216,18 +219,17 @@ export default {
   data() {
     return {
       title: '新增数据源',
-      opType: '',
-      dataType: '',
-      databaseType: '',
+      opType: '', // 操作类型
+      dataType: '', // 数据结构类型
+      databaseType: '', // 数据库类型
+      timerId: null,
       btnLoading: false,
       detailLoading: false,
       testBtnLoading: false,
-      positionOptions: [
-        { label: '第一行', value: 1 },
-        { label: '第二行', value: 2 },
-        { label: '最后一行', value: 3 }
-      ],
       dialogVisible: false,
+      veifyNameLoading: false,
+
+      // 数据源表单参数
       dataSourceForm: {
         name: '',
         databaseName: '',
@@ -238,7 +240,9 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
+          { required: true, message: '请输入数据源名称', trigger: 'blur' },
+          // { validator: verifySpecialCode, trigger: 'blur' },
+          { validator: this.verifyDatasourceName, trigger: 'blur' }
         ],
         databaseName: [
           { required: true, message: '请输入数据库名', trigger: 'blur' }
@@ -252,7 +256,12 @@ export default {
         ],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         status: [{ required: true, message: '请选择是否启用', trigger: 'blur' }]
-      }
+      },
+      positionOptions: [
+        { label: '第一行', value: 1 },
+        { label: '第二行', value: 2 },
+        { label: '最后一行', value: 3 }
+      ]
     }
   },
 
@@ -284,6 +293,30 @@ export default {
       const databaseType = this.databaseType || 'mysql'
       const { ip, port, databaseName, username, password } = this.dataSourceForm
       return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${password}`
+    },
+
+    // 验证是否已经存在数据源名称
+    verifyDatasourceName(rule, value, cb) {
+      // 特殊符号
+      const regStr = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/gi
+      // 表情包
+      const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
+      const isValid = regStr.test(value) || emojiRegStr.test(value)
+      if (isValid) {
+        cb(new Error('该名称中包含不规范字符，请重新输入'))
+      } else {
+        this.timerId = null
+        this.veifyNameLoading = true
+        API.verifyDatasourceName({ name: value })
+          .then(({ success, data }) => {
+            success && data ? cb(new Error('该名称已存在，请重新输入')) : cb()
+          })
+          .finally(() => {
+            this.timerId = setTimeout(() => {
+              this.veifyNameLoading = false
+            }, 300)
+          })
+      }
     },
 
     // 上一步

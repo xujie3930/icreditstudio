@@ -6,20 +6,7 @@
 
 <template>
   <div class="task-step">
-    <!-- <el-steps process-status="finish" space="192" simple :active="curStep">
-      <el-step
-        :title="item.title"
-        :key="item.title"
-        v-for="(item, index) in renderStepsConfig"
-      >
-        <div slot="icon" class="el-step__icon">
-          <div class="el-step__icon-inner">{{ index + 1 }}</div>
-        </div>
-      </el-step>
-    </el-steps> -->
-
     <div class="step" :key="index" v-for="(item, index) in renderStepsConfig">
-      <!-- <div class="step-main"> -->
       <div
         :class="['step-icon', curStep === index + 1 ? 'step-icon__active' : '']"
       >
@@ -33,13 +20,6 @@
       >
         {{ item.title }}
       </div>
-      <!-- </div> -->
-      <!-- <div class="step-line">
-        <i
-          class="el-step__line-inner"
-          style="transition-delay: 0ms; border-width: 0px; width: 0%;"
-        ></i>
-      </div> -->
     </div>
   </div>
 </template>
@@ -59,7 +39,7 @@ export default {
   props: {
     curStep: {
       type: Number,
-      default: 3
+      default: 1
     }
   }
 }
