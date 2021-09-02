@@ -1,9 +1,6 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.web.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * @author xujie

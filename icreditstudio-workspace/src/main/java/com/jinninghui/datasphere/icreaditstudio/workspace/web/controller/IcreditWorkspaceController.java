@@ -1,24 +1,21 @@
 package com.jinninghui.datasphere.icreaditstudio.workspace.web.controller;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
-import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceDelRequest;
-import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
-import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceSaveRequest;
-import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest;
+import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.*;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.result.WorkspaceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -61,10 +58,11 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/update")
     @Logable
-    public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceSaveRequest request) {
+    public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceUpdateRequest request) {
 
         IcreditWorkspaceEntity entity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(request, entity);
+        entity.setUpdateTime(new Date());
         return BusinessResult.success(workspaceService.updateById(entity));
     }
 
