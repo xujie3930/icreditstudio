@@ -13,7 +13,7 @@
   >
     <div class="content">
       {{ beforeOperateMsg }}
-      <span class="color-text">{{ name }}</span>
+      <span v-if="afterOperateMsg" class="color-text">{{ name }}</span>
       {{ afterOperateMsg }}
     </div>
   </BaseDialog>
@@ -53,6 +53,10 @@ export default {
     close() {
       this.$refs.baseDialog.close()
       this.dialogVisible = false
+    },
+
+    btnLoadingClose() {
+      this.$refs.baseDialog.btnLoadingClose()
     },
 
     confirm() {

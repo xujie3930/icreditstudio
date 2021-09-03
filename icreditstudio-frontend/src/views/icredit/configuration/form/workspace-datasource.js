@@ -11,16 +11,16 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: 'N', label: '全部' },
-      { value: 'Y', label: 'MySQL' },
-      { value: 'M', label: 'oracle' },
-      { value: 'D', label: 'hive' },
-      { value: 'HDFS', label: 'HDFS' },
-      { value: 'SFTP', label: 'SFTP' },
-      { value: 'FTP', label: 'FTP' },
-      { value: 'progresql', label: 'progresql' },
-      { value: 'mongodb', label: 'MongoDB' },
-      { value: 'chain', label: '区块链' }
+      { value: 10, label: '全部' },
+      { value: 1, label: 'MySQL' },
+      { value: 2, label: 'oracle' },
+      { value: 3, label: 'hive' },
+      { value: 4, label: 'HDFS' },
+      { value: 5, label: 'SFTP' },
+      { value: 6, label: 'FTP' },
+      { value: 7, label: 'progresql' },
+      { value: 8, label: 'MongoDB' },
+      { value: 9, label: '区块链' }
     ]
   },
   {
@@ -37,9 +37,9 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: 'All', label: '全部' },
-      { value: 'Y', label: '是' },
-      { value: 'N', label: '否' }
+      { value: 2, label: '全部' },
+      { value: 0, label: '是' },
+      { value: 1, label: '否' }
     ]
   }
 ]

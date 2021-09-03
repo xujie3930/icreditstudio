@@ -16,7 +16,7 @@
         <div class="table-container">
           <j-table
             ref="leftTable"
-            v-loading="tableLoading"
+            v-loading="tableLeftLoading"
             :table-configuration="leftTableConfiguration"
             :table-data="
               elLeftData | filterTableList(tableFilterConfig.prop, leftFilter)
@@ -84,6 +84,10 @@ import _ from 'lodash'
 export default {
   name: 'JTransferTable',
   props: {
+    tableLeftLoading: {
+      type: Boolean,
+      default: false
+    },
     tableLoading: {
       type: Boolean,
       default: false

@@ -162,9 +162,9 @@ export default {
     workspaceList: {
       deep: true,
       immediate: true,
-      handler(nVal) {
+      handler(nVal = []) {
         localStorage.setItem('workspaceId', null)
-        if (nVal.length) {
+        if (nVal && nVal.length) {
           const { id } = nVal[0]
           this.workspaceId = id
           localStorage.setItem('workspaceId', id)

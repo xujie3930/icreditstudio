@@ -90,7 +90,7 @@ export function generateIndexRouter(data) {
   // 必要步骤：删除多余的children属性，否则vue-router会认为其是父级路由，会继续往下去匹配其子路由而不是本身
   for (const index in tilePathData) {
     if (tilePathData[index].children) {
-      delete tilePathData[index].children;
+      delete tilePathData[index].children
     }
   }
   return [
@@ -116,7 +116,8 @@ export function generateIndexRouter(data) {
       path: '*',
       redirect: '/404',
       hidden: true
-    }]
+    }
+  ]
 }
 
 // 生成嵌套路由（子路由）
@@ -209,8 +210,7 @@ export function removeClass(ele, cls) {
  * @return {string}
  */
 export function upperCaseFirst(str) {
-  return str.charAt(0)
-    .toUpperCase() + str.slice(1)
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 export function changState(val) {
@@ -307,16 +307,16 @@ export function arrayToTree(arr, rootVal, pidKey = 'parentId') {
  * @param filterKey {string} 不传时将整条装入，传入key时仅把item[key]值装入数组
  */
 export function treeToArray(tree, field = 'children', filterKey = null) {
-  const arr = [];
+  const arr = []
   const expanded = datas => {
     if (datas && datas.length > 0) {
       datas.forEach(e => {
-        arr.push(filterKey ? e[filterKey] : e);
-        expanded(e[field]);
+        arr.push(filterKey ? e[filterKey] : e)
+        expanded(e[field])
       })
     }
-  };
-  expanded(tree);
+  }
+  expanded(tree)
   return arr
 }
 
@@ -328,7 +328,8 @@ export function treeToArray(tree, field = 'children', filterKey = null) {
  */
 export const debounce = (fn, delay = 800) => {
   let timer = null
-  return function (...arg) {
+  // eslint-disable-next-line space-before-function-paren
+  return function(...arg) {
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => {
       fn.apply(this, arg)
@@ -343,9 +344,7 @@ export const handleTrim = source => {
   if (type === 'string') return source.trim()
   if (type === 'object') {
     for (const [key, value] of Object.entries(source)) {
-      obj[key] = getObjType(value) === 'string'
-        ? value.trim()
-        : value
+      obj[key] = getObjType(value) === 'string' ? value.trim() : value
     }
     return obj
   }
@@ -356,15 +355,51 @@ export const handleTrim = source => {
  */
 export const base64UrlFilter = url => {
   let result = ''
-  if (url.startsWith('blob:') || /^[\s\S]*\/img\//.test(url)) { // blob格式||本地文件，不处理
+  if (url.startsWith('blob:') || /^[\s\S]*\/img\//.test(url)) {
+    // blob格式||本地文件，不处理
     result = url
-  } else if (url.startsWith('dataimage/')) { // base64全路径储存的格式
+  } else if (url.startsWith('dataimage/')) {
+    // base64全路径储存的格式
     const curType = url.split('dataimage/')[1].split('base64')[0]
     const before = `dataimage/${curType}base64`
     const after = `data:image/${curType};base64,`
     result = url.replace(new RegExp(before, 'g'), after)
-  } else { // base64截取base64后路径储存的格式,统一转成png格式展示
-    result = url.startsWith('data:image/') ? url : `data:image/png;base64,${url}`
+  } else {
+    // base64截取base64后路径储存的格式,统一转成png格式展示
+    result = url.startsWith('data:image/')
+      ? url
+      : `data:image/png;base64,${url}`
   }
   return result
+}
+
+// 数据库连接URI切割
+export const uriSplit = (uri, dataSource) => {
+  const paramsObj = {}
+  const [beforeStr, afterStr] = uri.split('?')
+
+  // 处理查询参数
+  const newAfterStr = afterStr.replaceAll('|', '&')
+  newAfterStr.split('&').forEach(item => {
+    const [key, val] = item.split('=')
+    paramsObj[key] = val
+  })
+
+  // 处理uri类型以及IP以及端口号
+  const [databaseType, ipPort, databaseName] = beforeStr
+    .split('/')
+    .filter(item => item && item.trim())
+
+  const [ip, port] = ipPort.split(':')
+
+  const newDataSource = {
+    databaseType,
+    ip,
+    port,
+    databaseName,
+    ...dataSource,
+    ...paramsObj
+  }
+
+  return newDataSource
 }

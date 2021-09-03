@@ -68,7 +68,10 @@
               <el-button type="text" @click="handleOperateClick(row, 'Edit')">
                 编辑
               </el-button>
-              <el-button type="text" @click="handleOperateClick(row, 'Delete')">
+              <el-button
+                type="text"
+                @click="handleDeleteBtnClick(row, 'Delete')"
+              >
                 删除
               </el-button>
               <el-button
@@ -96,9 +99,15 @@
 
     <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
     <Detail ref="dataSourceDetail" :footer="true" />
+    <!-- 新增数据源 - 选择数据类型弹窗 -->
     <AddDataSourceStepFirst
       ref="addStepFirst"
-      @confirm="addDatasourceCallback"
+      @on-confirm="addDatasourceCallback"
+    />
+    <!-- 新增或编辑数据源 - 表单类型弹窗 -->
+    <AddDataSourceStepSecond
+      ref="addStepSecond"
+      @on-confirm="addDatasourceCallback"
     />
   </div>
 </template>
@@ -112,11 +121,17 @@ import formOption from '@/views/icredit/configuration/form/workspace-datasource'
 import Message from '@/views/icredit/components/message'
 import Detail from './detail'
 import AddDataSourceStepFirst from './add-step-first'
+import AddDataSourceStepSecond from './add-step-second'
 import API from '@/api/icredit'
 
 export default {
   mixins: [crud, operate, workspace],
-  components: { Message, Detail, AddDataSourceStepFirst },
+  components: {
+    Message,
+    Detail,
+    AddDataSourceStepFirst,
+    AddDataSourceStepSecond
+  },
 
   data() {
     return {
@@ -124,6 +139,10 @@ export default {
       isSyncClick: false,
       isSyncStatus: true,
       syncDataCount: 0,
+
+      btnViewLoading: false,
+      btnEditLoading: false,
+
       formOption,
       mixinSearchFormConfig: {
         models: { name: '', type: '', status: '' }
@@ -145,17 +164,13 @@ export default {
   methods: {
     interceptorsRequestRetrieve(params) {
       return {
-        workspaceId: this.workspaceId,
+        spaceId: this.workspaceId,
         ...params
       }
     },
 
     handleAddDataSource() {
       this.$refs.addStepFirst.open()
-    },
-
-    handleDeleteClick(row) {
-      console.log(row, 'row')
     },
 
     // 停用
@@ -170,9 +185,21 @@ export default {
       this.$refs.operateMessage.open(options)
     },
 
+    // 删除
+    handleDeleteBtnClick(row) {
+      const options = {
+        row,
+        opType: 'Delete',
+        title: '数据源删除',
+        beforeOperateMsg:
+          '数据源删除后将不在列表中展示，且不再参与工作流调度，确认删除吗？',
+        afterOperateMsg: ''
+      }
+      this.$refs.operateMessage.open(options)
+    },
+
     // 同步
     handleSyncClick(row) {
-      this.isSyncClick = true
       this.timerId = null
       this.isSyncStatus = true
       this.syncDataCount = 0
@@ -190,6 +217,7 @@ export default {
           this.isSyncStatus = false
         })
         .finally(() => {
+          this.isSyncClick = true
           this.timerId = setTimeout(() => {
             this.isSyncClick = false
           }, 2500)
@@ -202,10 +230,13 @@ export default {
       const params = { id, status: status ? 0 : 1 }
       switch (opType) {
         case 'View':
-          this.handleEditClick('datasourceDetail', id)
+          this.handleEditClick('datasourceDetail', id, opType)
           break
         case 'Enabled':
           this.handleEnabledClick('datasourceUpdate', params)
+          break
+        case 'Edit':
+          this.handleEditClick('datasourceDetail', id, opType, 'addStepSecond')
           break
         default:
           this.$refs.operateMessage.open(opType, row)
@@ -229,8 +260,9 @@ export default {
     },
 
     // 查看详情
-    mixinDetailInfo(data) {
-      this.$refs.dataSourceDetail.open({ data, opType: 'view' })
+    mixinDetailInfo(data, opType) {
+      opType === 'View' && this.$refs.dataSourceDetail.open({ data, opType })
+      opType === 'Edit' && this.$refs.addStepSecond.openEdit({ data, opType })
     }
   }
 }

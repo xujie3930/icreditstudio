@@ -6,7 +6,7 @@
 
 <template>
   <el-dialog
-    title="选择负责人"
+    title="选择成员"
     top="10vh"
     width="1346px"
     :close-on-click-modal="false"
@@ -18,7 +18,7 @@
         <div class="tree-desc">
           <span>部门树</span>
         </div>
-        <div class="left-tree">
+        <div class="left-tree" v-loading="treeLoading">
           <el-tree
             ref="orgTree"
             node-key="id"
@@ -44,7 +44,8 @@
         <j-transfer-table
           ref="userTransfer"
           :titles="['待选用户', '已选用户']"
-          :table-loading="transferTableLoading"
+          :table-left-loading="userSetModels.transfer.tableLoading"
+          :table-loading="userSetModels.transfer.tableLoading"
           :table-filter-config="userSetModels.transfer.filterConfig"
           :left-table-configuration="
             userSetModels.transfer.leftTableConfiguration
@@ -68,7 +69,7 @@ import crud from '@/mixins/crud'
 import userSetTableConfiguration from '@/views/system-basic/configuration/table/manage/manage-user-set'
 import JTransferTable from '@/components/transfer-table'
 import { queryAllOrgs, getUserInfosByOrgIds } from '@/api/user'
-import { getUserInfoByRoleId } from '@/api/role'
+// import { getUserInfoByRoleId } from '@/api/role'
 import { arrayToTree } from '@/utils/util'
 
 export default {
@@ -77,7 +78,7 @@ export default {
 
   data() {
     return {
-      // 配置用户相关 start↓
+      treeLoading: false,
       userSetDialogFlag: false,
       transferTableLoading: false,
       userSetModels: {
@@ -92,6 +93,7 @@ export default {
         },
         // 右侧用户选择穿梭树相关
         transfer: {
+          tableLeftLoading: false,
           tableLoading: false,
           filterConfig: {
             placeholder: '请输入用户查询',
@@ -105,36 +107,37 @@ export default {
     }
   },
 
-  created() {
-    this.fetchAllOrgs()
-  },
-
   methods: {
     open(roleId) {
       this.userSetDialogFlag = true
-      this.transferTableLoading = true
-      // 获取当前角色的已配置用户数据
-      getUserInfoByRoleId({ roleId })
-        .then(({ success, data }) => {
-          if (success) {
-            // 筛选出部门ids,并通过ids查询所有待选项
-            this.$nextTick(() => {
-              this.$refs.orgTree.setCheckedKeys([])
-              this.$refs.userTransfer.init()
-            })
-            const {
-              userSetModels: {
-                transfer: { leftData, rightData }
-              }
-            } = this
-            leftData.splice(0, leftData.length)
-            rightData.splice(0, rightData.length, ...data)
-            // this.queryUserLeftTableDataByIds(orgIds)
-          }
-        })
-        .finally(() => {
-          this.transferTableLoading = false
-        })
+      // this.transferTableLoading = true
+      // this.userSetModels.transfer.tableLoading = true
+      console.log(roleId, 'ooo')
+
+      this.fetchAllOrgs()
+
+      // // 获取当前角色的已配置用户数据
+      // getUserInfoByRoleId({ roleId })
+      //   .then(({ success, data }) => {
+      //     if (success) {
+      //       // 筛选出部门ids,并通过ids查询所有待选项
+      //       this.$nextTick(() => {
+      //         this.$refs.orgTree.setCheckedKeys([])
+      //         this.$refs.userTransfer.init()
+      //       })
+      //       const {
+      //         userSetModels: {
+      //           transfer: { leftData, rightData }
+      //         }
+      //       } = this
+      //       leftData.splice(0, leftData.length)
+      //       rightData.splice(0, rightData.length, ...data)
+      //       // this.queryUserLeftTableDataByIds(orgIds)
+      //     }
+      //   })
+      //   .finally(() => {
+      //     this.transferTableLoading = false
+      //   })
     },
 
     close() {
@@ -143,17 +146,24 @@ export default {
 
     // 获取公司组织架构
     fetchAllOrgs() {
-      queryAllOrgs().then(res => {
-        this.userSetModels.tree.orgTreeData = arrayToTree(
-          res.data.reduce((pre, cur) => {
-            cur.operateFlag === '1' && pre.push({ label: cur.orgName, ...cur })
-            return pre
-          }, []),
-          '0'
-        )
-      })
+      this.treeLoading = true
+      queryAllOrgs()
+        .then(res => {
+          this.userSetModels.tree.orgTreeData = arrayToTree(
+            res.data.reduce((pre, cur) => {
+              cur.operateFlag === '1' &&
+                pre.push({ label: cur.orgName, ...cur })
+              return pre
+            }, []),
+            '0'
+          )
+        })
+        .finally(() => {
+          this.treeLoading = false
+        })
     },
 
+    // selectTree 选中
     orgHandleCheck(nodeObj, selectObj) {
       const { checkedKeys } = selectObj
       if (!checkedKeys.length) {
@@ -164,33 +174,31 @@ export default {
         } = this
         leftData.splice(0, leftData.length)
       } else {
-        // 根据部门ID集合，查询各部门用户列表
         this.queryUserLeftTableDataByIds(checkedKeys)
       }
     },
 
+    // 根据部门ID集合，查询各部门用户列表
     queryUserLeftTableDataByIds(checkedKeys) {
       this.tableLoading = true
+      this.userSetModels.transfer.tableLoading = true
       getUserInfosByOrgIds({
         orgIds: checkedKeys,
         deleteFlag: this.mixinUpdate.deleteFlag
       })
-        .then(res => {
-          const {
-            userSetModels: {
-              transfer: { leftData, rightData }
-            }
-          } = this
-          const existIds = rightData.map(x => x.id)
+        .then(({ data }) => {
+          const existIds = this.userSetModels.transfer.rightData.map(x => x.id)
           // 穿梭框leftTable赋值(排除右边已有项)
-          leftData.splice(
+          this.userSetModels.transfer.leftData.splice(
             0,
-            leftData.length,
-            ...res.data.filter(x => !existIds.includes(x.id))
+            this.userSetModels.transfer.leftData.length,
+            ...data.filter(x => !existIds.includes(x.id))
           )
+          this.$refs.userTransfer.init()
         })
         .finally(() => {
           this.tableLoading = false
+          this.userSetModels.transfer.tableLoading = false
         })
     },
 

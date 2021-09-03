@@ -83,6 +83,10 @@ export default {
       this.$emit('on-close')
     },
 
+    btnLoadingClose() {
+      this.btnLoading = false
+    },
+
     confirm() {
       this.btnLoading = true
       this.$emit('on-confirm')

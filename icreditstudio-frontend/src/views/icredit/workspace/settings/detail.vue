@@ -35,7 +35,6 @@
               type="text"
               placeholder="请输入工作空间名称"
               size="small"
-              @blur="verifyWorkspaceName"
             >
               <i
                 v-if="veifyNameLoading"
@@ -94,9 +93,9 @@
             >
               <el-option
                 v-for="(item, idx) in userOptions"
-                :key="`${item.roleId}-${idx}`"
+                :key="`${item.id}-${idx}`"
                 :label="item.name"
-                :value="item.roleId"
+                :value="item.id"
               >
               </el-option>
             </el-select>
@@ -148,6 +147,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting-detail'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
@@ -171,6 +171,7 @@ export default {
       btnLoading: false,
       veifyNameLoading: false,
       timerId: null,
+      oldName: '',
 
       // 工作空间表单
       detailForm: {
@@ -183,7 +184,7 @@ export default {
       detailRules: {
         name: [
           { required: true, message: '必填项不能为空', trigger: 'blur' },
-          { validator: this.verifyWorkspaceName, trigger: 'blur' }
+          { validator: this.verifyName, trigger: 'blur' }
         ],
         status: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
@@ -194,6 +195,10 @@ export default {
       },
       userOptions: []
     }
+  },
+
+  computed: {
+    ...mapGetters({ userInfo: 'user/userInfo' })
   },
 
   mounted() {
@@ -242,17 +247,23 @@ export default {
     // 编辑操作数据回显
     mixinDetailInfo(data) {
       this.detailForm = data
+      this.oldName = this.detailForm.name
     },
 
     // 新增
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {
+          const { id: userId, userName: username } = this.userInfo
           const { memberList, ...restParams } = this.detailForm
           const newMemberList = memberList.map(
             ({ createTime, ...item }) => item
           )
-          const params = { memberList: newMemberList, ...restParams }
+          const params = {
+            memberList: newMemberList,
+            createUser: { userId, username },
+            ...restParams
+          }
 
           this.btnLoading = true
           API[`workspace${this.id ? 'Update' : 'Add'}`](params)
@@ -286,19 +297,38 @@ export default {
         })
     },
 
+    // 名称校验
+    verifyName(rule, value, cb) {
+      // 特殊符号
+      const regStr = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/gi
+      // 表情包
+      const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
+      const isValid = regStr.test(value) || emojiRegStr.test(value)
+      console.log(isValid, 'llplp')
+      if (isValid) {
+        cb(new Error('该名称中包含不规范字符，请重新输入'))
+      } else {
+        this.verifyWorkspaceName(rule, value, cb)
+      }
+    },
+
     // 验证是否已经存在工作空间名称
     verifyWorkspaceName(rule, value, cb) {
       this.timerId = null
-      this.veifyNameLoading = true
-      API.verifyWorkspaceName({ name: value })
-        .then(({ success, data }) => {
-          success && data ? cb(new Error('该名称已存在，请重新输入')) : cb()
-        })
-        .finally(() => {
-          this.timerId = setTimeout(() => {
-            this.veifyNameLoading = false
-          }, 300)
-        })
+      if (this.id && this.oldName === value) {
+        cb()
+      } else {
+        this.veifyNameLoading = true
+        API.verifyWorkspaceName({ name: value })
+          .then(({ success, data }) => {
+            success && data ? cb(new Error('该名称已存在，请重新输入')) : cb()
+          })
+          .finally(() => {
+            this.timerId = setTimeout(() => {
+              this.veifyNameLoading = false
+            }, 300)
+          })
+      }
     }
   }
 }

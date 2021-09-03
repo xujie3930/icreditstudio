@@ -146,8 +146,7 @@ export default {
 
   methods: {
     handleAddSyncTask() {
-      // this.$refs.addStepFirst.open()
-      this.$router.push('/data-manage/add-task-define')
+      this.$router.push('/data-manage/add-task')
     },
 
     // 删除

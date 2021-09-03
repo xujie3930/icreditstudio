@@ -24,11 +24,8 @@ const datasourceTestLink = params =>
   postAction('/datasource/testConnect', params)
 
 // 判断是否有重复工作空间
-const verifyWorkspaceName = params => postAction('/workspace/hasExist', params)
-
-// 负责人模糊查询
-const getUserFluzzyQuery = params =>
-  postAction('/system/user/user/queryUserRoleByLikeName', params)
+const verifyDatasourceName = params =>
+  postAction('/datasource/hasExist', params)
 
 export default {
   datasourceAdd,
@@ -37,6 +34,5 @@ export default {
   datasourceDetail,
   datasourceSync,
   datasourceTestLink,
-  verifyWorkspaceName,
-  getUserFluzzyQuery
+  verifyDatasourceName
 }

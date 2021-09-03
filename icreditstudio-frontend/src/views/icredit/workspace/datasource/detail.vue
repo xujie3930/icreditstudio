@@ -6,8 +6,8 @@
 <template>
   <BaseDialog
     ref="baseDialog"
-    title="数据源查看"
     width="600px"
+    :title="title"
     :hide-footer="true"
     @onClose="handleClose"
     @onConfirm="handleConfirm"
@@ -34,14 +34,14 @@
           <el-col :span="12">
             <el-form-item label="IP" :rules="[{ required: true }]">
               <span class="label-text">
-                {{ detailData.ipPort.split(':')[0] }}
+                {{ detailData.ip }}
               </span>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="端口" :rules="[{ required: true }]">
               <span class="label-text">
-                {{ detailData.ipPort.split(':')[1] }}
+                {{ detailData.port }}
               </span>
             </el-form-item>
           </el-col>
@@ -137,12 +137,14 @@
 </template>
 
 <script>
+import { uriSplit } from '@/utils/util'
 import BaseDialog from '@/views/icredit/components/dialog'
 
 export default {
   components: { BaseDialog },
   data() {
     return {
+      title: '',
       opType: 'view',
       dialogVisible: false,
       detailData: { ipPort: '' },
@@ -161,37 +163,13 @@ export default {
     }
   },
 
-  props: {
-    title: String
-  },
-
   methods: {
     open({ opType, data = {} }) {
+      this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
       this.detailData = data
       if (opType === 'view') {
-        const paramsObj = {}
-        const [beforeStr, afterStr] = this.detailData.uri.split('?')
-
-        // 处理查询参数
-        afterStr.split('&').forEach(item => {
-          const [key, val] = item.split('=')
-          paramsObj[key] = val
-        })
-
-        // 处理uri类型以及IP以及端口号
-        const [databaseType, ipPort, databaseName] = beforeStr
-          .split('/')
-          .filter(item => item && item.trim())
-
-        Object.assign(this.detailData, {
-          databaseType,
-          ipPort,
-          databaseName,
-          ...paramsObj
-        })
-
-        console.log(this.detailData, 'ddddd')
+        this.detialForm = uriSplit(data.uri, data)
       }
       this.$refs.baseDialog.open()
     },
