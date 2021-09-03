@@ -51,6 +51,11 @@ public class IcreditWorkspaceUserEntity implements Serializable {
     private String userRole;
 
     /**
+     * 用户部门
+     */
+    private String orgName;
+
+    /**
      * 功能权限
      */
     private String functionalAuthority;
