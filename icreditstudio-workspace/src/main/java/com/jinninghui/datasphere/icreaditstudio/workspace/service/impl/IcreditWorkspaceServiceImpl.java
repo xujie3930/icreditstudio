@@ -8,6 +8,7 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.feign.SystemFeignClien
 import com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
+import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceEntityPageParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest;
@@ -18,6 +19,8 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.DateUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +57,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     public BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param) {
         Date date = new Date();
         String createUserName = param.getCreateUser().getUsername();
+        //保存工作空间信息
         IcreditWorkspaceEntity defEntity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
@@ -61,7 +65,6 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         defEntity.setCreateTime(date);
         defEntity.setUpdateTime(date);
         defEntity.setUpdateUser(createUserName);
-        //保存工作空间信息
         save(defEntity);
         //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())) {
@@ -87,13 +90,18 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
 
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest) {
-        Page<IcreditWorkspaceEntity> page = new Page<>(pageRequest.getPageNum(), pageRequest.getPageSize());
+        IcreditWorkspaceEntityPageParam param = BeanCopyUtils.copyProperties(pageRequest, new IcreditWorkspaceEntityPageParam());
+        Page<IcreditWorkspaceEntity> page = new Page<>(param.getPageNum(), param.getPageSize());
         BusinessResult<Boolean> result = systemFeignClient.isAdmin();
         //管理员，可以查询所有数据
         if (result.isSuccess() && result.getData()){
             pageRequest.setUserId("");
         }
-        return BusinessPageResult.build(page.setRecords(workspaceMapper.queryPage(page, pageRequest)), pageRequest);
+        if (!StringUtils.isBlank(pageRequest.getUpdateTime())){
+            param.setUpdateStartTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 00:00:00"));
+            param.setUpdateEndTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 23:59:59"));
+        }
+        return BusinessPageResult.build(page.setRecords(workspaceMapper.queryPage(page, param)), param);
     }
 
     @Override
