@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,6 +76,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
                 entity.setSpaceId(defEntity.getId());
                 entity.setCreateUser(createUserName);
                 entity.setCreateTime(date);
+                entity.setOrgName(String.join(",", member.getOrgNames()));
                 workspaceUserService.save(entity);
             }
         }
@@ -121,6 +123,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         List<WorkspaceMember> collect = memberList.stream().map(user -> {
             WorkspaceMember member = BeanCopyUtils.copyProperties(user, new WorkspaceMember());
             member.setCreateTime(user.getCreateTime().getTime());
+            member.setOrgNames(Arrays.asList(user.getOrgName().split(",")));
             return member;
         }).collect(Collectors.toList());
         result.setMemberList(collect);

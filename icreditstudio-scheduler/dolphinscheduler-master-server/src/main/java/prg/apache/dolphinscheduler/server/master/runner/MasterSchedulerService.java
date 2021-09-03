@@ -150,6 +150,7 @@ public class MasterSchedulerService extends Thread {
             int activeCount = masterExecService.getActiveCount();
             // make sure to scan and delete command  table in one transaction
             Command command = processService.findOneCommand();
+            //这里更新为
             if (command != null) {
                 logger.info("find one command: id: {}, type: {}", command.getId(),command.getCommandType());
 
