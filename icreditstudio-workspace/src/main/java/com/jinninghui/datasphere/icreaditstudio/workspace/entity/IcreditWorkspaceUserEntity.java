@@ -24,6 +24,7 @@ public class IcreditWorkspaceUserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String SPACE_ID = "SPACE_ID";
+    public static final String USER_ID = "USER_ID";
 
     /**
      * 主键id

@@ -5,6 +5,7 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspac
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
+import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceUpdateParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.*;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.result.WorkspaceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
@@ -61,10 +62,9 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
     @Logable
     public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceUpdateRequest request) {
 
-        IcreditWorkspaceEntity entity = new IcreditWorkspaceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
-        entity.setUpdateTime(new Date());
-        return BusinessResult.success(workspaceService.updateById(entity));
+        IcreditWorkspaceUpdateParam param = new IcreditWorkspaceUpdateParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return workspaceService.updateWorkSpaceAndMember(param);
     }
 
     /**
