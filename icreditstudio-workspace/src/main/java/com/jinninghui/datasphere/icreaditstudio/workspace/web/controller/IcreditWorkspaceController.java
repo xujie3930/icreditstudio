@@ -12,6 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -93,8 +94,10 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
     @PostMapping("/pageList")
     @Logable
     public BusinessResult<BusinessPageResult> pageList(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceEntityPageRequest pageRequest) {
+        if (StringUtils.isBlank(pageRequest.getUserId())){
+            pageRequest.setUserId(userId);
+        }
         BusinessPageResult page = workspaceService.queryPage(pageRequest);
-        pageRequest.setUserId(userId);
         return BusinessResult.success(page);
     }
 }

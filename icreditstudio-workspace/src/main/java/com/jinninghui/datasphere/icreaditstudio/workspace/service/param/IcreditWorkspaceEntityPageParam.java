@@ -1,19 +1,19 @@
-package com.jinninghui.datasphere.icreaditstudio.workspace.web.request;
+package com.jinninghui.datasphere.icreaditstudio.workspace.service.param;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jinninghui.datasphere.icreditstudio.framework.result.base.BusinessBasePageForm;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
 
 /**
  * @author 1
  */
 @Data
-public class IcreditWorkspaceEntityPageRequest extends BusinessBasePageForm {
+public class IcreditWorkspaceEntityPageParam extends BusinessBasePageForm {
     private String name;//工作空间名称
     private String createUser;//创建人
-    private String updateTime;//创建时间
+    private Date updateStartTime;//初始时间
+    private Date updateEndTime;//结束时间
     private String userId;//用户id
 }

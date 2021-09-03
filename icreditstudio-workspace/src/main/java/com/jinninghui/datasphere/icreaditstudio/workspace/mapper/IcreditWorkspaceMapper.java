@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreaditstudio.workspace.mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceEntityPageParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,5 +26,5 @@ public interface IcreditWorkspaceMapper extends BaseMapper<IcreditWorkspaceEntit
 
     Boolean hasExit(WorkspaceHasExistRequest request);
 
-    List<IcreditWorkspaceEntity> queryPage(Page<IcreditWorkspaceEntity> page, @Param(value = "request") IcreditWorkspaceEntityPageRequest request);
+    List<IcreditWorkspaceEntity> queryPage(Page<IcreditWorkspaceEntity> page, @Param(value = "request") IcreditWorkspaceEntityPageParam request);
 }
