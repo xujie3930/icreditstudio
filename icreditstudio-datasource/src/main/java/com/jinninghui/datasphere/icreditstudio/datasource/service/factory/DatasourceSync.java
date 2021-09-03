@@ -2,7 +2,6 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
 import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
