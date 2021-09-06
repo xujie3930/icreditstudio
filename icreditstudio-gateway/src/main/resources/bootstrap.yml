@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev            # 指定gitlab仓库的分支
+    active: local            # 指定gitlab仓库的分支
   cloud:
     refresh:
       refreshable: none

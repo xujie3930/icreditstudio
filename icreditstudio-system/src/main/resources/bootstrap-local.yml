@@ -2,14 +2,17 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.30:8848
-        namespace: dd8ede24-19c7-4547-8956-a566f800a823
+        server-addr: worker:8848
+        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
+      config:
+        server-addr: worker:8848
+        file-extension: yml
   datasource:
-    url: "jdbc:mysql://192.168.0.17:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
-    username: 'icdstu'
-    password: 'icdstu@0902'
+    url: "jdbc:mysql://worker:3306/icdstuiframe?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
+    username: 'root'
+    password: 'root'
   redis:
-    host: 192.168.0.196
+    host: worker
     port: 6379
     timeout: 20000
     #    cluster:
@@ -34,13 +37,5 @@ knife4j:
   production: false #默认是false ,屏蔽所有Swagger的相关资源
   enable: true #是否开启swagger
 
-server:
-  port: 8100
-
-mybatis-plus:
-  global-config:
-    db-config:
-      logic-delete-value: 1
-      logic-not-delete-value: 0
-      id-type: id_worker_str
-  mapper-locations: classpath*:com/jinninghui/**/mapper/*.xml
+account:
+  defaultPassword: 123456

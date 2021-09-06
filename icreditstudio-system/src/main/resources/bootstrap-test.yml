@@ -8,7 +8,7 @@ spring:
         server-addr: 192.168.0.30:8848
         file-extension: yml
   datasource:
-    url: "jdbc:mysql://192.168.0.23:3306/icdstuiframe?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://192.168.0.17:3306/icdstuiframe?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
     username: 'icdstu'
     password: 'icdstu@0902'
   redis:
