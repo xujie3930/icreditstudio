@@ -20,6 +20,9 @@ public class DataSyncSaveRequest {
     @NotBlank(message = "工作空间不能为空")
     private String workspaceId;
     //=============同步任务定义===========
+    /**
+     * 任务ID
+     */
     private String taskId;
     /**
      * 任务名称

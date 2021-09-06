@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 /**
  * @author Peng
  */
-@FeignClient(value = "datasource1")
+@FeignClient(value = "datasource")
 public interface DatasourceFeign {
     /**
      * 获取连接信息

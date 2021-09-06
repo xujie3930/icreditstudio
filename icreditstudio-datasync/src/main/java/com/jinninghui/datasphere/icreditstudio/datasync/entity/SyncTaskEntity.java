@@ -21,6 +21,7 @@ public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
     public static final String TASK_NAME = "task_name";
     public static final String TASK_STATUS = "task_status";
     public static final String EXEC_STATUS = "exec_status";
+    public static final String LAST_SCHEDULING_TIME = "last_scheduling_time";
     /**
      * 主键
      */

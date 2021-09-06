@@ -2,14 +2,14 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.30:8848
+        server-addr: 192.168.0.23:8848
         namespace: dd8ede24-19c7-4547-8956-a566f800a823
   datasource:
-    url: "jdbc:mysql://localhost:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
+    url: "jdbc:mysql://192.168.0.23:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
     username: 'root'
-    password: 'root@0000'
+    password: 'root'
   redis:
-    host: 192.168.0.30
+    host: 192.168.0.23
     port: 6379
     timeout: 20000
     #    cluster:
@@ -21,7 +21,7 @@ spring:
         min-idle: 0
         max-idle: 8
         max-wait: -1
-    password: hash2018
+    password: 123456
 
 # swagger 登录认证
 knife4j:

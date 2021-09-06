@@ -21,6 +21,6 @@ public enum CollectModeEnum {
                 return value;
             }
         }
-        return null;
+        return MANUAL;
     }
 }
