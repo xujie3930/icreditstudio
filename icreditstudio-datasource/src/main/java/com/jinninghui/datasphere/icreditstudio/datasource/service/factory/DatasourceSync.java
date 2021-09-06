@@ -1,8 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
-import cn.hutool.core.util.StrUtil;
+//import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -55,16 +54,16 @@ public interface DatasourceSync {
         return null;
     }
 
-    /**
+   /* *//**
      * 取得数据库名称
      *
      * @param uri
      * @return
-     */
+     *//*
     static String getDatabaseName(String uri) {
         String s = StrUtil.subBefore(uri, "?", false);
         return StrUtil.subAfter(s, "/", true);
-    }
+    }*/
 
     default String testConn(Integer type, String uri) {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();

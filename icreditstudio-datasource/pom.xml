@@ -29,10 +29,5 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
             <version>${spring.cloud.inner.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.jinninghui.datasphere</groupId>
-            <artifactId>icreditstudio-metadata</artifactId>
-            <version>0.0.1</version>
-        </dependency>
     </dependencies>
 </project>

@@ -5,6 +5,7 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspac
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
+import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceUpdateParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.*;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.result.WorkspaceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
@@ -12,6 +13,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,10 +62,9 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
     @Logable
     public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceUpdateRequest request) {
 
-        IcreditWorkspaceEntity entity = new IcreditWorkspaceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
-        entity.setUpdateTime(new Date());
-        return BusinessResult.success(workspaceService.updateById(entity));
+        IcreditWorkspaceUpdateParam param = new IcreditWorkspaceUpdateParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return workspaceService.updateWorkSpaceAndMember(param);
     }
 
     /**
@@ -93,8 +94,10 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
     @PostMapping("/pageList")
     @Logable
     public BusinessResult<BusinessPageResult> pageList(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkspaceEntityPageRequest pageRequest) {
+        if (StringUtils.isBlank(pageRequest.getUserId())){
+            pageRequest.setUserId(userId);
+        }
         BusinessPageResult page = workspaceService.queryPage(pageRequest);
-        pageRequest.setUserId(userId);
         return BusinessResult.success(page);
     }
 }

@@ -24,6 +24,7 @@ public class IcreditWorkspaceUserEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static final String SPACE_ID = "SPACE_ID";
+    public static final String USER_ID = "USER_ID";
 
     /**
      * 主键id
@@ -49,6 +50,11 @@ public class IcreditWorkspaceUserEntity implements Serializable {
      * 用户角色
      */
     private String userRole;
+
+    /**
+     * 用户部门
+     */
+    private String orgName;
 
     /**
      * 功能权限

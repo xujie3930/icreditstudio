@@ -33,14 +33,17 @@
             <if test="request.createUser != null and request.createUser != '' ">
                 AND w.create_user = #{request.createUser}
             </if>
-            <if test="request.updateTime != null">
-                AND w.update_time = #{request.updateTime}
+            <if test="request.updateStartTime != null">
+                AND w.update_time > #{request.updateStartTime}
+            </if>
+            <if test="request.updateEndTime != null">
+                AND #{request.updateEndTime} > w.update_time
             </if>
             <if test="request.userId != null and request.userId != ''">
                 AND u.user_id = #{request.userId}
             </if>
+                AND w.id = u.space_id
         </where>
-        and w.id = u.space_id
         order by w.create_time
     </select>
 </mapper>

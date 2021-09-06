@@ -4,6 +4,7 @@ import com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspac
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceDelParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
+import com.jinninghui.datasphere.icreaditstudio.workspace.service.param.IcreditWorkspaceUpdateParam;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.request.WorkspaceHasExistRequest;
 import com.jinninghui.datasphere.icreaditstudio.workspace.web.result.WorkspaceDetailResult;
@@ -29,4 +30,6 @@ public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity
     BusinessResult<Boolean> hasExit(WorkspaceHasExistRequest request);
 
     WorkspaceDetailResult getDetailById(String id);
+
+    BusinessResult<Boolean> updateWorkSpaceAndMember(IcreditWorkspaceUpdateParam param);
 }
