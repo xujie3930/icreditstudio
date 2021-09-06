@@ -21,6 +21,6 @@ public enum SyncModeEnum {
                 return value;
             }
         }
-        return null;
+        return FULL;
     }
 }

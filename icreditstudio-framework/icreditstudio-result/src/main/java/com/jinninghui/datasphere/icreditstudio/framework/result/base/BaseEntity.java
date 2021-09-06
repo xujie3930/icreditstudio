@@ -1,11 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.framework.result.base;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.Data;
-
-import java.util.Date;
 
 /**
  * Project：business-build

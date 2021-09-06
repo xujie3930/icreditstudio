@@ -22,6 +22,6 @@ public enum SourceTypeEnum {
                 return value;
             }
         }
-        return null;
+        return EXTERNAL_DATABASE;
     }
 }

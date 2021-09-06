@@ -74,7 +74,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncWidetableEntity wideTableEntity = transferToSyncWidetableEntity(param);
         syncWidetableService.saveOrUpdate(wideTableEntity);
         List<SyncWidetableFieldEntity> syncWideTableFieldEntities = transferToWideTableFields(wideTableEntity.getId(), param);
-        syncWidetableFieldService.saveOrUpdateBatch(syncWideTableFieldEntities);
+        if (CollectionUtils.isNotEmpty(syncWideTableFieldEntities)) {
+            syncWidetableFieldService.saveOrUpdateBatch(syncWideTableFieldEntities);
+        }
         return BusinessResult.success(new ImmutablePair("taskId", entity.getId()));
     }
 
@@ -321,6 +323,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             wrapper.eq(SyncTaskEntity.EXEC_STATUS, param.getExecStatus().getCode());
         }
         wrapper.orderByAsc(SyncTaskEntity.TASK_STATUS);
+        wrapper.orderByDesc(SyncTaskEntity.LAST_SCHEDULING_TIME);
         return wrapper;
     }
 }

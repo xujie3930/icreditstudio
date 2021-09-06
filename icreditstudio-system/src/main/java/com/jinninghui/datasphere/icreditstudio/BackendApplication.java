@@ -1,8 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio;
 
-import com.jinninghui.datasphere.icreditstudio.system.common.config.IFrameBanner;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.configuration.EnableSequenceService;
-import com.jinninghui.datasphere.icreditstudio.framework.validate.EnableValidator;
+import com.jinninghui.datasphere.icreditstudio.system.common.config.IFrameBanner;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,9 +15,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  */
 @EnableDiscoveryClient
 @SpringBootApplication()
+@EnableFeignClients
 @EnableSequenceService
 //@EnableValidator
-@EnableFeignClients
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象

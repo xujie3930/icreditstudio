@@ -21,6 +21,6 @@ public enum CreateModeEnum {
                 return value;
             }
         }
-        return null;
+        return VISUAL;
     }
 }

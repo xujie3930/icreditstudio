@@ -7,12 +7,12 @@ spring:
   application:
     name: workspace
   datasource:
-    url: "jdbc:mysql://192.168.0.17:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    url: "jdbc:mysql://192.168.0.23:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'icdstu'
     password: 'icdstu@0902'
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-    host: 192.168.0.201
+    host: 192.168.0.196
     port: 6379
     timeout: 20000
     #    cluster:
