@@ -39,8 +39,15 @@ export default {
 
   methods: {
     open(options) {
-      const { title, row, opType, afterOperateMsg, beforeOperateMsg } = options
-      this.name = row.name
+      const {
+        title,
+        row,
+        name,
+        opType,
+        afterOperateMsg,
+        beforeOperateMsg
+      } = options
+      this.name = row?.name || name
       this.opType = opType
       this.row = row
       this.title = title

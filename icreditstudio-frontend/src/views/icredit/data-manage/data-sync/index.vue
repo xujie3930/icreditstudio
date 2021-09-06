@@ -44,51 +44,63 @@
           <!-- 任务状态 -->
           <template #taskStatusColumn="{row: {taskStatus}}">
             <span :style="{ color: taskStatusMapping[taskStatus || 0].color }">
-              {{ taskStatusMapping[taskStatus || 0].label }}
+              {{
+                [0, 1, 2].includes(taskStatus)
+                  ? taskStatusMapping[taskStatus].label
+                  : ''
+              }}
             </span>
           </template>
 
           <!-- 执行状态 -->
           <template #execStatusColumn="{row: {execStatus}}">
-            <span :style="{ color: execStatusMapping[execStatus || 0].color }">
-              {{ execStatusMapping[execStatus || 0].label }}
+            <span
+              :style="{
+                color: [0, 1, 2].includes(execStatus)
+                  ? execStatusMapping[execStatus].color
+                  : '#606266'
+              }"
+            >
+              {{
+                [0, 1, 2].includes(execStatus)
+                  ? execStatusMapping[execStatus].label
+                  : '-'
+              }}
             </span>
           </template>
 
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
-            <el-button type="text" @click="handleOperateClick(row, 'View')">
+            <el-button type="text" @click="handleViewBtnClick(row, 'View')">
               查看
             </el-button>
             <el-button
               v-if="row.taskStatus === 0"
               type="text"
-              @click="handleOperateClick(row, 'Disabled')"
+              @click="handleDisabledBtnClick(row, 'Disabled')"
             >
               停用
             </el-button>
-
             <el-button
-              v-if="[1, 2].include(row.taskStatus)"
+              v-if="row.taskStatus === 2"
               type="text"
-              @click="handleOperateClick(row, 'Delete')"
+              @click="handleEnabledBtnClick(row, 'Enabled')"
             >
-              删除
-            </el-button>
-            <el-button type="text" @click="handleOperateClick(row, 'Enabled')">
               启用
             </el-button>
+            <!-- v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)" -->
             <el-button
-              v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)"
               type="text"
-              @click="handleOperateClick(row, 'Enabled')"
+              v-if="row.taskStatus === 0"
+              @click="handleRunBtnClick(row, 'Run')"
             >
               立即执行
             </el-button>
+            <!-- v-if="row.taskStatus === 0 && row.execStatus === 2" -->
             <el-button
-              v-if="row.taskStatus === 0 && row.execStatus === 2"
               type="text"
-              @click="handleOperateClick(row, 'Enabled')"
+              v-if="row.taskStatus === 0"
+              @click="handleStopBtnClick(row, 'Stop')"
             >
               停止执行
             </el-button>
@@ -97,14 +109,21 @@
               v-if="row.taskStatus !== 0"
               @click="handleOperateClick(row, 'Edit')"
             >
-              编辑
+              编辑 {{ row.execStatus }}
+            </el-button>
+            <el-button
+              v-if="[1, 2].includes(row.taskStatus)"
+              type="text"
+              @click="handleDeleteBtnClick(row, 'Delete')"
+            >
+              删除
             </el-button>
           </template>
         </j-table>
       </template>
     </crud-basic>
 
-    <Message ref="operateMessage" />
+    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
     <Detail ref="dataDetail" />
   </div>
 </template>
@@ -117,6 +136,7 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-manage-
 import formOption from '@/views/icredit/configuration/form/data-manage-sync'
 import Message from '@/views/icredit/components/message'
 import Detail from './detail'
+import API from '@/api/icredit'
 
 export default {
   mixins: [crud, operate, workspace],
@@ -166,62 +186,82 @@ export default {
     },
 
     // 删除
-    handleDeleteClick(row) {
-      console.log(row, 'row')
+    handleDeleteBtnClick(row, opType) {
       const options = {
+        row,
+        opType,
         title: '删除同步任务',
         beforeOperateMsg: '删除同步任务',
         afterOperateMsg: '后，同步任务不会在任务列表中展示，确认删除吗？',
-        name: 'XXX同步任务名称'
+        name: row.taskName
       }
       this.$refs.operateMessage.open(options)
     },
 
     // 查看操作
-    handleDetailClick(row, opType) {
+    handleViewBtnClick(row, opType) {
       console.log('row', row)
       this.$refs.dataDetail.open({ row, opType })
     },
 
     // 启用
-    handleEnabledClick(row) {
-      console.log(row)
-      this.$message.success({
-        type: 'success',
-        offset: 200,
-        center: true,
-        duration: 1500,
-        message: '启用成功！'
-      })
-      // 调用接口
+    handleEnabledBtnClick(row) {
+      this.handleEnabledClick('dataSyncEnabled', { taskId: row.taskId })
     },
 
     // 停用
-    handleDisabledClick(row) {
-      console.log(row, 'raw')
+    handleDisabledBtnClick(row, opType) {
       const options = {
+        row,
+        opType,
         title: '停用数据同步任务',
         beforeOperateMsg: '停用同步任务',
         afterOperateMsg:
           '后，不再从源表写入数据到目标表，即目标表将不再更新，确认停用吗？',
-        name: '同步任务名称'
+        name: row.taskName
       }
       this.$refs.operateMessage.open(options)
     },
 
-    // 同步
-    handleSyncClick(row) {
-      console.log(row)
-      this.isSyncClick = true
-      // 调用接口
-      setTimeout(() => {
-        this.isSyncClick = false
-      }, 3000)
+    // 执行
+    handleRunBtnClick(row, opType) {
+      console.log(row, opType)
+      API.dataSyncRun({ taskId: row.taskId }).then(({ success, data }) => {
+        if (success && data) {
+          this.$notify.success({
+            title: '操作结果',
+            message: '任务执行成功！'
+          })
+        }
+      })
+    },
+
+    // 停止
+    handleStopBtnClick(row, opType) {
+      console.log(row, opType)
+      API.dataSyncStop({ taskId: row.taskId }).then(({ success, data }) => {
+        if (success && data) {
+          this.$notify.success({
+            title: '操作结果',
+            message: '任务已停止执行！'
+          })
+        }
+      })
     },
 
     handleOperateClick(row, opType) {
       console.log(row, 'row', opType)
       this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
+    },
+
+    // 弹窗提示回调函数
+    messageOperateCallback(opType, row) {
+      console.log(row, opType, 'row')
+      const methodName = `dataSync${opType}`
+      const params = {
+        Disabled: { taskId: row.taskId }
+      }
+      this[`handle${opType}Click`](methodName, params[opType], 'operateMessage')
     }
   }
 }

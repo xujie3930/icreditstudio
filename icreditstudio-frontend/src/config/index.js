@@ -1,8 +1,3 @@
-/*
- * @Author: lizheng
- * @Description:
- * @Date: 2021-08-16
- */
 /* 基础配置 */
 const baseConfig = {
   // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.50:13249',

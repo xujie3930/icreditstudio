@@ -91,7 +91,7 @@ export default _this => {
         width: 100
       },
       {
-        type: 'operation',
+        type: 'slot',
         label: '操作',
         prop: 'operation',
         width: '250px',

@@ -8,9 +8,10 @@
     <el-tabs
       class="data-detail-tab"
       v-model="activeName"
-      @tab-click="handleClick"
+      v-loading="detailLoading"
+      @tab-click="handleTabClick"
     >
-      <el-tab-pane label="任务详情" name="task">
+      <el-tab-pane label="任务详情" name="DefineDetial">
         <div class="tab-wrap">
           <div class="tab-wrap__title">任务详情</div>
           <div class="tab-wrap__content">
@@ -23,38 +24,45 @@
                 <span class="required-icon">*</span>
                 <span>{{ item.label }}</span>
               </div>
-              <span class="text">{{ item.content }}</span>
+              <span class="text">{{ item.value }}</span>
             </div>
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="数据源详情" name="second">
+      <el-tab-pane label="数据源详情" name="BuildDetial">
         <div class="tab-wrap">
-          <div class="tab-wrap__title">数据源详情</div>
+          <!-- <div class="tab-wrap__title">数据源详情</div> -->
           <div class="tab-wrap__content">
-            <el-row>
-              <el-col :span="8">
+            <el-row class="row">
+              <el-col class="col" :span="8">
                 <span>数据库源：</span>
-                <span>表间关联关系</span>
+                <span>sssss</span>
               </el-col>
 
-              <el-col :span="16">
-                <span>表间关联关系：</span>
-                <span class="icon icon-solid"></span>
-                <span class="icon"></span>
+              <el-col class="col" :span="16">
+                <div>表间关联关系：</div>
+                <div class="pop-wrap">
+                  <el-popover placement="right-end" width="450" trigger="hover">
+                    <Figure />
+                    <div class="svg-wrap" slot="reference">
+                      <JSvg name="left-link" class="icon" />
+                    </div>
+                  </el-popover>
+                </div>
               </el-col>
             </el-row>
 
-            <el-row>
-              <el-col :span="8">
+            <el-row class="row" style="margin-bottom: 20px">
+              <el-col class="col" :span="8">
                 <span> 宽表信息：</span>
-                <span>表间关联关系</span>
+                <span>dddsdededeef</span>
               </el-col>
-              <el-col :span="16">
+              <el-col class="col" :span="16">
                 <span> 分区字段：</span>
-                <span>表间关联关系</span>
+                <span>ddadefrgdd</span>
               </el-col>
             </el-row>
+
             <j-table
               ref="leftTable"
               v-loading="tableLoading"
@@ -64,7 +72,7 @@
           </div>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="任务调度详情" name="third">
+      <el-tab-pane label="任务调度详情" name="DispatchDetial">
         <div class="tab-wrap">
           <div class="tab-wrap__title">通道控制</div>
           <div class="tab-wrap__content">
@@ -73,17 +81,16 @@
                 <span class="required-icon">*</span>
                 <span>任务期望最大并发数</span>
               </div>
-              <span class="text">222</span>
+              <span class="text">{{ buildDetailInfo.maxConcurrent }}</span>
             </div>
             <div class="content-item">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步速率</span>
               </div>
-              <el-radio-group v-model="radio">
-                <el-radio :label="3">备选项</el-radio>
-                <el-radio :label="6">备选项</el-radio>
-                <el-radio :label="9">备选项</el-radio>
+              <el-radio-group v-model="buildDetailInfo.syncRate">
+                <el-radio :label="1">不限流</el-radio>
+                <el-radio :label="0">限流</el-radio>
               </el-radio-group>
             </div>
           </div>
@@ -96,14 +103,16 @@
                 <span class="required-icon">*</span>
                 <span>调度类型</span>
               </div>
-              <span class="text">周期执行</span>
+              <span class="text">
+                {{ scheduleTypeMapping[buildDetailInfo.scheduleType] }}
+              </span>
             </div>
             <div class="content-item">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
               </div>
-              <span class="text">5天02小时07分19秒</span>
+              <span class="text">{{ buildDetailInfo.syncCycle }}</span>
             </div>
           </div>
         </div>
@@ -114,33 +123,92 @@
 
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
+import Figure from '@/views/icredit/components/figure'
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-detail'
+import API from '@/api/icredit'
+import { deepClone } from '@/utils/util'
+import {
+  taskStatusMapping,
+  createModeMapping,
+  scheduleTypeMapping
+} from './contant'
 
 export default {
-  components: { BaseDialog },
+  components: { BaseDialog, Figure },
   data() {
+    this.scheduleTypeMapping = scheduleTypeMapping
     return {
+      row: {},
+      detailLoading: false,
+      activeName: 'DefineDetial',
+
+      // 表格
       tableConfiguration,
-      radio: 3,
       tableLoading: false,
       tableData: [],
-      activeName: 'task',
+
+      // 详情
+      datasourceDetailInfo: {},
+      buildDetailInfo: {},
       taskDetailInfo: [
-        { label: '任务名', content: '222' },
-        { label: '任务启用', content: '2' },
-        { label: '创建方式', content: 'dwd' },
-        { label: '任务描述', content: 'dddsw' }
+        { key: 'taskName', label: '任务名', value: '' },
+        { key: 'enable', label: '任务启用', value: '' },
+        { key: 'buildMode', label: '创建方式', value: '' },
+        { key: 'taskDescription', label: '任务描述', value: '' }
       ]
     }
   },
 
   methods: {
-    open() {
+    open({ row, opType }) {
+      console.log(opType, 'King')
+      this.row = row
       this.$refs.baseDialog.open()
+      this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
     },
 
-    handleClick(tab, event) {
-      console.log(tab, event)
+    handleTabClick() {
+      this.getDetailData(`dataSync${this.activeName}`, {
+        taskId: this.row.taskId
+      })
+    },
+
+    // 接口-详情数据返回值处理
+    handleFilterData(data) {
+      if (this.activeName === 'DefineDetial') {
+        this.taskDetailInfo = deepClone(this.taskDetailInfo).map(
+          ({ key, label }) => {
+            let value = ''
+            if (key === 'buildMode') {
+              value = createModeMapping[data[key]]
+            } else if (key === 'enable') {
+              value = taskStatusMapping[data[key]].label
+            } else {
+              value = data[key]
+            }
+            return { key, label, value }
+          }
+        )
+      } else if (this.activeName === 'DispatchDetial') {
+        this.buildDetailInfo = data
+      } else {
+        this.datasourceDetailInfo = data
+      }
+    },
+
+    // 接口-获取详情
+    getDetailData(methodName, params) {
+      this.detailLoading = true
+      API[methodName](params)
+        .then(({ success, data }) => {
+          if (success && data) {
+            console.log(data, 'data')
+            this.handleFilterData(data)
+          }
+        })
+        .finally(() => {
+          this.detailLoading = false
+        })
     }
   }
 }
@@ -204,16 +272,34 @@ export default {
         }
       }
 
-      .icon {
-        display: inline-block;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        border: 1px solid #1890ff;
+      .row {
+        width: 100%;
+        margin: 10px 0;
+        height: 26px;
+        @include flex;
+        .col {
+          @include flex(row, flex-start);
+          height: 26px;
+          line-height: 26px;
+        }
+
+        .pop-wrap {
+          @include flex;
+          padding-top: 7px;
+        }
       }
 
-      .icon-solid {
-        background-color: #1890ff;
+      .svg-wrap {
+        display: inline-flex;
+        align-items: center;
+        line-height: 20px;
+      }
+
+      .icon {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
       }
     }
   }

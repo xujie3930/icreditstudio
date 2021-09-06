@@ -66,7 +66,6 @@ export default {
     handleEditClick(methodName, params, opType, dialogName) {
       this.detailLoading = true
       this[`btn${opType}Loading`] = true
-      console.log(this.$refs[dialogName], 'vvv')
       if (dialogName) {
         this.$refs[dialogName].detailLoading = true
         this.$refs[dialogName].$refs.baseDialog.open()
