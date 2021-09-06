@@ -1,17 +1,12 @@
 spring:
   profiles:
-    active: dev
+    active: local
   servlet:
     multipart:
       max-file-size: 30MB
       max-request-size: 50MB
   application:
     name: datasource
-  datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/datasource?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
-    driver-class-name: com.mysql.jdbc.Driver
   http:
     encoding:
       charset: UTF-8

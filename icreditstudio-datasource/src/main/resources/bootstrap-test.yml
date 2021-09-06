@@ -2,9 +2,9 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.23:8848
+        server-addr: 192.168.0.30:8848
       config:
-        server-addr: 192.168.0.23:8848
+        server-addr: 192.168.0.30:8848
         file-extension: yml
   datasource:
     url: "jdbc:mysql://192.168.0.17:3306/datasource?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"

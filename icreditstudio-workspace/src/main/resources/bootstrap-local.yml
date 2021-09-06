@@ -1,14 +1,30 @@
 spring:
-  profiles:
-    active: local
-  servlet:
-    multipart:
-      max-file-size: 30MB
-      max-request-size: 50MB
+  cloud:
+    nacos:
+      discovery:
+        server-addr: worker:8848
+        namespace: dd8ede24-19c7-4547-8956-a566f800a823
   application:
-    name: uaa
+    name: workspace
   datasource:
+    url: "jdbc:mysql://worker:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'root'
+    password: 'root'
     driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: worker
+    port: 6379
+    timeout: 20000
+    #    cluster:
+    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
+    #      maxRedirects: 6
+    lettuce:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+#    password: 123456
   http:
     encoding:
       charset: UTF-8
@@ -31,12 +47,12 @@ spring:
       - classpath:db/migration
 
 server:
-  port: 8084
+  port: 8085
 system:
   errorCode: 500
 mybatis:
-  mapper-locations: classpath*:com/jinninghui/**/mapper/mysql/*.xml
-  type-handlers-package: com.jinninghui
+  mapper-locations: classpath*:com/hashtech/**/mapper/mysql/*.xml
+  type-handlers-package: com.hashtech
   configuration:
     #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     log-prefix: mapper.
