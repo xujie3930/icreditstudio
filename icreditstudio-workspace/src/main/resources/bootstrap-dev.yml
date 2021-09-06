@@ -2,17 +2,17 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.23:8848
+        server-addr: 192.168.0.30:8848
         namespace: dd8ede24-19c7-4547-8956-a566f800a823
   application:
     name: workspace
   datasource:
-    url: "jdbc:mysql://192.168.0.23:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
+    url: "jdbc:mysql://192.168.0.17:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'icdstu'
+    password: 'icdstu@0902'
     driver-class-name: com.mysql.jdbc.Driver
   redis:
-    host: 192.168.0.23
+    host: 192.168.0.201
     port: 6379
     timeout: 20000
     #    cluster:
@@ -24,7 +24,7 @@ spring:
         min-idle: 0
         max-idle: 8
         max-wait: -1
-    password: 123456
+#    password: 123456
   http:
     encoding:
       charset: UTF-8

@@ -11,7 +11,7 @@ spring:
     username: 'root'
     password: 'root'
   redis:
-    host: 192.168.0.30
+    host: 192.168.0.196
     port: 6379
     timeout: 20000
     #    cluster:
@@ -23,7 +23,7 @@ spring:
         min-idle: 0
         max-idle: 8
         max-wait: -1
-    password: hash2018
+#    password: hash2018
 
 # swagger 登录认证
 knife4j:

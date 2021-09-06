@@ -165,7 +165,7 @@ public class DataSyncController {
      */
     @PostMapping("/stop")
     public BusinessResult<Boolean> stop(@RequestBody DataSyncExecRequest request) {
-        return null;
+        return BusinessResult.success(true);
     }
 
     /**
@@ -175,7 +175,7 @@ public class DataSyncController {
      */
     @PostMapping("/remove")
     public BusinessResult<Boolean> remove(@RequestBody DataSyncExecRequest request) {
-        return null;
+        return BusinessResult.success(true);
     }
 
     /**
@@ -185,6 +185,16 @@ public class DataSyncController {
      */
     @PostMapping("/enable")
     public BusinessResult<Boolean> enable(@RequestBody DataSyncExecRequest request) {
-        return null;
+        return BusinessResult.success(true);
+    }
+
+    @PostMapping("/run")
+    public BusinessResult<Boolean> run(@RequestBody DataSyncExecRequest request) {
+        return BusinessResult.success(true);
+    }
+
+    @PostMapping("/cease")
+    public BusinessResult<Boolean> cease(@RequestBody DataSyncExecRequest request) {
+        return BusinessResult.success(true);
     }
 }

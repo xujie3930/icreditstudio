@@ -2,13 +2,12 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.23
+        server-addr: 192.168.0.30:8848
         namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
     gateway:
       routes: # 路由可以有多个
         - id: workspace # 我们⾃定义的路由 ID，保持唯⼀
           #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
-
           uri: lb://workspace # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           predicates:
             - Path=/workspace/**
@@ -18,21 +17,24 @@ spring:
           predicates:
             - Path=/system/**
         - id: datasource # 我们⾃定义的路由 ID，保持唯⼀
-            #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
-
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           uri: lb://datasource # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           predicates:
             - Path=/datasource/**
         - id: datasync # 我们⾃定义的路由 ID，保持唯⼀
-            #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
-
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           uri: lb://datasync # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           predicates:
             - Path=/datasync/**
+        - id: metadata # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://metadata # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/metadata/**
   application:
     name: api-gateway
   redis:
-    host: 192.168.0.23
+    host: 192.168.0.201
     port: 6379
     timeout: 20000
     lettuce:
@@ -41,7 +43,7 @@ spring:
         min-idle: 0
         max-idle: 8
         max-wait: -1
-    password: 123456
+#    password: 123456
   http:
     encoding:
       charset: UTF-8
@@ -72,8 +74,8 @@ hystrix:
           thread:
             timeoutInMilliseconds: 260000 # hystrix时间配置必须大于ribbon超时时间，否则重试机制没有意思
 ribbon:
-  ReadTimeout : 50000
-  SocketTimeout : 50000
+  ReadTimeout: 50000
+  SocketTimeout: 50000
   ConnectTimeout: 50000
 logging:
   #  file: ../logs/api-gateway/api-gateway.log
