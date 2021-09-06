@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="12px" viewBox="0 0 11 12" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59.1 (86144) - https://sketch.com -->
+    <title>txt</title>
+    <desc>Created with Sketch.</desc>
+    <g id="UI" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="新建同步任务2-2" transform="translate(-151.000000, -587.000000)" fill-rule="nonzero">
+            <g id="txt" transform="translate(151.000000, 587.000000)">
+                <path d="M1.5,0 L6.7518,0 L10.5,3.75 L10.5,10.5 C10.5,11.32845 9.82845,12 9,12 L1.5,12 C0.67155,12 0,11.32845 0,10.5 L0,1.5 C0,0.67155 0.67155,0 1.5,0 Z" id="路径" fill="#2696FF"></path>
+                <path d="M4.14555,6.4005 L3.43275,6.4005 L3.43275,8.3994 L2.9532,8.3994 L2.9532,6.4005 L2.25,6.4005 L2.25,6 L4.14555,6 L4.14555,6.4005 Z M5.25165,6.82725 L5.688,6 L6.2394,6 L5.5617,7.1898 L6.25695,8.3994 L5.6991,8.3994 L5.25165,7.55895 L4.80405,8.3994 L4.2462,8.3994 L4.9416,7.1898 L4.2639,6 L4.8153,6 L5.25165,6.82725 L5.25165,6.82725 Z M8.25,6.4005 L7.5372,6.4005 L7.5372,8.3994 L7.0575,8.3994 L7.0575,6.4005 L6.3543,6.4005 L6.3543,6 L8.25,6 L8.25,6.4005 Z" id="形状" fill="#FFFFFF" opacity="0.9"></path>
+                <path d="M6.75,0 L10.5,3.75 L8.25,3.75 C7.42155,3.75 6.75,3.07845 6.75,2.25 L6.75,0 Z" id="路径" fill="#8FC6FE"></path>
+            </g>
+        </g>
+    </g>
+</svg>

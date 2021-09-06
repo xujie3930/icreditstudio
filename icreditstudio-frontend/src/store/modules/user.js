@@ -9,7 +9,8 @@ import {
   SET_SYSTEM_SETTING,
   SET_USER_SHORTMENU,
   SET_WRKSPACE_LIST,
-  SET_WRKSPACE_ID
+  SET_WRKSPACE_ID,
+  SET_WRKSPACE_AUTH
 } from '@/store/mutation-types'
 import { arrayToTree } from 'utils/util'
 import { login, logout } from '@/api/login'
@@ -27,7 +28,8 @@ const states = () => ({
   messageNoticeInfo: {},
   shortMenus: [], // 快捷菜单列表
   workspaceList: [], // 工作空间下拉框
-  workspaceId: null // 当前选中工作空间ID
+  workspaceId: null, // 当前选中工作空间ID
+  workspaceCreateAuth: false // 当前登录账号是为root账号
 })
 
 const getters = {
@@ -37,7 +39,8 @@ const getters = {
   messageNoticeInfo: state => state.messageNoticeInfo,
   systemSetting: state => state.systemSetting,
   shortMenus: state => state.shortMenus,
-  workspaceList: state => state.workspaceList
+  workspaceList: state => state.workspaceList,
+  workspaceCreateAuth: state => state.workspaceCreateAuth
 }
 
 const mutations = {
@@ -67,6 +70,9 @@ const mutations = {
   },
   [SET_WRKSPACE_ID](state, id) {
     state.workspaceId = id
+  },
+  [SET_WRKSPACE_AUTH](state, createAuth) {
+    state.workspaceCreateAuth = createAuth
   }
 }
 
@@ -105,10 +111,12 @@ const actions = {
             authList,
             setting,
             shortMenus,
-            workspaceList
+            workspaceList,
+            workspaceCreateAuth
           } = data
           const _menusTree = arrayToTree(menus || [], '0')
           if (_menusTree && _menusTree.length > 0) {
+            commit(SET_WRKSPACE_AUTH, workspaceCreateAuth)
             commit(SET_WRKSPACE_LIST, workspaceList)
             commit(SET_USERINFO, userInfo || {})
             commit(SET_AUTH, authList)

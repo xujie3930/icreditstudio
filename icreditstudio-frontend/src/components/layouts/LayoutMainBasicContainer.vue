@@ -14,7 +14,8 @@
               type="primary"
               v-if="menuAuth.includes('add')"
               @click="$emit('handleAdd')"
-            >新增</el-button>
+              >新增</el-button
+            >
             <el-upload
               v-if="menuAuth.includes('import')"
               style="display: inline-block"
@@ -25,26 +26,28 @@
               :limit="1"
               action=""
               accept=".xlsx,.xls"
-              :show-file-list="false">
+              :show-file-list="false"
+            >
               <el-button style="margin:0 10px;" type="primary">导入</el-button>
             </el-upload>
             <el-button
               v-if="menuAuth.includes('export')"
               type="primary"
               @click="$emit('handleExport')"
-            >导出</el-button>
+              >导出</el-button
+            >
             <el-button
-              v-for="(item,index) in authcustomBtnConfig"
+              v-for="(item, index) in authcustomBtnConfig"
               :key="index"
-              :type="item.type||'primary'"
+              :type="item.type || 'primary'"
               v-on:[item.options.eventType].native="handleCustomMenuEvent(item)"
-            >{{item.label}}</el-button>
+              >{{ item.label }}</el-button
+            >
           </div>
           <div v-if="showCreate">
-            <el-button
-              type="primary"
-              @click="$emit('handleCreate')"
-            >生成代码</el-button>
+            <el-button type="primary" @click="$emit('handleCreate')"
+              >生成代码</el-button
+            >
           </div>
         </slot>
       </div>
@@ -75,13 +78,19 @@ export default {
   },
   computed: {
     authcustomBtnConfig() {
-      return this.customBtnConfig.filter(e => this.menuAuth.includes(e.key))
+      const btnArr = this.customBtnConfig.filter(({ key, isHide }) => {
+        return isHide
+          ? !isHide && this.menuAuth.includes(key)
+          : this.menuAuth.includes(key)
+      })
+      return btnArr
     }
   },
   data() {
     return {
       headers: {
-        'Content-Type': 'multipart/form-data', dataType: 'file'
+        'Content-Type': 'multipart/form-data',
+        dataType: 'file'
       },
       menuAuth: []
     }
@@ -92,14 +101,14 @@ export default {
   methods: {
     // 上传前对文件的大小的判断
     beforeAvatarUpload(file) {
-      const extension = file.name.split('.')[1] === 'xls';
-      const extension2 = file.name.split('.')[1] === 'xlsx';
-      const isLt2M = file.size / 1024 / 1024 < 10;
+      const extension = file.name.split('.')[1] === 'xls'
+      const extension2 = file.name.split('.')[1] === 'xlsx'
+      const isLt2M = file.size / 1024 / 1024 < 10
       if (!extension && !extension2) {
         this.$message({
           message: '上传模板只能是 xls、xlsx格式!',
           type: 'error'
-        });
+        })
         return false
       }
       if (!isLt2M) {
@@ -118,21 +127,21 @@ export default {
 }
 </script>
 <style scoped lang="scss">
-.iframe-layout-basic-container{
+.iframe-layout-basic-container {
   height: 100%;
   padding: 0 16px 16px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
-.iframe-layout-basic-header{
+.iframe-layout-basic-header {
   padding: 24px 0 0;
   border-bottom: 1px dashed $--border-color-base;
 }
 
-.iframe-layout-basic-main-top{
+.iframe-layout-basic-main-top {
   padding: 19px 0 16px;
 
-  span{
+  span {
     color: $--color-text-primary;
     font-size: 16px;
     font-weight: bolder;

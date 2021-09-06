@@ -1,4 +1,5 @@
 export default _this => {
+  console.log(_this.workspaceCreateAuth, 'workspaceCreateAuth')
   return {
     refName: 'workspace-setting',
     id: 'setting',
@@ -9,6 +10,7 @@ export default _this => {
         label: '新增工作空间',
         type: 'primary',
         key: 'addWorkspace',
+        isHide: !_this.workspaceCreateAuth,
         options: {
           eventType: 'click',
           eventName: 'handleAddWorkspace'

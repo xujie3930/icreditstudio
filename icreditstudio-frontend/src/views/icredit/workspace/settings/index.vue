@@ -58,7 +58,11 @@
             </div>
 
             <div v-else>
-              <el-button type="text" @click="handleOperateClick(row, 'Delete')">
+              <el-button
+                v-if="workspaceCreateAuth"
+                type="text"
+                @click="handleOperateClick(row, 'Delete')"
+              >
                 删除
               </el-button>
               <el-button
@@ -67,7 +71,11 @@
               >
                 启用
               </el-button>
-              <el-button type="text" @click="handleOperateClick(row, 'Edit')">
+              <el-button
+                v-if="workspaceCreateAuth"
+                type="text"
+                @click="handleOperateClick(row, 'Edit')"
+              >
                 编辑
               </el-button>
             </div>
@@ -95,7 +103,6 @@ export default {
   data() {
     return {
       formOption,
-      tableConfiguration: tableConfiguration(this),
       mixinSearchFormConfig: {
         models: { name: '', createUser: '', createTime: '' }
       },
@@ -104,7 +111,10 @@ export default {
   },
 
   computed: {
-    ...mapGetters('user', ['userInfo'])
+    ...mapGetters('user', ['userInfo', 'workspaceCreateAuth']),
+    tableConfiguration() {
+      return tableConfiguration(this)
+    }
   },
 
   created() {

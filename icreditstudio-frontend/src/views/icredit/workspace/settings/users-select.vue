@@ -108,13 +108,13 @@ export default {
   },
 
   methods: {
-    open(roleId) {
+    open(opType, rightData) {
       this.userSetDialogFlag = true
-      // this.transferTableLoading = true
-      // this.userSetModels.transfer.tableLoading = true
-      console.log(roleId, 'ooo')
-
       this.fetchAllOrgs()
+      if (opType === 'edit') {
+        this.userSetModels.transfer.rightData = rightData
+        this.$nextTick(() => this.$refs.userTransfer.init())
+      }
 
       // // 获取当前角色的已配置用户数据
       // getUserInfoByRoleId({ roleId })
@@ -168,7 +168,7 @@ export default {
       const { checkedKeys } = selectObj
       if (!checkedKeys.length) {
         const {
-          authSetModels: {
+          userSetModels: {
             transfer: { leftData }
           }
         } = this

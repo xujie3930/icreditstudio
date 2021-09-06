@@ -57,32 +57,48 @@
 
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
-            <div v-if="!row.status">
-              <el-button type="text" @click="handleOperateClick(row, 'View')">
-                查看
-              </el-button>
-              <el-button
-                type="text"
-                @click="handleOperateClick(row, 'Disabled')"
-              >
-                停用
-              </el-button>
-            </div>
+            <el-button type="text" @click="handleOperateClick(row, 'View')">
+              查看
+            </el-button>
+            <el-button
+              v-if="row.taskStatus === 0"
+              type="text"
+              @click="handleOperateClick(row, 'Disabled')"
+            >
+              停用
+            </el-button>
 
-            <div v-else>
-              <el-button type="text" @click="handleOperateClick(row, 'Delete')">
-                删除
-              </el-button>
-              <el-button
-                type="text"
-                @click="handleOperateClick(row, 'Enabled')"
-              >
-                启用
-              </el-button>
-              <el-button type="text" @click="handleOperateClick(row, 'Edit')">
-                编辑
-              </el-button>
-            </div>
+            <el-button
+              v-if="[1, 2].include(row.taskStatus)"
+              type="text"
+              @click="handleOperateClick(row, 'Delete')"
+            >
+              删除
+            </el-button>
+            <el-button type="text" @click="handleOperateClick(row, 'Enabled')">
+              启用
+            </el-button>
+            <el-button
+              v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)"
+              type="text"
+              @click="handleOperateClick(row, 'Enabled')"
+            >
+              立即执行
+            </el-button>
+            <el-button
+              v-if="row.taskStatus === 0 && row.execStatus === 2"
+              type="text"
+              @click="handleOperateClick(row, 'Enabled')"
+            >
+              停止执行
+            </el-button>
+            <el-button
+              type="text"
+              v-if="row.taskStatus !== 0"
+              @click="handleOperateClick(row, 'Edit')"
+            >
+              编辑
+            </el-button>
           </template>
         </j-table>
       </template>

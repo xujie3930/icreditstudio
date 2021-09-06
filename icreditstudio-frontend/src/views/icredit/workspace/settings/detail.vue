@@ -215,8 +215,29 @@ export default {
     },
 
     handleUserSelect() {
+      // id存在说明是编辑情况
+      if (this.id) {
+        const rightData = this.detailForm.memberList.map(item => {
+          const {
+            userId: id,
+            username: userName,
+            userRole: roleName,
+            // orgName: orgNames,
+            ...rest
+          } = item
+          return {
+            id,
+            userName,
+            roleName,
+            // orgNames,
+            ...rest
+          }
+        })
+        this.$refs.usersSelect.open('edit', rightData)
+        return
+      }
       this.detailForm.director
-        ? this.$refs.usersSelect.open(this.detailForm.director)
+        ? this.$refs.usersSelect.open('add')
         : this.$refs.detailForm.validateField('director')
     },
 
@@ -229,6 +250,7 @@ export default {
             id: userId,
             userName: username,
             roleName: userRole,
+            // orgNames: orgName,
             functionalAuthority,
             dataAuthority
           } = item
@@ -236,6 +258,7 @@ export default {
             userId,
             username,
             userRole,
+            // orgName,
             functionalAuthority,
             dataAuthority,
             createTime: new Date().getTime()

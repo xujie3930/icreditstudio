@@ -97,7 +97,7 @@ export default {
       addTaskForm: {
         taskName: '',
         enable: 0,
-        createMode: '',
+        createMode: 0,
         taskDescribe: ''
       },
       addTaskFormRules: {
@@ -163,7 +163,10 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           console.log(name, valid)
-          this.$router.push('/data-manage/add-build')
+          this.$router.push({
+            path: '/data-manage/add-build',
+            query: { createMode: this.addTaskForm.createMode }
+          })
         }
       })
     },
@@ -214,6 +217,7 @@ export default {
     color: #262626;
     border-radius: 4px;
     border-top: 1px solid #e9e9e9;
+    z-index: 9;
 
     .btn {
       width: 150px;

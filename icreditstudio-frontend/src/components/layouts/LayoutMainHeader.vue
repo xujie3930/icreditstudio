@@ -10,7 +10,7 @@
 
     <div class="header-text">
       <j-svg name="logo" class="logo" />
-      <span class="system-name">iCredit数据开发与管理平台</span>
+      <span class="system-name">ICredit可信数据中台</span>
       <span class="split">|</span>
       <span class="menu">{{ workspace }}</span>
     </div>

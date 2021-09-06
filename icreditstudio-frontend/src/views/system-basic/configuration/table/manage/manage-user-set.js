@@ -19,8 +19,8 @@ export default {
       type: 'text',
       label: '部门',
       prop: 'orgNames',
-      formatter(row) {
-        return row.orgNames.join(';');
+      formatter({ orgNames = [] }) {
+        return orgNames.join(';')
       }
     }
   ]
