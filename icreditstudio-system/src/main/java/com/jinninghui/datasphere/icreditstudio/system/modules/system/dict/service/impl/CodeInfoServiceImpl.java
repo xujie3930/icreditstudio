@@ -3,22 +3,20 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servi
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jinninghui.datasphere.icreditstudio.system.common.enums.DeleteFlagEnum;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.entity.CodeInfoEntity;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.mapper.CodeInfoMapper;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.CodeInfoService;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityDelParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityPageParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntitySaveParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityStatusParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
+import com.jinninghui.datasphere.icreditstudio.system.common.enums.DeleteFlagEnum;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.entity.CodeInfoEntity;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.mapper.CodeInfoMapper;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.CodeInfoService;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.AssociatedDictInfo;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service("geCodeInfoService")
@@ -114,4 +114,33 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
         return codeInfoMapper.getInfoByKey(key);
     }
 
+    @Override
+    public BusinessResult<List<AssociatedDictInfo>> associatedDict(CodeInfoAssociatedDictParam param) {
+        CodeInfoQueryConditionParam build = CodeInfoQueryConditionParam.builder()
+                .codeType(param.getKey())
+                .groupBy(true)
+                .groupByField(CodeInfoEntity.CODE_TYPE)
+                .build();
+        List<CodeInfoEntity> list = list(queryWrapper(build));
+        List<AssociatedDictInfo> collect = list.stream()
+                .filter(Objects::nonNull)
+                .map(entity -> {
+                    AssociatedDictInfo info = new AssociatedDictInfo();
+                    info.setName(entity.getCodeName());
+                    info.setKey(entity.getCodeType());
+                    return info;
+                }).collect(Collectors.toList());
+        return BusinessResult.success(collect);
+    }
+
+    private QueryWrapper<CodeInfoEntity> queryWrapper(CodeInfoQueryConditionParam param) {
+        QueryWrapper<CodeInfoEntity> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(param.getCodeType())) {
+            wrapper.like(CodeInfoEntity.CODE_TYPE, param.getCodeType());
+        }
+        if (param.isGroupBy()) {
+            wrapper.groupBy(param.getGroupByField());
+        }
+        return wrapper;
+    }
 }
