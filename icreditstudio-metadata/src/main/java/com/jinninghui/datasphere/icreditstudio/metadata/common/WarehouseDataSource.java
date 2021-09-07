@@ -19,10 +19,6 @@ public class WarehouseDataSource {
     private Statement stmt;
     private ResultSet rs;
 
-    public WarehouseDataSource() {
-        init();
-    }
-
     public void init() {
         try {
             Class.forName(dataSourceInfo.getDriverClass());
@@ -31,5 +27,10 @@ public class WarehouseDataSource {
         } catch (Exception e) {
             log.error("目标源初始化连接失败", e);
         }
+    }
+
+    public Statement getStmt() {
+        init();
+        return stmt;
     }
 }
