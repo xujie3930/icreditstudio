@@ -41,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.ResultSetMetaData;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -202,6 +203,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             log.error("识别宽表失败", e);
             throw new AppException("识别宽表失败");
         }
+        wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> e.getName()).collect(Collectors.toList()));
         return BusinessResult.success(wideTable);
     }
 
