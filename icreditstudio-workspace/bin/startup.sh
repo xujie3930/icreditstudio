@@ -4,7 +4,7 @@ cd ..
 HOME=`pwd`
 
 export ICREDIT_STUDIO_LOG_PATH=$HOME/logs
-export SERVER_CLASS=com.jinninghui.datasphere.icreaditstudio.workspace.WorkspaceApplication
+export SERVER_CLASS=com.jinninghui.datasphere.icreditstudio.workspace.WorkspaceApplication
 export PROFILE=$1
 
 if test -z "$SERVER_HEAP_SIZE"
