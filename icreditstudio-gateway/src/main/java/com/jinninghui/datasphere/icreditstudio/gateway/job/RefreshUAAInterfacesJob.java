@@ -20,7 +20,7 @@ public class RefreshUAAInterfacesJob {
 	private HFPSServiceMgrService hfpsServerMgrService;
 	Logger log = LoggerFactory.getLogger(RefreshUAAInterfacesJob.class);
 
-	@Scheduled(cron = "0/10 * * * * ?")
+	@Scheduled(cron = "0/60 * * * * ?")
 	public void execute() {
 		try
 		{

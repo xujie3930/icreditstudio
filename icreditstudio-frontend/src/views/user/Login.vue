@@ -4,7 +4,7 @@
     <div class="login-text-box">
       <div class="system">
         <img class="logo" src="@/assets/svg/login/logo.svg" />
-        <h3 class="system-name">iCredit数据开发与管理平台</h3>
+        <h3 class="system-name">iCredit可信数据中台</h3>
       </div>
       <img class="icon" src="@/assets/svg/login/icon.svg" />
     </div>

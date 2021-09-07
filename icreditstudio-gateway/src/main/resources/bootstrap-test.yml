@@ -75,10 +75,5 @@ ribbon:
   ReadTimeout : 50000
   SocketTimeout : 50000
   ConnectTimeout: 50000
-logging:
-  #  file: ../logs/api-gateway/api-gateway.log
-  #  level:
-  #    root: info
-  config: classpath:logback/logback-dev.xml
 server:
   port: 13249

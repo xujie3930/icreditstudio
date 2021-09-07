@@ -1,0 +1,123 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.parent.basedir}</directory>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/bin/
+            </directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/db/
+            </directory>
+            <outputDirectory>db</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-datasource/target/jnh-datasphere-icreditstudio-datasource-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-datasource</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-datasync/target/jnh-datasphere-icreditstudio-datasync-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-datasync</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-gateway/target/jnh-datasphere-icreditstudio-gateway-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-gateway</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-metadata/target/jnh-datasphere-icreditstudio-metadata-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-metadata</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-system/target/jnh-datasphere-icreditstudio-system-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-system</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-workspace/target/jnh-datasphere-icreditstudio-workspace-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-workspace</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/icreditstudio-datadev/target/jnh-datasphere-icreditstudio-datadev-${project.version}-dist
+            </directory>
+            <outputDirectory>servers/icreditstudio-datadev</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <unpack>false</unpack>
+            <useStrictFiltering>true</useStrictFiltering>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

@@ -154,8 +154,8 @@
                 <path d="M902.052456,791 L922,791 C922,768.96306 904.140747,751 882,751 L882,770.947544 C893.069821,771.052456 902.052456,780.033986 902.052456,791 Z" id="路径" fill="#85B3FF" fill-rule="nonzero" opacity="0.2"></path>
                 <path d="M515.052764,722 C513.911642,755.111923 531.32773,787.600439 562.635693,804 L604,725.114841 L515.052764,722 Z" id="路径备份-4" stroke="#ADC6FF" stroke-width="1.2294386"></path>
                 <path d="M552.052456,730 L572,730 C572,707.96306 554.140747,690 532,690 L532,709.947544 C543.069821,710.052456 552.052456,719.033986 552.052456,730 Z" id="路径备份-3" fill="#85B3FF" fill-rule="nonzero"></path>
-                <text id="iCredit数据开发与管理平台" font-family="PingFangSC-Medium, PingFang SC" font-size="26" font-weight="400" fill="#000000">
-                    <tspan x="130" y="183">iCredit数据开发与管理平台</tspan>
+                <text id="iCredit可信数据中台" font-family="PingFangSC-Medium, PingFang SC" font-size="26" font-weight="400" fill="#000000">
+                    <tspan x="130" y="183">iCredit可信数据中台</tspan>
                 </text>
                 <path d="M1326,53 L1326,111 L1384,111 C1384,78.9170096 1358.02564,53 1326,53 Z" id="路径备份-2" stroke="#2F54EB" stroke-width="1.2294386" opacity="0.142415365"></path>
                 <polygon id="路径备份" fill="#85B3FF" fill-rule="nonzero" opacity="0.08" points="1404 37 1359 37 1359 82 1404 82"></polygon>

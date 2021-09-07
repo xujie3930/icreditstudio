@@ -1,8 +1,10 @@
 spring:
   profiles:
-    active: local            # 指定gitlab仓库的分支
+    active: dev            # 指定gitlab仓库的分支
   cloud:
     refresh:
       refreshable: none
   application:
     name: metadata
+logging:
+  config: classpath:log4j2.xml
