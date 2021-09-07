@@ -3,13 +3,11 @@ package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.ConnectionInfoParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.DataSyncQueryDatasourceCatalogueParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceSaveParam;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -115,6 +113,13 @@ public class IcreditDatasourceController {
     @Logable
     public BusinessResult<String> sync(@PathVariable("id") String id) {
         return datasourceService.syncById(id);
+    }
+
+    @PostMapping("/datasourceSearch")
+    public BusinessResult<List<DataSourceBaseInfo>> datasourceSearch(@RequestBody DataSyncQueryDataSourceSearchRequest request) {
+        DataSyncQueryDataSourceSearchParam param = new DataSyncQueryDataSourceSearchParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.datasourceSearch(param);
     }
 
     /**

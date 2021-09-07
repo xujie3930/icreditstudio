@@ -3,13 +3,6 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.0.30:8848
-      config:
-        server-addr: 192.168.0.30:8848
-        file-extension: yml
-  datasource:
-    url: "jdbc:mysql://192.168.0.17:3306/metadata?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'icdstu'
-    password: 'icdstu@0902'
   redis:
     host: 192.168.0.196
     port: 6379
