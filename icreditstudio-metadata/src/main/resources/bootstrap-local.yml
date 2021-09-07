@@ -1,0 +1,44 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.23:8848
+        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
+  datasource:
+    url: "jdbc:mysql://worker:3306/metastore?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: 'root'
+    password: 'root'
+  redis:
+    host: 192.168.0.23
+    port: 6379
+    timeout: 20000
+    #    cluster:
+    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
+    #      maxRedirects: 6
+    lettuce:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait: -1
+    password: 123456
+
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+
+#数仓hive连接地址
+warehouse:
+  hive:
+    address:
+      - driverClass: org.apache.hive.jdbc.HiveDriver
+        username: hadoop
+        password: hadoop
+        url: jdbc:hive2://192.168.0.23:10000/default

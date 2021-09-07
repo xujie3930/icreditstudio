@@ -35,5 +35,4 @@
         create_by,update_time,update_by,
         del_flag
     </sql>
-    <select id=""
 </mapper>

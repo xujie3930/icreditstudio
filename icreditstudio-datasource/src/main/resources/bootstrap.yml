@@ -7,11 +7,6 @@ spring:
       max-request-size: 50MB
   application:
     name: datasource
-  datasource:
-    url: "jdbc:mysql://127.0.0.1:3306/datasource?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
-    driver-class-name: com.mysql.jdbc.Driver
   http:
     encoding:
       charset: UTF-8
@@ -79,3 +74,5 @@ ribbon: # uaa调用os服务，进行超时设置，否则调试时报错，时�
   ReadTimeout: 500000
   SocketTimeout: 50000
   ConnectTimeout: 500000
+logging:
+  config: classpath:log4j2.xml

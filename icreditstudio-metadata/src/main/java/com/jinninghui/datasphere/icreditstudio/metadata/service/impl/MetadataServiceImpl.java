@@ -1,11 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.DataSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseAddressProperties;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseDataSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -30,25 +33,31 @@ public class MetadataServiceImpl implements MetadataService {
 
     @Override
     public List<Database> getDatabases() {
+        List<Database> results;
         List<WarehouseDataSource> warehouseDataSources = getWarehouseDataSources();
-        List<List<String>> collect = warehouseDataSources.parallelStream()
+        results = warehouseDataSources.parallelStream()
                 .filter(Objects::nonNull)
                 .map(dataSource -> {
-                    List<String> databases = Lists.newArrayList();
+                    List<Database> databases = Lists.newArrayList();
+                    String address = dataSource.getDataSourceInfo().getAddress();
+
                     Statement stmt = dataSource.getStmt();
                     String sql = "show databases";
                     try {
                         ResultSet resultSet = stmt.executeQuery(sql);
                         while (resultSet.next()) {
+                            Database db = new Database();
                             String database = resultSet.getString(1);
-                            databases.add(database);
+                            db.setDatabaseName(database);
+                            db.setHost(address);
+                            databases.add(db);
                         }
                     } catch (SQLException throwables) {
                         throwables.printStackTrace();
                     }
                     return databases;
-                }).collect(Collectors.toList());
-        return null;
+                }).flatMap(databases -> databases.stream()).collect(Collectors.toList());
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
     }
 
     private Optional<WarehouseDataSource> getWarehouseDataSource(String address) {
@@ -74,5 +83,19 @@ public class MetadataServiceImpl implements MetadataService {
                     return dataSource;
                 }).collect(Collectors.toList());
         return Optional.ofNullable(results).orElse(Lists.newArrayList());
+    }
+
+    @Override
+    public BusinessResult<List<TargetSourceInfo>> targetSources(MetadataQueryTargetSourceParam param) {
+        List<Database> databases = getDatabases();
+        List<TargetSourceInfo> results = databases.parallelStream()
+                .filter(Objects::nonNull)
+                .map(database -> {
+                    TargetSourceInfo info = new TargetSourceInfo();
+                    info.setName(database.getDatabaseName());
+                    info.setUrl(database.getHost());
+                    return info;
+                }).collect(Collectors.toList());
+        return BusinessResult.success(results);
     }
 }

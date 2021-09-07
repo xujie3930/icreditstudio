@@ -61,6 +61,16 @@
                 <artifactId>icreditstudio-servicecenter</artifactId>
                 <version>${icredit.studio.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.jinninghui.datasphere</groupId>
+                <artifactId>icreditstudio-result</artifactId>
+                <version>${icredit.studio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jinninghui.datasphere</groupId>
+                <artifactId>icreditstudio-system-code</artifactId>
+                <version>${icredit.studio.version}</version>
+            </dependency>
 
         </dependencies>
     </dependencyManagement>
@@ -89,7 +99,7 @@
 
     <modules>
         <module>icreditstudio-datasync</module>
-        <module>icreditstudio-frontend</module>
+<!--        <module>icreditstudio-frontend</module>-->
         <module>icreditstudio-scheduler</module>
         <module>icreditstudio-datadev</module>
         <module>icreditstudio-gateway</module>
@@ -99,5 +109,6 @@
         <module>icreditstudio-framework</module>
         <module>icreditstudio-datasource</module>
         <module>auto-generator</module>
+        <module>assembly-package</module>
     </modules>
 </project>

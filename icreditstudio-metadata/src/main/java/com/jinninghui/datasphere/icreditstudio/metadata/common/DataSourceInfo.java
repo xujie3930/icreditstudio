@@ -24,7 +24,7 @@ public class DataSourceInfo {
 
     public String getAddress() {
         if (StringUtils.isBlank(address) && StringUtils.isNotBlank(url)) {
-            String address = StrUtil.subBefore(StrUtil.subAfter(url, "//", false), "/", false);
+            address = StrUtil.subBefore(StrUtil.subAfter(url, "//", false), "/", false);
             if (StringUtils.isBlank(address)) {
                 throw new RuntimeException("url格式不正确");
             }

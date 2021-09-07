@@ -28,6 +28,7 @@ public class CodeInfoEntity extends BaseEntity implements Serializable {
 
     public static final String CODE_NAME = "CODE_NAME";
     public static final String CODE_SORT = "CODE_SORT";
+    public static final String CODE_TYPE = "CODE_TYPE";
     /**
      * 主键
      */

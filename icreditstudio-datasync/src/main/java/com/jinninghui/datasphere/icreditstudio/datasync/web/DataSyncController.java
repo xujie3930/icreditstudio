@@ -73,23 +73,6 @@ public class DataSyncController {
     }
 
     /**
-     * 目标源列表
-     *
-     * @return
-     */
-    @Logable
-    @PostMapping("/targetSources")
-    public BusinessResult<List<DataSource>> targetSources(@RequestBody DataSyncQueryTargetSourceRequest request) {
-        List<DataSource> results = Lists.newArrayList();
-        DataSource ds = new DataSource();
-        ds.setName("data");
-        ds.setUrl("jdbc://");
-        ds.setId("");
-        results.add(ds);
-        return BusinessResult.success(results);
-    }
-
-    /**
      * 关联字典
      *
      * @return

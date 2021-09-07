@@ -6,3 +6,5 @@ spring:
       refreshable: none
   application:
     name: metadata
+logging:
+  config: classpath:log4j2.xml

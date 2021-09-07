@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.utils;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractAssociatedFormatter;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractDialectTypeHandler;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AssociatedDialectKeyContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.FormatterDialectKeyContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
@@ -22,8 +22,8 @@ public final class AssociatedUtil {
     }
 
     public static String wideTableSql(AssociatedFormatterVo vo) {
-        AbstractAssociatedFormatter abstractAssociatedFormatter = FormatterDialectKeyContainer.getInstance().find(vo.getDialect());
-        return abstractAssociatedFormatter.completion(vo);
+        AbstractDialectTypeHandler abstractDialectTypeHandler = FormatterDialectKeyContainer.getInstance().find(vo.getDialect());
+        return abstractDialectTypeHandler.completion(vo);
     }
 
     public static ResultSetMetaData getResultSetMetaData(ConnectionInfo info, String sql) throws Exception {

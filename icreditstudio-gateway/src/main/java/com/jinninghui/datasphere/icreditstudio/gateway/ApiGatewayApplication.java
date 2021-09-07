@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.gateway;
 
-import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableFeignClients
 @RestController
 @RefreshScope
-@EnableEncryptableProperties
 @EnableScheduling
 @ComponentScan("com.jinninghui")
 @EnableDiscoveryClient

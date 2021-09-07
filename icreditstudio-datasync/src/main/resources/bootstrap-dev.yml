@@ -22,7 +22,8 @@ spring:
         max-idle: 8
         max-wait: -1
 #    password: 123456
-
+system:
+  errorCode: 500
 # swagger 登录认证
 knife4j:
   basic:
@@ -43,4 +44,4 @@ mybatis-plus:
       logic-delete-value: 1
       logic-not-delete-value: 0
       id-type: id_worker_str
-  mapper-locations: classpath*:com/jinninghui/**/mapper/*.xml
+  mapper-locations: classpath*:mapper/*.xml
