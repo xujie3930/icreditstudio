@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container;
 
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedCondition;
@@ -13,11 +14,11 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
- * @author peng
+ * @author Peng
  */
-public abstract class AbstractAssociatedFormatter implements Formatter<AssociatedFormatterVo>, DialectKeyRegister {
+public abstract class AbstractDialectTypeHandler implements AssociatedRegister, Formatter<AssociatedFormatterVo> {
 
-    public AbstractAssociatedFormatter() {
+    public AbstractDialectTypeHandler() {
         register();
     }
 
@@ -32,8 +33,15 @@ public abstract class AbstractAssociatedFormatter implements Formatter<Associate
 
     @Override
     public void register() {
-        FormatterDialectKeyContainer instance = FormatterDialectKeyContainer.getInstance();
-        instance.put(this.getDialect(), this);
+        //注册formatter
+        FormatterDialectKeyContainer FormatterInstance = FormatterDialectKeyContainer.getInstance();
+        FormatterInstance.put(this.getDialect(), this);
+        //注册关系
+        AssociatedDialectKeyContainer AssociatedInstance = AssociatedDialectKeyContainer.getInstance();
+        Associated associated = new Associated();
+        associated.setAssocTypes(this.getAssocTypes());
+        associated.setAssocConditions(this.getAssocConditions());
+        AssociatedInstance.put(this.getDialect(), associated);
     }
 
     public final String completion(AssociatedFormatterVo associatedFormatterVo) {

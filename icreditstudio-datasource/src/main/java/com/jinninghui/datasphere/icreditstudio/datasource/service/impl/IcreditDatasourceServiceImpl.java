@@ -23,6 +23,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.result.Datasou
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -87,7 +88,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
         BusinessResult<Boolean> result = systemFeignClient.isAdmin();
         //非管理员，查询未删除的数据
-        if (result.isSuccess() && !result.getData()){
+        if (result.isSuccess() && !result.getData()) {
             wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
         }
         if (StringUtils.isNotBlank(pageRequest.getSpaceId())) {
@@ -162,6 +163,48 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    public BusinessResult<List<DataSourceBaseInfo>> datasourceSearch(DataSyncQueryDataSourceSearchParam param) {
+        List<DataSourceBaseInfo> results = Lists.newArrayList();
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .category(Sets.newHashSet(param.getSourceType()))
+                .build();
+        List<IcreditDatasourceEntity> list = list(queryWrapper(build));
+        if (CollectionUtils.isNotEmpty(list)) {
+            Set<String> dataSourceIds = list.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
+            Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(dataSourceIds);
+            if (MapUtils.isNotEmpty(stringOptionalMap)) {
+                stringOptionalMap.forEach((k, v) -> {
+                    Optional<IcreditDatasourceEntity> first = list.parallelStream().filter(Objects::nonNull).filter(entity -> StringUtils.equals(entity.getId(), k)).findFirst();
+                    if (first.isPresent()) {
+                        IcreditDatasourceEntity entity = first.get();
+                        String name = entity.getName();
+                        if (v.isPresent()) {
+                            IcreditDdlSyncEntity ddlSyncEntity = v.get();
+                            String columnsInfo = ddlSyncEntity.getColumnsInfo();
+                            if (StringUtils.isNotBlank(columnsInfo)) {
+                                List<String> tableName = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
+                                results.addAll(Optional.ofNullable(tableName).orElse(Lists.newArrayList())
+                                        .parallelStream()
+                                        .filter(StringUtils::isNotBlank)
+                                        .map(n -> {
+                                            DataSourceBaseInfo info = new DataSourceBaseInfo();
+                                            info.setDatabaseName(name);
+                                            info.setTableName(n);
+                                            return info;
+                                        })
+                                        .filter(info -> StringUtils.isBlank(param.getTableName()) || info.getTableName().contains(param.getTableName())).collect(Collectors.toList()));
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        return BusinessResult.success(results);
+    }
+
+    @Override
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
@@ -182,6 +225,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
                         catalogue.setName(icreditDatasourceEntity.getName());
+                        if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
+                            catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
+                        }
                         catalogue.setUrl(icreditDatasourceEntity.getUri());
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
@@ -207,9 +253,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                                         catalogue.setUrl(datasourceCatalogue.getUrl());
                                         catalogue.setDialect(datasourceCatalogue.getDialect());
                                         catalogue.setName(s);
-                                        if (s.equals(param.getTableName())) {
-                                            catalogue.setSelect(true);
-                                        }
+                                        catalogue.setSelect(s.equals(param.getTableName()));
                                         return catalogue;
                                     }).collect(Collectors.toList());
                             datasourceCatalogue.setContent(content);

@@ -3,9 +3,7 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.0.23:8848
-      config:
-        server-addr: 192.168.0.23:8848
-        file-extension: yml
+        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
   datasource:
     url: "jdbc:mysql://worker:3306/metastore?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
     username: 'root'
@@ -43,4 +41,4 @@ warehouse:
       - driverClass: org.apache.hive.jdbc.HiveDriver
         username: hadoop
         password: hadoop
-        url: jdbc:hive2://worker:10000/default
+        url: jdbc:hive2://192.168.0.23:10000/default

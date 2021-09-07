@@ -2,14 +2,14 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servi
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.entity.CodeInfoEntity;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityDelParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityPageParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntitySaveParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityStatusParam;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.AssociatedDictInfo;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.CodeInfoAssociatedDictRequest;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -35,5 +35,7 @@ public interface CodeInfoService extends IService<CodeInfoEntity> {
     BusinessResult<Boolean> addEntity(CodeInfoEntitySaveParam param);
 
     List<CodeInfoResult> getInfoByKey(String key);
+
+    BusinessResult<List<AssociatedDictInfo>> associatedDict(@RequestBody CodeInfoAssociatedDictParam param);
 }
 

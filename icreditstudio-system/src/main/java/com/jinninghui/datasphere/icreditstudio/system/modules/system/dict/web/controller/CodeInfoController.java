@@ -1,24 +1,19 @@
 package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.controller;
 
-import com.jinninghui.datasphere.icreditstudio.system.common.log.Log;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.entity.CodeInfoEntity;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.CodeInfoService;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityDelParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityPageParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntitySaveParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.CodeInfoEntityStatusParam;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.CodeInfoEntityDelRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.CodeInfoEntityPageRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.CodeInfoEntitySaveRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.CodeInfoEntityStatusRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
+import com.jinninghui.datasphere.icreditstudio.system.common.log.Log;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.entity.CodeInfoEntity;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.CodeInfoService;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.AssociatedDictInfo;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -140,4 +135,16 @@ public class CodeInfoController extends BaseController<CodeInfoEntity, CodeInfoS
         return BusinessResult.success(codeInfos);
     }
 
+    /**
+     * 关联字典表（数据同步模块宽表）
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/associatedDict")
+    public BusinessResult<List<AssociatedDictInfo>> associatedDict(@RequestBody CodeInfoAssociatedDictRequest request) {
+        CodeInfoAssociatedDictParam param = new CodeInfoAssociatedDictParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return codeInfoService.associatedDict(param);
+    }
 }

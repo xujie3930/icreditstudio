@@ -1,9 +1,12 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractAssociatedFormatter;
+import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractDialectTypeHandler;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedType;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.enums.AssociatedEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedCondition;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,10 +17,10 @@ import java.util.List;
 import java.util.StringJoiner;
 
 /**
- * @author peng
+ * @author Peng
  */
 @Component
-public class MysqlAssociatedFormatter extends AbstractAssociatedFormatter {
+public class MysqlTypeHandler extends AbstractDialectTypeHandler {
     @Override
     public String format(AssociatedFormatterVo associatedFormatterVo) {
         List<TableInfo> sourceTables = associatedFormatterVo.getSourceTables();
@@ -44,6 +47,16 @@ public class MysqlAssociatedFormatter extends AbstractAssociatedFormatter {
             }
         }
         return new StringJoiner("").add(sql).add(assocStr).toString();
+    }
+
+    @Override
+    public List<AssociatedType> getAssocTypes() {
+        return Lists.newArrayList(new AssociatedType(AssociatedEnum.LEFT_JOIN, "left join"), new AssociatedType(AssociatedEnum.INNER_JOIN, "inner join"));
+    }
+
+    @Override
+    public List<String> getAssocConditions() {
+        return Lists.newArrayList("=", ">", "<");
     }
 
     @Override
