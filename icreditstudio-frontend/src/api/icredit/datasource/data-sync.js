@@ -36,6 +36,22 @@ const dataSyncBuildDetial = params =>
 const dataSyncDispatchDetial = params =>
   postAction('/datasync/taskScheduleInfo', params)
 
+// 数据源模糊搜索
+const dataSyncFluzzySearch = params =>
+  postAction('/datasource/datasourceSearch', params)
+
+// 数据源目录
+const dataSyncCatalog = params =>
+  postAction('/datasource/getDatasourceCatalogue', params)
+
+// 数据源目录
+const dataSyncTargetSource = params =>
+  postAction('/metadata/targetSources', params)
+
+// 识别宽表或执行SQL
+const dataSyncGenerateTable = params =>
+  postAction('/datasync/generateWideTable', params)
+
 export default {
   dataSyncAdd,
   dataSyncDelete,
@@ -45,5 +61,9 @@ export default {
   dataSyncStop,
   dataSyncDefineDetial,
   dataSyncBuildDetial,
-  dataSyncDispatchDetial
+  dataSyncDispatchDetial,
+  dataSyncFluzzySearch,
+  dataSyncCatalog,
+  dataSyncTargetSource,
+  dataSyncGenerateTable
 }

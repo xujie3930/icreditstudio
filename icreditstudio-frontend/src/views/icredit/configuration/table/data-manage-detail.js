@@ -9,6 +9,7 @@ export default {
   id: '',
   isBorder: true,
   hasPage: false,
+  maxHeight: 350,
   group: [
     {
       type: 'index',

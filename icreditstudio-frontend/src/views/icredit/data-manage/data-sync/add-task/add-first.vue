@@ -19,7 +19,7 @@
         <el-form-item label="任务名" prop="taskName">
           <el-input
             v-model.trim="addTaskForm.taskName"
-            placeholder="请选择任务名"
+            placeholder="请输入任务名"
             clearable
             :maxlength="14"
             show-word-limit
@@ -97,7 +97,7 @@ export default {
       addTaskForm: {
         taskName: '',
         enable: 0,
-        createMode: 0,
+        createMode: 1,
         taskDescribe: ''
       },
       addTaskFormRules: {
