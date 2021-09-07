@@ -9,7 +9,7 @@ source /etc/profile
 source ~/.bash_profile
 
 shellDir=`dirname $0`
-
+profile=$1
 workDir=`cd ${shellDir}/..;pwd`
 
 
@@ -28,7 +28,7 @@ function startApp(){
 echo "<-------------------------------->"
 echo "Begin to start $SERVER_NAME"
 SERVER_BIN=${workDir}/servers/icreditstudio-${SERVER_NAME}/bin
-SERVER_LOCAL_START_CMD="sh ${SERVER_BIN}/startup.sh"
+SERVER_LOCAL_START_CMD="sh ${SERVER_BIN}/startup.sh $profile"
 
 eval $SERVER_LOCAL_START_CMD
 
