@@ -70,6 +70,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         defEntity.setUpdateTime(date);
         defEntity.setUpdateUser(createUserName);
         save(defEntity);
+        //保存创建人信息
+        IcreditWorkspaceUserEntity createUser = getNewMember(param.getCreateUser(), defEntity);
+        workspaceUserService.save(createUser);
         //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())) {
             for (WorkspaceMember member : param.getMemberList()) {

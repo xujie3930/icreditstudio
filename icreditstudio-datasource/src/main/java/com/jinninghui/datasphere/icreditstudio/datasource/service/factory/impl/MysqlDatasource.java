@@ -2,8 +2,8 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncnfo;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableISyncnfo;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -21,25 +21,25 @@ public class MysqlDatasource implements DatasourceSync {
     public Map<String, String> syncDDL(Integer type, String uri) throws Exception {
         Map<String, String> map = new HashMap<>();
         String username = DatasourceSync.getUsername(uri);
-        String password = DatasourceSync.getpassword(uri);
-        Connection conn = getConn(type, uri, username, password);
+        String password = DatasourceSync.getPassword(uri);
+        Connection conn = DatasourceSync.getConn(type, uri, username, password);
         if (!Objects.nonNull(conn)) {
             return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();
         ResultSet tableResultSet = metaData.getTables(null, null, "%", new String[]{"TABLE"});
-        List<TableISyncnfo> tableList = new ArrayList<>();
+        List<TableSyncInfo> tableList = new ArrayList<>();
         Integer tablesCount = 0;
         while (tableResultSet.next()) {
             tablesCount++;
-            TableISyncnfo table = new TableISyncnfo();
+            TableSyncInfo table = new TableSyncInfo();
             String tableName = tableResultSet.getString("TABLE_NAME");
             table.setTableName(tableName);
-            List<ColumnSyncnfo> columnList = table.getColumnList();
+            List<ColumnSyncInfo> columnList = table.getColumnList();
             // 获取表字段结构
             ResultSet columnResultSet = metaData.getColumns(null, "%", tableName, "%");
             while (columnResultSet.next()) {
-                ColumnSyncnfo row = new ColumnSyncnfo();
+                ColumnSyncInfo row = new ColumnSyncInfo();
                 // 字段名称
                 String columnName = columnResultSet.getString("COLUMN_NAME");
                 row.setField(columnName);

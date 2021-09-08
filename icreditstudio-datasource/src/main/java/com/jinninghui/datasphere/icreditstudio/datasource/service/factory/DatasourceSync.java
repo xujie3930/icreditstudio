@@ -28,7 +28,7 @@ public interface DatasourceSync {
      * @param uri
      * @return
      */
-    static String getpassword(String uri) {
+    static String getPassword(String uri) {
         //根据uri获取password
         String temp = uri.substring(uri.indexOf("password=") + "password=".length());
         String password;
@@ -68,7 +68,7 @@ public interface DatasourceSync {
     default String testConn(Integer type, String uri) {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         String username = getUsername(uri);
-        String password = getpassword(uri);
+        String password = getPassword(uri);
         try {
             Class.forName(driver);
             Connection conn = DriverManager.getConnection(uri, username, password);
@@ -79,7 +79,7 @@ public interface DatasourceSync {
         }
     }
 
-    default Connection getConn(Integer type, String uri, String username, String password) {
+    static Connection getConn(Integer type, String uri, String username, String password) {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         Connection connection;
         try {
