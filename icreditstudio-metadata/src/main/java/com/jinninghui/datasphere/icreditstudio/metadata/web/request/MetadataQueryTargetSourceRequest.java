@@ -8,4 +8,5 @@ import lombok.Data;
 @Data
 public class MetadataQueryTargetSourceRequest {
     private String workspaceId;
+    private String name;
 }

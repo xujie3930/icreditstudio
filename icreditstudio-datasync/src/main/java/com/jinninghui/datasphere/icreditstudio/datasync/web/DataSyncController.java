@@ -1,11 +1,13 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
 
-import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuildInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -19,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 /**
  * @author Peng
@@ -70,23 +71,6 @@ public class DataSyncController {
         DataSyncGenerateWideTableParam param = new DataSyncGenerateWideTableParam();
         BeanCopyUtils.copyProperties(request, param);
         return syncTaskService.generateWideTable(param);
-    }
-
-    /**
-     * 关联字典
-     *
-     * @return
-     */
-    @Logable
-    @PostMapping("/associatedDict")
-    public BusinessResult<List<Dict>> associatedDict(@RequestBody DataSyncQueryDictRequest request) {
-        List<Dict> results = Lists.newArrayList();
-        Dict dict = new Dict();
-        dict.setName("性别");
-        dict.setKey("grand");
-        dict.setType("nan");
-        results.add(dict);
-        return BusinessResult.success(results);
     }
 
     /**

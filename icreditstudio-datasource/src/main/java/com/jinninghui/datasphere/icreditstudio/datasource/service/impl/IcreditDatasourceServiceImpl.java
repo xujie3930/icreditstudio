@@ -25,11 +25,15 @@ import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDat
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.SourceTableInfo;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
+import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
@@ -39,6 +43,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +57,7 @@ import java.util.stream.Collectors;
  * @author xujie
  * @since 2021-08-24
  */
+@Slf4j
 @Service
 public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceMapper, IcreditDatasourceEntity> implements IcreditDatasourceService {
 
@@ -284,10 +292,44 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             info = new ConnectionInfo();
             info.setDriverClass(DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDriver());
             info.setUsername(DatasourceSync.getUsername(byId.getUri()));
-            info.setPassword(DatasourceSync.getpassword(byId.getUri()));
+            info.setPassword(DatasourceSync.getPassword(byId.getUri()));
             info.setUrl(DatasourceSync.getConnUrl(byId.getUri()));
         }
         return BusinessResult.success(info);
+    }
+
+    @Override
+    @BusinessParamsValidate
+    public BusinessResult<List<SourceTableInfo>> getTableInfo(DataSourceTableInfoParam param) {
+        List<SourceTableInfo> results = null;
+        IcreditDatasourceEntity byId = getById(param.getDatasourceId());
+        if (Objects.nonNull(byId)) {
+            String uri = byId.getUri();
+            String connUrl = DatasourceSync.getConnUrl(uri);
+            String username = DatasourceSync.getUsername(uri);
+            String password = DatasourceSync.getPassword(uri);
+            Connection conn = DatasourceSync.getConn(byId.getType(), connUrl, username, password);
+            if (Objects.isNull(conn)) {
+                throw new AppException("70000000");
+            }
+            try {
+                PreparedStatement stemt = conn.prepareStatement("select * from " + param.getTableName());
+                ResultSetMetaData metaData = stemt.getMetaData();
+                int columnCount = metaData.getColumnCount();
+                if (columnCount > 0) {
+                    results = Lists.newArrayList();
+                    for (int i = 1; i <= columnCount; i++) {
+                        SourceTableInfo info = new SourceTableInfo();
+                        info.setName(metaData.getColumnName(i));
+                        info.setFieldType(metaData.getColumnTypeName(i));
+                        results.add(info);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("获取数据库源信息", e);
+            }
+        }
+        return BusinessResult.success(results);
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {

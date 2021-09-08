@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.jinninghui.datasphere.icreaditstudio.workspace.mapper.IcreditWorkspaceUserMapper">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceUserMapper">
 
     <select id="getWorkspaceByUserId" parameterType="java.lang.String" resultType="map">
         select w.id, w.name
@@ -11,7 +11,7 @@
     </select>
 
     <select id="getUserListById" parameterType="java.lang.String"
-            resultType="com.jinninghui.datasphere.icreaditstudio.workspace.entity.IcreditWorkspaceUserEntity">
+            resultType="com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity">
         select *
         from icredit_workspace_user
         where space_id = #{id};

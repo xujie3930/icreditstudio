@@ -29,3 +29,14 @@ export const scheduleTypeMapping = {
   0: '周期执行',
   1: '手动执行'
 }
+
+// 数据源树形组件ICON名映射
+export const treeIconMapping = {
+  0: ['database', 'table'],
+  1: {
+    excel: ['excel-icon', 'excel-icon-2'],
+    csv: ['csv-icon', 'csv-icon-2'],
+    txt: ['txt-icon', 'txt-icon-2']
+  },
+  2: []
+}

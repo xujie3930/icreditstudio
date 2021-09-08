@@ -95,7 +95,8 @@ public class MetadataServiceImpl implements MetadataService {
                     info.setName(database.getDatabaseName());
                     info.setUrl(database.getHost());
                     return info;
-                }).collect(Collectors.toList());
+                }).filter(info -> StringUtils.isBlank(param.getName()) || info.getName().contains(param.getName()))
+                .collect(Collectors.toList());
         return BusinessResult.success(results);
     }
 }
