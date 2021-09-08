@@ -6,11 +6,11 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
-import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSyncQueryDataSourceSearchRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.web.result.SourceTableInfo;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
@@ -63,4 +63,12 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
     BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request);
 
     DatasourceDetailResult getDetailById(String id);
+
+    /**
+     * 源表字段信息
+     *
+     * @param param
+     * @return
+     */
+    BusinessResult<List<SourceTableInfo>> getTableInfo(DataSourceTableInfoParam param);
 }
