@@ -40,6 +40,10 @@ const dataSyncDispatchDetial = params =>
 const dataSyncFluzzySearch = params =>
   postAction('/datasource/datasourceSearch', params)
 
+// 数字字典模糊搜索
+const dataSyncFluzzyDictionary = params =>
+  postAction('/system/code/code/associatedDict', params)
+
 // 数据源目录
 const dataSyncCatalog = params =>
   postAction('/datasource/getDatasourceCatalogue', params)
@@ -63,6 +67,7 @@ export default {
   dataSyncBuildDetial,
   dataSyncDispatchDetial,
   dataSyncFluzzySearch,
+  dataSyncFluzzyDictionary,
   dataSyncCatalog,
   dataSyncTargetSource,
   dataSyncGenerateTable

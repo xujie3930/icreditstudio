@@ -38,3 +38,8 @@
 .el-table th.gutter {
   display: table-cell !important;
 }
+
+.el-table td.is-center,
+.el-table th.is-center {
+  text-align: center;
+}

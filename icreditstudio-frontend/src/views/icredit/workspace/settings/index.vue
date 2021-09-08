@@ -90,6 +90,7 @@
 
 <script>
 import crud from '@/mixins/crud'
+import workspace from '@/mixins/workspace'
 import operate from '@/mixins/operate'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting'
 import formOption from '@/views/icredit/configuration/form/workspace-setting'
@@ -97,7 +98,7 @@ import Dialog from './dialog'
 import { mapGetters } from 'vuex'
 
 export default {
-  mixins: [crud, operate],
+  mixins: [crud, operate, workspace],
   components: { Dialog },
 
   data() {

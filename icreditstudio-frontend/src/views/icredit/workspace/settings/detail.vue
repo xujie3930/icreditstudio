@@ -5,11 +5,7 @@
 -->
 <template>
   <div class="workspace-setting">
-    <div
-      title="返回"
-      class="back-icon"
-      @click="$router.replace('/workspace/space-setting')"
-    >
+    <div title="返回" class="back-icon" @click="handleBackClick">
       <j-svg name="back" />
     </div>
     <el-form
@@ -90,6 +86,7 @@
               v-model="detailForm.director"
               :loading="userSelectLoading"
               :remote-method="getUsersFuzzySearch"
+              @clear="userOptions = []"
             >
               <el-option
                 v-for="(item, idx) in userOptions"
@@ -114,7 +111,9 @@
       <el-row>
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
+            <span v-if="!detailForm.memberList.length">无</span>
             <j-table
+              v-else
               ref="table"
               v-loading="tableLoading"
               :table-data="detailForm.memberList"
@@ -178,7 +177,7 @@ export default {
         name: '',
         status: 0,
         descriptor: '',
-        director: [],
+        director: '',
         memberList: []
       },
       detailRules: {
@@ -271,6 +270,18 @@ export default {
     mixinDetailInfo(data) {
       this.detailForm = data
       this.oldName = this.detailForm.name
+    },
+
+    // 返回按钮提示
+    handleBackClick() {
+      !this.id &&
+        this.$confirm('该工作空间内容尚未提交，请确认是否返回?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.$router.replace('/workspace/space-setting')
+        })
     },
 
     // 新增

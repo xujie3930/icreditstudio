@@ -133,7 +133,7 @@
                 <el-select
                   style="min-width:250px"
                   class="text-select"
-                  v-model="searchStockName"
+                  v-model.trim="searchStockName"
                   filterable
                   clearable
                   remote
@@ -155,7 +155,7 @@
                   clearable
                   style="margin-left:10px"
                   placeholder="请输入宽表名称"
-                  v-model="largeTableName"
+                  v-model.trim="largeTableName"
                 >
                   <el-button
                     :disabled="!isCanJumpNext"
@@ -187,7 +187,40 @@
               v-loading="tableLoading"
               :table-configuration="tableConfiguration"
               :table-data="tableData"
-            ></JTable>
+            >
+              <!-- 字段类型 -->
+              <template #fieldTypeColumn="{row}">
+                <el-cascader
+                  v-model="row.fieldType"
+                  :options="row.fieldTypeOptions"
+                  :show-all-levels="false"
+                  @change="handleCascaderChange"
+                ></el-cascader>
+              </template>
+
+              <!-- 关联字典表 -->
+              <template #associateDictColumn="{row}">
+                <el-select
+                  remote
+                  filterable
+                  clearable
+                  placeholder="请输入字典名称"
+                  class="text-select"
+                  v-model.trim="row.associateDict"
+                  :loading="row.dictLoading"
+                  :remote-method="name => getFluzzyDictionary(name, row)"
+                  @clear="row.dictionaryOptions = []"
+                >
+                  <el-option
+                    v-for="(item, idx) in row.dictionaryOptions"
+                    :key="idx"
+                    :label="item.name"
+                    :value="item.key"
+                  >
+                  </el-option>
+                </el-select>
+              </template>
+            </JTable>
           </div>
         </section>
       </div>
@@ -221,7 +254,7 @@ import API from '@/api/icredit'
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { treeIconMapping } from '../contant'
-import { randomNum } from '@/utils/util'
+import { randomNum, deepClone } from '@/utils/util'
 
 export default {
   components: { Back, HeaderStepBar, VueDraggable },
@@ -230,6 +263,40 @@ export default {
   data() {
     this.getFluzzyTableName = debounce(this.getFluzzyTableName, 500)
     this.getFluzzyStockName = debounce(this.getFluzzyStockName, 500)
+    this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
+
+    // 字段类型
+    this.fieldTypeOptions = [
+      {
+        value: 'number',
+        label: '数值类',
+        children: [
+          { label: 'TINYINT', value: 'TINYINT' },
+          { label: 'SMALLINT', value: 'SMALLINT' },
+          { label: 'INT', value: 'INT' },
+          { label: 'BIGINT', value: 'BIGINT' },
+          { label: 'FLOAT', value: 'FLOAT' },
+          { label: 'DOUBLE', value: 'DOUBLE' },
+          { label: 'DECIMAL', value: 'DECIMAL' }
+        ]
+      },
+      {
+        value: 'date',
+        label: '日期时间类',
+        children: [
+          { label: 'TIMESTAMP', value: 'TIMESTAMP' },
+          { label: 'DATE', value: 'DATE' }
+        ]
+      },
+      {
+        value: 'string',
+        label: '字符串类',
+        children: [
+          { label: 'STRING', value: 'STRING' },
+          { label: 'VARCHAR', value: 'VARCHAR' }
+        ]
+      }
+    ]
 
     return {
       // 是否可以跳到下一步
@@ -314,9 +381,21 @@ export default {
       evt.preventDefault()
     },
 
+    // 清空下拉框Options
     handleClear(name) {
       this.isCanJumpNext = false
       this[name] = []
+    },
+
+    handleDictClear(row) {
+      console.log(row, 'lp')
+      // eslint-disable-next-line no-param-reassign
+      row.dictionaryOptions = []
+    },
+
+    // 字段类型级联值发生改变
+    handleCascaderChange(value) {
+      console.log(value)
     },
 
     // 识别宽表
@@ -329,14 +408,26 @@ export default {
 
       const params = {}
       this.widthTableLoading = false
+      this.tableLoading = true
       API.dataSyncGenerateTable(this.createMode ? sqlParams : params)
         .then(({ success, data }) => {
           if (success && data) {
             console.log(data)
+            const { partitions = [], fields = [] } = data
+            this.zoningOptions = partitions
+            this.tableData = deepClone(fields).map(item => {
+              return {
+                fieldTypeOptions: this.fieldTypeOptions,
+                dictLoading: false,
+                dictionaryOptions: [],
+                ...item
+              }
+            })
           }
         })
         .finally(() => {
           this.widthTableLoading = false
+          this.tableLoading = false
         })
     },
 
@@ -346,6 +437,7 @@ export default {
       this.getDatasourceCatalog()
     },
 
+    // 自动生成宽表名称
     changeStockName(name) {
       if (name && this.largeTableName === '') {
         this.largeTableName = `widthtable_${dayjs(new Date()).format(
@@ -416,6 +508,24 @@ export default {
         })
         .finally(() => {
           this.searchStockLoading = false
+        })
+    },
+
+    // 关联字典模糊查询
+    getFluzzyDictionary(name, row) {
+      /* eslint-disable no-param-reassign */
+      row.dictLoading = true
+      API.dataSyncFluzzyDictionary({ name })
+        .then(({ success, data }) => {
+          if (success && data) {
+            console.log(data)
+            // eslint-disable-next-line no-param-reassign
+            row.dictionaryOptions = data
+          }
+        })
+        .finally(() => {
+          // eslint-disable-next-line no-param-reassign
+          row.dictLoading = false
         })
     }
   }
@@ -552,6 +662,8 @@ export default {
   .content-section {
     flex: 1;
     height: 100%;
+    overflow-y: auto;
+    padding-bottom: 20px;
 
     &-header {
       position: relative;

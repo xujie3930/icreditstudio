@@ -163,6 +163,10 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           console.log(name, valid)
+          sessionStorage.setItem(
+            'firstTaskFrom',
+            JSON.stringify(this.addTaskForm)
+          )
           this.$router.push({
             path: '/data-manage/add-build',
             query: { createMode: this.addTaskForm.createMode }
