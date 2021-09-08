@@ -1,11 +1,10 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -17,7 +16,6 @@ public class DataSyncSaveRequest {
     /**
      * 工作空间id
      */
-    @NotBlank(message = "工作空间不能为空")
     private String workspaceId;
     //=============同步任务定义===========
     /**
@@ -27,22 +25,18 @@ public class DataSyncSaveRequest {
     /**
      * 任务名称
      */
-    @NotBlank(message = "任务名称")
     private String taskName;
     /**
      * 【0：未启用，1：启用】
      */
-    @NotNull(message = "任务启用状态")
     private Integer enable;
     /**
      * 【0：可视化，1：sql】
      */
-    @NotNull(message = "任务创建方式")
     private Integer createMode;
     /**
      * 任务描述
      */
-    @Length(max = 255, message = "不能大于255个字符")
     private String taskDescribe;
     //==============end=================
     //============同步任务构建=============
@@ -63,9 +57,19 @@ public class DataSyncSaveRequest {
      */
     private Integer sourceType;
     /**
-     * 源库ID
+     * 调用步骤
      */
-    private String datasourceId;
+    @NotNull(message = "60000021")
+    private Integer callStep;
+    /**
+     * 数据源方言
+     */
+    private String dialect;
+
+    /**
+     * 连接表集合
+     */
+    private List<TableInfo> sourceTables;
     /**
      * 关联关系
      */
@@ -92,7 +96,6 @@ public class DataSyncSaveRequest {
      * 调度类型【0：周期，1：手动】
      */
     private Integer scheduleType;
-    //    private CronInfo cronInfo;
     /**
      * cron表达式
      */

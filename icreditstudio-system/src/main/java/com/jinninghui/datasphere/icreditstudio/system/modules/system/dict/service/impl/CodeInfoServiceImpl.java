@@ -117,7 +117,7 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
     @Override
     public BusinessResult<List<AssociatedDictInfo>> associatedDict(CodeInfoAssociatedDictParam param) {
         CodeInfoQueryConditionParam build = CodeInfoQueryConditionParam.builder()
-                .codeType(param.getKey())
+                .codeName(param.getName())
                 .groupBy(true)
                 .groupByField(CodeInfoEntity.CODE_TYPE)
                 .build();
@@ -135,8 +135,8 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
 
     private QueryWrapper<CodeInfoEntity> queryWrapper(CodeInfoQueryConditionParam param) {
         QueryWrapper<CodeInfoEntity> wrapper = new QueryWrapper<>();
-        if (StringUtils.isNotBlank(param.getCodeType())) {
-            wrapper.like(CodeInfoEntity.CODE_TYPE, param.getCodeType());
+        if (StringUtils.isNotBlank(param.getCodeName())) {
+            wrapper.like(CodeInfoEntity.CODE_NAME, param.getCodeName());
         }
         if (param.isGroupBy()) {
             wrapper.groupBy(param.getGroupByField());

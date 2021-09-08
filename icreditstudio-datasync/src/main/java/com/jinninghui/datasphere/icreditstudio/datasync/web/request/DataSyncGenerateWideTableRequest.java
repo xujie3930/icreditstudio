@@ -16,8 +16,8 @@ public class DataSyncGenerateWideTableRequest {
     /**
      * 工作空间ID
      */
-    @NotNull(message = "60000000")
-    private String workspaceId;
+    /*@NotNull(message = "60000000")
+    private String workspaceId;*/
     /**
      * 数据源ID
      */
@@ -28,6 +28,12 @@ public class DataSyncGenerateWideTableRequest {
      */
     @NotBlank(message = "60000004")
     private String dialect;
+    /**
+     * 创建方式【0：可视化，1，SQL】
+     */
+    private Integer createMode;
+
+    private String sql;
     /**
      * 连接表集合
      */

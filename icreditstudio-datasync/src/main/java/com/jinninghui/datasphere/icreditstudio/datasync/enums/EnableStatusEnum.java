@@ -8,21 +8,20 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum TaskStatusEnum {
-    ENABLE(0, "启用"),
-    DISABLE(1, "草稿"),
-    DRAFT(2, "停用"),
-    ALL(3, "全部"),
+public enum EnableStatusEnum {
+    ENABLE(1, "启用", TaskStatusEnum.ENABLE),
+    DISABLE(0, "未启用", TaskStatusEnum.DRAFT),
     ;
     private Integer code;
     private String desc;
+    private TaskStatusEnum taskStatus;
 
-    public static TaskStatusEnum find(Integer code) {
-        for (TaskStatusEnum value : TaskStatusEnum.values()) {
+    public static EnableStatusEnum find(Integer code) {
+        for (EnableStatusEnum value : EnableStatusEnum.values()) {
             if (value.code.equals(code)) {
                 return value;
             }
         }
-        return null;
+        return ENABLE;
     }
 }

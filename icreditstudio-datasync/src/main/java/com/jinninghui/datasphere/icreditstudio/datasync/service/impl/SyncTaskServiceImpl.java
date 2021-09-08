@@ -69,37 +69,134 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
-        SyncTaskEntity entity = transferToSyncTaskEntity(param);
-        this.saveOrUpdate(entity);
-        param.setTaskId(entity.getId());
-        SyncWidetableEntity wideTableEntity = transferToSyncWidetableEntity(param);
-        syncWidetableService.saveOrUpdate(wideTableEntity);
-        List<SyncWidetableFieldEntity> syncWideTableFieldEntities = transferToWideTableFields(wideTableEntity.getId(), param);
-        if (CollectionUtils.isNotEmpty(syncWideTableFieldEntities)) {
-            syncWidetableFieldService.saveOrUpdateBatch(syncWideTableFieldEntities);
+        String taskId = null;
+        if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
+            taskId = oneStepSave(param);
         }
-        return BusinessResult.success(new ImmutablePair("taskId", entity.getId()));
+        if (CallStepEnum.TWO == CallStepEnum.find(param.getCallStep())) {
+            taskId = twoStepSave(param);
+        }
+        if (CallStepEnum.THREE == CallStepEnum.find(param.getCallStep())) {
+            taskId = threeStepSave(param);
+        }
+        if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
+
+        }
+
+        return BusinessResult.success(new ImmutablePair("taskId", taskId));
+    }
+
+    //第一步保存
+    private String oneStepSave(DataSyncSaveParam param) {
+        DataSyncTaskDefineSaveParam defineSaveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskDefineSaveParam.class);
+        return syncTaskDefineSave(defineSaveParam);
+    }
+
+    //第二部保存
+    private String twoStepSave(DataSyncSaveParam param) {
+        String taskId = oneStepSave(param);
+        DataSyncTaskBuildSaveParam saveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskBuildSaveParam.class);
+        saveParam.setTaskId(taskId);
+        syncTaskBuildSave(saveParam);
+        return taskId;
+    }
+
+    //第三步保存
+    private String threeStepSave(DataSyncSaveParam param) {
+        String taskId = twoStepSave(param);
+        TaskParamSaveParam saveParam = BeanCopyUtils.copyProperties(param, TaskParamSaveParam.class);
+        saveParam.setTaskId(taskId);
+        taskParamSave(saveParam);
+        return taskId;
+    }
+
+    @Override
+    @BusinessParamsValidate
+    @Transactional(rollbackFor = Exception.class)
+    public String syncTaskDefineSave(DataSyncTaskDefineSaveParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        BeanCopyUtils.copyProperties(param, entity);
+        entity.setId(param.getTaskId());
+        entity.setTaskStatus(EnableStatusEnum.find(param.getEnable()).getTaskStatus().getCode());
+        saveOrUpdate(entity);
+        return entity.getId();
+    }
+
+    @BusinessParamsValidate
+    @Transactional(rollbackFor = Exception.class)
+    public void syncTaskBuildSave(DataSyncTaskBuildSaveParam param) {
+        SyncWidetableEntity entity = new SyncWidetableEntity();
+        entity.setSyncTaskId(param.getTaskId());
+        entity.setName(param.getWideTableName());
+        entity.setTargetSource(param.getTargetSource());
+        entity.setPartitionField(param.getPartition());
+        entity.setSqlStr(param.getWideTableSql());
+        entity.setViewJson(JSONObject.toJSONString(param.getView()));
+        entity.setVersion(param.getVersion());
+        syncWidetableService.saveOrUpdate(entity);
+
+        List<WideTableFieldInfo> fieldInfos = param.getFieldInfos();
+        if (CollectionUtils.isNotEmpty(fieldInfos)) {
+            List<WideTableFieldSaveParam> saveParams = fieldInfos.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(info -> {
+                        WideTableFieldSaveParam saveParam = new WideTableFieldSaveParam();
+                        BeanCopyUtils.copyProperties(info, saveParam);
+                        saveParam.setChineseName(info.getFieldChineseName());
+                        saveParam.setName(info.getFieldName());
+                        saveParam.setDictKey(info.getAssociateDict());
+                        saveParam.setType(info.getFieldType());
+                        return saveParam;
+                    }).collect(Collectors.toList());
+            wideTableFieldSave(saveParams);
+        }
+    }
+
+    public void wideTableFieldSave(List<WideTableFieldSaveParam> params) {
+        if (CollectionUtils.isNotEmpty(params)) {
+            List<SyncWidetableFieldEntity> collect = params.parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(param -> {
+                        SyncWidetableFieldEntity entity = new SyncWidetableFieldEntity();
+                        BeanCopyUtils.copyProperties(param, entity);
+                        entity.setSource(param.getSourceTable());
+                        entity.setChinese(param.getChineseName());
+                        return entity;
+                    }).collect(Collectors.toList());
+            syncWidetableFieldService.saveOrUpdateBatch(collect);
+        }
+    }
+
+    @BusinessParamsValidate
+    @Transactional(rollbackFor = Exception.class)
+    public void taskParamSave(TaskParamSaveParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        BeanCopyUtils.copyProperties(param, entity);
+        entity.setId(param.getTaskId());
+        saveOrUpdate(entity);
     }
 
     @Override
     public BusinessResult<BusinessPageResult> syncTasks(DataSyncQueryParam param) {
+        //查询条件
         SyncTaskConditionParam build = SyncTaskConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
                 .taskName(param.getTaskName())
                 .taskStatus(TaskStatusEnum.find(param.getTaskStatus()))
                 .execStatus(ExecStatusEnum.find(param.getExecStatus()))
                 .build();
-
+        //查询结果
         IPage<SyncTaskEntity> page = this.page(
                 new Query<SyncTaskEntity>().getPage(param),
                 queryWrapper(build)
         );
-
+        //结果分页列表数据
         List<SyncTaskEntity> records = page.getRecords();
 
         IPage<SyncTaskInfo> resultPage = new Page<>();
         if (CollectionUtils.isNotEmpty(records)) {
             BeanCopyUtils.copyProperties(page, resultPage);
+            //处理数据
             List<SyncTaskInfo> collect = records.stream()
                     .map(entity -> {
                         SyncTaskInfo info = new SyncTaskInfo();
@@ -175,12 +272,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
-        AssociatedFormatterVo vo = new AssociatedFormatterVo();
-        vo.setDialect(param.getDialect());
-        vo.setSourceTables(param.getSourceTables());
-        vo.setAssoc(param.getView());
-        String sql = AssociatedUtil.wideTableSql(vo);
-        WideTable wideTable = null;
+        String sql;
+        if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
+            AssociatedFormatterVo vo = new AssociatedFormatterVo();
+            vo.setDialect(param.getDialect());
+            vo.setSourceTables(param.getSourceTables());
+            vo.setAssoc(param.getView());
+            sql = AssociatedUtil.wideTableSql(vo);
+        } else {
+            sql = param.getSql();
+        }
+        WideTable wideTable;
         try {
             wideTable = new WideTable();
             wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
@@ -201,9 +303,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             wideTable.setFields(fieldInfos);
         } catch (Exception e) {
             log.error("识别宽表失败", e);
-            throw new AppException("识别宽表失败");
+            throw new AppException("60000020");
         }
-        wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> e.getName()).collect(Collectors.toList()));
+        wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), e.getName())).collect(Collectors.toList()));
         return BusinessResult.success(wideTable);
     }
 
