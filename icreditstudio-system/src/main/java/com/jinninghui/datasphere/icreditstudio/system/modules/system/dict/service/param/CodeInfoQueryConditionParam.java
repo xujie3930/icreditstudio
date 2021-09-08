@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 @Builder
 public class CodeInfoQueryConditionParam {
-    private String codeType;
+    private String codeName;
     private boolean groupBy;
     private String groupByField;
 }

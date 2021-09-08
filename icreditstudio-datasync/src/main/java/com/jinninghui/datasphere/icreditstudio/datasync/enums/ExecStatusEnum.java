@@ -12,7 +12,9 @@ public enum ExecStatusEnum {
 
     SUCCESS(0, "成功"),
     FAILURE(1, "失败"),
-    EXEC(2, "执行中");
+    EXEC(2, "执行中"),
+    ALL(3, "全部"),
+    ;
     private Integer code;
     private String desc;
 

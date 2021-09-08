@@ -173,7 +173,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             }
         }
         //删除多余的member
-        workspaceUserService.removeByIds(delList);
+        if (!CollectionUtils.isEmpty(delList)){
+            workspaceUserService.removeByIds(delList);
+        }
         return BusinessResult.success(true);
     }
 }

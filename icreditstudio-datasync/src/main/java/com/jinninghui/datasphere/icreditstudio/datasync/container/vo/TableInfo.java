@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TableInfo {
+    private String datasourceId;
     private String database;
     private String tableName;
 }

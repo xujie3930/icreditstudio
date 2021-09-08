@@ -25,6 +25,14 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param);
 
     /**
+     * 同步任务定义保存
+     *
+     * @param param
+     * @return
+     */
+    String syncTaskDefineSave(DataSyncTaskDefineSaveParam param);
+
+    /**
      * 同步任务列表
      *
      * @param param

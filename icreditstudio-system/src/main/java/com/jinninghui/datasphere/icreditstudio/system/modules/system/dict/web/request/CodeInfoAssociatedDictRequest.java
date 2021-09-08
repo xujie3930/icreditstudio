@@ -8,5 +8,5 @@ import lombok.Data;
 @Data
 public class CodeInfoAssociatedDictRequest {
 
-    private String key;
+    private String name;
 }
