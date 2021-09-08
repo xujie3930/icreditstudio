@@ -15,7 +15,7 @@ export default [
   {
     type: 'text',
     label: '更新人',
-    ruleProp: 'createUser',
+    ruleProp: 'updateUser',
     model: '',
     isSearch: true
   },
@@ -23,7 +23,7 @@ export default [
     type: 'date',
     label: '更新时间',
     model: '',
-    ruleProp: 'createTime',
+    ruleProp: 'updateTime',
     isSearch: true,
     format: 'yyyy-MM-dd',
     valueFormat: 'yyyy-MM-dd'

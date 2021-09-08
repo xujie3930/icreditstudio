@@ -104,7 +104,7 @@ export default {
     return {
       formOption,
       mixinSearchFormConfig: {
-        models: { name: '', createUser: '', createTime: '' }
+        models: { name: '', updateTime: '', updateUser: '' }
       },
       fetchConfig: { retrieve: { url: '/workspace/pageList', method: 'post' } }
     }

@@ -9,7 +9,12 @@
     <div class="add-task">
       <HeaderStepBar :cur-step="3" />
 
-      <el-form class="add-task-content" :model="taskForm" :rules="taskRules">
+      <el-form
+        class="add-task-content"
+        ref="taskForm"
+        :model="taskForm"
+        :rules="taskRules"
+      >
         <el-form-item style="width:100%">
           <div class="content-item">
             <h3 class="title">通道控制</h3>
@@ -70,13 +75,22 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label-width="35%" label="同步任务周期" prop="period">
-          <el-radio-group v-model="taskForm.period">
-            <el-radio :label="0">按月度</el-radio>
-            <el-radio :label="1">按周级</el-radio>
-            <el-radio :label="2">按天级</el-radio>
-            <el-radio :label="3">按小时级</el-radio>
-          </el-radio-group>
+        <!-- <el-form-item label-width="35%" label="同步任务周期" prop="cron"> -->
+        <el-form-item
+          v-if="!taskForm.scheduleType"
+          label-width="35%"
+          label="Cron"
+          prop="cron"
+        >
+          <el-input
+            style="width: 500px"
+            placeholder="请输入内容"
+            v-model="taskForm.cron"
+          >
+            <div slot="append" class="cron-suffix" @click="handleOpenCron">
+              <i class="el-icon-open "></i>
+            </div>
+          </el-input>
         </el-form-item>
       </el-form>
 
@@ -84,28 +98,43 @@
         <el-button class="btn" @click="$router.push('/data-manage/add-build')">
           上一步
         </el-button>
-        <el-button class="btn" type="primary" @click="handlePublish">
+        <el-button
+          class="btn"
+          :loading="settingBtnLoading"
+          @click="handleSaveSetting('taskForm')"
+        >
+          保存设置
+        </el-button>
+        <el-button
+          class="btn"
+          type="primary"
+          :loading="publishLoading"
+          @click="handlePublish('taskForm')"
+        >
           发布
         </el-button>
       </footer>
     </div>
+
+    <Cron ref="cron" v-model="taskForm.cron" />
   </div>
 </template>
 
 <script>
 import HeaderStepBar from './header-step-bar'
 import Back from '@/views/icredit/components/back'
+import Cron from '@/components/cron'
+import API from '@/api/icredit'
+import { mapState } from 'vuex'
 
 export default {
-  components: { HeaderStepBar, Back },
+  components: { HeaderStepBar, Back, Cron },
 
   data() {
     return {
-      taskForm: {
-        maxThread: '',
-        limitRate: '',
-        syncRate: null
-      },
+      settingBtnLoading: false,
+      publishLoading: false,
+      taskForm: { maxThread: 2, limitRate: '', syncRate: 1, cron: '' },
       taskRules: {
         maxThread: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
@@ -118,13 +147,48 @@ export default {
         ],
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
-        ]
+        ],
+        cron: [{ required: true, message: '必填项不能为空', trigger: 'blur' }]
       }
     }
   },
 
+  computed: {
+    ...mapState('user', ['workspaceId'])
+  },
+
   methods: {
-    handlePublish() {}
+    handleOpenCron() {
+      this.$refs.cron.open()
+    },
+
+    // 发布
+    handlePublish(name) {
+      this.handleSaveSetting(name)
+    },
+
+    // 保存设置
+    handleSaveSetting(name) {
+      const params = { workspaceId: this.workspaceId, ...this.taskForm }
+      this.$refs[name].validate(valid => {
+        if (valid) {
+          this.settingBtnLoading = true
+          API.dataSyncAdd(params)
+            .then(({ success, data }) => {
+              if (success && data) {
+                console.log(success, data)
+                this.$notify.success({
+                  title: '操作结果',
+                  message: '保存设置成功！'
+                })
+              }
+            })
+            .finally(() => {
+              this.settingBtnLoading = false
+            })
+        }
+      })
+    }
   }
 }
 </script>
@@ -171,10 +235,16 @@ export default {
     margin-top: 2px;
   }
 
+  .cron-suffix {
+    cursor: pointer;
+    padding: 0;
+  }
+
   .fade-enter-active,
   .fade-leave-active {
     transition: opacity 0.3s ease;
   }
+
   .fade-enter,
   .fade-leave-to {
     opacity: 0;
