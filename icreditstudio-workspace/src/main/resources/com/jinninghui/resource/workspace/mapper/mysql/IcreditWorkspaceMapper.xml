@@ -30,8 +30,8 @@
             <if test="request.name != null and request.name != '' ">
                 AND w.name like concat ('%', #{request.name}, '%')
             </if>
-            <if test="request.createUser != null and request.createUser != '' ">
-                AND w.create_user = #{request.createUser}
+            <if test="request.updateUser != null and request.updateUser != '' ">
+                AND w.update_user = #{request.updateUser}
             </if>
             <if test="request.updateStartTime != null">
                 AND w.update_time > #{request.updateStartTime}

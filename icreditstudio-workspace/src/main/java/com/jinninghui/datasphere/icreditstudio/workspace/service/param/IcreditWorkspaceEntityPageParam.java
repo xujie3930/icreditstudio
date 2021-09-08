@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 public class IcreditWorkspaceEntityPageParam extends BusinessBasePageForm {
     private String name;//工作空间名称
-    private String createUser;//创建人
+    private String updateUser;//更新人
     private Date updateStartTime;//初始时间
     private Date updateEndTime;//结束时间
     private String userId;//用户id
