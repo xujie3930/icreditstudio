@@ -38,12 +38,14 @@ export default _this => {
       {
         type: 'text',
         label: '包含业务流程数（个）',
-        prop: 'businessFlowCount'
+        prop: 'businessFlowCount',
+        width: 200
       },
       {
         type: 'text',
         label: '包含工作流个数（个）',
-        prop: 'workFlowCount'
+        prop: 'workFlowCount',
+        width: 200
       },
       {
         type: 'text',

@@ -232,6 +232,7 @@ export default {
             title: '操作结果',
             message: '任务执行成功！'
           })
+          this.mixinRetrieveTableData()
         }
       })
     },
@@ -245,6 +246,7 @@ export default {
             title: '操作结果',
             message: '任务已停止执行！'
           })
+          this.mixinRetrieveTableData()
         }
       })
     },

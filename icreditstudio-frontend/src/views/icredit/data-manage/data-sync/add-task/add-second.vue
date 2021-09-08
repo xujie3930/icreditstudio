@@ -172,7 +172,7 @@
                 <div class="label">分区字段</div>
                 <el-select v-model="value" placeholder="请选择">
                   <el-option
-                    v-for="item in options"
+                    v-for="item in zoningOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
