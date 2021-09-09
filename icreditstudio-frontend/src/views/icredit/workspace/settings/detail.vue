@@ -92,7 +92,7 @@
                 v-for="(item, idx) in userOptions"
                 :key="`${item.id}-${idx}`"
                 :label="item.name"
-                :value="item.id"
+                :value="item.name"
               >
               </el-option>
             </el-select>
@@ -155,6 +155,7 @@ import operate from '@/mixins/operate'
 import API from '@/api/icredit'
 import UserSelect from './users-select.vue'
 import { debounce } from 'lodash'
+import { validStrSpecial } from '@/utils/validate'
 
 export default {
   mixins: [crud, operate],
@@ -192,6 +193,9 @@ export default {
         ],
         director: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
+        ],
+        descriptor: [
+          { required: false, validator: this.verifyDes, trigger: 'blur' }
         ]
       },
       userOptions: []
@@ -334,6 +338,14 @@ export default {
         .finally(() => {
           this.userSelectLoading = false
         })
+    },
+
+    verifyDes(rule, value, cb) {
+      if (validStrSpecial(value)) {
+        cb(new Error('该名称中包含不规范字符，请重新输入'))
+      } else {
+        cb()
+      }
     },
 
     // 名称校验
