@@ -18,7 +18,6 @@ public class IcreditWorkspaceUpdateRequest {
     @NotBlank(message = "工作空间名称不能为空")
     @Length(max = 15, message = "工作空间名称不能超过15个字符")
     private String name;//空间名称
-    @NotBlank(message = "工作空间描述不能为空")
     private String descriptor;//空间描述
     private int status = 0;//空间状态
     private String director;//负责人

@@ -94,11 +94,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
-        BusinessResult<Boolean> result = systemFeignClient.isAdmin();
-        //非管理员，查询未删除的数据
-        if (result.isSuccess() && !result.getData()) {
-            wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
-        }
+        //不管是否管理员，都只能查询未删除的数据
+        wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
         if (StringUtils.isNotBlank(pageRequest.getSpaceId())) {
             wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getSpaceId());
         }
