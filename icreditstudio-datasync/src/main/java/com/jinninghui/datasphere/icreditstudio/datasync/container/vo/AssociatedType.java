@@ -1,7 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.vo;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.AssociatedEnum;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -31,4 +30,13 @@ public class AssociatedType {
      * 关联关键字
      */
     private String keyword;
+
+    private String name;
+
+    public String getName() {
+        if (Objects.nonNull(type)) {
+            return type.getDesc();
+        }
+        return null;
+    }
 }
