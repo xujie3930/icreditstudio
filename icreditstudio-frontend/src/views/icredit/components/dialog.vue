@@ -52,8 +52,7 @@ export default {
     },
 
     width: {
-      type: String,
-      default: '700'
+      type: String
     },
 
     title: {

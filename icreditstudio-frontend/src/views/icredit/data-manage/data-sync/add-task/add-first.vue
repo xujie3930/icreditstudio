@@ -28,8 +28,8 @@
 
         <el-form-item label="任务启用" prop="enable">
           <el-radio-group v-model="addTaskForm.enable">
-            <el-radio :label="0">是</el-radio>
-            <el-radio :label="1">否</el-radio>
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="0">否</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -96,7 +96,7 @@ export default {
       ],
       addTaskForm: {
         taskName: '',
-        enable: 0,
+        enable: 1,
         createMode: 1,
         taskDescribe: ''
       },
@@ -142,6 +142,7 @@ export default {
           console.log(name)
           const params = {
             workspaceId: this.workspaceId,
+            callStep: 1,
             ...this.addTaskForm
           }
           this.saveSettingLoading = true

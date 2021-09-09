@@ -8,8 +8,7 @@ import { mapState } from 'vuex'
 export default {
   watch: {
     workspaceId(nVal) {
-      console.log('nVal::::', nVal)
-      this.mixinRetrieveTableData()
+      nVal && this.mixinRetrieveTableData()
     }
   },
 

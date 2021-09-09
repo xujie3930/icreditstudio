@@ -35,7 +35,10 @@
           </div>
           <div class="content-aside-tree">
             <el-button-group class="btn-group">
-              <el-radio-group v-model="sourceType" @change="changeSourceType">
+              <el-radio-group
+                v-model="secondTaskForm.sourceType"
+                @change="changeSourceType"
+              >
                 <el-radio-button
                   :class="item.className"
                   :label="item.label"
@@ -103,6 +106,7 @@
                 class="table-item"
                 @mouseenter.native="isShowDot = true"
                 @mouseleave.native="isShowDot = false"
+                @click.native="handleLinkDialogOpen"
               >
                 <!-- @mousedown.native="handleTagMouseDown" -->
                 <!-- @dragstart="handleTagItemDrag" -->
@@ -133,7 +137,7 @@
                 <el-select
                   style="min-width:250px"
                   class="text-select"
-                  v-model.trim="searchStockName"
+                  v-model.trim="secondTaskForm.targetSource"
                   filterable
                   clearable
                   remote
@@ -155,7 +159,7 @@
                   clearable
                   style="margin-left:10px"
                   placeholder="请输入宽表名称"
-                  v-model.trim="largeTableName"
+                  v-model.trim="secondTaskForm.wideTableName"
                 >
                   <el-button
                     :disabled="!isCanJumpNext"
@@ -170,7 +174,10 @@
               </div>
               <div class="label-wrap">
                 <div class="label">分区字段</div>
-                <el-select v-model="value" placeholder="请选择">
+                <el-select
+                  v-model="secondTaskForm.partition"
+                  placeholder="请选择"
+                >
                   <el-option
                     v-for="item in zoningOptions"
                     :key="item.value"
@@ -186,7 +193,7 @@
               ref="table"
               v-loading="tableLoading"
               :table-configuration="tableConfiguration"
-              :table-data="tableData"
+              :table-data="secondTaskForm.fieldInfos"
             >
               <!-- 字段类型 -->
               <template #fieldTypeColumn="{row}">
@@ -196,6 +203,16 @@
                   :show-all-levels="false"
                   @change="handleCascaderChange"
                 ></el-cascader>
+              </template>
+
+              <!-- 字段中文名称 -->
+              <template #fieldChineseNameColumn="{row}">
+                <el-input
+                  clearable
+                  placeholder="请输入中文名称"
+                  v-model.trim="row.fieldChineseName"
+                  @change="handleChangeChineseName"
+                ></el-input>
               </template>
 
               <!-- 关联字典表 -->
@@ -229,17 +246,24 @@
         <el-button class="btn" @click="$router.push('/data-manage/add-task')">
           上一步
         </el-button>
-        <el-button class="btn">保存设置</el-button>
+        <el-button
+          class="btn"
+          :disabled="!secondTaskForm.sql"
+          @click="handleSaveSetting"
+          >保存设置</el-button
+        >
         <el-button
           class="btn"
           type="primary"
-          :disabled="isCanJumpNext"
+          :disabled="!secondTaskForm.sql"
           @click="handleStepClick"
         >
           下一步
         </el-button>
       </footer>
     </div>
+
+    <Affiliations ref="linkDialog" />
   </div>
 </template>
 
@@ -247,6 +271,7 @@
 import VueDraggable from 'vuedraggable'
 import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
+import Affiliations from './affiliations'
 import dayjs from 'dayjs'
 import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/data-sync-add'
@@ -255,9 +280,10 @@ import { debounce } from 'lodash'
 import { mapState } from 'vuex'
 import { treeIconMapping } from '../contant'
 import { randomNum, deepClone } from '@/utils/util'
+import { validStrZh } from '@/utils/validate'
 
 export default {
-  components: { Back, HeaderStepBar, VueDraggable },
+  components: { Back, HeaderStepBar, Affiliations, VueDraggable },
   mixins: [crud],
 
   data() {
@@ -268,7 +294,7 @@ export default {
     // 字段类型
     this.fieldTypeOptions = [
       {
-        value: 'number',
+        value: 0,
         label: '数值类',
         children: [
           { label: 'TINYINT', value: 'TINYINT' },
@@ -281,7 +307,7 @@ export default {
         ]
       },
       {
-        value: 'date',
+        value: 1,
         label: '日期时间类',
         children: [
           { label: 'TIMESTAMP', value: 'TIMESTAMP' },
@@ -289,7 +315,7 @@ export default {
         ]
       },
       {
-        value: 'string',
+        value: 2,
         label: '字符串类',
         children: [
           { label: 'STRING', value: 'STRING' },
@@ -301,6 +327,7 @@ export default {
     return {
       // 是否可以跳到下一步
       isCanJumpNext: false,
+      isCanSaveSetting: false,
       isShowDot: false,
       searchTableName: '',
       searchStockName: '',
@@ -311,9 +338,7 @@ export default {
       searchStockLoading: false,
       tableLoading: false,
       widthTableLoading: false,
-      tableData: [],
       createMode: '',
-      largeTableName: '',
       type: 'sql',
       sql: '',
       sourceType: 0,
@@ -325,7 +350,18 @@ export default {
         { label: 0, className: 'btn btn-left', name: '外接数据库' },
         { label: 1, className: 'btn btn-center', name: '本地文件' },
         { label: 2, className: 'btn btn-right', name: '区块链数据' }
-      ]
+      ],
+
+      // 表单参数
+      secondTaskForm: {
+        sql: '', // SQL命令
+        targetSource: '', // 目标库
+        wideTableName: '', // 宽表名称
+        partition: '', // 分区字段
+        fieldInfos: [], // 表信息
+        sourceType: 0, // 资源类型
+        callStep: 2 // 调用步骤
+      }
     }
   },
 
@@ -381,6 +417,72 @@ export default {
       evt.preventDefault()
     },
 
+    handleLinkDialogOpen() {
+      this.$refs.linkDialog.open({ title: '新增关联关系' })
+    },
+
+    // 中文名称
+    handleChangeChineseName(name) {
+      console.log(name)
+      const valid = validStrZh(name)
+      console.log('valid', valid)
+      this.isCanSaveSetting = valid
+      this.$message.error('该字段为中文名称输入，请检查后重新输入！')
+    },
+
+    // 保存设置
+    handleSaveSetting() {
+      if (!this.isCanSaveSetting) {
+        this.$message.error(
+          '表格字段为中文名称一列，输入不合法，请检查后重新输入！'
+        )
+        return
+      }
+
+      const { fieldInfos, ...restForm } = this.secondTaskForm
+
+      const newFieldInfos = deepClone(fieldInfos).map(
+        ({
+          dictLoading,
+          dictionaryOptions,
+          fieldTypeOptions,
+          fieldType,
+          ...rest
+        }) => {
+          return {
+            fieldType: fieldType[1],
+            ...rest
+          }
+        }
+      )
+
+      const firstFrom = JSON.parse(
+        sessionStorage.getItem('firstTaskFrom') || {}
+      )
+
+      const secondForm = {
+        workspaceId: this.workspaceId,
+        fieldInfos: newFieldInfos,
+        ...restForm
+      }
+
+      const params = {
+        ...firstFrom,
+        ...secondForm
+      }
+
+      API.dataSyncAdd(params)
+        .then(({ success, data }) => {
+          if (success && data) {
+            sessionStorage.setItem('taskForm', JSON.stringify(params))
+            this.$notify.success({ title: '操作结果', message: '保存成功' })
+          }
+        })
+        .finally(() => {
+          this.saveSettingLoading = false
+        })
+    },
+
     // 清空下拉框Options
     handleClear(name) {
       this.isCanJumpNext = false
@@ -415,7 +517,8 @@ export default {
             console.log(data)
             const { partitions = [], fields = [] } = data
             this.zoningOptions = partitions
-            this.tableData = deepClone(fields).map(item => {
+            this.secondTaskForm.sql = data.sql
+            this.secondTaskForm.fieldInfos = deepClone(fields).map(item => {
               return {
                 fieldTypeOptions: this.fieldTypeOptions,
                 dictLoading: false,
@@ -439,10 +542,10 @@ export default {
 
     // 自动生成宽表名称
     changeStockName(name) {
-      if (name && this.largeTableName === '') {
-        this.largeTableName = `widthtable_${dayjs(new Date()).format(
-          'YYYYMMDD'
-        )}_${randomNum(100000, 11000000)}`
+      if (name && this.secondTaskForm.wideTableName === '') {
+        this.secondTaskForm.wideTableName = `widthtable_${dayjs(
+          new Date()
+        ).format('YYYYMMDD')}_${randomNum(100000, 11000000)}`
       }
     },
 
@@ -463,10 +566,9 @@ export default {
       API.dataSyncCatalog(params)
         .then(({ success, data }) => {
           if (success && data) {
-            console.log(success, data)
             this.treeData = data.map(item => {
-              const { content, ...rest } = item
-              const newContent = content.map(list => {
+              const { content = [], ...rest } = item
+              const newContent = content?.map(list => {
                 return { icon: icon(1, list.name), ...list }
               })
               return { icon: icon(0, item.name), content: newContent, ...rest }

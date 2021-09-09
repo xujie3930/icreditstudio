@@ -236,7 +236,8 @@ export default {
         ip: '',
         port: '',
         username: '',
-        password: ''
+        password: '',
+        status: 0
       },
       rules: {
         name: [

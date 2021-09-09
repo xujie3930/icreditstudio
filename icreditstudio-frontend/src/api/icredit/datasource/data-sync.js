@@ -56,6 +56,14 @@ const dataSyncTargetSource = params =>
 const dataSyncGenerateTable = params =>
   postAction('/datasync/generateWideTable', params)
 
+// 关联类型
+const dataSyncLinkType = params =>
+  postAction('/datasync/dialectAssociatedSupport', params)
+
+// 表字段查询
+const dataSyncFieldSearch = params =>
+  postAction('/datasource/getTableInfo', params)
+
 export default {
   dataSyncAdd,
   dataSyncDelete,
@@ -70,5 +78,7 @@ export default {
   dataSyncFluzzyDictionary,
   dataSyncCatalog,
   dataSyncTargetSource,
-  dataSyncGenerateTable
+  dataSyncGenerateTable,
+  dataSyncLinkType,
+  dataSyncFieldSearch
 }

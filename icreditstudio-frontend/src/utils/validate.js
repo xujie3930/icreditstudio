@@ -13,4 +13,7 @@
 // const pattern3 = new RegExp('[0-9]+')
 
 // // 验证是否是中文
-// export const validStrZh = () => {}
+export const validStrZh = str => {
+  const pattern = new RegExp(/\p{Unified_Ideograph}/gu)
+  return pattern.test(str)
+}

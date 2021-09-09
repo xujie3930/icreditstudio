@@ -12,10 +12,10 @@ export default {
   maxHeight: 360,
   group: [
     {
-      type: 'index',
+      type: 'text',
       label: '序号',
       width: '100px',
-      prop: 'serialNumber'
+      prop: 'sort'
     },
     {
       type: 'text',
@@ -33,7 +33,7 @@ export default {
       prop: 'sourceTable'
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '字段中文名称',
       prop: 'fieldChineseName'
     },

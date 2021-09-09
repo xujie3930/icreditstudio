@@ -111,7 +111,9 @@
       <el-row>
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
-            <span v-if="!detailForm.memberList.length">无</span>
+            <span v-if="detailForm.memberList && !detailForm.memberList.length"
+              >无</span
+            >
             <j-table
               v-else
               ref="table"
@@ -274,7 +276,9 @@ export default {
 
     // 返回按钮提示
     handleBackClick() {
-      !this.id &&
+      if (this.id || this.opType === 'view') {
+        this.$router.replace('/workspace/space-setting')
+      } else {
         this.$confirm('该工作空间内容尚未提交，请确认是否返回?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -282,6 +286,7 @@ export default {
         }).then(() => {
           this.$router.replace('/workspace/space-setting')
         })
+      }
     },
 
     // 新增
