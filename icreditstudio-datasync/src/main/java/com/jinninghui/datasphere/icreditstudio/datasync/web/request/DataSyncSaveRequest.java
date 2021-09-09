@@ -66,6 +66,10 @@ public class DataSyncSaveRequest {
      * 数据源方言
      */
     private String dialect;
+    /**
+     * 识别宽表的sql
+     */
+    private String sql;
 
     /**
      * 连接表集合
