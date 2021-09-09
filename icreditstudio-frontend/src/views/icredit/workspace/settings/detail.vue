@@ -287,9 +287,14 @@ export default {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
-        }).then(() => {
-          this.$router.replace('/workspace/space-setting')
         })
+          .then(() => {
+            this.$router.replace('/workspace/space-setting')
+          })
+          .catch(err => {
+            console.log(err, 'err')
+          })
+          .finally(() => {})
       }
     },
 

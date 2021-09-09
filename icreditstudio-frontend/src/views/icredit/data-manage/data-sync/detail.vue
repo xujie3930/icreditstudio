@@ -81,16 +81,16 @@
                 <span class="required-icon">*</span>
                 <span>任务期望最大并发数</span>
               </div>
-              <span class="text">{{ buildDetailInfo.maxConcurrent }}</span>
+              <span class="text">{{ buildDetailInfo.maxThread }}</span>
             </div>
             <div class="content-item">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步速率</span>
               </div>
-              <el-radio-group v-model="buildDetailInfo.syncRate">
-                <el-radio :label="1">不限流</el-radio>
-                <el-radio :label="0">限流</el-radio>
+              <el-radio-group disabled v-model="buildDetailInfo.syncRate">
+                <el-radio :label="0">不限流</el-radio>
+                <el-radio :label="1">限流</el-radio>
               </el-radio-group>
             </div>
           </div>
@@ -162,6 +162,7 @@ export default {
   methods: {
     open({ row, opType }) {
       console.log(opType, 'King')
+      this.activeName = 'DefineDetial'
       this.row = row
       this.$refs.baseDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })

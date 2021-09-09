@@ -20,7 +20,8 @@ export default {
       label: '部门',
       prop: 'orgNames',
       formatter({ orgNames = [] }) {
-        return orgNames.join(';')
+        console.log('orgNames', orgNames)
+        return orgNames && orgNames.join(';')
       }
     }
   ]

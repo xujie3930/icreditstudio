@@ -77,13 +77,16 @@
 
         <section class="content-section">
           <!-- sql语句 -->
-          <div v-if="createMode === 1" class="content-section-header">
+          <div
+            v-if="secondTaskForm.createMode === 1"
+            class="content-section-header"
+          >
             <el-input
               class="sql-textarea"
               type="textarea"
               placeholder="请在此输入hive语法的SQL语句"
               show-word-limit
-              v-model="sql"
+              v-model="secondTaskForm.sql"
               :autosize="{ minRows: 7 }"
             >
             </el-input>
@@ -117,17 +120,6 @@
                 <span v-if="isShowDot" class="dot dot-bottom"></span>
               </el-tag>
             </VueDraggable>
-            <!-- sql语句 -->
-            <el-input
-              class="sql-textarea"
-              type="textarea"
-              placeholder="请在此输入hive语法的SQL语句"
-              show-word-limit
-              v-if="createMode === 1"
-              v-model="textarea"
-              :autosize="{ minRows: 7 }"
-            >
-            </el-input>
           </div>
 
           <div class="content-section-table">
@@ -162,13 +154,13 @@
                   v-model.trim="secondTaskForm.wideTableName"
                 >
                   <el-button
-                    :disabled="!isCanJumpNext"
+                    :disabled="!secondTaskForm.sql"
                     :class="['append-btn', isCanJumpNext ? '' : 'is-disabled']"
                     slot="append"
                     :loading="widthTableLoading"
                     @click="handleIdentifyTable"
                   >
-                    {{ createMode ? '执行SQL' : '识别宽表' }}
+                    {{ secondTaskForm.createMode ? '执行SQL' : '识别宽表' }}
                   </el-button>
                 </el-input>
               </div>
@@ -338,7 +330,6 @@ export default {
       searchStockLoading: false,
       tableLoading: false,
       widthTableLoading: false,
-      createMode: '',
       type: 'sql',
       sql: '',
       sourceType: 0,
@@ -360,7 +351,8 @@ export default {
         partition: '', // 分区字段
         fieldInfos: [], // 表信息
         sourceType: 0, // 资源类型
-        callStep: 2 // 调用步骤
+        callStep: 2, // 调用步骤
+        createMode: 1 // 创建方式
       }
     }
   },
@@ -370,14 +362,15 @@ export default {
   },
 
   created() {
-    const { createMode } = this.$route.query
-    this.createMode = Number(createMode)
+    this.initPage()
     this.getDatasourceCatalog()
   },
 
   methods: {
-    handleStepClick() {
-      this.$router.push('/data-manage/add-transfer')
+    initPage() {
+      const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
+      this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
     },
 
     handleDropClick(evt, data, node) {
@@ -425,22 +418,33 @@ export default {
     handleChangeChineseName(name) {
       console.log(name)
       const valid = validStrZh(name)
-      console.log('valid', valid)
       this.isCanSaveSetting = valid
       this.$message.error('该字段为中文名称输入，请检查后重新输入！')
     },
 
     // 保存设置
     handleSaveSetting() {
-      if (!this.isCanSaveSetting) {
-        this.$message.error(
-          '表格字段为中文名称一列，输入不合法，请检查后重新输入！'
-        )
-        return
-      }
+      API.dataSyncAdd(this.handleTaskFormParams())
+        .then(({ success, data }) => {
+          if (success && data) {
+            this.$notify.success({ title: '操作结果', message: '保存成功' })
+          }
+        })
+        .finally(() => {
+          this.saveSettingLoading = false
+        })
+    },
 
+    // 下一步
+    handleStepClick() {
+      this.handleTaskFormParams()
+      this.$router.push('/data-manage/add-transfer')
+    },
+
+    // 表单参数缓存以及过滤处理
+    handleTaskFormParams() {
+      const { workspaceId } = this
       const { fieldInfos, ...restForm } = this.secondTaskForm
-
       const newFieldInfos = deepClone(fieldInfos).map(
         ({
           dictLoading,
@@ -455,32 +459,11 @@ export default {
           }
         }
       )
-
-      const firstFrom = JSON.parse(
-        sessionStorage.getItem('firstTaskFrom') || {}
-      )
-
-      const secondForm = {
-        workspaceId: this.workspaceId,
-        fieldInfos: newFieldInfos,
-        ...restForm
-      }
-
-      const params = {
-        ...firstFrom,
-        ...secondForm
-      }
-
-      API.dataSyncAdd(params)
-        .then(({ success, data }) => {
-          if (success && data) {
-            sessionStorage.setItem('taskForm', JSON.stringify(params))
-            this.$notify.success({ title: '操作结果', message: '保存成功' })
-          }
-        })
-        .finally(() => {
-          this.saveSettingLoading = false
-        })
+      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
+      const params = { ...firstFrom, ...secondForm }
+      sessionStorage.setItem('taskForm', JSON.stringify(params))
+      return params
     },
 
     // 清空下拉框Options
@@ -504,34 +487,41 @@ export default {
     handleIdentifyTable() {
       const sqlParams = {
         workspaceId: this.workspaceId,
-        createMode: this.createMode,
-        sql: this.sql
+        createMode: this.secondTaskForm.createMode,
+        sql: this.secondTaskForm.sql
       }
 
       const params = {}
       this.widthTableLoading = false
       this.tableLoading = true
-      API.dataSyncGenerateTable(this.createMode ? sqlParams : params)
+      API.dataSyncGenerateTable(
+        this.secondTaskForm.createMode ? sqlParams : params
+      )
         .then(({ success, data }) => {
           if (success && data) {
             console.log(data)
             const { partitions = [], fields = [] } = data
             this.zoningOptions = partitions
             this.secondTaskForm.sql = data.sql
-            this.secondTaskForm.fieldInfos = deepClone(fields).map(item => {
-              return {
-                fieldTypeOptions: this.fieldTypeOptions,
-                dictLoading: false,
-                dictionaryOptions: [],
-                ...item
-              }
-            })
+            this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
           }
         })
         .finally(() => {
           this.widthTableLoading = false
           this.tableLoading = false
         })
+    },
+
+    // 表格信息过滤
+    hadleFieldInfos(fields = []) {
+      return deepClone(fields).map(item => {
+        return {
+          fieldTypeOptions: this.fieldTypeOptions,
+          dictLoading: false,
+          dictionaryOptions: [],
+          ...item
+        }
+      })
     },
 
     // 切换数据源类型

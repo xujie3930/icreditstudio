@@ -40,15 +40,15 @@
 
         <el-form-item label-width="35%" label="同步速率" prop="syncRate">
           <el-radio-group v-model="taskForm.syncRate">
-            <el-radio :label="1">不限流</el-radio>
-            <el-radio :label="0">限流</el-radio>
+            <el-radio :label="0">不限流</el-radio>
+            <el-radio :label="1">限流</el-radio>
           </el-radio-group>
         </el-form-item>
 
         <transition name="fade">
           <el-form-item
             label-width="35%"
-            v-if="!taskForm.syncRate"
+            v-if="taskForm.syncRate"
             label="限流速率"
           >
             <el-input
@@ -70,14 +70,13 @@
 
         <el-form-item label-width="35%" label="调度类型" prop="scheduleType">
           <el-radio-group v-model="taskForm.scheduleType">
-            <el-radio :label="0">周期执行</el-radio>
-            <el-radio :label="1">手动执行</el-radio>
+            <el-radio :label="1">周期执行</el-radio>
+            <el-radio :label="0">手动执行</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <!-- <el-form-item label-width="35%" label="同步任务周期" prop="cron"> -->
         <el-form-item
-          v-if="!taskForm.scheduleType"
+          v-if="taskForm.scheduleType"
           label-width="35%"
           label="Cron"
           prop="cron"
@@ -101,7 +100,7 @@
         <el-button
           class="btn"
           :loading="settingBtnLoading"
-          @click="handleSaveSetting('taskForm')"
+          @click="handleSaveSetting(3, 'settingBtnLoading')"
         >
           保存设置
         </el-button>
@@ -109,7 +108,7 @@
           class="btn"
           type="primary"
           :loading="publishLoading"
-          @click="handlePublish('taskForm')"
+          @click="handleSaveSetting(4, 'publishLoading')"
         >
           发布
         </el-button>
@@ -134,7 +133,13 @@ export default {
     return {
       settingBtnLoading: false,
       publishLoading: false,
-      taskForm: { maxThread: 2, limitRate: '', syncRate: 1, cron: '' },
+      taskForm: {
+        maxThread: 2,
+        limitRate: '',
+        syncRate: 1,
+        scheduleType: 1,
+        cron: ''
+      },
       taskRules: {
         maxThread: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
@@ -162,29 +167,35 @@ export default {
       this.$refs.cron.open()
     },
 
-    // 发布
-    handlePublish(name) {
-      this.handleSaveSetting(name)
-    },
-
-    // 保存设置
-    handleSaveSetting(name) {
-      const params = { workspaceId: this.workspaceId, ...this.taskForm }
-      this.$refs[name].validate(valid => {
+    // 保存设置或发布
+    handleSaveSetting(callStep, loading) {
+      const beforeStepForm = JSON.parse(
+        sessionStorage.getItem('taskForm') || '{}'
+      )
+      const params = {
+        workspaceId: this.workspaceId,
+        ...this.taskForm,
+        ...beforeStepForm
+      }
+      params.callStep = callStep
+      this.$refs.taskForm.validate(valid => {
         if (valid) {
-          this.settingBtnLoading = true
+          this[loading] = true
           API.dataSyncAdd(params)
             .then(({ success, data }) => {
               if (success && data) {
-                console.log(success, data)
                 this.$notify.success({
                   title: '操作结果',
-                  message: '保存设置成功！'
+                  message: callStep === 3 ? '保存设置成功！' : '发布成功！'
                 })
+                if (callStep === 4) {
+                  this.$router.push('/data-manage/data-sync')
+                  sessionStorage.clear('taskForm')
+                }
               }
             })
             .finally(() => {
-              this.settingBtnLoading = false
+              this[loading] = false
             })
         }
       })

@@ -26,8 +26,8 @@ export const createModeMapping = {
 
 // 调度类型
 export const scheduleTypeMapping = {
-  0: '周期执行',
-  1: '手动执行'
+  0: '手动执行',
+  1: '周期执行'
 }
 
 // 数据源树形组件ICON名映射

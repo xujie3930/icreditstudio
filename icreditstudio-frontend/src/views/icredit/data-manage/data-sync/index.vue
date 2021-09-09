@@ -139,7 +139,7 @@ import Detail from './detail'
 import API from '@/api/icredit'
 
 export default {
-  mixins: [crud, operate, workspace],
+  mixins: [crud, workspace, operate],
   components: { Message, Detail },
 
   data() {
@@ -151,7 +151,6 @@ export default {
       formOption,
       mixinSearchFormConfig: {
         models: {
-          workspaceId: '',
           taskName: '',
           taskStatus: '',
           execStatus: ''

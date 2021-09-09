@@ -95,6 +95,7 @@ export default {
         { label: 'SQL', value: 1 }
       ],
       addTaskForm: {
+        taskId: '',
         taskName: '',
         enable: 1,
         createMode: 1,
@@ -147,8 +148,9 @@ export default {
           }
           this.saveSettingLoading = true
           API.dataSyncAdd(params)
-            .then(({ success }) => {
-              if (success) {
+            .then(({ success, data }) => {
+              if (success && data) {
+                this.addTaskForm.taskId = data.taskId
                 this.$notify.success({ title: '操作结果', message: '保存成功' })
               }
             })
@@ -164,10 +166,7 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           console.log(name, valid)
-          sessionStorage.setItem(
-            'firstTaskFrom',
-            JSON.stringify(this.addTaskForm)
-          )
+          sessionStorage.setItem('taskForm', JSON.stringify(this.addTaskForm))
           this.$router.push({
             path: '/data-manage/add-build',
             query: { createMode: this.addTaskForm.createMode }

@@ -14,5 +14,14 @@ export default {
 
   computed: {
     ...mapState('user', ['workspaceId'])
+  },
+
+  methods: {
+    interceptorsRequestRetrieve(params) {
+      return {
+        workspaceId: this.workspaceId,
+        ...params
+      }
+    }
   }
 }
