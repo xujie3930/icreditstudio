@@ -16,10 +16,6 @@ public class WideTableFieldInfo {
      */
     private String fieldName;
     /**
-     * 字段类型
-     */
-    private String fieldType;
-    /**
      * 来源表
      */
     private String sourceTable;

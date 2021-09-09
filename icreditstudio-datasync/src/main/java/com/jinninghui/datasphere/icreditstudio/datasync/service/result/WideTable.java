@@ -2,7 +2,6 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 
 import java.util.List;
 
@@ -23,6 +22,11 @@ public class WideTable {
      * 分区字段列表
      */
     private List<WideTable.Select> partitions;
+
+    /**
+     * 生成宽表sql
+     */
+    private String sql;
 
     @Data
     @AllArgsConstructor

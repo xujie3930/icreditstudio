@@ -4,10 +4,12 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
@@ -41,10 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.ResultSetMetaData;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -133,9 +132,18 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setSqlStr(param.getWideTableSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         entity.setVersion(param.getVersion());
+        if (StringUtils.isNotBlank(param.getTaskId())) {
+            Map<String, Object> columnMap = Maps.newHashMap();
+            columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
+            List<SyncWidetableEntity> entities = (List<SyncWidetableEntity>) syncWidetableService.listByMap(columnMap);
+            if (CollectionUtils.isNotEmpty(entities)) {
+                SyncWidetableEntity entity1 = entities.get(0);
+                entity.setId(entity1.getId());
+            }
+        }
         syncWidetableService.saveOrUpdate(entity);
 
-        List<WideTableFieldInfo> fieldInfos = param.getFieldInfos();
+        List<WideTableFieldRequest> fieldInfos = param.getFieldInfos();
         if (CollectionUtils.isNotEmpty(fieldInfos)) {
             List<WideTableFieldSaveParam> saveParams = fieldInfos.parallelStream()
                     .filter(Objects::nonNull)
@@ -143,6 +151,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         WideTableFieldSaveParam saveParam = new WideTableFieldSaveParam();
                         BeanCopyUtils.copyProperties(info, saveParam);
                         saveParam.setChineseName(info.getFieldChineseName());
+                        saveParam.setWideTableId(entity.getId());
                         saveParam.setName(info.getFieldName());
                         saveParam.setDictKey(info.getAssociateDict());
                         saveParam.setType(info.getFieldType());
@@ -152,6 +161,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
     }
 
+    @BusinessParamsValidate
+    @Transactional(rollbackFor = Exception.class)
     public void wideTableFieldSave(List<WideTableFieldSaveParam> params) {
         if (CollectionUtils.isNotEmpty(params)) {
             List<SyncWidetableFieldEntity> collect = params.parallelStream()
@@ -163,6 +174,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         entity.setChinese(param.getChineseName());
                         return entity;
                     }).collect(Collectors.toList());
+            Set<String> wideTableIds = params.parallelStream().filter(Objects::nonNull).map(WideTableFieldSaveParam::getWideTableId).collect(Collectors.toSet());
+            if (CollectionUtils.isNotEmpty(wideTableIds)) {
+                syncWidetableFieldService.deleteByWideTableIds(wideTableIds);
+            }
             syncWidetableFieldService.saveOrUpdateBatch(collect);
         }
     }
@@ -292,10 +307,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             int columnCount = metaData.getColumnCount();
             List<WideTableFieldInfo> fieldInfos = Lists.newArrayList();
             for (int i = 1; i <= columnCount; i++) {
-                WideTableFieldInfo fieldInfo = new WideTableFieldInfo();
+                WideTableFieldResult fieldInfo = new WideTableFieldResult();
                 fieldInfo.setSort(i);
                 fieldInfo.setFieldName(metaData.getColumnName(i));
-                fieldInfo.setFieldType(HiveMapJdbcTypeEnum.find(metaData.getColumnTypeName(i)).getHiveType());
+                HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(metaData.getColumnTypeName(i));
+                fieldInfo.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
                 fieldInfo.setSourceTable(metaData.getTableName(i));
                 fieldInfo.setFieldChineseName(null);
                 fieldInfos.add(fieldInfo);
@@ -305,6 +321,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             log.error("识别宽表失败", e);
             throw new AppException("60000020");
         }
+        wideTable.setSql(sql);
         wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), e.getName())).collect(Collectors.toList()));
         return BusinessResult.success(wideTable);
     }
@@ -331,75 +348,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     }).collect(Collectors.toList());
         }
         return Optional.ofNullable(results).orElse(Lists.newArrayList());
-    }
-
-    private List<SyncWidetableFieldEntity> transferToWideTableFields(final String wideTableId, DataSyncSaveParam param) {
-        List<SyncWidetableFieldEntity> results = null;
-        List<WideTableFieldInfo> fieldInfos = param.getFieldInfos();
-        if (CollectionUtils.isNotEmpty(fieldInfos)) {
-            results = fieldInfos.parallelStream()
-                    .map(field -> {
-                        SyncWidetableFieldEntity entity = new SyncWidetableFieldEntity();
-                        BeanCopyUtils.copyProperties(field, entity);
-                        entity.setWideTableId(wideTableId);
-                        entity.setSort(field.getSort());
-                        entity.setName(field.getFieldName());
-                        entity.setType(field.getFieldType());
-                        entity.setChinese(field.getFieldChineseName());
-                        entity.setDictKey(field.getAssociateDict());
-                        entity.setSource(field.getSourceTable());
-                        return entity;
-                    }).collect(Collectors.toList());
-        }
-        return Optional.ofNullable(results).orElse(Lists.newArrayList());
-    }
-
-    /**
-     * 转换同步任务表数据
-     *
-     * @param param
-     * @return
-     */
-    private SyncTaskEntity transferToSyncTaskEntity(DataSyncSaveParam param) {
-        SyncTaskEntity entity = new SyncTaskEntity();
-        BeanCopyUtils.copyProperties(param, entity);
-        entity.setTaskStatus(TaskStatusEnum.find(param.getEnable()).getCode());
-        entity.setCreateMode(CreateModeEnum.find(param.getCreateMode()).getCode());
-        entity.setSyncMode(SyncModeEnum.FULL.getCode());
-        if (StringUtils.isNotBlank(param.getPartition())) {
-            entity.setSyncMode(SyncModeEnum.INC.getCode());
-        }
-        entity.setCollectMode(CollectModeEnum.find(param.getScheduleType()).getCode());
-        TaskScheduleInfo scheduleInfo = findScheduleInfo(param);
-        entity.setTaskParamJson(JSONObject.toJSONString(scheduleInfo));
-        return entity;
-    }
-
-    private SyncWidetableEntity transferToSyncWidetableEntity(DataSyncSaveParam param) {
-        SyncWidetableEntity entity = new SyncWidetableEntity();
-        BeanCopyUtils.copyProperties(param, entity);
-        entity.setSyncTaskId(param.getTaskId());
-        entity.setPartitionField(param.getPartition());
-        entity.setTargetUrl(param.getTargetSource());
-        entity.setName(param.getWideTableName());
-        entity.setSourceType(SourceTypeEnum.find(param.getSourceType()).getCode());
-        return entity;
-    }
-
-    private String transferToWideTableSql(DataSyncSaveParam param) {
-        return "";
-    }
-
-    private TaskDefineInfo findTaskDefineInfo(DataSyncSaveParam param) {
-        TaskDefineInfo info = new TaskDefineInfo();
-        BeanCopyUtils.copyProperties(param, info);
-        return info;
-    }
-
-    private TaskBuildInfo findTaskBuildInfo(DataSyncSaveParam param) {
-        TaskBuildInfo info = new TaskBuildInfo();
-        BeanCopyUtils.copyProperties(param, info);
-        return info;
     }
 
     private TaskScheduleInfo findScheduleInfo(DataSyncSaveParam param) {

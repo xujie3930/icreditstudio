@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldRequest;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -77,7 +78,7 @@ public class DataSyncSaveRequest {
     /**
      * 宽表字段
      */
-    private List<WideTableFieldInfo> fieldInfos;
+    private List<WideTableFieldRequest> fieldInfos;
     //=============end===================
     //=================同步任务调度============
     /**

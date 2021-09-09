@@ -9,26 +9,27 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum HiveMapJdbcTypeEnum {
-    VARCHAR("VARCHAR", "STRING"),
-    CHAR("CHAR", "CHAR"),
-    CLOB("CLOB","STRING"),
+    VARCHAR("VARCHAR", "STRING", HiveFieldCategoryEnum.CHARACTER),
+    CHAR("CHAR", "CHAR", HiveFieldCategoryEnum.CHARACTER),
+    CLOB("CLOB", "STRING", HiveFieldCategoryEnum.CHARACTER),
 
-    BLOB("BLOB","BINARY"),
+//    BLOB("BLOB", "BINARY",HiveFieldCategoryEnum.NUMERIC),
 
-    BIT("BIT", "TINYINT"),
-    INTEGER("INTEGER", "INT"),
-    INT("INTEGER", "INT"),
-    BIGINT("BIGINT", "BIGINT"),
-    FLOAT("FLOAT", "FLOAT"),
-    DOUBLE("DOUBLE", "DOUBLE"),
-    DECIMAL("DECIMAL", "DECIMAL"),
+    BIT("BIT", "TINYINT", HiveFieldCategoryEnum.NUMERIC),
+    INTEGER("INTEGER", "INT", HiveFieldCategoryEnum.NUMERIC),
+    INT("INTEGER", "INT", HiveFieldCategoryEnum.NUMERIC),
+    BIGINT("BIGINT", "BIGINT", HiveFieldCategoryEnum.NUMERIC),
+    FLOAT("FLOAT", "FLOAT", HiveFieldCategoryEnum.NUMERIC),
+    DOUBLE("DOUBLE", "DOUBLE", HiveFieldCategoryEnum.NUMERIC),
+    DECIMAL("DECIMAL", "DECIMAL", HiveFieldCategoryEnum.NUMERIC),
 
-    DATETIME("DATETIME", "DATE"),
-    DATE("DATE", "DATE"),
-    TIMESTAMP("TIMESTAMP", "TIMESTAMP"),
+    DATETIME("DATETIME", "DATE", HiveFieldCategoryEnum.DATE),
+    DATE("DATE", "DATE", HiveFieldCategoryEnum.DATE),
+    TIMESTAMP("TIMESTAMP", "TIMESTAMP", HiveFieldCategoryEnum.DATE),
     ;
     private String jdbcType;
     private String hiveType;
+    private HiveFieldCategoryEnum categoryEnum;
 
     public static HiveMapJdbcTypeEnum find(String jdbcType) {
         for (HiveMapJdbcTypeEnum value : HiveMapJdbcTypeEnum.values()) {

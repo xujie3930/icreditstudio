@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.param;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldRequest;
 import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 
@@ -62,7 +62,7 @@ public class DataSyncTaskBuildSaveParam {
      * 宽表字段
      */
     @NotNull(message = "60000014")
-    private List<WideTableFieldInfo> fieldInfos;
+    private List<WideTableFieldRequest> fieldInfos;
 
     private Integer version;
 
