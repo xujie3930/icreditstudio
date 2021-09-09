@@ -248,6 +248,7 @@ export default {
 
     // 选择负责人
     userSelectCallback({ opType, users }) {
+      console.log(users, 'users')
       this.$refs.usersSelect.close()
       if (opType === 'confirm') {
         this.detailForm.memberList = users.map(item => {
@@ -255,7 +256,7 @@ export default {
             id: userId,
             userName: username,
             roleName: userRole,
-            // orgNames: orgName,
+            orgNames,
             functionalAuthority,
             dataAuthority
           } = item
@@ -263,7 +264,7 @@ export default {
             userId,
             username,
             userRole,
-            // orgName,
+            orgNames,
             functionalAuthority,
             dataAuthority,
             createTime: new Date().getTime()
