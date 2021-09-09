@@ -42,8 +42,9 @@
             <if test="request.userId != null and request.userId != ''">
                 AND u.user_id = #{request.userId}
             </if>
+                AND del_flag = 'N'
                 AND w.id = u.space_id
         </where>
-        order by w.create_time
+        order by w.create_time desc, w.update_time desc
     </select>
 </mapper>

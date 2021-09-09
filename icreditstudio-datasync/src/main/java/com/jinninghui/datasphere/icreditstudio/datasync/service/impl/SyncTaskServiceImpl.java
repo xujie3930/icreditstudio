@@ -186,6 +186,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncTaskEntity entity = new SyncTaskEntity();
         BeanCopyUtils.copyProperties(param, entity);
         entity.setId(param.getTaskId());
+        entity.setCollectMode(param.getScheduleType());
+        entity.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
+        TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
+        entity.setTaskParamJson(JSONObject.toJSONString(info));
+
         saveOrUpdate(entity);
     }
 
@@ -348,11 +353,46 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return Optional.ofNullable(results).orElse(Lists.newArrayList());
     }
 
-    private TaskScheduleInfo findScheduleInfo(DataSyncSaveParam param) {
-        TaskScheduleInfo info = new TaskScheduleInfo();
-        BeanCopyUtils.copyProperties(param, info);
-        info.setMaxConcurrent(param.getMaxThread());
-        return info;
+    @Override
+    public BusinessResult<Boolean> stop(DataSyncExecParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(param.getTaskId());
+        entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+        updateById(entity);
+        return BusinessResult.success(true);
+    }
+
+    @Override
+    public BusinessResult<Boolean> remove(DataSyncExecParam param) {
+        removeById(param.getTaskId());
+        return BusinessResult.success(true);
+    }
+
+    @Override
+    public BusinessResult<Boolean> enable(DataSyncExecParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(param.getTaskId());
+        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        updateById(entity);
+        return BusinessResult.success(true);
+    }
+
+    @Override
+    public BusinessResult<Boolean> run(DataSyncExecParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(param.getTaskId());
+        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
+        updateById(entity);
+        return BusinessResult.success(true);
+    }
+
+    @Override
+    public BusinessResult<Boolean> cease(DataSyncExecParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(param.getTaskId());
+        entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
+        updateById(entity);
+        return BusinessResult.success(true);
     }
 
     private QueryWrapper<SyncTaskEntity> queryWrapper(SyncTaskConditionParam param) {

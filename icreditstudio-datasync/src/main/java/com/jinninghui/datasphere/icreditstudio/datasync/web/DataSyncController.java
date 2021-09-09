@@ -134,7 +134,9 @@ public class DataSyncController {
      */
     @PostMapping("/stop")
     public BusinessResult<Boolean> stop(@RequestBody DataSyncExecRequest request) {
-        return BusinessResult.success(true);
+        DataSyncExecParam param = new DataSyncExecParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.stop(param);
     }
 
     /**
@@ -144,7 +146,9 @@ public class DataSyncController {
      */
     @PostMapping("/remove")
     public BusinessResult<Boolean> remove(@RequestBody DataSyncExecRequest request) {
-        return BusinessResult.success(true);
+        DataSyncExecParam param = new DataSyncExecParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.remove(param);
     }
 
     /**
@@ -154,16 +158,22 @@ public class DataSyncController {
      */
     @PostMapping("/enable")
     public BusinessResult<Boolean> enable(@RequestBody DataSyncExecRequest request) {
-        return BusinessResult.success(true);
+        DataSyncExecParam param = new DataSyncExecParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.enable(param);
     }
 
     @PostMapping("/run")
     public BusinessResult<Boolean> run(@RequestBody DataSyncExecRequest request) {
-        return BusinessResult.success(true);
+        DataSyncExecParam param = new DataSyncExecParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.run(param);
     }
 
     @PostMapping("/cease")
     public BusinessResult<Boolean> cease(@RequestBody DataSyncExecRequest request) {
-        return BusinessResult.success(true);
+        DataSyncExecParam param = new DataSyncExecParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.cease(param);
     }
 }

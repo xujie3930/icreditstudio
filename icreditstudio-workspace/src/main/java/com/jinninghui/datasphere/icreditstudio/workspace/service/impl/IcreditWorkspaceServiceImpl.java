@@ -149,9 +149,11 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateWorkSpaceAndMember(IcreditWorkspaceUpdateParam param) {
         //更新workspace
         IcreditWorkspaceEntity entity = BeanCopyUtils.copyProperties(param, new IcreditWorkspaceEntity());
+        entity.setUpdateTime(new Date());
         updateById(entity);
         String spaceId = entity.getId();
         List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(userEntity -> userEntity.getId()).collect(Collectors.toList());

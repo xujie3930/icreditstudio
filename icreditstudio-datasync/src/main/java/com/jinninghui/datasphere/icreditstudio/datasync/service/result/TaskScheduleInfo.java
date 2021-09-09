@@ -10,7 +10,7 @@ public class TaskScheduleInfo {
     /**
      * 最大并发数
      */
-    private Integer maxConcurrent;
+    private Integer maxThread;
     /**
      * 同步速率【0：限流，1：不限流】
      */
@@ -21,10 +21,6 @@ public class TaskScheduleInfo {
     private Integer scheduleType;
 
     private Integer limitRate;
-    /**
-     * 同步周期
-     */
-    private Long syncCycle;
     /**
      * cron表达式
      */

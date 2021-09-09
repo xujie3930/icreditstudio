@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
 //import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -75,7 +76,7 @@ public interface DatasourceSync {
             conn.close();
             return "测试连接成功";
         } catch (Exception e) {
-            return e.getMessage();
+            throw new AppException("70000000");
         }
     }
 
