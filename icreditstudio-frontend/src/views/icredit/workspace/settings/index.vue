@@ -126,6 +126,7 @@ export default {
     interceptorsRequestRetrieve(params) {
       return {
         userId: this.userInfo.id,
+        spaceId: this.workspaceId,
         ...params
       }
     },
