@@ -148,18 +148,19 @@ export default {
     fetchAllOrgs() {
       this.treeLoading = true
       queryAllOrgs()
-        .then(res => {
-          this.userSetModels.tree.orgTreeData = arrayToTree(
-            res.data.reduce((pre, cur) => {
+        .then(({ success, data }) => {
+          if (success && data) {
+            const dataSource = data.reduce((pre, cur) => {
               cur.operateFlag === '1' &&
                 pre.push({ label: cur.orgName, ...cur })
               return pre
-            }, []),
-            '0'
-          )
+            }, [])
+            this.userSetModels.tree.orgTreeData = arrayToTree(dataSource, '0')
+          }
         })
         .finally(() => {
           this.treeLoading = false
+          console.log('orgData', this.userSetModels.tree.orgTreeData)
         })
     },
 
