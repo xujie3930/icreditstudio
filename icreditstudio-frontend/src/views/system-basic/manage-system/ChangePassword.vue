@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container w100 h100">
     <el-form
       :model="ruleForm"
       :rules="rules"
@@ -11,13 +11,22 @@
         <el-input
           v-model="ruleForm.oldpassword"
           type="password"
-          placeholder="请输入"></el-input>
+          placeholder="请输入"
+        ></el-input>
       </el-form-item>
       <el-form-item label="新密码" prop="newpassword">
-        <el-input v-model="ruleForm.newpassword" type="password" placeholder="请输入"></el-input>
+        <el-input
+          v-model="ruleForm.newpassword"
+          type="password"
+          placeholder="请输入"
+        ></el-input>
       </el-form-item>
       <el-form-item label="确认密码" prop="confrimpassword">
-        <el-input v-model="ruleForm.confrimpassword" type="password" placeholder="请输入"></el-input>
+        <el-input
+          v-model="ruleForm.confrimpassword"
+          type="password"
+          placeholder="请输入"
+        ></el-input>
       </el-form-item>
     </el-form>
     <div class="center-div">
@@ -27,7 +36,6 @@
 </template>
 
 <script>
-
 import { editAccountPwd } from '@/api/user'
 import { mapActions } from 'vuex'
 import _ from 'lodash'
@@ -52,21 +60,28 @@ export default {
         confrimpassword: ''
       },
       rules: {
-        oldpassword: [{
-          required: true,
-          message: '请输入旧密码',
-          trigger: 'blur'
-        }],
-        newpassword: [{
-          required: true,
-          message: '请输入新密码',
-          trigger: 'blur'
-        }],
-        confrimpassword: [{
-          required: true,
-          message: '请输入确认密码',
-          trigger: 'blur'
-        }, { validator: validatePass, trigger: 'blur' }]
+        oldpassword: [
+          {
+            required: true,
+            message: '请输入旧密码',
+            trigger: 'blur'
+          }
+        ],
+        newpassword: [
+          {
+            required: true,
+            message: '请输入新密码',
+            trigger: 'blur'
+          }
+        ],
+        confrimpassword: [
+          {
+            required: true,
+            message: '请输入确认密码',
+            trigger: 'blur'
+          },
+          { validator: validatePass, trigger: 'blur' }
+        ]
       }
     }
   },
@@ -91,10 +106,10 @@ export default {
       this.$refs.ruleForm.validate(valid => {
         if (valid) {
           const obj = _.cloneDeep(this.ruleForm)
-          const SM4 = require('gm-crypt').sm4;
-          const sm4 = new SM4(sm4Config);
-          obj.oldpassword = sm4.encrypt(obj.oldpassword);
-          obj.newpassword = sm4.encrypt(obj.newpassword);
+          const SM4 = require('gm-crypt').sm4
+          const sm4 = new SM4(sm4Config)
+          obj.oldpassword = sm4.encrypt(obj.oldpassword)
+          obj.newpassword = sm4.encrypt(obj.newpassword)
           console.log(obj)
           editAccountPwd({
             newPassWord: obj.newpassword,
@@ -104,11 +119,13 @@ export default {
             this.$message.success('修改密码成功')
             setTimeout(() => {
               this.logoutAction().then(() => {
-                this.$router.replace({
-                  path: '/login'
-                }).then(() => {
-                  window.location.reload()
-                })
+                this.$router
+                  .replace({
+                    path: '/login'
+                  })
+                  .then(() => {
+                    window.location.reload()
+                  })
               })
             }, 1000)
           })
@@ -125,7 +142,7 @@ export default {
 .container {
   margin: 16px 24px;
   padding: 20px;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   .center-ruleForm {
     width: 400px;
     margin: 0 auto;

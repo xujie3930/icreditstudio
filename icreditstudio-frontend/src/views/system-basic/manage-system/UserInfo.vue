@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container w100 h100">
     <div class="left">
       <div class="user_image">
         <el-upload
@@ -239,7 +239,10 @@ export default {
                   title: '成功',
                   message: '修改成功'
                 })
-                this.$store.commit(`user/${SET_USERINFO}`, { ...this.ruleForm, id: this.userInfo.id })
+                this.$store.commit(`user/${SET_USERINFO}`, {
+                  ...this.ruleForm,
+                  id: this.userInfo.id
+                })
                 this.$router.push({
                   path: '/index'
                 })
