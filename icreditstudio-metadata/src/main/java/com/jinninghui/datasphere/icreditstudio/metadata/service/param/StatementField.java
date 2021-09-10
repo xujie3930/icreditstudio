@@ -6,7 +6,7 @@ import lombok.Data;
  * @author Peng
  */
 @Data
-public class WideTableField {
+public class StatementField {
     /**
      * 字段名称
      */

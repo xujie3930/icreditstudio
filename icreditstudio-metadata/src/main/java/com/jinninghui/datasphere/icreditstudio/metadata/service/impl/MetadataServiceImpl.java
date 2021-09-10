@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.DataSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
@@ -9,7 +10,10 @@ import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseDataSour
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
@@ -21,11 +25,13 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 /**
  * @author Peng
  */
+@Slf4j
 @Service
 @EnableConfigurationProperties(WarehouseAddressProperties.class)
 public class MetadataServiceImpl implements MetadataService {
@@ -103,6 +109,60 @@ public class MetadataServiceImpl implements MetadataService {
 
     @Override
     public BusinessResult<Boolean> generateWideTable(MetadataGenerateWideTableParam param) {
-        return null;
+        String statementSql = generateWideTableStatement(param);
+        List<WarehouseDataSource> warehouseDataSources = getWarehouseDataSources();
+        if (CollectionUtils.isNotEmpty(warehouseDataSources)) {
+            WarehouseDataSource dataSource = warehouseDataSources.get(0);
+            String useSql = "use " + param.getDatabaseName();
+            Statement stmt = dataSource.getStmt();
+            try {
+                stmt.execute(useSql);
+                stmt.execute(statementSql);
+            } catch (Exception ex) {
+                log.error("执行hive命令失败", ex);
+                throw new AppException("80000000", ex.getMessage());
+            }
+        } else {
+            throw new AppException("80000001");
+        }
+        return BusinessResult.success(true);
+    }
+
+    private String generateWideTableStatement(MetadataGenerateWideTableParam param) {
+        //语句前缀
+        String prefix = "create table ";
+
+        List<StatementField> fieldList = param.getFieldList();
+        StringJoiner sj = null;
+        if (CollectionUtils.isNotEmpty(fieldList)) {
+            sj = new StringJoiner(",", "(", ")");
+            for (StatementField field : fieldList) {
+                StringJoiner sj1 = new StringJoiner(" ");
+                sj1.add(field.getFieldName());
+                sj1.add(field.getFieldType());
+                String filed = sj1.toString();
+                sj.add(filed);
+            }
+        }
+        //分区
+        String partitionCondition = new StringJoiner(" ").add("partitioned by (").add(param.getPartition()).add(" string)").toString();
+        //分隔符
+        String delimiterCondition = new StringJoiner(" ").add("row format delimited fields terminated by ").add("\'" + param.getDelimiter() + "\'").toString();
+
+        String wideTableName = param.getWideTableName();
+        StringJoiner statement = null;
+        if (StringUtils.isNotBlank(param.getDatabaseName()) && StringUtils.isNotBlank(wideTableName) && Objects.nonNull(sj)) {
+            statement = new StringJoiner(" ");
+            statement.add(prefix);
+            statement.add(new StringJoiner(".").add(param.getDatabaseName()).add(wideTableName).toString());
+            statement.add(sj.toString());
+            if (StringUtils.isNotBlank(param.getPartition())) {
+                statement.add(partitionCondition);
+            }
+            if (StringUtils.isNotEmpty(param.getDelimiter())) {
+                statement.add(delimiterCondition);
+            }
+        }
+        return statement.toString();
     }
 }

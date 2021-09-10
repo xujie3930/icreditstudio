@@ -10,14 +10,14 @@ import lombok.Getter;
 @Getter
 public enum HiveMapJdbcTypeEnum {
     VARCHAR("VARCHAR", "STRING", HiveFieldCategoryEnum.CHARACTER),
-    CHAR("CHAR", "CHAR", HiveFieldCategoryEnum.CHARACTER),
+    CHAR("CHAR", "STRING", HiveFieldCategoryEnum.CHARACTER),
     CLOB("CLOB", "STRING", HiveFieldCategoryEnum.CHARACTER),
 
 //    BLOB("BLOB", "BINARY",HiveFieldCategoryEnum.NUMERIC),
 
     BIT("BIT", "TINYINT", HiveFieldCategoryEnum.NUMERIC),
     INTEGER("INTEGER", "INT", HiveFieldCategoryEnum.NUMERIC),
-    INT("INTEGER", "INT", HiveFieldCategoryEnum.NUMERIC),
+    INT("INT", "INT", HiveFieldCategoryEnum.NUMERIC),
     BIGINT("BIGINT", "BIGINT", HiveFieldCategoryEnum.NUMERIC),
     FLOAT("FLOAT", "FLOAT", HiveFieldCategoryEnum.NUMERIC),
     DOUBLE("DOUBLE", "DOUBLE", HiveFieldCategoryEnum.NUMERIC),

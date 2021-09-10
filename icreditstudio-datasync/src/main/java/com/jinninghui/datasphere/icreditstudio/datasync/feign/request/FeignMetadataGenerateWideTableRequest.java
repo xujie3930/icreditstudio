@@ -1,6 +1,5 @@
-package com.jinninghui.datasphere.icreditstudio.metadata.web.request;
+package com.jinninghui.datasphere.icreditstudio.datasync.feign.request;
 
-import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
 import lombok.Data;
 
 import java.util.List;
@@ -9,7 +8,7 @@ import java.util.List;
  * @author Peng
  */
 @Data
-public class MetadataGenerateWideTableRequest {
+public class FeignMetadataGenerateWideTableRequest {
 
     /**
      * 数据库名

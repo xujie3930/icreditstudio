@@ -19,7 +19,10 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEnti
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignMetadataGenerateWideTableRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.StatementField;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
@@ -36,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,8 +62,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private Parser<String, List<AssociatedData>> fileAssociatedParser;
     @Resource
     private Parser<String, TaskScheduleInfo> taskScheduleInfoParser;
-    @Autowired
+    @Resource
     private DatasourceFeign datasourceFeign;
+    @Resource
+    private MetadataFeign metadataFeign;
 
     @Override
     @BusinessParamsValidate
@@ -78,6 +82,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             taskId = threeStepSave(param);
         }
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
+            CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+            //创建宽表
+            createWideTable(wideTableParam);
             taskId = threeStepSave(param);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
@@ -393,6 +400,50 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
         updateById(entity);
         return BusinessResult.success(true);
+    }
+
+    /**
+     * 创建宽表
+     *
+     * @param param
+     */
+    private void createWideTable(CreateWideTableParam param) {
+        String wideTableName = param.getWideTableName();
+        List<WideTableFieldRequest> fieldInfos = param.getFieldInfos();
+        String targetSource = param.getTargetSource();
+        if (StringUtils.isBlank(wideTableName)) {
+            throw new AppException("60000002");
+        }
+        if (StringUtils.isBlank(targetSource)) {
+            throw new AppException("60000001");
+        }
+        if (CollectionUtils.isEmpty(fieldInfos)) {
+            throw new AppException("60000014");
+        }
+        FeignMetadataGenerateWideTableRequest feignRequest = new FeignMetadataGenerateWideTableRequest();
+        feignRequest.setWideTableName(wideTableName);
+        feignRequest.setPartition(param.getPartition());
+        feignRequest.setDatabaseName(targetSource);
+        feignRequest.setDelimiter(DefaultDelimiterEnum.TABS.getSymbol());
+
+        Set<String> checkDuplicate = new HashSet<>();
+        List<StatementField> statementFields = fieldInfos.stream()
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(WideTableFieldRequest::getSort))
+                .map(info -> {
+                    StatementField field = new StatementField();
+                    if (checkDuplicate.contains(info.getFieldName())) {
+                        field.setFieldName(new StringJoiner("_").add(info.getSourceTable()).add(info.getFieldName()).toString());
+                        checkDuplicate.add(info.getFieldName());
+                    } else {
+                        field.setFieldName(info.getFieldName());
+                        checkDuplicate.add(info.getFieldName());
+                    }
+                    field.setFieldType(info.getFieldType());
+                    return field;
+                }).collect(Collectors.toList());
+        feignRequest.setFieldList(statementFields);
+        metadataFeign.generateWideTable(feignRequest);
     }
 
     private QueryWrapper<SyncTaskEntity> queryWrapper(SyncTaskConditionParam param) {
