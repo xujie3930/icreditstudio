@@ -70,8 +70,8 @@ public class DataSyncController {
     public BusinessResult<WideTable> generateWideTable(@RequestBody DataSyncGenerateWideTableRequest request) {
         DataSyncGenerateWideTableParam param = new DataSyncGenerateWideTableParam();
         BeanCopyUtils.copyProperties(request, param);
-        param.setDatasourceId("880047995863814144");
-        param.setDialect("dialect");
+//        param.setDatasourceId("880047995863814144");
+//        param.setDialect("dialect");
         return syncTaskService.generateWideTable(param);
     }
 

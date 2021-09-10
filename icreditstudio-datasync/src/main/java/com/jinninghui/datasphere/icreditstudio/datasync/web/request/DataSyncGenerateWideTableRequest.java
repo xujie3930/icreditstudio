@@ -13,11 +13,7 @@ import java.util.List;
  */
 @Data
 public class DataSyncGenerateWideTableRequest {
-    /**
-     * 工作空间ID
-     */
-    /*@NotNull(message = "60000000")
-    private String workspaceId;*/
+
     /**
      * 数据源ID
      */
