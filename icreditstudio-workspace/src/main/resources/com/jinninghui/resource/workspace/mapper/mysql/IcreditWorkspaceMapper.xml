@@ -27,6 +27,9 @@
         w.update_time, w.update_user
         from icredit_workspace w, icredit_workspace_user u
         <where>
+            <if test="request.spaceId != null and request.spaceId != '' ">
+                AND w.id = #{request.spaceId}
+            </if>
             <if test="request.name != null and request.name != '' ">
                 AND w.name like concat ('%', #{request.name}, '%')
             </if>
