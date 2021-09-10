@@ -14,12 +14,11 @@
   >
     <!-- 查看详情 -->
     <el-form
-      v-if="opType === 'view'"
-      :model="detialForm"
+      :model="detailData"
       :rules="rules"
-      ref="detialForm"
+      ref="detailData"
       label-width="100px"
-      :class="[opType === 'view' ? 'form-detail' : '']"
+      :class="[opType === 'View' ? 'form-detail' : '']"
     >
       <template>
         <el-form-item label="数据源名称" :rules="[{ required: true }]">
@@ -73,13 +72,13 @@
     </el-form>
 
     <!-- 新增或编辑 -->
-    <el-form
+    <!-- <el-form
       v-else
       :model="detialForm"
       :rules="rules"
       ref="detialForm "
       label-width="100px"
-      :class="[opType === 'view' ? 'form-detail' : '']"
+      :class="[opType === 'View' ? 'form-detail' : '']"
     >
       <template>
         <el-form-item label="数据源名称" prop="name">
@@ -132,7 +131,7 @@
           ></el-input>
         </el-form-item>
       </template>
-    </el-form>
+    </el-form> -->
   </BaseDialog>
 </template>
 
@@ -145,10 +144,9 @@ export default {
   data() {
     return {
       title: '',
-      opType: 'view',
+      opType: 'View',
       dialogVisible: false,
-      detailData: { ipPort: '' },
-      detialForm: {},
+      detailData: {},
       rules: {
         name: [
           { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
@@ -167,10 +165,7 @@ export default {
     open({ opType, data = {} }) {
       this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
-      this.detailData = data
-      if (opType === 'view') {
-        this.detialForm = uriSplit(data.uri, data)
-      }
+      this.detailData = uriSplit(data.uri, data)
       this.$refs.baseDialog.open()
     },
 

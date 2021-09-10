@@ -7,6 +7,7 @@ import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseAddressProperties;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseDataSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
 import org.apache.commons.lang3.StringUtils;
@@ -98,5 +99,10 @@ public class MetadataServiceImpl implements MetadataService {
                 }).filter(info -> StringUtils.isBlank(param.getName()) || info.getName().contains(param.getName()))
                 .collect(Collectors.toList());
         return BusinessResult.success(results);
+    }
+
+    @Override
+    public BusinessResult<Boolean> generateWideTable(MetadataGenerateWideTableParam param) {
+        return null;
     }
 }
