@@ -7,6 +7,7 @@
         from icredit_workspace_user u,
              icredit_workspace w
         where u.space_id = w.id
+          and w.del_flag = 'N'
           and u.user_id = #{id};
     </select>
 
