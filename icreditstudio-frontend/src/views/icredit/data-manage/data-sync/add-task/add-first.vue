@@ -98,7 +98,7 @@ export default {
         taskId: '',
         taskName: '',
         enable: 1,
-        createMode: 1,
+        createMode: 0,
         taskDescribe: ''
       },
       addTaskFormRules: {

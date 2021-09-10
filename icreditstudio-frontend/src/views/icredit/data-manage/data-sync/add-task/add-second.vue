@@ -66,7 +66,7 @@
                 :draggable="node.level > 1"
                 class="custom-tree-node"
                 slot-scope="{ node, data }"
-                @dragstart="e => handleDropClick(e, data, node)"
+                @dragstart="e => handleDragClick(e, data, node)"
               >
                 <JSvg class="jsvg-icon" :name="data.icon"></JSvg>
                 <span>{{ data.name }}</span>
@@ -101,25 +101,53 @@
             @drop="handleTagWrapDrop"
             @dragover="handlePreventDefault"
           >
-            <VueDraggable tag="span">
-              <el-tag
-                closable
-                draggable
-                id="tagItem"
-                class="table-item"
-                @mouseenter.native="isShowDot = true"
-                @mouseleave.native="isShowDot = false"
-                @click.native="handleLinkDialogOpen"
-              >
-                <!-- @mousedown.native="handleTagMouseDown" -->
-                <!-- @dragstart="handleTagItemDrag" -->
-                <span class="text">huhuhuhuhu</span>
-                <span v-if="isShowDot" class="dot dot-top"></span>
-                <span v-if="isShowDot" class="dot dot-left"></span>
-                <span v-if="isShowDot" class="dot dot-right"></span>
-                <span v-if="isShowDot" class="dot dot-bottom"></span>
-              </el-tag>
-            </VueDraggable>
+            <el-row class="row" type="flex" align="middle" justify="center">
+              <template v-for="(item, idx) in selectedTable">
+                <div
+                  :key="idx"
+                  :class="['col', `col-${idx + 1}`]"
+                  v-if="item.type === 'tag'"
+                >
+                  <el-tag
+                    closable
+                    id="tagItem"
+                    :class="[
+                      'table-item',
+                      `table-item-${idx}`,
+                      item.isChecked ? 'table-item-checked' : ''
+                    ]"
+                    @mouseenter.native="item.isShowDot = true"
+                    @mouseleave.native="item.isShowDot = false"
+                    @click.native="handleTagClick(idx)"
+                    @close="handleDeleteTagClick(idx)"
+                  >
+                    <el-tooltip
+                      effect="dark"
+                      placement="top-start"
+                      :content="item.name"
+                    >
+                      <span class="col">{{ item.name }}</span>
+                    </el-tooltip>
+                    <span v-if="item.isShowDot" class="dot dot-left"></span>
+                    <span v-if="item.isShowDot" class="dot dot-right"></span>
+                  </el-tag>
+                </div>
+
+                <div
+                  v-else-if="item.isShow && selectedTable.length - 1 !== idx"
+                  class="col relation-line"
+                  :key="idx"
+                >
+                  <div class="line"></div>
+                  <JSvg
+                    name="left-link"
+                    class="icon"
+                    @click.native="handleLinkIconClick"
+                  />
+                  <div class="line"></div>
+                </div>
+              </template>
+            </el-row>
           </div>
 
           <div class="content-section-table">
@@ -260,7 +288,7 @@
 </template>
 
 <script>
-import VueDraggable from 'vuedraggable'
+// import VueDraggable from 'vuedraggable'
 import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import Affiliations from './affiliations'
@@ -270,12 +298,12 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-sync-ad
 import API from '@/api/icredit'
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { treeIconMapping } from '../contant'
+import { treeIconMapping, radioBtnOption } from '../contant'
 import { randomNum, deepClone } from '@/utils/util'
 import { validStrZh } from '@/utils/validate'
 
 export default {
-  components: { Back, HeaderStepBar, Affiliations, VueDraggable },
+  components: { Back, HeaderStepBar, Affiliations },
   mixins: [crud],
 
   data() {
@@ -337,10 +365,32 @@ export default {
       zoningOptions: [],
       value: '',
       treeData: [],
-      radioBtnOption: [
-        { label: 0, className: 'btn btn-left', name: '外接数据库' },
-        { label: 1, className: 'btn btn-center', name: '本地文件' },
-        { label: 2, className: 'btn btn-right', name: '区块链数据' }
+      radioBtnOption,
+
+      // 可视化-已拖拽的表
+      selectedTable: [
+        // {
+        //   type: 'tag',
+        //   isChecked: false,
+        //   isShowDot: false,
+        //   tableName: 'TableA'
+        // },
+        // { type: 'line', iconName: 'cover-link' },
+        // {
+        //   type: 'tag',
+        //   isChecked: false,
+        //   isShowDot: false,
+        //   tableName: 'TableB'
+        // },
+        // { type: 'line', iconName: 'left-link' },
+        // {
+        //   type: 'tag',
+        //   isChecked: false,
+        //   isShowDot: false,
+        //   tableName: 'TableC'
+        // },
+        // { type: 'line', iconName: 'all-link' },
+        // { type: 'tag', isChecked: false, isShowDot: false, tableName: 'TableD' }
       ],
 
       // 表单参数
@@ -373,26 +423,49 @@ export default {
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
     },
 
-    handleDropClick(evt, data, node) {
-      console.log('evt', evt, data, node)
-      evt.dataTransfer.setData('text/json', data)
+    // 可视化-表拖拽
+    handleDragClick(evt, data, node) {
+      evt.dataTransfer.setData(
+        'application/json',
+        JSON.stringify({ tableId: node.id, ...data })
+      )
     },
 
-    handleTagItemDrag(evt) {
-      // eslint-disable-next-line no-param-reassign
-      evt.currentTarget.style.border = 'dashed'
-      evt.dataTransfer.setData('text/json', evt.target.id)
-    },
-
+    // 可视化-释放被动的表
     handleTagWrapDrop(evt) {
       evt.preventDefault()
-      const data = evt.dataTransfer.getData('text/json')
-      console.log('ddddd', data)
-      // evt.target.appendChild(document.getElementById(data))
-      // evt.dataTransfer.clearData()
-      const tagItemDom = document.getElementById('tagItem')
-      const tagItemNode = tagItemDom.cloneNode(true)
-      document.getElementById('dropArea').appendChild(tagItemNode)
+      const domData = evt.dataTransfer.getData('application/json')
+      const dataSource = JSON.parse(domData)
+      const addTableObj = [
+        { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
+        { type: 'line', iconName: 'left-link', isShow: false }
+      ]
+      const isExistIdx = this.selectedTable.findIndex(
+        ({ tableId }) => dataSource.tableId === tableId
+      )
+
+      if (isExistIdx > -1) {
+        this.$message.error('拖动的表已存在， 请重新选择一张表！')
+        return
+      }
+
+      if (!this.selectedTable.length) {
+        this.selectedTable.push(...addTableObj)
+      } else {
+        this.selectedTable = deepClone([
+          ...this.selectedTable,
+          ...addTableObj
+        ]).map(({ isShow, ...rest }) => {
+          return {
+            isShow: true,
+            ...rest
+          }
+        })
+      }
+    },
+
+    handlePreventDefault(evt) {
+      evt.preventDefault()
     },
 
     handleTagMouseDown(e) {
@@ -406,11 +479,34 @@ export default {
       // }
     },
 
-    handlePreventDefault(evt) {
-      evt.preventDefault()
+    handleTagClick(idx) {
+      const { isChecked } = this.selectedTable[idx]
+      this.selectedTable[idx].isChecked = !isChecked
     },
 
-    handleLinkDialogOpen() {
+    // 可视化-删除已选择的的表
+    handleDeleteTagClick(idx) {
+      switch (idx) {
+        case 0:
+          this.selectedTable = []
+          break
+
+        default:
+          break
+      }
+      // this.selectedTable = deepClone(
+      //   this.selectedTable.filter(({ type, isShow }) => {
+      //     return type === 'tag' || isShow
+      //   })
+      // ).filter((item, index) => {
+      //   return index !== idx && index !== idx + 1 && index && idx - 1
+      // })
+    },
+
+    // 可视化-点击关联图标打开关联弹窗
+    handleLinkIconClick(options) {
+      const { lfTableName, rgTableName, dialect } = options
+      console.log(lfTableName, rgTableName, dialect)
       this.$refs.linkDialog.open({ title: '新增关联关系' })
     },
 
@@ -734,6 +830,7 @@ export default {
 
         .custom-tree-node {
           @include flex;
+          cursor: pointer;
 
           .jsvg-icon {
             width: 14px;
@@ -764,6 +861,41 @@ export default {
       overflow-y: auto;
       border-bottom: 1px solid #e9e9e9;
 
+      .row {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+
+        .col {
+          width: 150px;
+          height: 34px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .col-1 {
+          text-align: right;
+        }
+
+        .relation-line {
+          @include flex;
+          width: 150;
+
+          .line {
+            width: 60px;
+            height: 2px;
+            background-color: #1890ff;
+          }
+
+          .icon {
+            width: 30px;
+            height: 20px;
+            cursor: pointer;
+          }
+        }
+      }
+
       .table-item {
         @include flex;
         display: inline-flex;
@@ -780,8 +912,7 @@ export default {
         text-align: center;
         color: #262626;
         line-height: 34px;
-        margin: 10px;
-        cursor: move;
+        cursor: pointer;
 
         .dot {
           position: absolute;
@@ -822,6 +953,11 @@ export default {
             margin-top: 2px;
           }
         }
+      }
+
+      .table-item-checked {
+        color: #1890ff;
+        background: #fff;
       }
 
       .sql-textarea {

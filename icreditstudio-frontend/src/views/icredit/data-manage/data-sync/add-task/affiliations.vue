@@ -7,6 +7,7 @@
   <BaseDialog
     class="link-type"
     ref="baseDialog"
+    width="1000px"
     :title="title"
     @onClose="close"
     @onConfirm="confirm"

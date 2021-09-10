@@ -25,7 +25,7 @@
         @change="workspaceIdChange"
       >
         <el-option
-          v-for="item in workspaceList || []"
+          v-for="item in workspaceList"
           :key="item.id"
           :label="item.name"
           :value="item.id"

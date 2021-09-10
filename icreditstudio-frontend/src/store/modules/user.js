@@ -117,7 +117,10 @@ const actions = {
           const _menusTree = arrayToTree(menus || [], '0')
           if (_menusTree && _menusTree.length > 0) {
             commit(SET_WRKSPACE_AUTH, workspaceCreateAuth)
-            commit(SET_WRKSPACE_LIST, workspaceList)
+            commit(SET_WRKSPACE_LIST, [
+              { name: '全部', id: 'all' },
+              ...workspaceList
+            ])
             commit(SET_USERINFO, userInfo || {})
             commit(SET_AUTH, authList)
             commit(SET_PERMISSION_LIST, _menusTree)

@@ -124,11 +124,13 @@ export default {
 
   methods: {
     interceptorsRequestRetrieve(params) {
-      return {
+      const newParams = {
         userId: this.userInfo.id,
         spaceId: this.workspaceId,
         ...params
       }
+      this.workspaceId === 'all' && delete newParams.spaceId
+      return newParams
     },
 
     handleAddWorkspace() {

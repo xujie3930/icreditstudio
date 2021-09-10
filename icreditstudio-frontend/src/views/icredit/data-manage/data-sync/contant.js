@@ -40,3 +40,10 @@ export const treeIconMapping = {
   },
   2: []
 }
+
+// 同步任务构建-切换数据源选项
+export const radioBtnOption = [
+  { label: 0, className: 'btn btn-left', name: '外接数据库' },
+  { label: 1, className: 'btn btn-center', name: '本地文件' },
+  { label: 2, className: 'btn btn-right', name: '区块链数据' }
+]
