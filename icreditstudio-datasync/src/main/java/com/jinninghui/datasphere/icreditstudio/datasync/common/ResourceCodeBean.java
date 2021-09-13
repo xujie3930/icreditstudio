@@ -36,6 +36,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000019("60000019", "宽表ID为空"),
         RESOURCE_CODE_60000020("60000020", "识别宽表失败"),
         RESOURCE_CODE_60000021("60000021", "调用步骤不能为空"),
+        RESOURCE_CODE_60000022("60000022", "任务名称不大于15个字符"),
+        RESOURCE_CODE_60000023("60000023", "任务描述不大于255个字符"),
         ;
 
         public final String code;

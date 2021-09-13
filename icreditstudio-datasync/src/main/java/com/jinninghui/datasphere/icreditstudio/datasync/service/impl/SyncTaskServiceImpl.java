@@ -1,7 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,6 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.Associat
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
@@ -43,6 +42,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -202,6 +204,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    @BusinessParamsValidate
     public BusinessResult<BusinessPageResult> syncTasks(DataSyncQueryParam param) {
         //查询条件
         SyncTaskConditionParam build = SyncTaskConditionParam.builder()
@@ -246,10 +249,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             info = new TaskDefineInfo();
             BeanCopyUtils.copyProperties(byId, info);
-            info.setEnable(byId.getTaskStatus());
+            info.setEnable(TaskStatusEnum.find(byId.getTaskStatus()).getStatusEnum().getCode());
             info.setTaskId(byId.getId());
-            info.setTaskDescription(byId.getTaskDescribe());
-            info.setBuildMode(byId.getCreateMode());
+            info.setTaskDescribe(byId.getTaskDescribe());
+            info.setCreateMode(byId.getCreateMode());
         }
         return BusinessResult.success(info);
     }
@@ -296,12 +299,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
         String sql;
         if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
             AssociatedFormatterVo vo = new AssociatedFormatterVo();
             vo.setDialect(param.getDialect());
-            vo.setSourceTables(param.getSourceTables());
+            vo.setSourceTables(BeanCopyUtils.copy(param.getSourceTables(), TableInfo.class));
             vo.setAssoc(param.getView());
             sql = AssociatedUtil.wideTableSql(vo);
         } else {
@@ -310,10 +314,24 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         WideTable wideTable;
         try {
             wideTable = new WideTable();
-            wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
+//            wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
             ConnectionInfo info = getConnectionInfo(param.getDatasourceId());
+            Connection connection = AssociatedUtil.getConnection(info);
+            ResultSetMetaData metaData = AssociatedUtil.getResultSetMetaData(connection, sql);
+            DatabaseMetaData databaseMetaData = AssociatedUtil.getDatabaseMetaData(connection);
 
-            ResultSetMetaData metaData = AssociatedUtil.getResultSetMetaData(info, sql);
+            List<TableInfo> sourceTables = param.getSourceTables();
+            List<ImmutablePair<String, String>> collect = Optional.ofNullable(sourceTables).orElse(Lists.newArrayList())
+                    .parallelStream()
+                    .filter(Objects::nonNull)
+                    .map(ti -> {
+                        ImmutablePair<String, String> pair = new ImmutablePair(ti.getDatabase(), ti.getTableName());
+                        return pair;
+                    })
+                    .collect(Collectors.toList());
+
+            Map<String, String> tableFieldRemark = getTableFieldRemark(databaseMetaData, collect);
+
             int columnCount = metaData.getColumnCount();
             List<WideTableFieldInfo> fieldInfos = Lists.newArrayList();
             for (int i = 1; i <= columnCount; i++) {
@@ -323,13 +341,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(metaData.getColumnTypeName(i));
                 fieldInfo.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
                 fieldInfo.setSourceTable(metaData.getTableName(i));
-                fieldInfo.setFieldChineseName(null);
+                String key = new StringJoiner(".").add(metaData.getSchemaName(i)).add(metaData.getTableName(i)).add(metaData.getColumnName(i)).toString();
+                fieldInfo.setFieldChineseName(tableFieldRemark.get(key));
                 fieldInfos.add(fieldInfo);
             }
             wideTable.setFields(fieldInfos);
         } catch (Exception e) {
             log.error("识别宽表失败", e);
             throw new AppException("60000020");
+        } finally {
+
         }
         wideTable.setSql(sql);
         wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), e.getName())).collect(Collectors.toList()));
@@ -354,6 +375,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     .map(entity -> {
                         WideTableFieldInfo info = new WideTableFieldInfo();
                         BeanCopyUtils.copyProperties(entity, info);
+                        info.setFieldChineseName(entity.getChinese());
+                        info.setSourceTable(entity.getSource());
+                        info.setAssociateDict(entity.getDictKey());
+                        info.setFieldName(entity.getName());
+                        info.setRemark(entity.getRemark());
                         return info;
                     }).collect(Collectors.toList());
         }
@@ -400,6 +426,26 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
         updateById(entity);
         return BusinessResult.success(true);
+    }
+
+    private Map<String, String> getTableFieldRemark(DatabaseMetaData metaData, List<ImmutablePair<String, String>> pairs) throws Exception {
+        Map<String, String> results = Maps.newHashMap();
+        if (CollectionUtils.isNotEmpty(pairs)) {
+            for (ImmutablePair<String, String> pair : pairs) {
+                ResultSet columnResultSet = metaData.getColumns(null, "%", pair.getRight(), "%");
+                while (columnResultSet.next()) {
+                    // 字段名称
+                    String columnName = columnResultSet.getString("COLUMN_NAME");
+                    if (StringUtils.isNotBlank(columnName)) {
+                        String key = new StringJoiner(".").add(pair.getLeft()).add(pair.getRight()).add(columnName).toString();
+                        // 描述
+                        String remarks = columnResultSet.getString("REMARKS");
+                        results.put(key, remarks);
+                    }
+                }
+            }
+        }
+        return results;
     }
 
     /**
@@ -457,10 +503,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (StringUtils.isNotBlank(param.getTaskName())) {
             wrapper.like(SyncTaskEntity.TASK_NAME, param.getTaskName());
         }
-        if (Objects.nonNull(param.getTaskStatus())) {
+        if (Objects.nonNull(param.getTaskStatus()) && !TaskStatusEnum.ALL.equals(param.getTaskStatus())) {
             wrapper.eq(SyncTaskEntity.TASK_STATUS, param.getTaskStatus().getCode());
         }
-        if (Objects.nonNull(param.getExecStatus())) {
+        if (Objects.nonNull(param.getExecStatus()) && !ExecStatusEnum.ALL.equals(param.getExecStatus())) {
             wrapper.eq(SyncTaskEntity.EXEC_STATUS, param.getExecStatus().getCode());
         }
         wrapper.orderByAsc(SyncTaskEntity.TASK_STATUS);
