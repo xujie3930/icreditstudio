@@ -3,6 +3,8 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 //import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public interface DatasourceSync {
+
+    Logger logger = LoggerFactory.getLogger(DatasourceSync.class);
     /**
      * 获取用户名
      *
@@ -76,6 +80,7 @@ public interface DatasourceSync {
             conn.close();
             return "测试连接成功";
         } catch (Exception e) {
+            logger.error("异常：{}", e.toString());
             throw new AppException("70000000");
         }
     }
