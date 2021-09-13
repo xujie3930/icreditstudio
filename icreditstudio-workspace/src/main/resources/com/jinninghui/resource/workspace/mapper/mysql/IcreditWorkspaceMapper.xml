@@ -48,6 +48,6 @@
                 AND del_flag = 'N'
                 AND w.id = u.space_id
         </where>
-        order by w.create_time desc, w.update_time desc
+        order by  w.update_time desc
     </select>
 </mapper>

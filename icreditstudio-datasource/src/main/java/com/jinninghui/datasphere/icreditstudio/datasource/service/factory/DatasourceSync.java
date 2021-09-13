@@ -15,6 +15,7 @@ import java.util.Objects;
 public interface DatasourceSync {
 
     Logger logger = LoggerFactory.getLogger(DatasourceSync.class);
+    static final  String SEPARATOR = "|";
 
     /**
      * 根据uri获取jdbc连接
@@ -23,7 +24,7 @@ public interface DatasourceSync {
      */
     static String geturi(String uri) {
         //根据uri获取jdbc连接
-        return uri.substring(0, uri.indexOf("|"));
+        return uri.substring(0, uri.indexOf(SEPARATOR));
     }
 
     /**
@@ -35,7 +36,7 @@ public interface DatasourceSync {
     static String getUsername(String uri) {
         //根据uri获取username
         String temp = uri.substring(uri.indexOf("username=") + "username=".length());
-        String username = temp.substring(0, temp.indexOf("|"));
+        String username = temp.substring(0, temp.indexOf(SEPARATOR));
         return username;
     }
 
@@ -49,10 +50,10 @@ public interface DatasourceSync {
         //根据uri获取password
         String temp = uri.substring(uri.indexOf("password=") + "password=".length());
         String password;
-        if (!temp.endsWith("|")) {
+        if (!temp.endsWith(SEPARATOR)) {
             password = temp;
         } else {
-            password = temp.substring(0, temp.indexOf("|"));
+            password = temp.substring(0, temp.indexOf(SEPARATOR));
         }
         return password;
     }
