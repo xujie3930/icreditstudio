@@ -4,7 +4,12 @@
  * @Date: 2021-08-24
 -->
 <template>
-  <BaseDialog hideFooter title="查看同步任务" ref="baseDialog">
+  <BaseDialog
+    hideFooter
+    title="查看同步任务"
+    ref="baseDialog"
+    @on-close="close"
+  >
     <el-tabs
       class="data-detail-tab"
       v-model="activeName"
@@ -21,7 +26,11 @@
               v-for="item in taskDetailInfo"
             >
               <div class="label">
-                <span class="required-icon">*</span>
+                <span
+                  v-if="item.key !== 'taskDescription'"
+                  class="required-icon"
+                  >*
+                </span>
                 <span>{{ item.label }}</span>
               </div>
               <span class="text">{{ item.value }}</span>
@@ -36,30 +45,31 @@
             <el-row class="row">
               <el-col class="col" :span="8">
                 <span>数据库源：</span>
-                <span>sssss</span>
+                <span>{{ datasourceDetailInfo.sourceType }}</span>
               </el-col>
 
               <el-col class="col" :span="16">
                 <div>表间关联关系：</div>
-                <div class="pop-wrap">
+                <div v-if="datasourceDetailInfo.view" class="pop-wrap">
                   <el-popover placement="right-end" width="450" trigger="hover">
-                    <Figure />
+                    <Figure :data-source="datasourceDetailInfo.view" />
                     <div class="svg-wrap" slot="reference">
                       <JSvg name="left-link" class="icon" />
                     </div>
                   </el-popover>
                 </div>
+                <span v-else>无</span>
               </el-col>
             </el-row>
 
             <el-row class="row" style="margin-bottom: 20px">
               <el-col class="col" :span="8">
                 <span> 宽表信息：</span>
-                <span>dddsdededeef</span>
+                <span>{{ datasourceDetailInfo.wideTableName }}</span>
               </el-col>
               <el-col class="col" :span="16">
                 <span> 分区字段：</span>
-                <span>ddadefrgdd</span>
+                <span>{{ datasourceDetailInfo.partition }}</span>
               </el-col>
             </el-row>
 
@@ -67,7 +77,7 @@
               ref="leftTable"
               v-loading="tableLoading"
               :table-configuration="tableConfiguration"
-              :table-data="tableData"
+              :table-data="datasourceDetailInfo.fieldInfos"
             ></j-table>
           </div>
         </div>
@@ -153,8 +163,8 @@ export default {
       taskDetailInfo: [
         { key: 'taskName', label: '任务名', value: '' },
         { key: 'enable', label: '任务启用', value: '' },
-        { key: 'buildMode', label: '创建方式', value: '' },
-        { key: 'taskDescription', label: '任务描述', value: '' }
+        { key: 'createMode', label: '创建方式', value: '' },
+        { key: 'taskDescribe', label: '任务描述', value: '' }
       ]
     }
   },
@@ -166,6 +176,11 @@ export default {
       this.row = row
       this.$refs.baseDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
+    },
+
+    close() {
+      this.datasourceDetailInfo = {}
+      this.buildDetailInfo = {}
     },
 
     handleTabClick() {
@@ -180,7 +195,7 @@ export default {
         this.taskDetailInfo = deepClone(this.taskDetailInfo).map(
           ({ key, label }) => {
             let value = ''
-            if (key === 'buildMode') {
+            if (key === 'createMode') {
               value = createModeMapping[data[key]]
             } else if (key === 'enable') {
               value = taskStatusMapping[data[key]].label
@@ -193,6 +208,7 @@ export default {
       } else if (this.activeName === 'DispatchDetial') {
         this.buildDetailInfo = data
       } else {
+        console.log('data', data)
         this.datasourceDetailInfo = data
       }
     },

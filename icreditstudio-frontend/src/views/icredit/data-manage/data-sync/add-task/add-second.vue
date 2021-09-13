@@ -53,7 +53,7 @@
             <el-tree
               class="tree"
               :data="treeData"
-              node-key="name"
+              node-key="idx"
               default-expand-all
               highlight-current
               check-on-click-node
@@ -86,7 +86,7 @@
               type="textarea"
               placeholder="请在此输入hive语法的SQL语句"
               show-word-limit
-              v-model="secondTaskForm.sql"
+              v-model="secondTaskForm.sqlInfo.sql"
               :autosize="{ minRows: 7 }"
             >
             </el-input>
@@ -118,7 +118,6 @@
                     ]"
                     @mouseenter.native="item.isShowDot = true"
                     @mouseleave.native="item.isShowDot = false"
-                    @click.native="handleTagClick(idx)"
                     @close="handleDeleteTagClick(idx)"
                   >
                     <el-tooltip
@@ -142,7 +141,7 @@
                   <JSvg
                     name="left-link"
                     class="icon"
-                    @click.native="handleLinkIconClick"
+                    @click.native="handleLinkIconClick({ idx, ...item })"
                   />
                   <div class="line"></div>
                 </div>
@@ -182,7 +181,7 @@
                   v-model.trim="secondTaskForm.wideTableName"
                 >
                   <el-button
-                    :disabled="!secondTaskForm.sql"
+                    :disabled="verifyTableDisabled"
                     :class="['append-btn', isCanJumpNext ? '' : 'is-disabled']"
                     slot="append"
                     :loading="widthTableLoading"
@@ -268,14 +267,14 @@
         </el-button>
         <el-button
           class="btn"
-          :disabled="!secondTaskForm.sql"
+          :disabled="!secondTaskForm.sqlInfo.sql"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
         <el-button
           class="btn"
           type="primary"
-          :disabled="!secondTaskForm.sql"
+          :disabled="!secondTaskForm.sqlInfo.sql"
           @click="handleStepClick"
         >
           下一步
@@ -283,7 +282,7 @@
       </footer>
     </div>
 
-    <Affiliations ref="linkDialog" />
+    <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
   </div>
 </template>
 
@@ -359,7 +358,6 @@ export default {
       tableLoading: false,
       widthTableLoading: false,
       type: 'sql',
-      sql: '',
       sourceType: 0,
       tableConfiguration,
       zoningOptions: [],
@@ -368,47 +366,35 @@ export default {
       radioBtnOption,
 
       // 可视化-已拖拽的表
-      selectedTable: [
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableA'
-        // },
-        // { type: 'line', iconName: 'cover-link' },
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableB'
-        // },
-        // { type: 'line', iconName: 'left-link' },
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableC'
-        // },
-        // { type: 'line', iconName: 'all-link' },
-        // { type: 'tag', isChecked: false, isShowDot: false, tableName: 'TableD' }
-      ],
+      selectedTable: [],
 
       // 表单参数
       secondTaskForm: {
-        sql: '', // SQL命令
+        sqlInfo: {
+          sql: '', // SQL命令
+          databaseHost: []
+        },
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
         partition: '', // 分区字段
         fieldInfos: [], // 表信息
         sourceType: 0, // 资源类型
         callStep: 2, // 调用步骤
-        createMode: 1 // 创建方式
+        createMode: null, // 创建方式
+
+        // 可视化表单参数
+        dialect: null,
+        sourceTables: [],
+        view: []
       }
     }
   },
 
   computed: {
-    ...mapState('user', ['workspaceId'])
+    ...mapState('user', ['workspaceId']),
+    verifyTableDisabled() {
+      return false
+    }
   },
 
   created() {
@@ -425,9 +411,10 @@ export default {
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
+      const { id, parent } = node
       evt.dataTransfer.setData(
         'application/json',
-        JSON.stringify({ tableId: node.id, ...data })
+        JSON.stringify({ tableId: id, database: parent.label, ...data })
       )
     },
 
@@ -436,22 +423,36 @@ export default {
       evt.preventDefault()
       const domData = evt.dataTransfer.getData('application/json')
       const dataSource = JSON.parse(domData)
+      console.log('ssss', dataSource)
       const addTableObj = [
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
+
       const isExistIdx = this.selectedTable.findIndex(
         ({ tableId }) => dataSource.tableId === tableId
       )
 
+      // 不能重复拖动同一张表
       if (isExistIdx > -1) {
         this.$message.error('拖动的表已存在， 请重新选择一张表！')
         return
       }
 
+      // 不同类型的数据库不能拖该库下的表
+      const filterDiffType = () => {
+        const { dialect } = this.selectedTable[0]
+        if (dataSource.dialect !== dialect) {
+          this.$message.error('数据库类型不统一， 请重新选择一张表！')
+          return true
+        }
+        return false
+      }
+
       if (!this.selectedTable.length) {
         this.selectedTable.push(...addTableObj)
       } else {
+        if (filterDiffType()) return
         this.selectedTable = deepClone([
           ...this.selectedTable,
           ...addTableObj
@@ -464,24 +465,25 @@ export default {
       }
     },
 
+    // 点击图标设置关联字段
+    handleVisualConfirm(options) {
+      const { idx } = options
+      const updateViewData = () => {
+        const index = this.secondTaskForm.view.findIndex(
+          item => item.idx === idx
+        )
+        this.secondTaskForm.view.splice(index, 1, options)
+      }
+
+      !this.secondTaskForm.view.length
+        ? this.secondTaskForm.view.push(options)
+        : updateViewData()
+
+      console.log(this.secondTaskForm, 'this.secondTaskForm')
+    },
+
     handlePreventDefault(evt) {
       evt.preventDefault()
-    },
-
-    handleTagMouseDown(e) {
-      const tag = document.getElementById('tag1')
-      console.log()
-      tag.style.left = `${e.clientX}px`
-      tag.style.top = `${e.clientY}px`
-
-      // tag.onmouseup = () => {
-      //   document.onmousemove = null
-      // }
-    },
-
-    handleTagClick(idx) {
-      const { isChecked } = this.selectedTable[idx]
-      this.selectedTable[idx].isChecked = !isChecked
     },
 
     // 可视化-删除已选择的的表
@@ -505,9 +507,32 @@ export default {
 
     // 可视化-点击关联图标打开关联弹窗
     handleLinkIconClick(options) {
-      const { lfTableName, rgTableName, dialect } = options
-      console.log(lfTableName, rgTableName, dialect)
-      this.$refs.linkDialog.open({ title: '新增关联关系' })
+      const { idx } = options
+      // 目前只能新增四张表， 通过ICON的index找前后关联的两张表index
+      const lfTbIdx = idx - 1
+      const rhTbIdx = idx + 1
+
+      console.log(idx, rhTbIdx, this.selectedTable)
+
+      const { dialect, datasourceId, name, database } = this.selectedTable[
+        lfTbIdx
+      ]
+      const {
+        datasourceId: sid,
+        name: rName,
+        database: rDatabase
+      } = this.selectedTable[rhTbIdx]
+
+      const leftTable = { datasourceId, name, database }
+      const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
+
+      this.$refs.linkDialog.open({
+        idx,
+        title: '新增关联关系',
+        dialect,
+        leftTable,
+        rightTable
+      })
     },
 
     // 中文名称
@@ -540,6 +565,9 @@ export default {
     // 表单参数缓存以及过滤处理
     handleTaskFormParams() {
       const { workspaceId } = this
+      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      // 可视化方式参数处理
+      !Number(firstFrom.createMode) && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
       const newFieldInfos = deepClone(fieldInfos).map(
         ({
@@ -555,11 +583,30 @@ export default {
           }
         }
       )
-      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
-      const params = { ...firstFrom, ...secondForm }
+
+      const params = { ...secondForm, ...firstFrom }
       sessionStorage.setItem('taskForm', JSON.stringify(params))
       return params
+    },
+
+    // 处理可视化表单参数
+    handleVisualizationParams() {
+      this.secondTaskForm.dialect = this.selectedTable[0].dialect
+
+      this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
+        ({ idx, ...item }) => item
+      )
+
+      this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
+        .filter(({ type }) => type === 'tag')
+        .map(({ datasourceId, database, name }) => {
+          return {
+            datasourceId,
+            database,
+            tableName: name
+          }
+        })
     },
 
     // 清空下拉框Options
@@ -581,24 +628,39 @@ export default {
 
     // 识别宽表
     handleIdentifyTable() {
+      this.handleVisualizationParams()
+      const {
+        createMode,
+        sqlInfo,
+        sourceTables,
+        dialect,
+        view
+      } = this.secondTaskForm
       const sqlParams = {
         workspaceId: this.workspaceId,
-        createMode: this.secondTaskForm.createMode,
-        sql: this.secondTaskForm.sql
+        createMode,
+        sqlInfo
       }
 
-      const params = {}
+      const visualParams = {
+        datasourceId: this.selectedTable[0].datasourceId,
+        createMode,
+        sourceTables: deepClone(
+          sourceTables
+        ).map(({ database, tableName }) => ({ database, tableName })),
+        view,
+        dialect
+      }
+
       this.widthTableLoading = false
       this.tableLoading = true
-      API.dataSyncGenerateTable(
-        this.secondTaskForm.createMode ? sqlParams : params
-      )
+      API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
         .then(({ success, data }) => {
           if (success && data) {
             console.log(data)
             const { partitions = [], fields = [] } = data
             this.zoningOptions = partitions
-            this.secondTaskForm.sql = data.sql
+            this.secondTaskForm.sqlInfo.sql = data.sql
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
           }
         })
@@ -655,9 +717,18 @@ export default {
             this.treeData = data.map(item => {
               const { content = [], ...rest } = item
               const newContent = content?.map(list => {
-                return { icon: icon(1, list.name), ...list }
+                return {
+                  icon: icon(1, list.name),
+                  idx: new Date().getTime() * Math.random() * 10,
+                  ...list
+                }
               })
-              return { icon: icon(0, item.name), content: newContent, ...rest }
+              return {
+                icon: icon(0, item.name),
+                idx: new Date().getTime() * Math.random() * 10,
+                content: newContent,
+                ...rest
+              }
             })
           }
         })
