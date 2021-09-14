@@ -202,7 +202,7 @@
                   placeholder="请选择增量字段"
                 >
                   <el-option
-                    v-for="item in zoningOptions"
+                    v-for="item in increFieldsOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -313,6 +313,29 @@
     </div>
 
     <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
+
+    <Dialog
+      width="600px"
+      title="提示"
+      ref="baseDialog"
+      @on-confirm="handleSelectBatabase"
+    >
+      <div class="same-base-tip">
+        <h4 class="title">
+          该SQL表达式中所选择的库存在同名情况，请在下列重新选择正确的库:
+        </h4>
+        <el-checkbox-group class="group" v-model="checkList">
+          <el-checkbox
+            class="box"
+            v-for="(item, idx) in sameNameDataBase"
+            :key="idx"
+            :label="item.datasourceId"
+          >
+            {{ item.databaseName }}({{ item.host }})
+          </el-checkbox>
+        </el-checkbox-group>
+      </div>
+    </Dialog>
   </div>
 </template>
 
@@ -330,9 +353,10 @@ import { mapState } from 'vuex'
 import { treeIconMapping, radioBtnOption, fieldTypeOptions } from '../contant'
 import { randomNum, deepClone } from '@/utils/util'
 import { validStrZh } from '@/utils/validate'
+import Dialog from '@/views/icredit/components/dialog'
 
 export default {
-  components: { Back, HeaderStepBar, Affiliations },
+  components: { Back, HeaderStepBar, Affiliations, Dialog },
   mixins: [crud],
 
   data() {
@@ -358,9 +382,23 @@ export default {
       tableConfiguration,
       treeData: [],
       zoningOptions: [],
+      increFieldsOptions: [],
       tableNameOptions: [],
       stockNameOptions: [],
+      sameNameDataBase: [
+        {
+          datasourceId: 1909,
+          databaseName: '数据库-100',
+          host: '192.168.0.90'
+        },
+        {
+          datasourceId: 1999,
+          databaseName: '数据库-1023ssd',
+          host: '192.168.0.93'
+        }
+      ],
       searchTableName: '',
+      checkList: [],
 
       // 可视化-已拖拽的表
       selectedTable: [],
@@ -402,7 +440,6 @@ export default {
       const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
-      console.log(this.secondTaskForm, 'jijijijiji')
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
     },
@@ -625,6 +662,14 @@ export default {
       console.log(value)
     },
 
+    // 数据库同名选择弹窗回调
+    handleSelectBatabase() {
+      this.secondTaskForm.sqlInfo.databaseHost = deepClone(
+        this.sameNameDataBase
+      ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
+      this.handleIdentifyTable()
+    },
+
     // 识别宽表
     handleIdentifyTable() {
       this.handleVisualizationParams()
@@ -657,11 +702,23 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             console.log(data)
-            const { partitions = [], fields = [] } = data
+            const { sql, partitions, fields, incrementalFields } = data
             this.zoningOptions = partitions
-            this.secondTaskForm.sqlInfo.sql = data.sql
+            this.increFieldsOptions = incrementalFields
+            this.secondTaskForm.sqlInfo.sql = sql
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
+
+            // 数据库同名的情况选择相应的库
+            if (createMode && data.sameNameDataBase) {
+              this.sameNameDataBase = data?.sameNameDataBase || []
+              data.sameNameDataBase.length && this.$refs.baseDialog.open()
+            } else {
+              this.$refs.baseDialog.close()
+            }
           }
+        })
+        .catch(() => {
+          this.$refs.baseDialog.close()
         })
         .finally(() => {
           this.widthTableLoading = false
@@ -1105,5 +1162,28 @@ export default {
 
 .footer-btn-wrap {
   margin-top: 0;
+}
+
+.same-base-tip {
+  .title {
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  .group {
+    @include flex(column, center, flex-start);
+    padding-left: 20px;
+
+    .box {
+      min-width: 80%;
+      margin: 5px 0;
+      padding: 10px;
+    }
+
+    .is-checked {
+      border: 1px solid #1890ff;
+      border-radius: 4px;
+    }
+  }
 }
 </style>

@@ -18,6 +18,7 @@
     <div class="iframe-layout-main-header-user">
       <!-- 工作空间 -->
       <el-select
+        v-if="workspaceCreateAuth"
         class="workspace-select"
         size="mini"
         placeholder="请选择"
@@ -160,6 +161,7 @@ export default {
 
   computed: {
     ...mapGetters({
+      workspaceCreateAuth: 'user/workspaceCreateAuth',
       workspaceList: 'user/workspaceList',
       userInfo: 'user/userInfo',
       isCollapse: 'common/isHeaderCollapse',
