@@ -41,7 +41,7 @@ public class IcreditWorkspaceEntity implements Serializable {
     /**
      * 删除标识
      */
-    private String delFlag;
+    private String delFlag = "N";
 
     /**
      * 空间描述

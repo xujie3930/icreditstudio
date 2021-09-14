@@ -24,7 +24,7 @@
 
     <select id="queryPage"
             resultType="com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity">
-        select w.id, w.status, w.del_flag, w.descriptor, w.director, w.name, w.create_time, w.create_user,
+        select DISTINCT w.id, w.status, w.del_flag, w.descriptor, w.director, w.name, w.create_time, w.create_user,
         w.update_time, w.update_user
         from icredit_workspace w, icredit_workspace_user u
         <where>
