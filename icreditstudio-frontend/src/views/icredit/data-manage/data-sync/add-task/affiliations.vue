@@ -9,11 +9,14 @@
     ref="baseDialog"
     width="1000px"
     :title="title"
-    @onClose="close"
-    @onConfirm="confirm"
+    @on-confirm="confirm"
   >
     <el-form ref="form" :model="form" label-width="100px" v-loading="loading">
-      <el-form-item label="关联类型">
+      <el-form-item
+        label="关联类型"
+        prop="associatedType"
+        :rules="{ required: true, message: '必填项不能为空', trigger: 'blur' }"
+      >
         <el-tag
           size="medium"
           effect="plain"
@@ -25,7 +28,7 @@
           <JSvg :name="item.icon" />
           <span>{{ item.name }}</span>
           <i
-            v-if="curSelectType === item.code"
+            v-if="form.associatedType === Number(item.code)"
             class="el-icon-success is-checked"
           />
         </el-tag>
@@ -49,9 +52,9 @@
                 >
                   <el-option
                     v-for="item in aTableOption"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
                   >
                   </el-option>
                 </el-select>
@@ -79,9 +82,9 @@
                 >
                   <el-option
                     v-for="item in bTableOption"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
+                    :key="item.name"
+                    :label="item.name"
+                    :value="item.name"
                   >
                   </el-option>
                 </el-select>
@@ -121,67 +124,96 @@ export default {
 
   data() {
     return {
+      idx: null,
       title: '',
       value: '',
-      curSelectType: '0',
       loading: false,
       aTableName: '',
       bTableName: '',
       aTableOption: [],
+      leftTable: {},
+      rightTable: {},
       bTableOption: [],
       linkTypeData: {
         assocTypes: [],
         conditions: [{ left: '', associate: '', right: '' }],
         conditionsOptions: []
       },
-      form: { radio: 1 }
+      form: { radio: 1, associatedType: null }
     }
   },
 
   methods: {
     open(options) {
-      const {
-        title,
-        datasourceId,
-        dialect = 'mysql',
-        aTableName = 'TableA',
-        bTableName = 'TableB'
-      } = options
+      const { title, idx, dialect, leftTable, rightTable } = options
       this.title = title
-      this.aTableName = aTableName
-      this.bTableName = bTableName
+      this.idx = idx
+      this.leftTable = leftTable
+      this.rightTable = rightTable
+      this.aTableName = leftTable.name
+      this.bTableName = rightTable.name
       this.$refs.baseDialog.open()
       this.getLinkTypeData(dialect)
-      console.log(datasourceId)
-      // this.getTableField('aTableOption', {
-      //   datasourceId,
-      //   tableName: 'aTableName'
-      // })
-      // this.getTableField('bTableOption', {
-      //   datasourceId,
-      //   tableName: 'bTableName'
-      // })
+      this.getTableField('aTableOption', {
+        datasourceId: leftTable.datasourceId,
+        tableName: leftTable.name
+      })
     },
 
     close() {
+      // this.aTableOption = []
+      // this.aTableOption = []
+      // this.$refs.form.resetFields()
+      // this.linkTypeData.conditions = [{ left: '', associate: '', right: '' }]
       this.$refs.baseDialog.close()
     },
 
-    confirm() {},
-
-    handleTagClick(curTag) {
-      this.curSelectType = curTag.code
+    closeBtnLoading() {
+      this.$refs.baseDialog.btnLoadingClose()
     },
 
+    confirm() {
+      const { form, linkTypeData, leftTable, rightTable } = this
+      const relationData = {
+        idx: this.idx,
+        associatedType: form.associatedType,
+        conditions: linkTypeData.conditions,
+        leftSource: leftTable.name,
+        leftSourceDatabase: leftTable.database,
+        rightSource: rightTable.name,
+        rightSourceDatabase: rightTable.database
+      }
+      this.validate(relationData)
+    },
+
+    validate(relationData) {
+      console.log('relationData', relationData)
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          this.close()
+          this.$emit('on-confirm', relationData)
+        }
+        this.closeBtnLoading()
+      })
+    },
+
+    handleTagClick(curTag) {
+      console.log(curTag)
+      this.form.associatedType = curTag.code
+    },
+
+    // 新增字段关联
     handleAddClick() {
       this.linkTypeData.conditions.push({ left: '', associate: '', right: '' })
     },
 
+    // 删除字段关联
     handleMinusClick(idx) {
       this.linkTypeData.conditions.length > 1 &&
         this.linkTypeData.conditions.splice(idx, 1)
     },
 
+    // 获取关联条件数据
     getLinkTypeData(dialect = 'mysql') {
       this.loading = true
       const iconMapping = {
@@ -213,14 +245,24 @@ export default {
         })
     },
 
+    // 获取表字段
     getTableField(type, params) {
+      this.loading = true
       API.dataSyncFieldSearch(params)
         .then(({ success, data }) => {
           if (success && data) {
             this[type] = data
+            if (type !== 'bTableOption') {
+              this.getTableField('bTableOption', {
+                datasourceId: this.rightTable.datasourceId,
+                tableName: this.rightTable.name
+              })
+            }
           }
         })
-        .finally()
+        .finally(() => {
+          this.loading = false
+        })
     }
   }
 }

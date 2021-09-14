@@ -6,7 +6,7 @@
 <template>
   <div class="add-task-page">
     <Back path="/data-manage/data-sync" />
-    <div class="add-task">
+    <div class="add-task" v-loading="detailLoading">
       <HeaderStepBar />
 
       <el-form
@@ -89,13 +89,14 @@ export default {
 
   data() {
     return {
+      detailLoading: false,
       saveSettingLoading: false,
       createModeOptions: [
         { label: '可视化', value: 0 },
         { label: 'SQL', value: 1 }
       ],
       addTaskForm: {
-        taskId: '',
+        taskId: null,
         taskName: '',
         enable: 1,
         createMode: 0,
@@ -121,10 +122,35 @@ export default {
   },
 
   created() {
-    this.autoGenerateTaskName()
+    this.initPage()
   },
 
   methods: {
+    initPage() {
+      // 编辑的情况下 taskId 有值
+      this.addTaskForm.taskId = this.$route.query?.taskId
+      this.addTaskForm.taskId
+        ? this.getDetailData()
+        : this.autoGenerateTaskName()
+    },
+
+    // 编辑情况下获取详情
+    getDetailData() {
+      this.detailLoading = true
+      API.dataSyncDefineDetial({ taskId: this.addTaskForm.taskId })
+        .then(({ success, data }) => {
+          if (success && data) {
+            for (const [key, value] of Object.entries(data)) {
+              console.log(key, value, typeof value)
+              this.addTaskForm[key] = value
+            }
+          }
+        })
+        .finally(() => {
+          this.detailLoading = false
+        })
+    },
+
     // 自动生成任务名规则
     autoGenerateTaskName() {
       const prefixStrArr = ['mysql', 'oracle', 'postSql', 'excel']
@@ -140,7 +166,6 @@ export default {
     saveSetting(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          console.log(name)
           const params = {
             workspaceId: this.workspaceId,
             callStep: 1,
@@ -165,7 +190,6 @@ export default {
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          console.log(name, valid)
           sessionStorage.setItem('taskForm', JSON.stringify(this.addTaskForm))
           this.$router.push({
             path: '/data-manage/add-build',

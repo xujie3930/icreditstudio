@@ -107,7 +107,7 @@
             <el-button
               type="text"
               v-if="row.taskStatus !== 0"
-              @click="handleOperateClick(row, 'Edit')"
+              @click="handleEditBtnClick(row, 'Edit')"
             >
               编辑 {{ row.execStatus }}
             </el-button>
@@ -253,6 +253,16 @@ export default {
     handleOperateClick(row, opType) {
       console.log(row, 'row', opType)
       this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
+    },
+
+    // 编辑
+    handleEditBtnClick(row, opType) {
+      console.log(row, opType)
+      const params = {
+        path: '/data-manage/add-task',
+        query: { taskId: row.taskId }
+      }
+      this.$router.push(params)
     },
 
     // 弹窗提示回调函数

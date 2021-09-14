@@ -53,7 +53,7 @@
             <el-tree
               class="tree"
               :data="treeData"
-              node-key="name"
+              node-key="idx"
               default-expand-all
               highlight-current
               check-on-click-node
@@ -75,7 +75,7 @@
           </div>
         </aside>
 
-        <section class="content-section">
+        <section class="content-section" v-loading="detailLoading">
           <!-- sql语句 -->
           <div
             v-if="secondTaskForm.createMode === 1"
@@ -86,7 +86,7 @@
               type="textarea"
               placeholder="请在此输入hive语法的SQL语句"
               show-word-limit
-              v-model="secondTaskForm.sql"
+              v-model="secondTaskForm.sqlInfo.sql"
               :autosize="{ minRows: 7 }"
             >
             </el-input>
@@ -118,7 +118,6 @@
                     ]"
                     @mouseenter.native="item.isShowDot = true"
                     @mouseleave.native="item.isShowDot = false"
-                    @click.native="handleTagClick(idx)"
                     @close="handleDeleteTagClick(idx)"
                   >
                     <el-tooltip
@@ -142,7 +141,7 @@
                   <JSvg
                     name="left-link"
                     class="icon"
-                    @click.native="handleLinkIconClick"
+                    @click.native="handleLinkIconClick({ idx, ...item })"
                   />
                   <div class="line"></div>
                 </div>
@@ -155,12 +154,13 @@
               <div class="label-wrap">
                 <div class="label">宽表信息</div>
                 <el-select
-                  style="min-width:250px"
+                  style="min-width:150px"
                   class="text-select"
                   v-model.trim="secondTaskForm.targetSource"
                   filterable
                   clearable
                   remote
+                  size="mini"
                   placeholder="请输入库名称"
                   :loading="searchStockLoading"
                   :remote-method="getFluzzyStockName"
@@ -177,12 +177,14 @@
                 </el-select>
                 <el-input
                   clearable
-                  style="margin-left:10px"
+                  size="mini"
+                  style="margin-left:10px;"
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
                 >
                   <el-button
-                    :disabled="!secondTaskForm.sql"
+                    size="mini"
+                    :disabled="verifyTableDisabled"
                     :class="['append-btn', isCanJumpNext ? '' : 'is-disabled']"
                     slot="append"
                     :loading="widthTableLoading"
@@ -193,10 +195,11 @@
                 </el-input>
               </div>
               <div class="label-wrap">
-                <div class="label">分区字段</div>
+                <div class="label">增量字段</div>
                 <el-select
-                  v-model="secondTaskForm.partition"
-                  placeholder="请选择"
+                  size="mini"
+                  v-model="secondTaskForm.syncCondition.incrementalField"
+                  placeholder="请选择增量字段"
                 >
                   <el-option
                     v-for="item in zoningOptions"
@@ -206,6 +209,32 @@
                   >
                   </el-option>
                 </el-select>
+
+                <!-- 增量类型 -->
+                <el-select
+                  style="margin-left:10px"
+                  size="mini"
+                  v-model="secondTaskForm.syncCondition.partition"
+                  placeholder="请选择增量类型"
+                >
+                  <el-option
+                    v-for="item in zoningOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </div>
+              <div class="label-wrap">
+                <div class="label">时间过滤条件: T +</div>
+                <el-input-number
+                  size="mini"
+                  style="width: 80px"
+                  controls-position="right"
+                  :min="0"
+                  v-model="secondTaskForm.syncCondition.n"
+                />
               </div>
             </div>
             <JTable
@@ -268,14 +297,14 @@
         </el-button>
         <el-button
           class="btn"
-          :disabled="!secondTaskForm.sql"
+          :disabled="!secondTaskForm.sqlInfo.sql"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
         <el-button
           class="btn"
           type="primary"
-          :disabled="!secondTaskForm.sql"
+          :disabled="!secondTaskForm.sqlInfo.sql"
           @click="handleStepClick"
         >
           下一步
@@ -283,7 +312,7 @@
       </footer>
     </div>
 
-    <Affiliations ref="linkDialog" />
+    <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
   </div>
 </template>
 
@@ -298,7 +327,7 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-sync-ad
 import API from '@/api/icredit'
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { treeIconMapping, radioBtnOption } from '../contant'
+import { treeIconMapping, radioBtnOption, fieldTypeOptions } from '../contant'
 import { randomNum, deepClone } from '@/utils/util'
 import { validStrZh } from '@/utils/validate'
 
@@ -311,104 +340,56 @@ export default {
     this.getFluzzyStockName = debounce(this.getFluzzyStockName, 500)
     this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
 
-    // 字段类型
-    this.fieldTypeOptions = [
-      {
-        value: 0,
-        label: '数值类',
-        children: [
-          { label: 'TINYINT', value: 'TINYINT' },
-          { label: 'SMALLINT', value: 'SMALLINT' },
-          { label: 'INT', value: 'INT' },
-          { label: 'BIGINT', value: 'BIGINT' },
-          { label: 'FLOAT', value: 'FLOAT' },
-          { label: 'DOUBLE', value: 'DOUBLE' },
-          { label: 'DECIMAL', value: 'DECIMAL' }
-        ]
-      },
-      {
-        value: 1,
-        label: '日期时间类',
-        children: [
-          { label: 'TIMESTAMP', value: 'TIMESTAMP' },
-          { label: 'DATE', value: 'DATE' }
-        ]
-      },
-      {
-        value: 2,
-        label: '字符串类',
-        children: [
-          { label: 'STRING', value: 'STRING' },
-          { label: 'VARCHAR', value: 'VARCHAR' }
-        ]
-      }
-    ]
-
     return {
-      // 是否可以跳到下一步
       isCanJumpNext: false,
       isCanSaveSetting: false,
       isShowDot: false,
-      searchTableName: '',
-      searchStockName: '',
-      tableNameOptions: [],
-      stockNameOptions: [],
+
+      // 加载的状态
+      detailLoading: false,
       treeLoading: false,
       searchLoading: false,
       searchStockLoading: false,
       tableLoading: false,
       widthTableLoading: false,
-      type: 'sql',
-      sql: '',
-      sourceType: 0,
-      tableConfiguration,
-      zoningOptions: [],
-      value: '',
-      treeData: [],
+
+      fieldTypeOptions,
       radioBtnOption,
+      tableConfiguration,
+      treeData: [],
+      zoningOptions: [],
+      tableNameOptions: [],
+      stockNameOptions: [],
+      searchTableName: '',
 
       // 可视化-已拖拽的表
-      selectedTable: [
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableA'
-        // },
-        // { type: 'line', iconName: 'cover-link' },
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableB'
-        // },
-        // { type: 'line', iconName: 'left-link' },
-        // {
-        //   type: 'tag',
-        //   isChecked: false,
-        //   isShowDot: false,
-        //   tableName: 'TableC'
-        // },
-        // { type: 'line', iconName: 'all-link' },
-        // { type: 'tag', isChecked: false, isShowDot: false, tableName: 'TableD' }
-      ],
+      selectedTable: [],
 
       // 表单参数
       secondTaskForm: {
-        sql: '', // SQL命令
+        syncCondition: { incrementalField: '', partition: '', n: undefined },
+        sqlInfo: { sql: '', databaseHost: [] },
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
-        partition: '', // 分区字段
+        // partition: '', // 分区字段
         fieldInfos: [], // 表信息
         sourceType: 0, // 资源类型
         callStep: 2, // 调用步骤
-        createMode: 1 // 创建方式
+        createMode: null, // 创建方式
+
+        // 可视化表单参数
+        dialect: null,
+        sourceTables: [],
+        view: []
       }
     }
   },
 
   computed: {
-    ...mapState('user', ['workspaceId'])
+    ...mapState('user', ['workspaceId']),
+    verifyTableDisabled() {
+      return false
+    }
   },
 
   created() {
@@ -421,13 +402,17 @@ export default {
       const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
+      console.log(this.secondTaskForm, 'jijijijiji')
+      // taskId存在表明是编辑的情况
+      this.secondTaskForm.taskId && this.getDetailData()
     },
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
+      const { id, parent } = node
       evt.dataTransfer.setData(
         'application/json',
-        JSON.stringify({ tableId: node.id, ...data })
+        JSON.stringify({ tableId: id, database: parent.label, ...data })
       )
     },
 
@@ -436,22 +421,36 @@ export default {
       evt.preventDefault()
       const domData = evt.dataTransfer.getData('application/json')
       const dataSource = JSON.parse(domData)
+      console.log('ssss', dataSource)
       const addTableObj = [
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
+
       const isExistIdx = this.selectedTable.findIndex(
         ({ tableId }) => dataSource.tableId === tableId
       )
 
+      // 不能重复拖动同一张表
       if (isExistIdx > -1) {
         this.$message.error('拖动的表已存在， 请重新选择一张表！')
         return
       }
 
+      // 不同类型的数据库不能拖该库下的表
+      const filterDiffType = () => {
+        const { dialect } = this.selectedTable[0]
+        if (dataSource.dialect !== dialect) {
+          this.$message.error('数据库类型不统一， 请重新选择一张表！')
+          return true
+        }
+        return false
+      }
+
       if (!this.selectedTable.length) {
         this.selectedTable.push(...addTableObj)
       } else {
+        if (filterDiffType()) return
         this.selectedTable = deepClone([
           ...this.selectedTable,
           ...addTableObj
@@ -464,24 +463,25 @@ export default {
       }
     },
 
+    // 点击图标设置关联字段
+    handleVisualConfirm(options) {
+      const { idx } = options
+      const updateViewData = () => {
+        const index = this.secondTaskForm.view.findIndex(
+          item => item.idx === idx
+        )
+        this.secondTaskForm.view.splice(index, 1, options)
+      }
+
+      !this.secondTaskForm.view.length
+        ? this.secondTaskForm.view.push(options)
+        : updateViewData()
+
+      console.log(this.secondTaskForm, 'this.secondTaskForm')
+    },
+
     handlePreventDefault(evt) {
       evt.preventDefault()
-    },
-
-    handleTagMouseDown(e) {
-      const tag = document.getElementById('tag1')
-      console.log()
-      tag.style.left = `${e.clientX}px`
-      tag.style.top = `${e.clientY}px`
-
-      // tag.onmouseup = () => {
-      //   document.onmousemove = null
-      // }
-    },
-
-    handleTagClick(idx) {
-      const { isChecked } = this.selectedTable[idx]
-      this.selectedTable[idx].isChecked = !isChecked
     },
 
     // 可视化-删除已选择的的表
@@ -505,9 +505,32 @@ export default {
 
     // 可视化-点击关联图标打开关联弹窗
     handleLinkIconClick(options) {
-      const { lfTableName, rgTableName, dialect } = options
-      console.log(lfTableName, rgTableName, dialect)
-      this.$refs.linkDialog.open({ title: '新增关联关系' })
+      const { idx } = options
+      // 目前只能新增四张表， 通过ICON的index找前后关联的两张表index
+      const lfTbIdx = idx - 1
+      const rhTbIdx = idx + 1
+
+      console.log(idx, rhTbIdx, this.selectedTable)
+
+      const { dialect, datasourceId, name, database } = this.selectedTable[
+        lfTbIdx
+      ]
+      const {
+        datasourceId: sid,
+        name: rName,
+        database: rDatabase
+      } = this.selectedTable[rhTbIdx]
+
+      const leftTable = { datasourceId, name, database }
+      const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
+
+      this.$refs.linkDialog.open({
+        idx,
+        title: '新增关联关系',
+        dialect,
+        leftTable,
+        rightTable
+      })
     },
 
     // 中文名称
@@ -540,12 +563,16 @@ export default {
     // 表单参数缓存以及过滤处理
     handleTaskFormParams() {
       const { workspaceId } = this
+      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      console.log('firstFrom', firstFrom)
+      // 可视化方式参数处理
+      !firstFrom.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
       const newFieldInfos = deepClone(fieldInfos).map(
         ({
           dictLoading,
           dictionaryOptions,
-          fieldTypeOptions,
+          fieldTypeOptions: fOption,
           fieldType,
           ...rest
         }) => {
@@ -555,11 +582,30 @@ export default {
           }
         }
       )
-      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
-      const params = { ...firstFrom, ...secondForm }
+
+      const params = { ...secondForm, ...firstFrom }
       sessionStorage.setItem('taskForm', JSON.stringify(params))
       return params
+    },
+
+    // 处理可视化表单参数
+    handleVisualizationParams() {
+      this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
+
+      this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
+        ({ idx, ...item }) => item
+      )
+
+      this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
+        .filter(({ type }) => type === 'tag')
+        .map(({ datasourceId, database, name }) => {
+          return {
+            datasourceId,
+            database,
+            tableName: name
+          }
+        })
     },
 
     // 清空下拉框Options
@@ -581,24 +627,39 @@ export default {
 
     // 识别宽表
     handleIdentifyTable() {
+      this.handleVisualizationParams()
+      const {
+        createMode,
+        sqlInfo,
+        sourceTables,
+        dialect,
+        view
+      } = this.secondTaskForm
       const sqlParams = {
         workspaceId: this.workspaceId,
-        createMode: this.secondTaskForm.createMode,
-        sql: this.secondTaskForm.sql
+        createMode,
+        sqlInfo
       }
 
-      const params = {}
+      const visualParams = {
+        datasourceId: this.selectedTable[0]?.datasourceId,
+        createMode,
+        sourceTables: deepClone(
+          sourceTables
+        ).map(({ database, tableName }) => ({ database, tableName })),
+        view,
+        dialect
+      }
+      console.log('createMode==', createMode)
       this.widthTableLoading = false
       this.tableLoading = true
-      API.dataSyncGenerateTable(
-        this.secondTaskForm.createMode ? sqlParams : params
-      )
+      API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
         .then(({ success, data }) => {
           if (success && data) {
             console.log(data)
             const { partitions = [], fields = [] } = data
             this.zoningOptions = partitions
-            this.secondTaskForm.sql = data.sql
+            this.secondTaskForm.sqlInfo.sql = data.sql
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
           }
         })
@@ -637,16 +698,17 @@ export default {
 
     // 数据库表目录
     getDatasourceCatalog() {
+      const { sourceType } = this.secondTaskForm
       const icon = (idx, name) => {
-        return this.sourceType === 1
-          ? treeIconMapping[this.sourceType][idx][name][idx]
-          : treeIconMapping[this.sourceType][idx]
+        return sourceType === 1
+          ? treeIconMapping[sourceType][idx][name][idx]
+          : treeIconMapping[sourceType][idx]
       }
 
       const params = {
         workspaceId: this.workspaceId,
-        sourceType: this.sourceType,
-        tableName: ''
+        tableName: '',
+        sourceType
       }
       this.treeLoading = true
       API.dataSyncCatalog(params)
@@ -655,9 +717,18 @@ export default {
             this.treeData = data.map(item => {
               const { content = [], ...rest } = item
               const newContent = content?.map(list => {
-                return { icon: icon(1, list.name), ...list }
+                return {
+                  icon: icon(1, list.name),
+                  idx: new Date().getTime() * Math.random() * 10,
+                  ...list
+                }
               })
-              return { icon: icon(0, item.name), content: newContent, ...rest }
+              return {
+                icon: icon(0, item.name),
+                idx: new Date().getTime() * Math.random() * 10,
+                content: newContent,
+                ...rest
+              }
             })
           }
         })
@@ -668,8 +739,9 @@ export default {
 
     // 数据源表模糊搜索
     getFluzzyTableName(tableName) {
+      const { sourceType } = this.secondTaskForm
       this.searchLoading = true
-      API.dataSyncFluzzySearch({ tableName, sourceType: this.sourceType })
+      API.dataSyncFluzzySearch({ tableName, sourceType })
         .then(({ success, data }) => {
           if (success && data) {
             this.tableNameOptions = data
@@ -714,6 +786,23 @@ export default {
         .finally(() => {
           // eslint-disable-next-line no-param-reassign
           row.dictLoading = false
+        })
+    },
+
+    // 编辑情况下获取详情
+    getDetailData() {
+      this.detailLoading = true
+      API.dataSyncBuildDetial({ taskId: this.secondTaskForm.taskId })
+        .then(({ success, data }) => {
+          if (success && data) {
+            for (const [key, value] of Object.entries(data)) {
+              console.log(key, value, typeof value)
+              this.addTaskForm[key] = value
+            }
+          }
+        })
+        .finally(() => {
+          this.detailLoading = false
         })
     }
   }

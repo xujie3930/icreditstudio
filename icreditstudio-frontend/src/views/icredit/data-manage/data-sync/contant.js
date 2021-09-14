@@ -47,3 +47,36 @@ export const radioBtnOption = [
   { label: 1, className: 'btn btn-center', name: '本地文件' },
   { label: 2, className: 'btn btn-right', name: '区块链数据' }
 ]
+
+// 字段类型
+export const fieldTypeOptions = [
+  {
+    value: 0,
+    label: '数值类',
+    children: [
+      { label: 'TINYINT', value: 'TINYINT' },
+      { label: 'SMALLINT', value: 'SMALLINT' },
+      { label: 'INT', value: 'INT' },
+      { label: 'BIGINT', value: 'BIGINT' },
+      { label: 'FLOAT', value: 'FLOAT' },
+      { label: 'DOUBLE', value: 'DOUBLE' },
+      { label: 'DECIMAL', value: 'DECIMAL' }
+    ]
+  },
+  {
+    value: 1,
+    label: '日期时间类',
+    children: [
+      { label: 'TIMESTAMP', value: 'TIMESTAMP' },
+      { label: 'DATE', value: 'DATE' }
+    ]
+  },
+  {
+    value: 2,
+    label: '字符串类',
+    children: [
+      { label: 'STRING', value: 'STRING' },
+      { label: 'VARCHAR', value: 'VARCHAR' }
+    ]
+  }
+]

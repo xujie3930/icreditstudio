@@ -47,6 +47,13 @@ export default {
 
   data() {
     return {}
+  },
+
+  props: {
+    dataSource: {
+      type: Array,
+      default: () => []
+    }
   }
 }
 </script>
