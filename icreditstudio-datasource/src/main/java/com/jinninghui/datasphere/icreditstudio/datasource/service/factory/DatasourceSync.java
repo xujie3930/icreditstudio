@@ -106,7 +106,8 @@ public interface DatasourceSync {
         Connection connection;
         try {
             Class.forName(driver);
-            connection = DriverManager.getConnection(uri, username, password);
+            String jdbcUri = geturi(uri);
+            connection = DriverManager.getConnection(jdbcUri, username, password);
         } catch (Exception e) {
             return null;
         }

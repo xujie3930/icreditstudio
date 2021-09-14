@@ -17,6 +17,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000000("70000000", "获取数据库连接失败"),
         RESOURCE_CODE_70000001("70000001", "表名称不能为空"),
         RESOURCE_CODE_70000002("70000002", "数据源ID不能为空"),
+        RESOURCE_CODE_70000003("70000003", "数据库同步失败")
         ;
 
         public final String code;

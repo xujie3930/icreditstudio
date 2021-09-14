@@ -143,6 +143,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         Map<String, String> map;
         try {
             map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)){
+                throw new AppException("70000003");
+            }
             //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
         } catch (Exception e) {
             return BusinessResult.success(e.getMessage());
