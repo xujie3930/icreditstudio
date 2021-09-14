@@ -116,11 +116,15 @@ const actions = {
           } = data
           const _menusTree = arrayToTree(menus || [], '0')
           if (_menusTree && _menusTree.length > 0) {
+            // 登录系统时-工作空间切换逻辑
+            const workspaceId = Vue.ls.get('workspaceId') || 'all'
+            const nWorkList = [{ name: '全部', id: 'all' }, ...workspaceList]
+            const idx = nWorkList.findIndex(({ id }) => workspaceId === id)
+            const wid = nWorkList.length > 1 ? nWorkList[1].id : nWorkList[0].id
+            idx < 0 && Vue.ls.set('workspaceId', wid)
+
             commit(SET_WRKSPACE_AUTH, workspaceCreateAuth)
-            commit(SET_WRKSPACE_LIST, [
-              { name: '全部', id: 'all' },
-              ...workspaceList
-            ])
+            commit(SET_WRKSPACE_LIST, nWorkList)
             commit(SET_USERINFO, userInfo || {})
             commit(SET_AUTH, authList)
             commit(SET_PERMISSION_LIST, _menusTree)

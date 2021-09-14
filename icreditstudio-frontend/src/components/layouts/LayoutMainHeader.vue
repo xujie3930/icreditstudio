@@ -158,22 +158,6 @@ export default {
     }
   },
 
-  watch: {
-    // workspaceList: {
-    //   deep: true,
-    //   immediate: true,
-    //   handler(nVal = []) {
-    //     localStorage.setItem('workspaceId', undefined)
-    //     if (nVal && nVal.length) {
-    //       const { id } = nVal[0]
-    //       this.workspaceId = id
-    //       localStorage.setItem('workspaceId', id)
-    //       this.setWorkspaceId(id)
-    //     }
-    //   }
-    // }
-  },
-
   computed: {
     ...mapGetters({
       workspaceList: 'user/workspaceList',
@@ -193,9 +177,7 @@ export default {
     this.activeModule = this.activeModuleId
     this.pollingUnreadInfos(60000)
     this.$once('hook:beforeDestroy', () => clearTimeout(this.timer))
-    console.log('ssss', localStorage.getItem('workspaceId'))
-    this.workspaceId = localStorage.getItem('workspaceId') || undefined
-    console.log('aaa', this.workspaceId)
+    this.workspaceId = this.$ls.get('workspaceId') || 'all'
   },
 
   mounted() {
@@ -213,7 +195,7 @@ export default {
     ]),
 
     workspaceIdChange(id) {
-      localStorage.setItem('workspaceId', id)
+      this.$ls.set('workspaceId', id)
       this.setWorkspaceId(id)
     },
 
