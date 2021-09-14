@@ -50,6 +50,8 @@ import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000000;
+
 /**
  * <p>
  * 服务实现类
@@ -78,6 +80,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
+        IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
+        BusinessResult<String> testConnResult = testConn(testConnectRequest);
+        if (!testConnResult.isSuccess()){
+            return BusinessResult.fail(RESOURCE_CODE_70000000.code, RESOURCE_CODE_70000000.message);
+        }
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
