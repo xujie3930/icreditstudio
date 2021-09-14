@@ -204,6 +204,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             long processDefinitionCode = SnowFlakeUtils.getInstance().nextId();
             processDefinition.setCode(processDefinitionCode);
             processDefinition.setVersion(1);
+            processDefinition.setReleaseState(ReleaseState.ONLINE);
         } catch (SnowFlakeException e) {
             putMsg(result, Status.CREATE_PROCESS_DEFINITION);
             return result;
@@ -216,7 +217,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             putMsg(result, Status.SUCCESS);
             // return processDefinition object with ID
             result.put(Constants.DATA_LIST, processDefinition.getId());
-            result.put(PROCESSDEFINITIONID, processDefinition.getId());
+            result.put(PROCESSDEFINITIONID, saveResult);
         } else {
             putMsg(result, Status.CREATE_PROCESS_DEFINITION);
         }
