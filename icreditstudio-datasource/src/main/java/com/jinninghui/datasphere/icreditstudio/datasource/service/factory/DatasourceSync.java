@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
 //import cn.hutool.core.util.StrUtil;
 
+import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import org.slf4j.Logger;
@@ -15,10 +16,11 @@ import java.util.Objects;
 public interface DatasourceSync {
 
     Logger logger = LoggerFactory.getLogger(DatasourceSync.class);
-    static final  String SEPARATOR = "|";
+    static final String SEPARATOR = "|";
 
     /**
      * 根据uri获取jdbc连接
+     *
      * @param uri
      * @return
      */
@@ -72,18 +74,17 @@ public interface DatasourceSync {
         return null;
     }
 
-    /* */
-
     /**
      * 取得数据库名称
      *
      * @param uri
      * @return
-     *//*
+     */
     static String getDatabaseName(String uri) {
         String s = StrUtil.subBefore(uri, "?", false);
         return StrUtil.subAfter(s, "/", true);
-    }*/
+    }
+
     default String testConn(Integer type, String uri) {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         String username = getUsername(uri);

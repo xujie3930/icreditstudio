@@ -9,6 +9,6 @@ import javax.validation.constraints.NotBlank;
  */
 @Data
 public class DataSyncDetailRequest {
-    @NotBlank(message = "ID不能为空")
+    @NotBlank(message = "60000016")
     private String taskId;
 }
