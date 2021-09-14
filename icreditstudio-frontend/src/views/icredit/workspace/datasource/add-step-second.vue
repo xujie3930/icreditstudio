@@ -276,6 +276,7 @@ export default {
       this.opType = 'Add'
       this.dataType = type
       this.databaseType = name
+      this.$refs.dataSourceForm.resetFields()
       this.$refs.baseDialog.open()
     },
 

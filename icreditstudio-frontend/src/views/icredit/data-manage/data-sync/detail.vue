@@ -7,7 +7,7 @@
   <BaseDialog
     hideFooter
     title="查看同步任务"
-    ref="baseDialog"
+    ref="taskDialog"
     @on-close="close"
   >
     <el-tabs
@@ -50,7 +50,7 @@
 
               <el-col class="col" :span="16">
                 <div>表间关联关系：</div>
-                <div v-if="datasourceDetailInfo.view" class="pop-wrap">
+                <div v-if="datasourceDetailInfo.view.length" class="pop-wrap">
                   <el-popover placement="right-end" width="450" trigger="hover">
                     <Figure :data-source="datasourceDetailInfo.view" />
                     <div class="svg-wrap" slot="reference">
@@ -122,7 +122,7 @@
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
               </div>
-              <span class="text">{{ buildDetailInfo.syncCycle }}</span>
+              <span class="text">{{ buildDetailInfo.cron }}</span>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default {
       tableData: [],
 
       // 详情
-      datasourceDetailInfo: {},
+      datasourceDetailInfo: { view: [] },
       buildDetailInfo: {},
       taskDetailInfo: [
         { key: 'taskName', label: '任务名', value: '' },
@@ -174,7 +174,8 @@ export default {
       console.log(opType, 'King')
       this.activeName = 'DefineDetial'
       this.row = row
-      this.$refs.baseDialog.open()
+      console.log(this.$refs, 'jijijijiji')
+      this.$refs.taskDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
     },
 
