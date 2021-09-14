@@ -228,6 +228,7 @@ export default {
       testBtnLoading: false,
       dialogVisible: false,
       veifyNameLoading: false,
+      oldName: '',
 
       // 数据源表单参数
       dataSourceForm: {
@@ -276,7 +277,7 @@ export default {
       this.opType = 'Add'
       this.dataType = type
       this.databaseType = name
-      this.$refs.dataSourceForm.resetFields()
+      // this.$refs.dataSourceForm.resetFields()
       this.$refs.baseDialog.open()
     },
 
@@ -287,6 +288,7 @@ export default {
       this.opType = opType
       this.detailLoading = false
       this.dataSourceForm = uriSplit(data.uri, data)
+      this.oldName = data.name
       // this.$refs.baseDialog.open()
     },
 
@@ -307,6 +309,14 @@ export default {
       if (isValid) {
         cb(new Error('该名称中包含不规范字符，请重新输入'))
       } else {
+        const {
+          opType,
+          oldName,
+          dataSourceForm: { name }
+        } = this
+        if (opType === 'Edit' && oldName === name) {
+          return cb()
+        }
         this.timerId = null
         this.veifyNameLoading = true
         API.verifyDatasourceName({ name: value })
