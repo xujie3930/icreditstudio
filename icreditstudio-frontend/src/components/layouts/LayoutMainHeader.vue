@@ -136,7 +136,7 @@ export default {
   data() {
     this.getSystemTheme = getSystemTheme
     return {
-      workspaceId: null,
+      workspaceId: undefined,
       isShowQuickMenu: 'N',
       activeModule: '',
       count: 1,
@@ -155,22 +155,6 @@ export default {
   filters: {
     base64UrlFilter(url) {
       return base64UrlFilter(url)
-    }
-  },
-
-  watch: {
-    workspaceList: {
-      deep: true,
-      immediate: true,
-      handler(nVal = []) {
-        localStorage.setItem('workspaceId', null)
-        if (nVal && nVal.length) {
-          const { id } = nVal[0]
-          this.workspaceId = id
-          localStorage.setItem('workspaceId', id)
-          this.setWorkspaceId(id)
-        }
-      }
     }
   },
 
@@ -193,6 +177,7 @@ export default {
     this.activeModule = this.activeModuleId
     this.pollingUnreadInfos(60000)
     this.$once('hook:beforeDestroy', () => clearTimeout(this.timer))
+    this.workspaceId = this.$ls.get('workspaceId') || 'all'
   },
 
   mounted() {
@@ -210,8 +195,7 @@ export default {
     ]),
 
     workspaceIdChange(id) {
-      console.log(id, 'ididiidid')
-      localStorage.setItem('workspaceId', id)
+      this.$ls.set('workspaceId', id)
       this.setWorkspaceId(id)
     },
 
