@@ -22,9 +22,9 @@ import java.util.Collection;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWeight;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.LowerWeightRoundRobin;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWeight;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.LowerWeightRoundRobin;
 
 public class LowerWeightRoundRobinTest {
 

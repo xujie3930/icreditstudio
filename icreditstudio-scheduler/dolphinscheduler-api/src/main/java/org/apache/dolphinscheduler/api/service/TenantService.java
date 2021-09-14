@@ -18,6 +18,7 @@
 package org.apache.dolphinscheduler.api.service;
 
 import org.apache.dolphinscheduler.api.utils.Result;
+import org.apache.dolphinscheduler.dao.entity.Tenant;
 import org.apache.dolphinscheduler.dao.entity.User;
 
 import java.util.Map;
@@ -92,4 +93,11 @@ public interface TenantService {
      * @return true if tenant code can user, otherwise return false
      */
     Result verifyTenantCode(String tenantCode);
+
+    /**
+     * 查询租户
+     * @param tenantCode
+     * @return
+     */
+    Tenant findByTenantCode(String tenantCode);
 }

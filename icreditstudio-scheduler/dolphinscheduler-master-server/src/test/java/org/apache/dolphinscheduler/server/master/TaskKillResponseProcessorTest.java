@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
 
 import io.netty.channel.Channel;
-import prg.apache.dolphinscheduler.server.master.processor.TaskKillResponseProcessor;
+import org.apache.dolphinscheduler.server.master.processor.TaskKillResponseProcessor;
 
 /**
  *  task response processor test

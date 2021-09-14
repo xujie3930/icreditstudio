@@ -1361,4 +1361,93 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
         return CollectionUtils.isEmpty(resIds) ? new ArrayList<>() : resourcesMapper.queryResourceListById(resIds);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    public Result myOnlineCreateResource(User loginUser, ResourceType type, String fileName, String fileSuffix, String desc, String content,int pid,String currentDirectory, String tenantCode) {
+        Result result = new Result();
+        // if resource upload startup
+        if (!PropertyUtils.getResUploadStartupState()){
+            logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
+            putMsg(result, Status.HDFS_NOT_STARTUP);
+            return result;
+        }
+
+        //check file suffix
+        String nameSuffix = fileSuffix.trim();
+        String resourceViewSuffixs = FileUtils.getResourceViewSuffixs();
+        if (StringUtils.isNotEmpty(resourceViewSuffixs)) {
+            List<String> strList = Arrays.asList(resourceViewSuffixs.split(","));
+            if (!strList.contains(nameSuffix)) {
+                logger.error("resouce suffix {} not support create", nameSuffix);
+                putMsg(result, Status.RESOURCE_SUFFIX_NOT_SUPPORT_VIEW);
+                return result;
+            }
+        }
+
+        String name = fileName.trim() + "." + nameSuffix;
+        String fullName = currentDirectory.equals("/") ? String.format("%s%s",currentDirectory,name):String.format("%s/%s",currentDirectory,name);
+
+        result = myVerifyResourceName(fullName,type,tenantCode);
+        if (!result.getCode().equals(Status.SUCCESS.getCode())) {
+            return result;
+        }
+        if (pid != -1) {
+            Resource parentResource = resourcesMapper.selectById(pid);
+
+            if (parentResource == null) {
+                putMsg(result, Status.PARENT_RESOURCE_NOT_EXIST);
+                return result;
+            }
+
+            if (!hasPerm(loginUser, parentResource.getUserId())) {
+                putMsg(result, Status.USER_NO_OPERATION_PERM);
+                return result;
+            }
+        }
+
+        // save data
+        Date now = new Date();
+        Resource resource = new Resource(pid,name,fullName,false,desc,name,loginUser.getId(),type,content.getBytes().length,now,now);
+
+        resourcesMapper.insert(resource);
+
+        putMsg(result, Status.SUCCESS);
+        Map<Object, Object> dataMap = new org.apache.commons.collections.BeanMap(resource);
+        Map<String, Object> resultMap = new HashMap<>();
+        for (Map.Entry<Object, Object> entry: dataMap.entrySet()) {
+            if (!Constants.CLASS.equalsIgnoreCase(entry.getKey().toString())) {
+                resultMap.put(entry.getKey().toString(), entry.getValue());
+            }
+        }
+
+        result = uploadContentToHdfs(fullName, tenantCode, content);
+        if (!result.getCode().equals(Status.SUCCESS.getCode())) {
+            throw new RuntimeException(result.getMsg());
+        }
+        resultMap.put("resourceId",resource.getId());
+        result.setData(resultMap);
+        return result;
+    }
+
+    public Result myVerifyResourceName(String fullName, ResourceType type,String tenantCode) {
+        Result result = new Result();
+        putMsg(result, Status.SUCCESS);
+        if (checkResourceExists(fullName, 0, type.ordinal())) {
+            logger.error("resource type:{} name:{} has exist, can't create again.", type, fullName);
+            putMsg(result, Status.RESOURCE_EXIST);
+        } else {
+            // query tenant
+            try {
+                String hdfsFilename = HadoopUtils.getHdfsFileName(type,tenantCode,fullName);
+                if(HadoopUtils.getInstance().exists(hdfsFilename)){
+                    logger.error("resource type:{} name:{} has exist in hdfs {}, can't create again.", type, fullName,hdfsFilename);
+                    putMsg(result, Status.RESOURCE_FILE_EXIST,hdfsFilename);
+                }
+            } catch (Exception e) {
+                logger.error(e.getMessage(),e);
+                putMsg(result,Status.HDFS_OPERATION_ERROR);
+            }
+        }
+        return result;
+    }
+
 }

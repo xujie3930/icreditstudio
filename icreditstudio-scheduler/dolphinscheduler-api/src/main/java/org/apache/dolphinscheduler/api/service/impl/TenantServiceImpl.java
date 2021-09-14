@@ -343,4 +343,10 @@ public class TenantServiceImpl extends BaseServiceImpl implements TenantService 
         Boolean existTenant = tenantMapper.existTenant(tenantCode);
         return BooleanUtils.isTrue(existTenant);
     }
+
+    @Override
+    public Tenant findByTenantCode(String tenantCode) {
+        List<Tenant> tenants = tenantMapper.queryByTenantCode(tenantCode);
+        return CollectionUtils.isEmpty(tenants) ? null : tenants.get(0);
+    }
 }

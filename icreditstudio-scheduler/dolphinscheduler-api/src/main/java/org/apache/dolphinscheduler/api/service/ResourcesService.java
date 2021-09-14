@@ -231,4 +231,5 @@ public interface ResourcesService {
      */
     Map<String, Object> authorizedFile(User loginUser, Integer userId);
 
+    Result myOnlineCreateResource(User loginUser, ResourceType type, String fileName, String fileSuffix, String desc, String content,int pid,String currentDirectory, String tenantCode);
 }

@@ -38,7 +38,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.context.ApplicationContext;
-import prg.apache.dolphinscheduler.server.master.runner.MasterTaskExecThread;
+import org.apache.dolphinscheduler.server.master.runner.MasterTaskExecThread;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 @PrepareForTest(MasterTaskExecThread.class)

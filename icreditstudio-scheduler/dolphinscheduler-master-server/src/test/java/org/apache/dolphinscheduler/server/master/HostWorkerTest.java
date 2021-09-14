@@ -19,7 +19,7 @@ package org.apache.dolphinscheduler.server.master;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
 
 public class HostWorkerTest {
 

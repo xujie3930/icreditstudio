@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.RoundRobinSelector;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.RoundRobinSelector;
 
 /**
  * round robin selector
