@@ -14,7 +14,7 @@
 
 // 验证是否是中文
 export const validStrZh = str => {
-  const pattern = new RegExp(/[^\u4E00-\u9FA5]/g)
+  const pattern = /[^\u4E00-\u9FA5]/g
   return pattern.test(str)
 }
 
@@ -26,4 +26,12 @@ export const validStrSpecial = str => {
   const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
   const isValid = regStr.test(str) || emojiRegStr.test(str)
   return isValid
+}
+
+// 验证IP地址是否合法
+export const validIpAddress = ip => {
+  const re = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
+  const valid =
+    RegExp.$1 < 256 && RegExp.$2 < 256 && RegExp.$3 < 256 && RegExp.$4 < 256
+  return re.test(ip) && valid
 }

@@ -40,6 +40,7 @@
         prop="databaseName"
       >
         <el-input
+          clearable
           v-model="dataSourceForm.databaseName"
           placeholder="请输入数据库名"
         ></el-input>
@@ -53,6 +54,7 @@
           prop="uri"
         >
           <el-input
+            clearable
             v-model="dataSourceForm.uri"
             placeholder="请输入数据源路径"
           ></el-input>
@@ -72,6 +74,7 @@
 
         <el-form-item label="表头位置" prop="position">
           <el-select
+            clearable
             style="width: 100%"
             v-model="dataSourceForm.position"
             placeholder="请选择"
@@ -88,6 +91,7 @@
 
         <el-form-item label="分隔符" prop="separator">
           <el-input
+            clearable
             v-model="dataSourceForm.separator"
             placeholder="请输入分隔符"
           ></el-input>
@@ -98,6 +102,7 @@
         <el-col :span="12">
           <el-form-item label="IP" prop="ip">
             <el-input
+              clearable
               v-model="dataSourceForm.ip"
               placeholder="请输入数据源连接IP"
             >
@@ -106,10 +111,13 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="端口" prop="port">
-            <el-input
+            <el-input-number
+              :min="0"
+              controls-position="right"
               v-model="dataSourceForm.port"
               placeholder="请输入端口"
-            ></el-input>
+              style="width:100%"
+            ></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
@@ -118,8 +126,9 @@
         <el-col :span="12">
           <el-form-item label="用户名" prop="username">
             <el-input
+              clearable
               v-model="dataSourceForm.username"
-              placeholder="请输入数据源连接用户名"
+              placeholder="请输入用户名"
             >
             </el-input>
           </el-form-item>
@@ -127,9 +136,10 @@
         <el-col :span="12">
           <el-form-item label="密码" prop="password">
             <el-input
+              clearable
               show-password
               v-model="dataSourceForm.password"
-              placeholder="请输入数据源连接密码"
+              placeholder="请输入密码"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -195,6 +205,7 @@
 <script>
 import { mapState } from 'vuex'
 import { uriSplit } from '@/utils/util'
+import { validStrSpecial, validIpAddress } from '@/utils/validate'
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
 
@@ -250,7 +261,8 @@ export default {
           { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
         ip: [
-          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' },
+          { validator: this.verifyIpAddress, trigger: 'blur' }
         ],
         port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
         username: [
@@ -301,12 +313,7 @@ export default {
 
     // 验证是否已经存在数据源名称
     verifyDatasourceName(rule, value, cb) {
-      // 特殊符号
-      const regStr = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/gi
-      // 表情包
-      const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
-      const isValid = regStr.test(value) || emojiRegStr.test(value)
-      if (isValid) {
+      if (validStrSpecial(value)) {
         cb(new Error('该名称中包含不规范字符，请重新输入'))
       } else {
         const {
@@ -328,6 +335,16 @@ export default {
               this.veifyNameLoading = false
             }, 300)
           })
+      }
+    },
+
+    // 验证IP地址
+    verifyIpAddress(rule, value, cb) {
+      console.log(validIpAddress(value), '’kpkpkp')
+      if (validIpAddress(value)) {
+        cb()
+      } else {
+        cb(new Error('输入的IP地址不合法，请重新输入'))
       }
     },
 
