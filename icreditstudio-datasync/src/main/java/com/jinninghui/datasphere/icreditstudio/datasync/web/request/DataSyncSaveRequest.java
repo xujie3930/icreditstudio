@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncCondition;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldRequest;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -53,10 +54,14 @@ public class DataSyncSaveRequest {
      * 宽表名称
      */
     private String wideTableName;
+//    /**
+//     * 分区字段
+//     */
+//    private String partition;
     /**
-     * 分区字段
+     * 同步条件
      */
-    private String partition;
+    private SyncCondition syncCondition;
     /**
      * 【0：外部数据库，1：本地文件，2：区块链数据】
      */

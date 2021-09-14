@@ -9,12 +9,11 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum EnableStatusEnum {
-    ENABLE(1, "启用", TaskStatusEnum.ENABLE),
-    DISABLE(0, "未启用", TaskStatusEnum.DRAFT),
+    ENABLE(1, "启用"),
+    DISABLE(0, "未启用"),
     ;
     private Integer code;
     private String desc;
-    private TaskStatusEnum taskStatus;
 
     public static EnableStatusEnum find(Integer code) {
         for (EnableStatusEnum value : EnableStatusEnum.values()) {
