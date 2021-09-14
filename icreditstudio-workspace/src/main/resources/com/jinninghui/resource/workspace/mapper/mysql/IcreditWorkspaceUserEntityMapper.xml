@@ -8,7 +8,8 @@
              icredit_workspace w
         where u.space_id = w.id
           and w.del_flag = 'N'
-          and u.user_id = #{id};
+          and u.user_id = #{id}
+          order by w.update_time desc;
     </select>
 
     <select id="getUserListById" parameterType="java.lang.String"
