@@ -7,10 +7,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSetMetaData;
+import java.sql.*;
 
 /**
  * @author Peng
@@ -26,10 +23,17 @@ public final class AssociatedUtil {
         return abstractDialectTypeHandler.completion(vo);
     }
 
-    public static ResultSetMetaData getResultSetMetaData(ConnectionInfo info, String sql) throws Exception {
-        Class.forName(info.getDriverClass());
-        Connection connection = DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
+    public static ResultSetMetaData getResultSetMetaData(Connection connection, String sql) throws Exception {
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         return preparedStatement.getMetaData();
+    }
+
+    public static DatabaseMetaData getDatabaseMetaData(Connection connection) throws Exception {
+        return connection.getMetaData();
+    }
+
+    public static Connection getConnection(ConnectionInfo info) throws Exception {
+        Class.forName(info.getDriverClass());
+        return DriverManager.getConnection(info.getUrl(), info.getUsername(), info.getPassword());
     }
 }

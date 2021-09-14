@@ -22,9 +22,9 @@ public class TaskDefineInfo {
     /**
      * 创建方式【0：可视化，1：SQL】
      */
-    private Integer buildMode;
+    private Integer createMode;
     /**
      * 任务描述
      */
-    private String taskDescription;
+    private String taskDescribe;
 }

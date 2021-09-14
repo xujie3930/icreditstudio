@@ -230,7 +230,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        catalogue.setName(icreditDatasourceEntity.getName());
+                        catalogue.setName(DatasourceSync.getDatabaseName(icreditDatasourceEntity.getUri()));
                         if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }

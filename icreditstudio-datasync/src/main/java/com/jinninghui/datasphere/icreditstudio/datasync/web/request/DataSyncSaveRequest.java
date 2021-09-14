@@ -4,7 +4,9 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldRequest;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -16,6 +18,7 @@ public class DataSyncSaveRequest {
     /**
      * 工作空间id
      */
+    @NotBlank(message = "60000000")
     private String workspaceId;
     //=============同步任务定义===========
     /**
@@ -25,6 +28,7 @@ public class DataSyncSaveRequest {
     /**
      * 任务名称
      */
+    @Length(max = 15, message = "60000022")
     private String taskName;
     /**
      * 【0：未启用，1：启用】
@@ -37,6 +41,7 @@ public class DataSyncSaveRequest {
     /**
      * 任务描述
      */
+    @Length(max = 255, message = "60000023")
     private String taskDescribe;
     //==============end=================
     //============同步任务构建=============
