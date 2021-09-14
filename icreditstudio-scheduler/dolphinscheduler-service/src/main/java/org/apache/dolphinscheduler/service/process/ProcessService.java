@@ -2106,7 +2106,7 @@ public class ProcessService {
         }
 
         processDefinitionLog.setId(processDefinition.getId());
-        processDefinitionLog.setReleaseState(isFromProcessDefine ? ReleaseState.OFFLINE : ReleaseState.ONLINE);
+        processDefinitionLog.setReleaseState(ReleaseState.ONLINE);
         processDefinitionLog.setFlag(Flag.YES);
 
         int result;
@@ -2115,7 +2115,7 @@ public class ProcessService {
         } else {
             result = processDefineMapper.updateById(processDefinitionLog);
         }
-        return result;
+        return processDefinitionLog.getId();
     }
 
     /**
