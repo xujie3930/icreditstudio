@@ -293,7 +293,7 @@ export default {
     completeUri() {
       const databaseType = this.databaseType || 'mysql'
       const { ip, port, databaseName, username, password } = this.dataSourceForm
-      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${password}`
+      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${password}`
     },
 
     // 验证是否已经存在数据源名称

@@ -29,7 +29,7 @@ const states = () => ({
   shortMenus: [], // 快捷菜单列表
   workspaceList: [], // 工作空间下拉框
   workspaceId: null, // 当前选中工作空间ID
-  workspaceCreateAuth: false // 当前登录账号是为root账号
+  workspaceCreateAuth: false // 当前登录账号是否为root账号
 })
 
 const getters = {
@@ -121,8 +121,10 @@ const actions = {
             const nWorkList = [{ name: '全部', id: 'all' }, ...workspaceList]
             const idx = nWorkList.findIndex(({ id }) => workspaceId === id)
             const wid = nWorkList.length > 1 ? nWorkList[1].id : nWorkList[0].id
+
             idx < 0 && Vue.ls.set('workspaceId', wid)
 
+            commit(SET_WRKSPACE_ID, wid)
             commit(SET_WRKSPACE_AUTH, workspaceCreateAuth)
             commit(SET_WRKSPACE_LIST, nWorkList)
             commit(SET_USERINFO, userInfo || {})
