@@ -166,7 +166,6 @@ export default {
     saveSetting(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          console.log(name)
           const params = {
             workspaceId: this.workspaceId,
             callStep: 1,
@@ -191,7 +190,6 @@ export default {
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          console.log(name, valid)
           sessionStorage.setItem('taskForm', JSON.stringify(this.addTaskForm))
           this.$router.push({
             path: '/data-manage/add-build',

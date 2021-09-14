@@ -12,6 +12,7 @@
       <el-form
         class="add-task-content"
         ref="taskForm"
+        v-loading="detailLoading"
         :model="taskForm"
         :rules="taskRules"
       >
@@ -125,14 +126,17 @@ import Back from '@/views/icredit/components/back'
 import Cron from '@/components/cron'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
+import { deepClone } from '@/utils/util'
 
 export default {
   components: { HeaderStepBar, Back, Cron },
 
   data() {
     return {
+      detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
+
       taskForm: {
         maxThread: 2,
         limitRate: '',
@@ -162,20 +166,33 @@ export default {
     ...mapState('user', ['workspaceId'])
   },
 
+  created() {
+    this.initPage()
+  },
+
   methods: {
+    initPage() {
+      const beforeStepForm = JSON.parse(
+        sessionStorage.getItem('taskForm') || '{}'
+      )
+      this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
+      // 编辑
+      this.taskForm.taskId && this.getDetailData()
+    },
+
+    // 打开选择CRON表达式的弹窗
     handleOpenCron() {
       this.$refs.cron.open()
     },
 
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
-      const beforeStepForm = JSON.parse(
-        sessionStorage.getItem('taskForm') || '{}'
-      )
+      // const beforeStepForm = JSON.parse(
+      //   sessionStorage.getItem('taskForm') || '{}'
+      // )
       const params = {
         workspaceId: this.workspaceId,
-        ...this.taskForm,
-        ...beforeStepForm
+        ...this.taskForm
       }
       params.callStep = callStep
       this.$refs.taskForm.validate(valid => {
@@ -199,6 +216,23 @@ export default {
             })
         }
       })
+    },
+
+    // 编辑情况下获取详情
+    getDetailData() {
+      this.detailLoading = true
+      API.dataSyncBuildDetial({ taskId: this.taskForm.taskId })
+        .then(({ success, data }) => {
+          if (success && data) {
+            for (const [key, value] of Object.entries(data)) {
+              console.log(key, value, typeof value)
+              this.taskForm[key] = value
+            }
+          }
+        })
+        .finally(() => {
+          this.detailLoading = false
+        })
     }
   }
 }
