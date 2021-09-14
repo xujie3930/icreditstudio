@@ -14,13 +14,12 @@ export default {
     {
       type: 'index',
       label: '序号',
-      width: '100px',
-      prop: 'fieldName'
+      width: '100px'
     },
     {
       type: 'text',
       label: '字段名称',
-      prop: 'userName'
+      prop: 'fieldName'
     },
     {
       type: 'text',

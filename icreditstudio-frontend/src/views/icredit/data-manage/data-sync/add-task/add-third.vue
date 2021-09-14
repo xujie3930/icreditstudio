@@ -187,9 +187,6 @@ export default {
 
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
-      // const beforeStepForm = JSON.parse(
-      //   sessionStorage.getItem('taskForm') || '{}'
-      // )
       const params = {
         workspaceId: this.workspaceId,
         ...this.taskForm
@@ -201,6 +198,7 @@ export default {
           API.dataSyncAdd(params)
             .then(({ success, data }) => {
               if (success && data) {
+                this.taskForm.taskId = data.taskId
                 this.$notify.success({
                   title: '操作结果',
                   message: callStep === 3 ? '保存设置成功！' : '发布成功！'

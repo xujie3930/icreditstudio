@@ -14,7 +14,7 @@
 
 // 验证是否是中文
 export const validStrZh = str => {
-  const pattern = new RegExp(/\p{Unified_Ideograph}/gu)
+  const pattern = new RegExp(/[^\u4E00-\u9FA5]/g)
   return pattern.test(str)
 }
 

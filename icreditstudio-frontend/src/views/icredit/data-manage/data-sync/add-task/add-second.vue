@@ -386,16 +386,16 @@ export default {
       tableNameOptions: [],
       stockNameOptions: [],
       sameNameDataBase: [
-        {
-          datasourceId: 1909,
-          databaseName: '数据库-100',
-          host: '192.168.0.90'
-        },
-        {
-          datasourceId: 1999,
-          databaseName: '数据库-1023ssd',
-          host: '192.168.0.93'
-        }
+        // {
+        //   datasourceId: 1909,
+        //   databaseName: '数据库-100',
+        //   host: '192.168.0.90'
+        // },
+        // {
+        //   datasourceId: 1999,
+        //   databaseName: '数据库-1023ssd',
+        //   host: '192.168.0.93'
+        // }
       ],
       searchTableName: '',
       checkList: [],
@@ -438,7 +438,7 @@ export default {
   methods: {
     initPage() {
       const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
-      this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
+      this.secondTaskForm = { ...taskForm, ...this.secondTaskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
@@ -583,6 +583,7 @@ export default {
       API.dataSyncAdd(this.handleTaskFormParams())
         .then(({ success, data }) => {
           if (success && data) {
+            this.secondTaskForm.taskId = data.taskId
             this.$notify.success({ title: '操作结果', message: '保存成功' })
           }
         })
@@ -853,8 +854,12 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value, typeof value)
-              this.addTaskForm[key] = value
+              console.log(key, value)
+              if (key === 'fieldInfos') {
+                this.secondTaskForm[key] = this.hadleFieldInfos(value)
+              } else {
+                this.secondTaskForm[key] = value
+              }
             }
           }
         })
