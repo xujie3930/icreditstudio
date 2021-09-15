@@ -67,9 +67,22 @@
                 <span> 宽表信息：</span>
                 <span>{{ datasourceDetailInfo.wideTableName }}</span>
               </el-col>
-              <el-col class="col" :span="16">
-                <span> 分区字段：</span>
-                <span>{{ datasourceDetailInfo.partition }}</span>
+
+              <el-col class="col" :span="5">
+                <span> 增量字段：</span>
+                <span>
+                  {{ datasourceDetailInfo.syncCondition.incrementalField }}
+                </span>
+              </el-col>
+
+              <el-col class="col" :span="5">
+                <span> 日期格式：</span>
+                <span>{{ datasourceDetailInfo.syncCondition.partition }}</span>
+              </el-col>
+
+              <el-col class="col" :span="6">
+                <span> 时间过滤条件：</span>
+                <span>T + {{ datasourceDetailInfo.syncCondition.n }}</span>
               </el-col>
             </el-row>
 
@@ -140,7 +153,8 @@ import { deepClone } from '@/utils/util'
 import {
   taskStatusMapping,
   createModeMapping,
-  scheduleTypeMapping
+  scheduleTypeMapping,
+  taskDetailInfo
 } from './contant'
 
 export default {
@@ -158,25 +172,25 @@ export default {
       tableData: [],
 
       // 详情
-      datasourceDetailInfo: { view: [] },
+      datasourceDetailInfo: { view: [], syncCondition: {} },
       buildDetailInfo: {},
-      taskDetailInfo: [
-        { key: 'taskName', label: '任务名', value: '' },
-        { key: 'enable', label: '任务启用', value: '' },
-        { key: 'createMode', label: '创建方式', value: '' },
-        { key: 'taskDescribe', label: '任务描述', value: '' }
-      ]
+      taskDetailInfo: []
     }
   },
 
   methods: {
-    open({ row, opType }) {
-      console.log(opType, 'King')
+    open({ row }) {
       this.activeName = 'DefineDetial'
       this.row = row
-      console.log(this.$refs, 'jijijijiji')
+      this.initData()
       this.$refs.taskDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
+    },
+
+    initData() {
+      this.datasourceDetailInfo = { view: [], syncCondition: {} }
+      this.buildDetailInfo = {}
+      this.taskDetailInfo = taskDetailInfo
     },
 
     close() {

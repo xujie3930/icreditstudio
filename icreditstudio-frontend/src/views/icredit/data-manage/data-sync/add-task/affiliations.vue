@@ -118,6 +118,7 @@
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
 import { deepClone } from '@/utils/util'
+import { iconMapping } from '../contant'
 
 export default {
   components: { BaseDialog },
@@ -216,11 +217,6 @@ export default {
     // 获取关联条件数据
     getLinkTypeData(dialect = 'mysql') {
       this.loading = true
-      const iconMapping = {
-        0: { icon: 'left-link', name: '左关联' },
-        1: { icon: 'cover-link', name: '内关联' },
-        2: { icon: 'all-link', name: '全关联' }
-      }
       API.dataSyncLinkType({ dialect })
         .then(({ success, data }) => {
           if (success && data) {

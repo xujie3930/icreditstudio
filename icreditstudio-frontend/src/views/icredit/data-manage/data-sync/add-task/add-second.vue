@@ -260,7 +260,7 @@
                   clearable
                   placeholder="请输入中文名称"
                   v-model.trim="row.fieldChineseName"
-                  @change="handleChangeChineseName"
+                  @blur="handleChangeChineseName(row.fieldChineseName)"
                 ></el-input>
               </template>
 
@@ -281,7 +281,7 @@
                     v-for="(item, idx) in row.dictionaryOptions"
                     :key="idx"
                     :label="item.name"
-                    :value="item.key"
+                    :value="item.name"
                   >
                   </el-option>
                 </el-select>
@@ -297,7 +297,7 @@
         </el-button>
         <el-button
           class="btn"
-          :disabled="!secondTaskForm.sqlInfo.sql"
+          :disabled="!secondTaskForm.sqlInfo.sql && isCanSaveSetting"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
@@ -438,7 +438,7 @@ export default {
   methods: {
     initPage() {
       const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
-      this.secondTaskForm = { ...taskForm, ...this.secondTaskForm }
+      this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
@@ -572,10 +572,12 @@ export default {
 
     // 中文名称
     handleChangeChineseName(name) {
-      console.log(name)
-      const valid = validStrZh(name)
-      this.isCanSaveSetting = valid
-      this.$message.error('该字段为中文名称输入，请检查后重新输入！')
+      console.log(name, validStrZh(name), 'name')
+      if (name) {
+        const valid = validStrZh(name)
+        this.isCanSaveSetting = valid
+        valid && this.$message.error('该字段为中文名称输入，请检查后重新输入！')
+      }
     },
 
     // 保存设置

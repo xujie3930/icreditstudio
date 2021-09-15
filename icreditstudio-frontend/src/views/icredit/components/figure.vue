@@ -38,6 +38,7 @@
 </template>
 
 <script>
+import { iconMapping } from '@/views/icredit/data-manage/data-sync/contant'
 import FigureLine from './line'
 
 export default {
@@ -46,7 +47,7 @@ export default {
   },
 
   data() {
-    return {}
+    return { iconMapping }
   },
 
   props: {
