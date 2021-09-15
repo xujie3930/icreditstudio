@@ -223,7 +223,6 @@ export default {
       } else if (this.activeName === 'DispatchDetial') {
         this.buildDetailInfo = data
       } else {
-        console.log('data', data)
         this.datasourceDetailInfo = data
       }
     },

@@ -86,7 +86,7 @@
               type="textarea"
               placeholder="请在此输入hive语法的SQL语句"
               show-word-limit
-              v-model="secondTaskForm.sqlInfo.sql"
+              v-model="secondTaskForm.sql"
               :autosize="{ minRows: 7 }"
             >
             </el-input>
@@ -297,14 +297,14 @@
         </el-button>
         <el-button
           class="btn"
-          :disabled="!secondTaskForm.sqlInfo.sql && isCanSaveSetting"
+          :disabled="!secondTaskForm.sql && isCanSaveSetting"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
         <el-button
           class="btn"
           type="primary"
-          :disabled="!secondTaskForm.sqlInfo.sql"
+          :disabled="!secondTaskForm.sql"
           @click="handleStepClick"
         >
           下一步
@@ -403,13 +403,15 @@ export default {
       // 可视化-已拖拽的表
       selectedTable: [],
 
+      // 识别宽表-同名数据库
+      sqlInfo: { sql: '', databaseHost: [] },
+
       // 表单参数
       secondTaskForm: {
         syncCondition: { incrementalField: '', partition: '', n: undefined },
-        sqlInfo: { sql: '', databaseHost: [] },
+        sql: '',
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
-        // partition: '', // 分区字段
         fieldInfos: [], // 表信息
         sourceType: 0, // 资源类型
         callStep: 2, // 调用步骤
@@ -604,7 +606,6 @@ export default {
     handleTaskFormParams() {
       const { workspaceId } = this
       const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
-      console.log('firstFrom', firstFrom)
       // 可视化方式参数处理
       !firstFrom.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
@@ -655,7 +656,6 @@ export default {
     },
 
     handleDictClear(row) {
-      console.log(row, 'lp')
       // eslint-disable-next-line no-param-reassign
       row.dictionaryOptions = []
     },
@@ -667,7 +667,7 @@ export default {
 
     // 数据库同名选择弹窗回调
     handleSelectBatabase() {
-      this.secondTaskForm.sqlInfo.databaseHost = deepClone(
+      this.sqlInfo.databaseHost = deepClone(
         this.sameNameDataBase
       ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
       this.handleIdentifyTable()
@@ -676,17 +676,21 @@ export default {
     // 识别宽表
     handleIdentifyTable() {
       this.handleVisualizationParams()
+
       const {
         createMode,
-        sqlInfo,
+        sql,
         sourceTables,
         dialect,
         view
       } = this.secondTaskForm
+
+      console.log(sql, this.sqlInfo)
+      this.sqlInfo.sql = sql
       const sqlParams = {
         workspaceId: this.workspaceId,
         createMode,
-        sqlInfo
+        sqlInfo: this.sqlInfo
       }
 
       const visualParams = {
@@ -698,17 +702,16 @@ export default {
         view,
         dialect
       }
-      console.log('createMode==', createMode)
+
       this.widthTableLoading = false
       this.tableLoading = true
       API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
         .then(({ success, data }) => {
           if (success && data) {
-            console.log(data)
-            const { sql, partitions, fields, incrementalFields } = data
+            const { sql: sq, partitions, fields, incrementalFields } = data
             this.zoningOptions = partitions
             this.increFieldsOptions = incrementalFields
-            this.secondTaskForm.sqlInfo.sql = sql
+            this.secondTaskForm.sql = sq
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
 
             // 数据库同名的情况选择相应的库
