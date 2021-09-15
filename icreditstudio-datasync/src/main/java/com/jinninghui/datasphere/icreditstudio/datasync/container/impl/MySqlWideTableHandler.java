@@ -49,6 +49,11 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
     private DatasourceFeign datasourceFeign;
 
     @Override
+    public boolean isCurrentWideTable(DataSyncGenerateWideTableParam param) {
+        return true;
+    }
+
+    @Override
     public String getDialect() {
         return "mysql";
     }
@@ -85,7 +90,8 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
             } else {
                 String wideTableSql = getWideTableSql(param);
                 String from = StrUtil.subAfter(wideTableSql, "from", true);
-                String database = StrUtil.subBefore(StrUtil.trim(from), " ", true);
+                String databaseTable = StrUtil.subBefore(StrUtil.trim(from), " ", false);
+                String database = StrUtil.subBefore(databaseTable, ".", false);
                 FeignDataSourcesRequest feignRequest = new FeignDataSourcesRequest();
                 feignRequest.setDatabaseName(database);
                 BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(feignRequest);
