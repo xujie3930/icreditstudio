@@ -9,7 +9,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
@@ -107,6 +109,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         String taskId = oneStepSave(param);
         DataSyncTaskBuildSaveParam saveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskBuildSaveParam.class);
         saveParam.setTaskId(taskId);
+        saveParam.setWideTableSql(param.getSql());
         syncTaskBuildSave(saveParam);
         return taskId;
     }
@@ -136,11 +139,20 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public void syncTaskBuildSave(DataSyncTaskBuildSaveParam param) {
+        if (StringUtils.isBlank(param.getWideTableName())) {
+            throw new AppException("60000002");
+        }
+        if (StringUtils.isBlank(param.getTargetSource())) {
+            throw new AppException("60000001");
+        }
+        if (CollectionUtils.isEmpty(param.getFieldInfos())) {
+            throw new AppException("60000014");
+        }
         SyncWidetableEntity entity = new SyncWidetableEntity();
         entity.setSyncTaskId(param.getTaskId());
         entity.setName(param.getWideTableName());
         entity.setTargetSource(param.getTargetSource());
-        entity.setPartitionField(param.getPartition());
+        entity.setSyncCondition(JSONObject.toJSONString(param.getSyncCondition()));
         entity.setSqlStr(param.getWideTableSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         entity.setVersion(param.getVersion());
@@ -307,7 +319,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
-        String sql;
+       /* String sql;
         if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
             AssociatedFormatterVo vo = new AssociatedFormatterVo();
             vo.setDialect(param.getDialect());
@@ -354,11 +366,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException("60000020");
         } finally {
             IoUtil.close(connection);
-        }
+        }*/
+        GenerateWideTable generateWideTable = GenerateWideTableContainer.find(param);
+        String wideTableSql = generateWideTable.getWideTableSql(param);
+        generateWideTable.verifySql(param);
+        List<TableInfo> tableInfos = generateWideTable.getTableInfos(param);
+        String dataSourceId = generateWideTable.getDataSourceId(param);
+        WideTable wideTable = generateWideTable.generate(wideTableSql, dataSourceId, tableInfos);
         return BusinessResult.success(wideTable);
     }
 
-    private ConnectionInfo getConnectionInfo(String datasourceId) {
+    /*private ConnectionInfo getConnectionInfo(String datasourceId) {
         FeignConnectionInfoRequest build = FeignConnectionInfoRequest.builder()
                 .datasourceId(datasourceId)
                 .build();
@@ -367,7 +385,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             return connectionInfo.getData();
         }
         throw new AppException("60000006");
-    }
+    }*/
 
     private List<WideTableFieldRequest> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
         List<WideTableFieldRequest> results = null;
@@ -430,7 +448,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return BusinessResult.success(true);
     }
 
-    private Map<String, String> getDatabaseTableFieldRemark(List<TableInfo> tableInfos, ConnectionInfo connectionInfo) {
+    /*private Map<String, String> getDatabaseTableFieldRemark(List<TableInfo> tableInfos, ConnectionInfo connectionInfo) {
         Map<String, String> results = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(tableInfos) && Objects.nonNull(connectionInfo)) {
             ConnectionInfo connectionInfoCopy = BeanCopyUtils.copyProperties(connectionInfo, ConnectionInfo.class);
@@ -464,9 +482,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     });
         }
         return results;
-    }
+    }*/
 
-    private Map<String, String> getTableFieldRemark(DatabaseMetaData metaData, List<ImmutablePair<String, String>> pairs) throws Exception {
+    /*private Map<String, String> getTableFieldRemark(DatabaseMetaData metaData, List<ImmutablePair<String, String>> pairs) throws Exception {
         Map<String, String> results = Maps.newHashMap();
         if (CollectionUtils.isNotEmpty(pairs)) {
             for (ImmutablePair<String, String> pair : pairs) {
@@ -484,7 +502,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
         }
         return results;
-    }
+    }*/
 
     /**
      * 创建宽表

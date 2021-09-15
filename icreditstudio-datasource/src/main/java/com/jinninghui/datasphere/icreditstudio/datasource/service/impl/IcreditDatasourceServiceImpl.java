@@ -313,10 +313,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
         if (Objects.nonNull(byId)) {
             String uri = byId.getUri();
-            String connUrl = DatasourceSync.getConnUrl(uri);
+//            String connUrl = DatasourceSync.getConnUrl(uri);
             String username = DatasourceSync.getUsername(uri);
             String password = DatasourceSync.getPassword(uri);
-            Connection conn = DatasourceSync.getConn(byId.getType(), connUrl, username, password);
+            Connection conn = DatasourceSync.getConn(byId.getType(), uri, username, password);
             if (Objects.isNull(conn)) {
                 throw new AppException("70000000");
             }
@@ -334,7 +334,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     }
                 }
             } catch (Exception e) {
-                log.error("获取数据库源信息", e);
+                log.error("获取数据库源信息失败", e);
             }
         }
         return BusinessResult.success(results);

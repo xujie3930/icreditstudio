@@ -7,7 +7,16 @@ import lombok.Data;
  */
 @Data
 public class SyncCondition {
+    /**
+     * 增量字段
+     */
     private String incrementalField;
+    /**
+     * 分区类型
+     */
     private String partition;
+    /**
+     * 时间T+n
+     */
     private Integer n;
 }

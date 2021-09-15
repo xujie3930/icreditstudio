@@ -103,13 +103,13 @@ public interface DatasourceSync {
 
     static Connection getConn(Integer type, String uri, String username, String password) {
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
-        Connection connection;
+        Connection connection = null;
         try {
             Class.forName(driver);
             String jdbcUri = geturi(uri);
             connection = DriverManager.getConnection(jdbcUri, username, password);
         } catch (Exception e) {
-            return null;
+            logger.error("获取连接失败", e);
         }
         return connection;
     }

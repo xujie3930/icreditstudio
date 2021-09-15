@@ -12,6 +12,14 @@ import java.util.List;
 public interface GenerateWideTable extends DialectKeyRegister {
 
     /**
+     * 根据参数判断当前类型
+     *
+     * @param param
+     * @return
+     */
+    boolean isCurrentWideTable(DataSyncGenerateWideTableParam param);
+
+    /**
      * 获取宽表sql
      *
      * @param param
