@@ -261,8 +261,8 @@ export default {
           { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
         ip: [
-          { required: true, message: '请输入数据源连接IP', trigger: 'blur' },
-          { validator: this.verifyIpAddress, trigger: 'blur' }
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
+          // { validator: this.verifyIpAddress, trigger: 'blur' }
         ],
         port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
         username: [

@@ -45,7 +45,9 @@
             <el-row class="row">
               <el-col class="col" :span="8">
                 <span>数据库源：</span>
-                <span>{{ datasourceDetailInfo.sourceType }}</span>
+                <span>{{
+                  radioBtnOption[datasourceDetailInfo.sourceType].label
+                }}</span>
               </el-col>
 
               <el-col class="col" :span="16">
@@ -154,7 +156,8 @@ import {
   taskStatusMapping,
   createModeMapping,
   scheduleTypeMapping,
-  taskDetailInfo
+  taskDetailInfo,
+  radioBtnOption
 } from './contant'
 
 export default {
@@ -165,6 +168,7 @@ export default {
       row: {},
       detailLoading: false,
       activeName: 'DefineDetial',
+      radioBtnOption,
 
       // 表格
       tableConfiguration,
