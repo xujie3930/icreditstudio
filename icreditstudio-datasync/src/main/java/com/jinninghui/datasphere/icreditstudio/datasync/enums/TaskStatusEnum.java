@@ -26,4 +26,13 @@ public enum TaskStatusEnum {
         }
         return null;
     }
+
+    public static TaskStatusEnum find(EnableStatusEnum statusEnum) {
+        for (TaskStatusEnum value : TaskStatusEnum.values()) {
+            if (value.statusEnum.equals(statusEnum)) {
+                return value;
+            }
+        }
+        return null;
+    }
 }

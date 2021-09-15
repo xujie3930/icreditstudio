@@ -1,8 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.utils;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractDialectTypeHandler;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.AssociatedDialectKeyContainer;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.FormatterDialectKeyContainer;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.AssociatedDialectKeyContainer;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.FormatterDialectKeyContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;

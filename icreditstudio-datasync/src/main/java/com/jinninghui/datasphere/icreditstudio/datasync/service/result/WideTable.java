@@ -22,6 +22,10 @@ public class WideTable {
      * 分区字段列表
      */
     private List<WideTable.Select> partitions;
+    /**
+     * 增量字段
+     */
+    private List<WideTable.Select> incrementalFields;
 
     /**
      * 生成宽表sql

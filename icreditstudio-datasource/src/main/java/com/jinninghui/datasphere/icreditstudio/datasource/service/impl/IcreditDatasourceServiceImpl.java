@@ -150,7 +150,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         Map<String, String> map;
         try {
             map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
-            if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)){
+            if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)) {
                 throw new AppException("70000003");
             }
             //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
@@ -340,6 +340,16 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         return BusinessResult.success(results);
     }
 
+    @Override
+    public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .uri(param.getDatabaseName())
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+        return BusinessResult.success(list);
+    }
+
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(param.getWorkspaceId())) {
@@ -347,6 +357,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (CollectionUtils.isNotEmpty(param.getCategory())) {
             wrapper.in(IcreditDatasourceEntity.CATEGORY, param.getCategory());
+        }
+        if (StringUtils.isNotBlank(param.getUri())) {
+            wrapper.like(IcreditDatasourceEntity.URI, param.getUri());
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());

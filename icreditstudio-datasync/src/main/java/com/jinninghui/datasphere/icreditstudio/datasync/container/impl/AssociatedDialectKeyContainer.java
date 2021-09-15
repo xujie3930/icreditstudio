@@ -1,5 +1,6 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.container;
+package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractMapContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 
 /**

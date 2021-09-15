@@ -1,6 +1,5 @@
-package com.jinninghui.datasphere.icreditstudio.datasource.entity;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,8 +17,7 @@ import java.util.Date;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-@TableName("icredit_datasource")
-public class IcreditDatasourceEntity implements Serializable {
+public class DatasourceInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,7 +29,6 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String SPACE_ID = "SPACE_ID";
     public static final String CATEGORY = "CATEGORY";
     public static final String DEL_FLAG = "DEL_FLAG";
-    public static final String URI = "uri";
 
     /**
      * 主键id
