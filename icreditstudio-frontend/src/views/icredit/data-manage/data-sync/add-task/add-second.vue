@@ -139,7 +139,7 @@
                 >
                   <div class="line"></div>
                   <JSvg
-                    name="left-link"
+                    :name="item.iconName"
                     class="icon"
                     @click.native="handleLinkIconClick({ idx, ...item })"
                   />
@@ -350,8 +350,13 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-sync-ad
 import API from '@/api/icredit'
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { treeIconMapping, radioBtnOption, fieldTypeOptions } from '../contant'
-import { randomNum, deepClone } from '@/utils/util'
+import {
+  treeIconMapping,
+  radioBtnOption,
+  fieldTypeOptions,
+  iconMapping
+} from '../contant'
+import { randomNum, deepClone, uriSplit } from '@/utils/util'
 import { validStrZh } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
 
@@ -448,10 +453,16 @@ export default {
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
-      const { id, parent } = node
+      const {
+        id: tableId,
+        parent: { label: database }
+      } = node
+      const { ip } = uriSplit(data.url)
+      const { sourceType } = this.secondTaskForm
+      console.log('ssssaaaa==', ip, sourceType, data, node)
       evt.dataTransfer.setData(
         'application/json',
-        JSON.stringify({ tableId: id, database: parent.label, ...data })
+        JSON.stringify({ tableId, database, ip, sourceType, ...data })
       )
     },
 
@@ -460,19 +471,35 @@ export default {
       evt.preventDefault()
       const domData = evt.dataTransfer.getData('application/json')
       const dataSource = JSON.parse(domData)
-      console.log('ssss', dataSource)
       const addTableObj = [
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
 
+      // 不能重复拖动同一张表
       const isExistIdx = this.selectedTable.findIndex(
         ({ tableId }) => dataSource.tableId === tableId
       )
-
-      // 不能重复拖动同一张表
       if (isExistIdx > -1) {
         this.$message.error('拖动的表已存在， 请重新选择一张表！')
+        return
+      }
+
+      // 数据源类型不同的表不能拖
+      const isDiffTypeIdx = this.selectedTable.findIndex(
+        ({ sourceType }) => dataSource.sourceType !== sourceType
+      )
+      if (isDiffTypeIdx < -1) {
+        this.$message.error('数据源类型不同的表不能拖动，请重新选择一张表！')
+        return
+      }
+
+      // IP地址不相同的表不能拖
+      const isSameIpIdx = this.selectedTable.findIndex(
+        ({ ip }) => dataSource.ip === ip
+      )
+      if (isSameIpIdx < -1) {
+        this.$message.error('IP地址不同的表不能拖动， 请重新选择一张表！')
         return
       }
 
@@ -480,7 +507,7 @@ export default {
       const filterDiffType = () => {
         const { dialect } = this.selectedTable[0]
         if (dataSource.dialect !== dialect) {
-          this.$message.error('数据库类型不统一， 请重新选择一张表！')
+          this.$message.error('数据库类型不同表不能拖动， 请重新选择一张表！')
           return true
         }
         return false
@@ -502,21 +529,26 @@ export default {
       }
     },
 
-    // 点击图标设置关联字段
+    // 点击图标设置关联字段回调
     handleVisualConfirm(options) {
       const { idx } = options
+      const index = this.secondTaskForm.view.findIndex(item => item.idx === idx)
       const updateViewData = () => {
-        const index = this.secondTaskForm.view.findIndex(
-          item => item.idx === idx
-        )
         this.secondTaskForm.view.splice(index, 1, options)
       }
 
-      !this.secondTaskForm.view.length
-        ? this.secondTaskForm.view.push(options)
-        : updateViewData()
+      index > -1 ? updateViewData() : this.secondTaskForm.view.push(options)
 
       console.log(this.secondTaskForm, 'this.secondTaskForm')
+      // 显示已设置关联关系的表的状态
+      const { length } = this.secondTaskForm.view
+      const { lfTbIdx, rhTbIdx, associatedType } = this.secondTaskForm.view[
+        length - 1
+      ]
+      this.selectedTable[lfTbIdx].isChecked = true
+      this.selectedTable[rhTbIdx].isChecked = true
+      this.selectedTable[idx].iconName =
+        iconMapping[associatedType]?.icon || 'left-link'
     },
 
     handlePreventDefault(evt) {
@@ -563,12 +595,25 @@ export default {
       const leftTable = { datasourceId, name, database }
       const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
 
+      const viewDefaultData = {
+        associatedType: undefined,
+        conditions: [{ left: '', associate: '', right: '' }]
+      }
+      const { view } = this.secondTaskForm
+      const viewDataIdxMapping = { 1: 0, 3: 1, 5: 2 }
+      const vidx = viewDataIdxMapping[idx]
+      const { associatedType, conditions } = view[vidx] || viewDefaultData
+
       this.$refs.linkDialog.open({
         idx,
+        lfTbIdx,
+        rhTbIdx,
         title: '新增关联关系',
         dialect,
         leftTable,
-        rightTable
+        rightTable,
+        associatedType,
+        conditions
       })
     },
 
@@ -635,7 +680,7 @@ export default {
       this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
 
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
-        ({ idx, ...item }) => item
+        ({ idx, lfTbIdx, rhTbIdx, ...item }) => item
       )
 
       this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
