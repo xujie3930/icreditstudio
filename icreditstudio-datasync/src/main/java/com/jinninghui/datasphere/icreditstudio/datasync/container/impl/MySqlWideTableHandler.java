@@ -112,7 +112,32 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
     @Override
     public List<DataSyncGenerateWideTableRequest.DatabaseInfo> checkDatabaseFromSql(String sql) {
         List<DataSyncGenerateWideTableRequest.DatabaseInfo> results = Lists.newArrayList();
-        BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(new FeignDataSourcesRequest());
+        String database = parseDatabaseNameFromSql(sql);
+        FeignDataSourcesRequest request = new FeignDataSourcesRequest();
+        request.setDatabaseName(database);
+        BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(request);
+        if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
+            List<DatasourceInfo> data = dataSources.getData();
+            Map<String, List<DataSyncGenerateWideTableRequest.DatabaseInfo>> collect = data.stream()
+                    .filter(Objects::nonNull)
+                    .map(info -> {
+                        DataSyncGenerateWideTableRequest.DatabaseInfo databaseInfo = new DataSyncGenerateWideTableRequest.DatabaseInfo();
+                        databaseInfo.setDatasourceId(info.getId());
+                        databaseInfo.setDatabaseName(database);
+                        String uri = info.getUri();
+                        String prefix = StrUtil.subBefore(uri, "?", false);
+                        String temp = StrUtil.subBefore(prefix, ":", true);
+                        String host = StrUtil.subAfter(temp, "//", true);
+                        databaseInfo.setHost(host);
+                        return databaseInfo;
+                    }).collect(Collectors.groupingBy(DataSyncGenerateWideTableRequest.DatabaseInfo::getHost));
+            if (collect.size() > 1) {
+                collect.forEach((k, v) -> {
+                    results.add(v.get(0));
+                });
+            }
+        }
+        /*BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(new FeignDataSourcesRequest());
         if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
             List<DatasourceInfo> data = dataSources.getData();
 
@@ -146,7 +171,7 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                     }
                 }
             }
-        }
+        }*/
         return results;
     }
 
