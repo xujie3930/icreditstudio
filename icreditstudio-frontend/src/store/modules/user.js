@@ -28,7 +28,7 @@ const states = () => ({
   messageNoticeInfo: {},
   shortMenus: [], // 快捷菜单列表
   workspaceList: [], // 工作空间下拉框
-  workspaceId: null, // 当前选中工作空间ID
+  workspaceId: undefined, // 当前选中工作空间ID
   workspaceCreateAuth: false // 当前登录账号是否为root账号
 })
 
@@ -40,7 +40,8 @@ const getters = {
   systemSetting: state => state.systemSetting,
   shortMenus: state => state.shortMenus,
   workspaceList: state => state.workspaceList,
-  workspaceCreateAuth: state => state.workspaceCreateAuth
+  workspaceCreateAuth: state => state.workspaceCreateAuth,
+  workspaceId: state => state.workspaceId
 }
 
 const mutations = {
@@ -150,6 +151,7 @@ const actions = {
         })
     })
   },
+
   // 登出
   logoutAction({ commit }) {
     return new Promise(resolve => {
@@ -165,9 +167,14 @@ const actions = {
         })
     })
   },
+
   // 消息提醒
   setMessageNoticeInfo({ commit }, messageInfo) {
     commit(SET_MESSAGE_NOTICE_INFO, messageInfo)
+  },
+
+  setWorkspaceId({ commit }, id) {
+    commit(SET_WRKSPACE_ID, id)
   }
 }
 
