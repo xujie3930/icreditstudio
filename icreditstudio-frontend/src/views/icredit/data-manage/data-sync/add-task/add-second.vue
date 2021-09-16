@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back path="/data-manage/data-sync" />
+    <Back @click="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="2" />
       <div class="add-task-content">
@@ -184,8 +184,11 @@
                 >
                   <el-button
                     size="mini"
-                    :disabled="verifyTableDisabled"
-                    :class="['append-btn', isCanJumpNext ? '' : 'is-disabled']"
+                    :disabled="!verifyTableDisabled"
+                    :class="[
+                      'append-btn',
+                      verifyTableDisabled ? '' : 'is-disabled'
+                    ]"
                     slot="append"
                     :loading="widthTableLoading"
                     @click="handleIdentifyTable"
@@ -298,6 +301,7 @@
         <el-button
           class="btn"
           :disabled="!secondTaskForm.sql && isCanSaveSetting"
+          :loading="saveSettingLoading"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
@@ -381,6 +385,7 @@ export default {
       searchStockLoading: false,
       tableLoading: false,
       widthTableLoading: false,
+      saveSettingLoading: false,
 
       fieldTypeOptions,
       radioBtnOption,
@@ -432,8 +437,11 @@ export default {
 
   computed: {
     ...mapState('user', ['workspaceId']),
+
+    // 识别宽表按钮禁用状态
     verifyTableDisabled() {
-      return false
+      const { sql, wideTableName, targetSource } = this.secondTaskForm
+      return Boolean(sql && targetSource && wideTableName)
     }
   },
 
@@ -444,7 +452,7 @@ export default {
 
   methods: {
     initPage() {
-      const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
@@ -629,6 +637,7 @@ export default {
 
     // 保存设置
     handleSaveSetting() {
+      this.saveSettingLoading = true
       API.dataSyncAdd(this.handleTaskFormParams())
         .then(({ success, data }) => {
           if (success && data) {
@@ -641,6 +650,12 @@ export default {
         })
     },
 
+    // 返回提示
+    handleBackClick() {
+      this.$ls.remove('taskForm')
+      this.$router.push('/data-manage/data-sync')
+    },
+
     // 下一步
     handleStepClick() {
       this.handleTaskFormParams()
@@ -650,7 +665,7 @@ export default {
     // 表单参数缓存以及过滤处理
     handleTaskFormParams() {
       const { workspaceId } = this
-      const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
+      const firstFrom = this.$ls.get('taskForm') || {}
       // 可视化方式参数处理
       !firstFrom.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
@@ -671,7 +686,7 @@ export default {
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
 
       const params = { ...secondForm, ...firstFrom }
-      sessionStorage.setItem('taskForm', JSON.stringify(params))
+      this.$ls.set('taskForm', params)
       return params
     },
 
