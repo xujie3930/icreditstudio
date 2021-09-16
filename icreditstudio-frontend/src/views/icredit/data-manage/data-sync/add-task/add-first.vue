@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back path="/data-manage/data-sync" />
+    <Back @on-jump="handleBackClick" />
     <div class="add-task" v-loading="detailLoading">
       <HeaderStepBar />
 
@@ -134,6 +134,12 @@ export default {
         : this.autoGenerateTaskName()
     },
 
+    handleBackClick() {
+      // 返回提示
+      sessionStorage.removeItem('taskForm')
+      this.$router.push('/data-manage/data-sync')
+    },
+
     // 编辑情况下获取详情
     getDetailData() {
       this.detailLoading = true
@@ -153,6 +159,10 @@ export default {
 
     // 自动生成任务名规则
     autoGenerateTaskName() {
+      const taskForm =
+        sessionStorage.getItem('taskForm') || JSON.stringify(this.addTaskForm)
+      this.addTaskForm = JSON.parse(taskForm)
+
       const prefixStrArr = ['mysql', 'oracle', 'postSql', 'excel']
       const suffixStrArr = ['hive', 'hdfs']
       const preNum = Math.floor(Math.random() * 10)

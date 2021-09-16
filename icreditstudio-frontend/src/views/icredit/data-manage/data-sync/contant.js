@@ -80,3 +80,17 @@ export const fieldTypeOptions = [
     ]
   }
 ]
+
+// 关联类型icon名称映射
+export const iconMapping = {
+  0: { icon: 'left-link', name: '左关联' },
+  1: { icon: 'cover-link', name: '内关联' },
+  2: { icon: 'all-link', name: '全关联' }
+}
+
+export const taskDetailInfo = [
+  { key: 'taskName', label: '任务名', value: '' },
+  { key: 'enable', label: '任务启用', value: '' },
+  { key: 'createMode', label: '创建方式', value: '' },
+  { key: 'taskDescribe', label: '任务描述', value: '' }
+]

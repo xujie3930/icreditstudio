@@ -86,7 +86,7 @@
               type="textarea"
               placeholder="请在此输入hive语法的SQL语句"
               show-word-limit
-              v-model="secondTaskForm.sqlInfo.sql"
+              v-model="secondTaskForm.sql"
               :autosize="{ minRows: 7 }"
             >
             </el-input>
@@ -139,7 +139,7 @@
                 >
                   <div class="line"></div>
                   <JSvg
-                    name="left-link"
+                    :name="item.iconName"
                     class="icon"
                     @click.native="handleLinkIconClick({ idx, ...item })"
                   />
@@ -260,7 +260,7 @@
                   clearable
                   placeholder="请输入中文名称"
                   v-model.trim="row.fieldChineseName"
-                  @change="handleChangeChineseName"
+                  @blur="handleChangeChineseName(row.fieldChineseName)"
                 ></el-input>
               </template>
 
@@ -281,7 +281,7 @@
                     v-for="(item, idx) in row.dictionaryOptions"
                     :key="idx"
                     :label="item.name"
-                    :value="item.key"
+                    :value="item.name"
                   >
                   </el-option>
                 </el-select>
@@ -297,14 +297,14 @@
         </el-button>
         <el-button
           class="btn"
-          :disabled="!secondTaskForm.sqlInfo.sql"
+          :disabled="!secondTaskForm.sql && isCanSaveSetting"
           @click="handleSaveSetting"
           >保存设置</el-button
         >
         <el-button
           class="btn"
           type="primary"
-          :disabled="!secondTaskForm.sqlInfo.sql"
+          :disabled="!secondTaskForm.sql"
           @click="handleStepClick"
         >
           下一步
@@ -350,8 +350,13 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-sync-ad
 import API from '@/api/icredit'
 import { debounce } from 'lodash'
 import { mapState } from 'vuex'
-import { treeIconMapping, radioBtnOption, fieldTypeOptions } from '../contant'
-import { randomNum, deepClone } from '@/utils/util'
+import {
+  treeIconMapping,
+  radioBtnOption,
+  fieldTypeOptions,
+  iconMapping
+} from '../contant'
+import { randomNum, deepClone, uriSplit } from '@/utils/util'
 import { validStrZh } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
 
@@ -403,13 +408,15 @@ export default {
       // 可视化-已拖拽的表
       selectedTable: [],
 
+      // 识别宽表-同名数据库
+      sqlInfo: { sql: '', databaseHost: [] },
+
       // 表单参数
       secondTaskForm: {
         syncCondition: { incrementalField: '', partition: '', n: undefined },
-        sqlInfo: { sql: '', databaseHost: [] },
+        sql: '',
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
-        // partition: '', // 分区字段
         fieldInfos: [], // 表信息
         sourceType: 0, // 资源类型
         callStep: 2, // 调用步骤
@@ -438,7 +445,7 @@ export default {
   methods: {
     initPage() {
       const taskForm = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
-      this.secondTaskForm = { ...taskForm, ...this.secondTaskForm }
+      this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
@@ -446,10 +453,16 @@ export default {
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
-      const { id, parent } = node
+      const {
+        id: tableId,
+        parent: { label: database }
+      } = node
+      const { ip } = uriSplit(data.url)
+      const { sourceType } = this.secondTaskForm
+      console.log('ssssaaaa==', ip, sourceType, data, node)
       evt.dataTransfer.setData(
         'application/json',
-        JSON.stringify({ tableId: id, database: parent.label, ...data })
+        JSON.stringify({ tableId, database, ip, sourceType, ...data })
       )
     },
 
@@ -458,19 +471,35 @@ export default {
       evt.preventDefault()
       const domData = evt.dataTransfer.getData('application/json')
       const dataSource = JSON.parse(domData)
-      console.log('ssss', dataSource)
       const addTableObj = [
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
 
+      // 不能重复拖动同一张表
       const isExistIdx = this.selectedTable.findIndex(
         ({ tableId }) => dataSource.tableId === tableId
       )
-
-      // 不能重复拖动同一张表
       if (isExistIdx > -1) {
         this.$message.error('拖动的表已存在， 请重新选择一张表！')
+        return
+      }
+
+      // 数据源类型不同的表不能拖
+      const isDiffTypeIdx = this.selectedTable.findIndex(
+        ({ sourceType }) => dataSource.sourceType !== sourceType
+      )
+      if (isDiffTypeIdx < -1) {
+        this.$message.error('数据源类型不同的表不能拖动，请重新选择一张表！')
+        return
+      }
+
+      // IP地址不相同的表不能拖
+      const isSameIpIdx = this.selectedTable.findIndex(
+        ({ ip }) => dataSource.ip === ip
+      )
+      if (isSameIpIdx < -1) {
+        this.$message.error('IP地址不同的表不能拖动， 请重新选择一张表！')
         return
       }
 
@@ -478,7 +507,7 @@ export default {
       const filterDiffType = () => {
         const { dialect } = this.selectedTable[0]
         if (dataSource.dialect !== dialect) {
-          this.$message.error('数据库类型不统一， 请重新选择一张表！')
+          this.$message.error('数据库类型不同表不能拖动， 请重新选择一张表！')
           return true
         }
         return false
@@ -500,21 +529,26 @@ export default {
       }
     },
 
-    // 点击图标设置关联字段
+    // 点击图标设置关联字段回调
     handleVisualConfirm(options) {
       const { idx } = options
+      const index = this.secondTaskForm.view.findIndex(item => item.idx === idx)
       const updateViewData = () => {
-        const index = this.secondTaskForm.view.findIndex(
-          item => item.idx === idx
-        )
         this.secondTaskForm.view.splice(index, 1, options)
       }
 
-      !this.secondTaskForm.view.length
-        ? this.secondTaskForm.view.push(options)
-        : updateViewData()
+      index > -1 ? updateViewData() : this.secondTaskForm.view.push(options)
 
       console.log(this.secondTaskForm, 'this.secondTaskForm')
+      // 显示已设置关联关系的表的状态
+      const { length } = this.secondTaskForm.view
+      const { lfTbIdx, rhTbIdx, associatedType } = this.secondTaskForm.view[
+        length - 1
+      ]
+      this.selectedTable[lfTbIdx].isChecked = true
+      this.selectedTable[rhTbIdx].isChecked = true
+      this.selectedTable[idx].iconName =
+        iconMapping[associatedType]?.icon || 'left-link'
     },
 
     handlePreventDefault(evt) {
@@ -561,21 +595,36 @@ export default {
       const leftTable = { datasourceId, name, database }
       const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
 
+      const viewDefaultData = {
+        associatedType: undefined,
+        conditions: [{ left: '', associate: '', right: '' }]
+      }
+      const { view } = this.secondTaskForm
+      const viewDataIdxMapping = { 1: 0, 3: 1, 5: 2 }
+      const vidx = viewDataIdxMapping[idx]
+      const { associatedType, conditions } = view[vidx] || viewDefaultData
+
       this.$refs.linkDialog.open({
         idx,
+        lfTbIdx,
+        rhTbIdx,
         title: '新增关联关系',
         dialect,
         leftTable,
-        rightTable
+        rightTable,
+        associatedType,
+        conditions
       })
     },
 
     // 中文名称
     handleChangeChineseName(name) {
-      console.log(name)
-      const valid = validStrZh(name)
-      this.isCanSaveSetting = valid
-      this.$message.error('该字段为中文名称输入，请检查后重新输入！')
+      console.log(name, validStrZh(name), 'name')
+      if (name) {
+        const valid = validStrZh(name)
+        this.isCanSaveSetting = valid
+        valid && this.$message.error('该字段为中文名称输入，请检查后重新输入！')
+      }
     },
 
     // 保存设置
@@ -602,7 +651,6 @@ export default {
     handleTaskFormParams() {
       const { workspaceId } = this
       const firstFrom = JSON.parse(sessionStorage.getItem('taskForm') || '{}')
-      console.log('firstFrom', firstFrom)
       // 可视化方式参数处理
       !firstFrom.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
@@ -632,7 +680,7 @@ export default {
       this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
 
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
-        ({ idx, ...item }) => item
+        ({ idx, lfTbIdx, rhTbIdx, ...item }) => item
       )
 
       this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
@@ -653,7 +701,6 @@ export default {
     },
 
     handleDictClear(row) {
-      console.log(row, 'lp')
       // eslint-disable-next-line no-param-reassign
       row.dictionaryOptions = []
     },
@@ -665,7 +712,7 @@ export default {
 
     // 数据库同名选择弹窗回调
     handleSelectBatabase() {
-      this.secondTaskForm.sqlInfo.databaseHost = deepClone(
+      this.sqlInfo.databaseHost = deepClone(
         this.sameNameDataBase
       ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
       this.handleIdentifyTable()
@@ -674,17 +721,21 @@ export default {
     // 识别宽表
     handleIdentifyTable() {
       this.handleVisualizationParams()
+
       const {
         createMode,
-        sqlInfo,
+        sql,
         sourceTables,
         dialect,
         view
       } = this.secondTaskForm
+
+      console.log(sql, this.sqlInfo)
+      this.sqlInfo.sql = sql
       const sqlParams = {
         workspaceId: this.workspaceId,
         createMode,
-        sqlInfo
+        sqlInfo: this.sqlInfo
       }
 
       const visualParams = {
@@ -696,17 +747,16 @@ export default {
         view,
         dialect
       }
-      console.log('createMode==', createMode)
+
       this.widthTableLoading = false
       this.tableLoading = true
       API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
         .then(({ success, data }) => {
           if (success && data) {
-            console.log(data)
-            const { sql, partitions, fields, incrementalFields } = data
+            const { sql: sq, partitions, fields, incrementalFields } = data
             this.zoningOptions = partitions
             this.increFieldsOptions = incrementalFields
-            this.secondTaskForm.sqlInfo.sql = sql
+            this.secondTaskForm.sql = sq
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
 
             // 数据库同名的情况选择相应的库

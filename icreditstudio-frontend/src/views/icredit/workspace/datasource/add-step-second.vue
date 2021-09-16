@@ -41,7 +41,7 @@
       >
         <el-input
           clearable
-          v-model="dataSourceForm.databaseName"
+          v-model.trim="dataSourceForm.databaseName"
           placeholder="请输入数据库名"
         ></el-input>
       </el-form-item>
@@ -55,7 +55,7 @@
         >
           <el-input
             clearable
-            v-model="dataSourceForm.uri"
+            v-model.trim="dataSourceForm.uri"
             placeholder="请输入数据源路径"
           ></el-input>
         </el-form-item>
@@ -65,7 +65,7 @@
           label="文件格式"
           prop="resource"
         >
-          <el-radio-group v-model="dataSourceForm.docType">
+          <el-radio-group v-model.trim="dataSourceForm.docType">
             <el-radio label="TXT">TXT</el-radio>
             <el-radio label="XLS">XLS</el-radio>
             <el-radio label="CSV">CSV</el-radio>
@@ -92,7 +92,7 @@
         <el-form-item label="分隔符" prop="separator">
           <el-input
             clearable
-            v-model="dataSourceForm.separator"
+            v-model.trim="dataSourceForm.separator"
             placeholder="请输入分隔符"
           ></el-input>
         </el-form-item>
@@ -103,7 +103,7 @@
           <el-form-item label="IP" prop="ip">
             <el-input
               clearable
-              v-model="dataSourceForm.ip"
+              v-model.trim="dataSourceForm.ip"
               placeholder="请输入数据源连接IP"
             >
             </el-input>
@@ -127,7 +127,7 @@
           <el-form-item label="用户名" prop="username">
             <el-input
               clearable
-              v-model="dataSourceForm.username"
+              v-model.trim="dataSourceForm.username"
               placeholder="请输入用户名"
             >
             </el-input>
@@ -138,7 +138,7 @@
             <el-input
               clearable
               show-password
-              v-model="dataSourceForm.password"
+              v-model.trim="dataSourceForm.password"
               placeholder="请输入密码"
             ></el-input>
           </el-form-item>
@@ -157,7 +157,7 @@
           show-word-limit
           :maxlength="250"
           type="textarea"
-          v-model="dataSourceForm.descriptor"
+          v-model.trim="dataSourceForm.descriptor"
           placeholder="请输入数据源描述"
         ></el-input>
       </el-form-item>
@@ -261,8 +261,8 @@ export default {
           { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
         ip: [
-          { required: true, message: '请输入数据源连接IP', trigger: 'blur' },
-          { validator: this.verifyIpAddress, trigger: 'blur' }
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
+          // { validator: this.verifyIpAddress, trigger: 'blur' }
         ],
         port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
         username: [
