@@ -115,5 +115,10 @@ public class IcreditDatasourceEntity implements Serializable {
      */
     private String remark;
 
+    /**
+     * 是否展示密码：0-隐藏，1-展示，默认0
+     */
+    private Integer showPassword;
+
 
 }
