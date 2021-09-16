@@ -38,4 +38,8 @@ public class TaskParamSaveParam {
      * cron表达式
      */
     private String cron;
+    /**
+     * 任务状态【0：启用，1：草稿，2：停用】
+     */
+    private Integer taskStatus;
 }

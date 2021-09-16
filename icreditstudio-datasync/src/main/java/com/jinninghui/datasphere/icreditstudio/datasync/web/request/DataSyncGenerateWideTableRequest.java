@@ -15,24 +15,20 @@ public class DataSyncGenerateWideTableRequest {
     /**
      * 数据源ID
      */
-//    @NotNull(message = "60000003")
     private String datasourceId;
     /**
      * 数据源方言
      */
-//    @NotBlank(message = "60000004")
     private String dialect;
     /**
      * 创建方式【0：可视化，1，SQL】
      */
     private Integer createMode;
 
-    //    private String sql;
     private SqlInfo sqlInfo;
     /**
      * 连接表集合
      */
-//    @NotNull(message = "60000005")
     private List<TableInfo> sourceTables;
     /**
      * 关联关系

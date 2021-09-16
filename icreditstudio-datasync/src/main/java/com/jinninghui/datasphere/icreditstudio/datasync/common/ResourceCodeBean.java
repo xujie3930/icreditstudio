@@ -38,6 +38,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000021("60000021", "调用步骤不能为空"),
         RESOURCE_CODE_60000022("60000022", "任务名称不大于15个字符"),
         RESOURCE_CODE_60000023("60000023", "任务描述不大于255个字符"),
+        RESOURCE_CODE_60000024("60000024", "生成宽表sql为空"),
+        RESOURCE_CODE_60000025("60000025", "未匹配到合适数据源"),
         ;
 
         public final String code;

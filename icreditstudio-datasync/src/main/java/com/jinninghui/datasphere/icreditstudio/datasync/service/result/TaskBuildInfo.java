@@ -36,5 +36,7 @@ public class TaskBuildInfo {
     /**
      * 宽表列表
      */
-    private List<WideTableFieldRequest> fieldInfos;
+    private List<WideTableFieldResult> fieldInfos;
+
+    private String sql;
 }
