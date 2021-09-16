@@ -122,6 +122,7 @@ public class TaskPriorityQueueConsumer extends Thread {
         List<TaskPriority> failedDispatchTasks = new ArrayList<>();
         while (Stopper.isRunning()) {
             try {
+                logger.info("taskPriorityQueueSize:{},{}", taskPriorityQueue.size(), taskPriorityQueue);
                 int fetchTaskNum = masterConfig.getMasterDispatchTaskNumber();
                 failedDispatchTasks.clear();
                 for (int i = 0; i < fetchTaskNum; i++) {
