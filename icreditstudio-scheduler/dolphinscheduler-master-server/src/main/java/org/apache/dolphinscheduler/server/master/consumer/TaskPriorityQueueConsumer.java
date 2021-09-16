@@ -113,7 +113,7 @@ public class TaskPriorityQueueConsumer extends Thread {
     @PostConstruct
     public void init() {
         super.setName("TaskUpdateQueueConsumerThread");
-        logger.info("TaskPriorityQueueConsumer start");
+        logger.info("TaskUpdateQueueConsumerThread start");
         super.start();
     }
 
