@@ -49,6 +49,7 @@
                   style="width:100%"
                   v-model="item.left"
                   placeholder="请选择"
+                  @change="handleChangeLeftSelect(item, idx)"
                 >
                   <el-option
                     v-for="item in aTableOption"
@@ -79,6 +80,7 @@
                   style="width:100%"
                   v-model="item.right"
                   placeholder="请选择"
+                  @change="handleChangeRightSelect(item, idx)"
                 >
                   <el-option
                     v-for="item in bTableOption"
@@ -128,6 +130,8 @@ export default {
       idx: null,
       lfTbIdx: null,
       rhTbIdx: null,
+      leftSelectVal: {},
+      rightSelectVal: {},
 
       title: '',
       value: '',
@@ -237,6 +241,44 @@ export default {
     handleTagClick(curTag) {
       console.log(curTag)
       this.form.associatedType = curTag.code
+    },
+
+    handleChangeLeftSelect(item, idx) {
+      console.log('this.aTableOption[idx]', this.aTableOption[idx])
+      const { left, right } = item
+      this.leftSelectVal = this.aTableOption.find(({ name }) => name === left)
+      if (right) {
+        const { fieldType } = this.leftSelectVal
+        const { fieldType: rType } = this.rightSelectVal
+        console.log(fieldType, rType)
+        if (fieldType !== rType) {
+          // eslint-disable-next-line no-param-reassign
+          item.left = ''
+          this.$message.error({
+            message: `字段类型不统一, 左表字段类型：${fieldType}, 右表字段类型：${rType}, 请重新选择!`,
+            duration: 3500
+          })
+        }
+      }
+    },
+
+    handleChangeRightSelect(item, idx) {
+      console.log('this.bTableOption[idx]', this.bTableOption[idx])
+      const { left, right } = item
+      this.rightSelectVal = this.bTableOption.find(({ name }) => name === right)
+      if (left) {
+        const { fieldType } = this.leftSelectVal
+        const { fieldType: rType } = this.rightSelectVal
+        console.log(fieldType, rType)
+        if (fieldType !== rType) {
+          // eslint-disable-next-line no-param-reassign
+          item.right = ''
+          this.$message.error({
+            message: `字段类型不统一, 左表字段类型：${fieldType}, 右表字段类型：${rType}, 请重新选择!`,
+            duration: 3500
+          })
+        }
+      }
     },
 
     // 新增字段关联

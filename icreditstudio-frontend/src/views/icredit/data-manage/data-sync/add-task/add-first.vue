@@ -83,6 +83,7 @@ import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
+import { verifySpecialStr } from '@/utils/validate'
 
 export default {
   components: { Back, HeaderStepBar },
@@ -104,15 +105,16 @@ export default {
       },
       addTaskFormRules: {
         taskName: [
-          { required: true, message: '任务名不能为空', trigger: 'blur' }
-          // { validator: this.verifyTaskname, trigger: 'blur' }
+          { required: true, message: '任务名不能为空', trigger: 'blur' },
+          { validator: this.verifyTaskname, trigger: 'blur' }
         ],
         enable: [
           { required: true, message: '任务启用不能为空', trigger: 'blur' }
         ],
         createMode: [
           { required: true, message: '创建方式不能为空', trigger: 'change' }
-        ]
+        ],
+        taskDescribe: [{ validator: verifySpecialStr, trigger: 'blur' }]
       }
     }
   },
@@ -211,14 +213,8 @@ export default {
 
     // 任务名称校验
     verifyTaskname(rule, value, cb) {
-      // 特殊符号
-      const regStr = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/gi
-      // 表情包
-      const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
-      const isValid = regStr.test(value) || emojiRegStr.test(value)
-      if (isValid) {
-        cb(new Error('该任务名称中包含不规范字符，请重新输入'))
-      } else cb()
+      const nVal = value.replaceAll('→', '')
+      verifySpecialStr(rule, nVal, cb)
     }
   }
 }
