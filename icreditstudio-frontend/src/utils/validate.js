@@ -33,3 +33,13 @@ export const validIpAddress = ip => {
   const regStr = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
   return regStr.test(ip)
 }
+
+// 特殊字符表单校验
+export const verifySpecialStr = (rule, value, cb) => {
+  console.log(value, 'ddd')
+  if (validStrSpecial(value)) {
+    cb(new Error('该名称中包含不规范字符，请重新输入'))
+  } else {
+    cb()
+  }
+}

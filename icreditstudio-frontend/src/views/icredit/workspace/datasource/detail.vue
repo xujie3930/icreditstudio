@@ -54,7 +54,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="密码" :rules="[{ required: true }]">
-              <span class="label-text">{{ detailData.password }}</span>
+              <span class="label-text">{{ hidePassword }}</span>
             </el-form-item>
           </el-col>
         </el-row>
@@ -70,68 +70,6 @@
         </el-form-item>
       </template>
     </el-form>
-
-    <!-- 新增或编辑 -->
-    <!-- <el-form
-      v-else
-      :model="detialForm"
-      :rules="rules"
-      ref="detialForm "
-      label-width="100px"
-      :class="[opType === 'View' ? 'form-detail' : '']"
-    >
-      <template>
-        <el-form-item label="数据源名称" prop="name">
-          <el-input
-            show-word-limit
-            :maxlength="15"
-            v-model="detialForm.name"
-            placeholder="请输入自定义数据源名称"
-          ></el-input>
-        </el-form-item>
-
-        <el-form-item label="数据库名" prop="name">
-          <el-input
-            v-model="detialForm.name"
-            placeholder="请输入数据库名"
-          ></el-input>
-        </el-form-item>
-
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="IP" prop="name">
-              <el-input v-model="detialForm.name" placeholder="请输入IP">
-              </el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="端口" prop="name">
-              <el-input
-                v-model="detialForm.name"
-                placeholder="请输入端口"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-
-        <el-form-item label="启用" prop="resource">
-          <el-radio-group v-model="detialForm.resource">
-            <el-radio label="是"></el-radio>
-            <el-radio label="否"></el-radio>
-          </el-radio-group>
-        </el-form-item>
-
-        <el-form-item label="数据源描述" prop="desc">
-          <el-input
-            show-word-limit
-            :maxlength="250"
-            type="textarea"
-            v-model="detialForm.desc"
-            placeholder="请输入数据源描述"
-          ></el-input>
-        </el-form-item>
-      </template>
-    </el-form> -->
   </BaseDialog>
 </template>
 
@@ -146,7 +84,7 @@ export default {
       title: '',
       opType: 'View',
       dialogVisible: false,
-      detailData: {},
+      detailData: { showPassword: 0 },
       rules: {
         name: [
           { required: true, message: '请输入自定义数据源名称', trigger: 'blur' }
@@ -158,6 +96,17 @@ export default {
           { required: true, message: '请选择活动资源', trigger: 'change' }
         ]
       }
+    }
+  },
+
+  computed: {
+    hidePassword() {
+      const { showPassword, password } = this.detailData
+      const getHideIcon = num =>
+        Array(num)
+          .fill('*')
+          .join('')
+      return showPassword ? getHideIcon(String(password).length) : password
     }
   },
 

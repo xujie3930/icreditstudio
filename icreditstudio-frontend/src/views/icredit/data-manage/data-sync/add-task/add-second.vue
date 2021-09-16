@@ -182,9 +182,9 @@
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
                 >
+                  <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
                     size="mini"
-                    :disabled="!verifyTableDisabled"
                     :class="[
                       'append-btn',
                       verifyTableDisabled ? '' : 'is-disabled'
@@ -467,7 +467,6 @@ export default {
       } = node
       const { ip } = uriSplit(data.url)
       const { sourceType } = this.secondTaskForm
-      console.log('ssssaaaa==', ip, sourceType, data, node)
       evt.dataTransfer.setData(
         'application/json',
         JSON.stringify({ tableId, database, ip, sourceType, ...data })
@@ -565,21 +564,35 @@ export default {
 
     // 可视化-删除已选择的的表
     handleDeleteTagClick(idx) {
+      // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
       switch (idx) {
         case 0:
-          this.selectedTable = []
+          this.selectedTable.splice(0, 1)
+          this.selectedTable.splice(0, 1)
+          this.secondTaskForm.view.splice(0, 1)
+          break
+        case 2:
+          this.selectedTable.splice(2, 1)
+          this.selectedTable.splice(2, 1)
+          this.secondTaskForm.view.splice(1, 1)
+          break
+        case 4:
+          this.selectedTable.splice(4, 1)
+          this.selectedTable.splice(4, 1)
+          this.secondTaskForm.view.splice(1, 1)
+          this.secondTaskForm.view.length === 2 &&
+            this.secondTaskForm.view.splice(1, 1)
+          break
+        case 6:
+          this.selectedTable.splice(6, 1)
+          this.selectedTable.splice(6, 1)
+          this.selectedTable.splice(5, 1)
+          this.secondTaskForm.view.splice(2, 1)
           break
 
         default:
           break
       }
-      // this.selectedTable = deepClone(
-      //   this.selectedTable.filter(({ type, isShow }) => {
-      //     return type === 'tag' || isShow
-      //   })
-      // ).filter((item, index) => {
-      //   return index !== idx && index !== idx + 1 && index && idx - 1
-      // })
     },
 
     // 可视化-点击关联图标打开关联弹窗
@@ -735,6 +748,7 @@ export default {
 
     // 识别宽表
     handleIdentifyTable() {
+      if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
 
       const {
@@ -790,6 +804,18 @@ export default {
           this.widthTableLoading = false
           this.tableLoading = false
         })
+    },
+
+    // 已经拖动的表是否完全设置了关联
+    verifyLinkTip() {
+      const unlinkTable = this.selectedTable.filter(
+        ({ type, isChecked }) => type === 'tag' && !isChecked
+      )
+      if (unlinkTable.length) {
+        this.$message.error('相关的表未设置关联关系，请先设置')
+        return true
+      }
+      return false
     },
 
     // 表格信息过滤

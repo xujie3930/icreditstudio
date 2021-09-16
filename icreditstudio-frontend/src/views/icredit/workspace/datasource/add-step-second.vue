@@ -137,9 +137,16 @@
           <el-form-item label="密码" prop="password">
             <el-input
               clearable
-              show-password
+              :type="dataSourceForm.showPassword ? 'text' : 'password'"
               v-model.trim="dataSourceForm.password"
               placeholder="请输入密码"
+            >
+              <i
+                slot="suffix"
+                class="el-input__icon el-icon-view"
+                style="cursor:pointer"
+                @click="handleShowPassword"
+              ></i
             ></el-input>
           </el-form-item>
         </el-col>
@@ -249,7 +256,9 @@ export default {
         port: undefined,
         username: '',
         password: '',
-        status: 0
+        status: 0,
+        showPassword: 0,
+        descriptor: ''
       },
 
       rules: {
@@ -291,8 +300,8 @@ export default {
       this.opType = 'Add'
       this.dataType = type
       this.databaseType = name
-      // this.$refs.dataSourceForm.resetFields()
       this.$refs.baseDialog.open()
+      this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
     },
 
     // 编辑状态下打开弹窗
@@ -355,6 +364,12 @@ export default {
       this.$refs.dataSourceForm.resetFields()
     },
 
+    // 是否展示显示密码
+    handleShowPassword() {
+      const { showPassword } = this.dataSourceForm
+      this.dataSourceForm.showPassword = showPassword ? 0 : 1
+    },
+
     // 测试链接
     handleTestLink() {
       this.testBtnLoading = true
@@ -387,11 +402,12 @@ export default {
 
     // 提交新增或编辑数据源表单
     handleConfirm() {
-      const { status, name, descriptor, id } = this.dataSourceForm
+      const { status, name, descriptor, id, showPassword } = this.dataSourceForm
       const params = {
         name,
         status,
         descriptor,
+        showPassword,
         category: dataTypeMapping[this.dataType],
         type: databaseTypeMapping[this.databaseType],
         spaceId: this.workspaceId,

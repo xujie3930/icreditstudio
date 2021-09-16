@@ -144,6 +144,7 @@ export default {
         scheduleType: 1,
         cron: ''
       },
+
       taskRules: {
         maxThread: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
@@ -157,7 +158,13 @@ export default {
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
-        cron: [{ required: true, message: '必填项不能为空', trigger: 'blur' }]
+        cron: [
+          {
+            required: true,
+            message: '必填项不能为空',
+            trigger: ['blur', 'change']
+          }
+        ]
       }
     }
   },
@@ -223,7 +230,7 @@ export default {
     // 编辑情况下获取详情
     getDetailData() {
       this.detailLoading = true
-      API.dataSyncBuildDetial({ taskId: this.taskForm.taskId })
+      API.dataSyncDispatchDetial({ taskId: this.taskForm.taskId })
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
