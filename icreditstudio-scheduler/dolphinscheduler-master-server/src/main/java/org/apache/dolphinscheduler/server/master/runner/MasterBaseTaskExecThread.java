@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.server.master.runner;
 
+import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskTimeoutStrategy;
 import org.apache.dolphinscheduler.common.enums.TimeoutFlag;
@@ -34,10 +35,13 @@ import org.apache.dolphinscheduler.service.queue.TaskPriorityQueue;
 import org.apache.dolphinscheduler.service.queue.TaskPriorityQueueImpl;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * master task exec base class
@@ -83,7 +87,8 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
     /**
      * taskUpdateQueue
      */
-    private TaskPriorityQueue taskUpdateQueue;
+    //private TaskPriorityQueue taskUpdateQueue;
+    private TaskPriorityQueue<TaskPriority> taskUpdateQueue;
 
     /**
      * whether need check task time out.
@@ -225,7 +230,11 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
                     taskInstance.getId(),
                     org.apache.dolphinscheduler.common.Constants.DEFAULT_WORKER_GROUP);
             taskUpdateQueue.put(taskPriority);
-            logger.info(String.format("master submit success, task : %s", taskInstance.getName()));
+            logger.info(String.format("master submit success, task : %s, %s ,%s", taskInstance.getName(), taskUpdateQueue.size(), taskUpdateQueue));
+            TaskPriority priority = taskUpdateQueue.poll(Constants.SLEEP_TIME_MILLIS, TimeUnit.MILLISECONDS);
+            if (Objects.isNull(priority)) {
+                logger.info("priority is null");
+            }
             return true;
         } catch (Exception e) {
             logger.error("submit task  Exception: ", e);
