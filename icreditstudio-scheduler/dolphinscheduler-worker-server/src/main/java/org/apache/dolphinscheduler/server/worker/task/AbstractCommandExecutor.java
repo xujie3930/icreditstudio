@@ -160,10 +160,10 @@ public abstract class AbstractCommandExecutor {
 
         int taskInstanceId = taskExecutionContext.getTaskInstanceId();
         // If the task has been killed, then the task in the cache is null
-        if (null == taskExecutionContextCacheManager.getByTaskInstanceId(taskInstanceId)) {
+       /* if (null == taskExecutionContextCacheManager.getByTaskInstanceId(taskInstanceId)) {
             result.setExitStatusCode(EXIT_CODE_KILL);
             return result;
-        }
+        }*/
         if (StringUtils.isEmpty(execCommand)) {
             taskExecutionContextCacheManager.removeByTaskInstanceId(taskInstanceId);
             return result;
