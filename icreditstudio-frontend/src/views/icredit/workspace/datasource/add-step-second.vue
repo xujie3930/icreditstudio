@@ -246,11 +246,12 @@ export default {
         name: '',
         databaseName: '',
         ip: '',
-        port: '',
+        port: undefined,
         username: '',
         password: '',
         status: 0
       },
+
       rules: {
         name: [
           { required: true, message: '请输入数据源名称', trigger: 'blur' },
@@ -261,8 +262,8 @@ export default {
           { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
         ip: [
-          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
-          // { validator: this.verifyIpAddress, trigger: 'blur' }
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' },
+          { validator: this.verifyIpAddress, trigger: 'blur' }
         ],
         port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
         username: [
@@ -271,6 +272,7 @@ export default {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         status: [{ required: true, message: '请选择是否启用', trigger: 'blur' }]
       },
+
       positionOptions: [
         { label: '第一行', value: 1 },
         { label: '第二行', value: 2 },
@@ -322,7 +324,8 @@ export default {
           dataSourceForm: { name }
         } = this
         if (opType === 'Edit' && oldName === name) {
-          return cb()
+          cb()
+          return
         }
         this.timerId = null
         this.veifyNameLoading = true
@@ -340,12 +343,9 @@ export default {
 
     // 验证IP地址
     verifyIpAddress(rule, value, cb) {
-      console.log(validIpAddress(value), '’kpkpkp')
-      if (validIpAddress(value)) {
-        cb()
-      } else {
-        cb(new Error('输入的IP地址不合法，请重新输入'))
-      }
+      validIpAddress(value)
+        ? cb()
+        : cb(new Error('输入的IP地址不合法，请重新输入'))
     },
 
     // 上一步

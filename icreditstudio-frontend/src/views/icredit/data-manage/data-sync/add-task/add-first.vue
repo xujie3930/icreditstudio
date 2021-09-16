@@ -11,14 +11,14 @@
 
       <el-form
         class="add-task-form"
-        :model="addTaskForm"
+        :model="taskForm"
         :rules="addTaskFormRules"
-        ref="addTaskForm"
+        ref="taskForm"
         label-width="100px"
       >
         <el-form-item label="任务名" prop="taskName">
           <el-input
-            v-model.trim="addTaskForm.taskName"
+            v-model.trim="taskForm.taskName"
             placeholder="请输入任务名"
             clearable
             :maxlength="14"
@@ -27,7 +27,7 @@
         </el-form-item>
 
         <el-form-item label="任务启用" prop="enable">
-          <el-radio-group v-model="addTaskForm.enable">
+          <el-radio-group v-model="taskForm.enable">
             <el-radio :label="1">是</el-radio>
             <el-radio :label="0">否</el-radio>
           </el-radio-group>
@@ -35,7 +35,7 @@
 
         <el-form-item label="创建方式" prop="createMode">
           <el-select
-            v-model="addTaskForm.createMode"
+            v-model="taskForm.createMode"
             placeholder="请选择创建方式"
             style="width:100%"
           >
@@ -56,7 +56,7 @@
             :maxlength="250"
             :rows="4"
             type="textarea"
-            v-model.trim="addTaskForm.taskDescribe"
+            v-model.trim="taskForm.taskDescribe"
             placeholder="请输入任务描述"
           ></el-input>
         </el-form-item>
@@ -66,11 +66,11 @@
         <el-button
           class="btn"
           :loading="saveSettingLoading"
-          @click="saveSetting('addTaskForm')"
+          @click="saveSetting('taskForm')"
         >
           保存设置
         </el-button>
-        <el-button class="btn" type="primary" @click="nextStep('addTaskForm')">
+        <el-button class="btn" type="primary" @click="nextStep('taskForm')">
           下一步
         </el-button>
       </footer>
@@ -95,8 +95,8 @@ export default {
         { label: '可视化', value: 0 },
         { label: 'SQL', value: 1 }
       ],
-      addTaskForm: {
-        taskId: null,
+      taskForm: {
+        taskId: undefined,
         taskName: '',
         enable: 1,
         createMode: 0,
@@ -121,34 +121,36 @@ export default {
     ...mapState('user', ['workspaceId'])
   },
 
-  created() {
+  mounted() {
     this.initPage()
   },
 
   methods: {
     initPage() {
+      this.taskForm = this.$ls.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
-      this.addTaskForm.taskId = this.$route.query?.taskId
-      this.addTaskForm.taskId
+      const { taskId, taskName } = this.taskForm
+      this.taskForm.taskId = taskId || this.$route.query?.taskId
+      this.taskForm.taskId
         ? this.getDetailData()
-        : this.autoGenerateTaskName()
+        : this.autoGenerateTaskName(taskName)
     },
 
     handleBackClick() {
       // 返回提示
-      sessionStorage.removeItem('taskForm')
+      this.$ls.remove('taskForm')
       this.$router.push('/data-manage/data-sync')
     },
 
     // 编辑情况下获取详情
     getDetailData() {
       this.detailLoading = true
-      API.dataSyncDefineDetial({ taskId: this.addTaskForm.taskId })
+      API.dataSyncDefineDetial({ taskId: this.taskForm.taskId })
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
               console.log(key, value, typeof value)
-              this.addTaskForm[key] = value
+              this.taskForm[key] = value
             }
           }
         })
@@ -158,18 +160,16 @@ export default {
     },
 
     // 自动生成任务名规则
-    autoGenerateTaskName() {
-      const taskForm =
-        sessionStorage.getItem('taskForm') || JSON.stringify(this.addTaskForm)
-      this.addTaskForm = JSON.parse(taskForm)
-
+    autoGenerateTaskName(name) {
+      console.log(name, 'kokoo')
+      if (name) return false
       const prefixStrArr = ['mysql', 'oracle', 'postSql', 'excel']
       const suffixStrArr = ['hive', 'hdfs']
       const preNum = Math.floor(Math.random() * 10)
       const sufNum = Math.floor(Math.random() * 10)
       const preIdx = preNum > 2 ? 3 : preNum
       const sufIdx = sufNum > 0 ? 1 : sufNum
-      this.addTaskForm.taskName = `${prefixStrArr[preIdx]}→${suffixStrArr[sufIdx]}`
+      this.taskForm.taskName = `${prefixStrArr[preIdx]}→${suffixStrArr[sufIdx]}`
     },
 
     // 保存设置
@@ -179,13 +179,13 @@ export default {
           const params = {
             workspaceId: this.workspaceId,
             callStep: 1,
-            ...this.addTaskForm
+            ...this.taskForm
           }
           this.saveSettingLoading = true
           API.dataSyncAdd(params)
             .then(({ success, data }) => {
               if (success && data) {
-                this.addTaskForm.taskId = data.taskId
+                this.taskForm.taskId = data.taskId
                 this.$notify.success({ title: '操作结果', message: '保存成功' })
               }
             })
@@ -200,10 +200,10 @@ export default {
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
-          sessionStorage.setItem('taskForm', JSON.stringify(this.addTaskForm))
+          this.$ls.set('taskForm', this.taskForm)
           this.$router.push({
             path: '/data-manage/add-build',
-            query: { createMode: this.addTaskForm.createMode }
+            query: { createMode: this.taskForm.createMode }
           })
         }
       })

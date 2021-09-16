@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back path="/data-manage/data-sync" />
+    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="3" />
 
@@ -172,9 +172,7 @@ export default {
 
   methods: {
     initPage() {
-      const beforeStepForm = JSON.parse(
-        sessionStorage.getItem('taskForm') || '{}'
-      )
+      const beforeStepForm = this.$ls.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
       this.taskForm.taskId && this.getDetailData()
@@ -205,7 +203,7 @@ export default {
                 })
                 if (callStep === 4) {
                   this.$router.push('/data-manage/data-sync')
-                  sessionStorage.clear('taskForm')
+                  this.$ls.remove('taskForm')
                 }
               }
             })
@@ -214,6 +212,12 @@ export default {
             })
         }
       })
+    },
+
+    // 返回提示
+    handleBackClick() {
+      this.$ls.remove('taskForm')
+      this.$router.push('/data-manage/data-sync')
     },
 
     // 编辑情况下获取详情

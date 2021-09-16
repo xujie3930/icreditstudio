@@ -66,7 +66,9 @@ export default {
   computed: {
     ...mapGetters({
       isCollapse: 'common/isCollapse',
-      systemSetting: 'user/systemSetting'
+      systemSetting: 'user/systemSetting',
+      workspaceList: 'user/workspaceList',
+      workspaceId: 'user/workspaceId'
     }),
 
     defalutActived() {
@@ -76,13 +78,25 @@ export default {
 
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
+    ...mapActions('user', ['setWorkspaceId']),
 
     handleMenuSelected(item) {
-      const showChildArr = item.children
-        ? item.children.filter(({ isShow }) => isShow)
-        : []
-      !showChildArr.length && this.$router.push(item.url)
-      this.$emit('getChildMenus', item)
+      if (this.changeWorkspaceMsg(item)) {
+        const showChildArr = item.children
+          ? item.children.filter(({ isShow }) => isShow)
+          : []
+        !showChildArr.length && this.$router.push(item.url)
+        this.$emit('getChildMenus', item)
+      }
+    },
+
+    // 切换菜单前必须先切换工作空间（不能为 全部 选项）
+    changeWorkspaceMsg(item) {
+      if (item.url === '/workspace/datasource' && this.workspaceId === 'all') {
+        this.setWorkspaceId(this.workspaceList[1].id)
+        return false
+      }
+      return true
     },
 
     getBaseConfig(key) {

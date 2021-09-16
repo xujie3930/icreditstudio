@@ -30,8 +30,6 @@ export const validStrSpecial = str => {
 
 // 验证IP地址是否合法
 export const validIpAddress = ip => {
-  const re = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/
-  const valid =
-    RegExp.$1 < 256 && RegExp.$2 < 256 && RegExp.$3 < 256 && RegExp.$4 < 256
-  return re.test(ip) && valid
+  const regStr = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+  return regStr.test(ip)
 }
