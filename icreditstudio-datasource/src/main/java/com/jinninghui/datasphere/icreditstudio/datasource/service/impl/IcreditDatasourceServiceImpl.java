@@ -114,7 +114,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             wrapper.eq(IcreditDatasourceEntity.TYPE, pageRequest.getType());
         }
         if (Objects.nonNull(pageRequest.getStatus())) {
-            wrapper.le(IcreditDatasourceEntity.STATUS, pageRequest.getStatus());
+            wrapper.eq(IcreditDatasourceEntity.STATUS, pageRequest.getStatus());
         }
         wrapper.orderByDesc(IcreditDatasourceEntity.CREATE_TIME);
         IPage<IcreditDatasourceEntity> page = this.page(
