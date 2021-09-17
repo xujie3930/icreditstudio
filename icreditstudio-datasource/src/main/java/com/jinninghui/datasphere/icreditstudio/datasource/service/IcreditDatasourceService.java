@@ -71,4 +71,12 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      * @return
      */
     BusinessResult<List<SourceTableInfo>> getTableInfo(DataSourceTableInfoParam param);
+
+    /**
+     * 根据数据库查询数据源信息
+     *
+     * @param param
+     * @return
+     */
+    BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param);
 }

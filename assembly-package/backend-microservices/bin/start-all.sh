@@ -51,4 +51,7 @@ startApp
 SERVER_NAME=datasource
 startApp
 
+SERVER_NAME=metadata
+startApp
+
 echo "icreditstudio started successfully"

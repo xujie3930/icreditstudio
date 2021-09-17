@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.server.worker.task.datax;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.datasource.BaseConnectionParam;
 import org.apache.dolphinscheduler.common.datasource.DatasourceUtil;
@@ -26,8 +27,6 @@ import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.process.Property;
 import org.apache.dolphinscheduler.common.task.AbstractParameters;
 import org.apache.dolphinscheduler.common.task.datax.DataxParameters;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.CommonUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.OSUtils;
 import org.apache.dolphinscheduler.common.utils.ParameterUtils;
@@ -74,7 +73,6 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
@@ -211,13 +209,13 @@ public class DataxTask extends AbstractTask {
         if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()) {
             json = dataXParameters.getJson().replaceAll("\\r\\n", "\n");
         } else {
-            ObjectNode job = JSONUtils.createObjectNode();
-            job.putArray("content").addAll(buildDataxJobContentJson());
-            job.set("setting", buildDataxJobSettingJson());
+            JSONObject job = new JSONObject();
+            job.put("content", buildDataxJobContentJson());
+            job.put("setting", buildDataxJobSettingJson());
 
-            ObjectNode root = JSONUtils.createObjectNode();
-            root.set("job", job);
-            root.set("core", buildDataxCoreJson());
+            JSONObject root = new JSONObject();
+            root.put("job", job);
+            root.put("core", buildDataxCoreJson());
             json = root.toString();
         }
 
@@ -230,14 +228,13 @@ public class DataxTask extends AbstractTask {
         FileUtils.writeStringToFile(new File(fileName), json, StandardCharsets.UTF_8);
         return fileName;
     }
-
     /**
      * build datax job config
      *
      * @return collection of datax job config JSONObject
      * @throws SQLException if error throws SQLException
      */
-    private List<ObjectNode> buildDataxJobContentJson() {
+    private List<JSONObject> buildDataxJobContentJson() {
 
         DataxTaskExecutionContext dataxTaskExecutionContext = taskExecutionContext.getDataxTaskExecutionContext();
 
@@ -249,7 +246,7 @@ public class DataxTask extends AbstractTask {
                 DbType.of(dataxTaskExecutionContext.getTargetType()),
                 dataxTaskExecutionContext.getTargetConnectionParams());
 
-        List<ObjectNode> readerConnArr = new ArrayList<>();
+        /*List<ObjectNode> readerConnArr = new ArrayList<>();
         ObjectNode readerConn = JSONUtils.createObjectNode();
 
         ArrayNode sqlArr = readerConn.putArray("querySql");
@@ -258,7 +255,7 @@ public class DataxTask extends AbstractTask {
         }
 
         ArrayNode urlArr = readerConn.putArray("jdbcUrl");
-        urlArr.add(DatasourceUtil.getJdbcUrl(DbType.valueOf(dataXParameters.getDtType()), dataSourceCfg));
+        urlArr.add(DatasourceUtil.getJdbcUrl(DbType.valueOf(dataXParameters.getDsType()), dataSourceCfg));
 
         readerConnArr.add(readerConn);
 
@@ -276,12 +273,20 @@ public class DataxTask extends AbstractTask {
         ArrayNode tableArr = writerConn.putArray("table");
         tableArr.add(dataXParameters.getTargetTable());
 
-        writerConn.put("jdbcUrl", DatasourceUtil.getJdbcUrl(DbType.valueOf(dataXParameters.getDsType()), dataTargetCfg));
+        writerConn.put("jdbcUrl", dataTargetCfg.getJdbcUrl());
         writerConnArr.add(writerConn);
 
         ObjectNode writerParam = JSONUtils.createObjectNode();
         writerParam.put("username", dataTargetCfg.getUser());
         writerParam.put("password", CommonUtils.decodePassword(dataTargetCfg.getPassword()));
+        //
+        writerParam.put("defaultFS", "hdfs://192.168.0.17:8020");
+        writerParam.put("fileType", "orc");
+        writerParam.put("path", "/usr/local/software/hive/warehouse/dfstest.db/dfs_mysql");
+        writerParam.put("fileName", "formDefinition");
+        writerParam.put("writeMode", "append");
+        writerParam.put("fieldDelimiter", ",");
+        writerParam.put("compress", "NONE");
 
         String[] columns = parsingSqlColumnNames(DbType.of(dataxTaskExecutionContext.getSourcetype()),
                 DbType.of(dataxTaskExecutionContext.getTargetType()),
@@ -316,6 +321,63 @@ public class DataxTask extends AbstractTask {
         ObjectNode content = JSONUtils.createObjectNode();
         content.set("reader", reader);
         content.set("writer", writer);
+        contentList.add(content);*/
+
+        List<JSONObject> readerConnArr = new ArrayList<>();
+        JSONObject readerConn = new JSONObject();
+        readerConn.put("querySql", new String[] {dataXParameters.getSql()});
+        //readerConn.put("jdbcUrl", dataSourceCfg.getJdbcUrl());
+        readerConn.put("jdbcUrl", new String[]{"jdbc:mysql://192.0168.0.3:3306/iframe?useSSL=false&allowLoadLocalInfile=false&autoDeserialize=false&allowLocalInfile=false&allowUrlInLocalInfile=false"});
+        readerConnArr.add(readerConn);
+
+        JSONObject readerParam = new JSONObject();
+        readerParam.put("username", dataSourceCfg.getUser());
+        readerParam.put("password", dataSourceCfg.getPassword());
+        readerParam.put("connection", readerConnArr);
+
+        JSONObject reader = new JSONObject();
+        reader.put("name", DataxUtils.getReaderPluginName(DbType.of(dataxTaskExecutionContext.getSourcetype())));
+        reader.put("parameter", readerParam);
+
+//        List<JSONObject> writerConnArr = new ArrayList<>();
+//        JSONObject writerConn = new JSONObject();
+//        writerConn.put("table", new String[] {dataXParameters.getTargetTable()});
+//        writerConn.put("jdbcUrl", dataTargetCfg.getJdbcUrl());
+//        writerConnArr.add(writerConn);
+
+        JSONObject writerParam = new JSONObject();
+        writerParam.put("defaultFS", "hdfs://192.168.0.17:8020");
+        writerParam.put("fileType", "orc");
+        writerParam.put("path", "/usr/local/software/hive/warehouse/dfstest.db/dfs_mysql");
+
+        List<JSONObject> columnList = new ArrayList<>();
+        JSONObject column1 = new JSONObject();
+        column1.put("name", "id");
+        column1.put("type", "STRING");
+        JSONObject column2 = new JSONObject();
+        column2.put("name", "form_name");
+        column2.put("type", "STRING");
+        columnList.add(column1);
+        columnList.add(column2);
+
+        JSONObject config = new JSONObject();
+        config.put("dfs.client.use.datanode.hostname",true);
+
+        writerParam.put("hadoopConfig", config);
+        writerParam.put("column", columnList);
+        writerParam.put("fileName", "formDefinition");
+        writerParam.put("writeMode", "append");
+        writerParam.put("fieldDelimiter", ",");
+        writerParam.put("compress", "NONE");
+
+        JSONObject writer = new JSONObject();
+        writer.put("name", DataxUtils.getWriterPluginName(DbType.of(dataxTaskExecutionContext.getTargetType())));
+        writer.put("parameter", writerParam);
+
+        List<JSONObject> contentList = new ArrayList<>();
+        JSONObject content = new JSONObject();
+        content.put("reader", reader);
+        content.put("writer", writer);
         contentList.add(content);
 
         return contentList;
@@ -326,9 +388,9 @@ public class DataxTask extends AbstractTask {
      *
      * @return datax setting config JSONObject
      */
-    private ObjectNode buildDataxJobSettingJson() {
+    private JSONObject buildDataxJobSettingJson() {
 
-        ObjectNode speed = JSONUtils.createObjectNode();
+        JSONObject speed = new JSONObject();
 
         speed.put("channel", DATAX_CHANNEL_COUNT);
 
@@ -340,20 +402,20 @@ public class DataxTask extends AbstractTask {
             speed.put("record", dataXParameters.getJobSpeedRecord());
         }
 
-        ObjectNode errorLimit = JSONUtils.createObjectNode();
+        JSONObject errorLimit = new JSONObject();
         errorLimit.put("record", 0);
         errorLimit.put("percentage", 0);
 
-        ObjectNode setting = JSONUtils.createObjectNode();
-        setting.set("speed", speed);
-        setting.set("errorLimit", errorLimit);
+        JSONObject setting = new JSONObject();
+        setting.put("speed", speed);
+        setting.put("errorLimit", errorLimit);
 
         return setting;
     }
 
-    private ObjectNode buildDataxCoreJson() {
+    private JSONObject buildDataxCoreJson() {
 
-        ObjectNode speed = JSONUtils.createObjectNode();
+        JSONObject speed = new JSONObject();
         speed.put("channel", DATAX_CHANNEL_COUNT);
 
         if (dataXParameters.getJobSpeedByte() > 0) {
@@ -364,14 +426,14 @@ public class DataxTask extends AbstractTask {
             speed.put("record", dataXParameters.getJobSpeedRecord());
         }
 
-        ObjectNode channel = JSONUtils.createObjectNode();
-        channel.set("speed", speed);
+        JSONObject channel = new JSONObject();
+        channel.put("speed", speed);
 
-        ObjectNode transport = JSONUtils.createObjectNode();
-        transport.set("channel", channel);
+        JSONObject transport = new JSONObject();
+        transport.put("channel", channel);
 
-        ObjectNode core = JSONUtils.createObjectNode();
-        core.set("transport", transport);
+        JSONObject core = new JSONObject();
+        core.put("transport", transport);
 
         return core;
     }

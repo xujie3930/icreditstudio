@@ -47,3 +47,50 @@ export const radioBtnOption = [
   { label: 1, className: 'btn btn-center', name: '本地文件' },
   { label: 2, className: 'btn btn-right', name: '区块链数据' }
 ]
+
+// 字段类型
+export const fieldTypeOptions = [
+  {
+    value: 0,
+    label: '数值类',
+    children: [
+      { label: 'TINYINT', value: 'TINYINT' },
+      { label: 'SMALLINT', value: 'SMALLINT' },
+      { label: 'INT', value: 'INT' },
+      { label: 'BIGINT', value: 'BIGINT' },
+      { label: 'FLOAT', value: 'FLOAT' },
+      { label: 'DOUBLE', value: 'DOUBLE' },
+      { label: 'DECIMAL', value: 'DECIMAL' }
+    ]
+  },
+  {
+    value: 1,
+    label: '日期时间类',
+    children: [
+      { label: 'TIMESTAMP', value: 'TIMESTAMP' },
+      { label: 'DATE', value: 'DATE' }
+    ]
+  },
+  {
+    value: 2,
+    label: '字符串类',
+    children: [
+      { label: 'STRING', value: 'STRING' },
+      { label: 'VARCHAR', value: 'VARCHAR' }
+    ]
+  }
+]
+
+// 关联类型icon名称映射
+export const iconMapping = {
+  0: { icon: 'left-link', name: '左关联' },
+  1: { icon: 'cover-link', name: '内关联' },
+  2: { icon: 'all-link', name: '全关联' }
+}
+
+export const taskDetailInfo = [
+  { key: 'taskName', label: '任务名', value: '' },
+  { key: 'enable', label: '任务启用', value: '' },
+  { key: 'createMode', label: '创建方式', value: '' },
+  { key: 'taskDescribe', label: '任务描述', value: '' }
+]

@@ -8,11 +8,9 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuild
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncExecRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * @author peng

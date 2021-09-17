@@ -33,8 +33,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import io.netty.channel.Channel;
-import prg.apache.dolphinscheduler.server.master.processor.queue.TaskResponseEvent;
-import prg.apache.dolphinscheduler.server.master.processor.queue.TaskResponseService;
+import org.apache.dolphinscheduler.server.master.processor.queue.TaskResponseEvent;
+import org.apache.dolphinscheduler.server.master.processor.queue.TaskResponseService;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskResponseServiceTest {

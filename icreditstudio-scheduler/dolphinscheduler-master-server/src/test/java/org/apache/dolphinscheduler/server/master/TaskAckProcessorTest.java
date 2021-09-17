@@ -18,10 +18,10 @@
 package org.apache.dolphinscheduler.server.master;
 
 import org.apache.dolphinscheduler.remote.command.TaskExecuteAckCommand;
-import prg.apache.dolphinscheduler.server.master.cache.impl.TaskInstanceCacheManagerImpl;
-import prg.apache.dolphinscheduler.server.master.processor.TaskAckProcessor;
-import prg.apache.dolphinscheduler.server.master.processor.queue.TaskResponseEvent;
-import prg.apache.dolphinscheduler.server.master.processor.queue.TaskResponseService;
+import org.apache.dolphinscheduler.server.master.cache.impl.TaskInstanceCacheManagerImpl;
+import org.apache.dolphinscheduler.server.master.processor.TaskAckProcessor;
+import org.apache.dolphinscheduler.server.master.processor.queue.TaskResponseEvent;
+import org.apache.dolphinscheduler.server.master.processor.queue.TaskResponseService;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 
@@ -30,7 +30,6 @@ import java.util.Date;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;

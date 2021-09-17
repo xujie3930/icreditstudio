@@ -14,38 +14,37 @@ export default {
     {
       type: 'index',
       label: '序号',
-      width: '100px',
-      prop: 'serialNumber'
+      width: '100px'
     },
     {
       type: 'text',
       label: '字段名称',
-      prop: 'userName'
+      prop: 'fieldName'
     },
     {
       type: 'text',
       label: '字段类型',
-      prop: 'orgName'
+      prop: 'fieldType'
     },
     {
       type: 'text',
       label: '来源表',
-      prop: 'accountIdentifier'
+      prop: 'sourceTable'
     },
     {
       type: 'text',
       label: '字段中文名称',
-      prop: 'telPhone'
+      prop: 'fieldChineseName'
     },
     {
-      type: 'date',
+      type: 'text',
       label: '关联字典表',
-      prop: 'createTime'
+      prop: 'associateDict'
     },
     {
-      type: 'date',
+      type: 'text',
       label: '备注',
-      prop: 'createTime'
+      prop: 'remark'
     }
   ]
 }

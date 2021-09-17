@@ -50,6 +50,8 @@ import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000000;
+
 /**
  * <p>
  * 服务实现类
@@ -78,6 +80,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
+        IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
+        BusinessResult<String> testConnResult = testConn(testConnectRequest);
+        if (!testConnResult.isSuccess()) {
+            return BusinessResult.fail(RESOURCE_CODE_70000000.code, RESOURCE_CODE_70000000.message);
+        }
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
@@ -107,7 +114,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             wrapper.eq(IcreditDatasourceEntity.TYPE, pageRequest.getType());
         }
         if (Objects.nonNull(pageRequest.getStatus())) {
-            wrapper.le(IcreditDatasourceEntity.STATUS, pageRequest.getStatus());
+            wrapper.eq(IcreditDatasourceEntity.STATUS, pageRequest.getStatus());
         }
         wrapper.orderByDesc(IcreditDatasourceEntity.CREATE_TIME);
         IPage<IcreditDatasourceEntity> page = this.page(
@@ -143,6 +150,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         Map<String, String> map;
         try {
             map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)) {
+                throw new AppException("70000003");
+            }
             //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
         } catch (Exception e) {
             return BusinessResult.success(e.getMessage());
@@ -230,11 +240,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        catalogue.setName(icreditDatasourceEntity.getName());
+                        catalogue.setName(DatasourceSync.getDatabaseName(icreditDatasourceEntity.getUri()));
                         if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }
-                        catalogue.setUrl(icreditDatasourceEntity.getUri());
+                        catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
+                        catalogue.setHost(DatasourceSync.getHost(icreditDatasourceEntity.getUri()));
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());
@@ -303,10 +314,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
         if (Objects.nonNull(byId)) {
             String uri = byId.getUri();
-            String connUrl = DatasourceSync.getConnUrl(uri);
+//            String connUrl = DatasourceSync.getConnUrl(uri);
             String username = DatasourceSync.getUsername(uri);
             String password = DatasourceSync.getPassword(uri);
-            Connection conn = DatasourceSync.getConn(byId.getType(), connUrl, username, password);
+            Connection conn = DatasourceSync.getConn(byId.getType(), uri, username, password);
             if (Objects.isNull(conn)) {
                 throw new AppException("70000000");
             }
@@ -324,10 +335,21 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     }
                 }
             } catch (Exception e) {
-                log.error("获取数据库源信息", e);
+                log.error("获取数据库源信息失败", e);
             }
         }
         return BusinessResult.success(results);
+    }
+
+    @Override
+    public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .uri(param.getDatabaseName())
+                .datasourceId(param.getDatasourceId())
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+        return BusinessResult.success(list);
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {
@@ -337,6 +359,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (CollectionUtils.isNotEmpty(param.getCategory())) {
             wrapper.in(IcreditDatasourceEntity.CATEGORY, param.getCategory());
+        }
+        if (StringUtils.isNotBlank(param.getUri())) {
+            wrapper.like(IcreditDatasourceEntity.URI, param.getUri());
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());

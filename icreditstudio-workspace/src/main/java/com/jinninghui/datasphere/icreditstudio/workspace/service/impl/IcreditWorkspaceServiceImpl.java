@@ -24,6 +24,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.DateUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
  * @author xujie
  * @since 2021-08-20
  */
+@Slf4j
 @Service
 public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMapper, IcreditWorkspaceEntity> implements IcreditWorkspaceService {
 
@@ -105,12 +107,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
 
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest) {
+        //mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
         IcreditWorkspaceEntityPageParam param = BeanCopyUtils.copyProperties(pageRequest, new IcreditWorkspaceEntityPageParam());
         Page<IcreditWorkspaceEntity> page = new Page<>(param.getPageNum(), param.getPageSize());
         BusinessResult<Boolean> result = systemFeignClient.isAdmin();
         //管理员，可以查询所有数据
         if (result.isSuccess() && result.getData()){
-            pageRequest.setUserId("");
+            log.info("当前用户为管理员，拥有全部空间权限");
+            param.setUserId("");
         }
         if (!StringUtils.isBlank(pageRequest.getUpdateTime())){
             param.setUpdateStartTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 00:00:00"));

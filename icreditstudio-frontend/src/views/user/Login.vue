@@ -155,13 +155,16 @@ export default {
           this.btnLoading = true
           loginObj.password = sm4.encrypt(loginObj.password)
           this.loginAction({ ...loginObj })
-            .then(() => {
-              const { loginName, password } = this.loginData
-              this.isSavePassword
-                ? this.$ls.set('loginInfo', { loginName, password })
-                : this.$ls.remove('loginInfo')
-              this.$router.replace({ path: '/' }).catch(() => {})
-              this.btnLoading = false
+            .then(({ success, data }) => {
+              if (success && data) {
+                const { userId } = data
+                const { loginName, password } = this.loginData
+                this.isSavePassword
+                  ? this.$ls.set('loginInfo', { loginName, password, userId })
+                  : this.$ls.remove('loginInfo')
+                this.$router.replace({ path: '/' }).catch(() => {})
+                this.btnLoading = false
+              }
             })
             .catch(err => {
               console.log(err)

@@ -14,7 +14,7 @@
 
 // 验证是否是中文
 export const validStrZh = str => {
-  const pattern = new RegExp(/\p{Unified_Ideograph}/gu)
+  const pattern = /[^\u4E00-\u9FA5]/g
   return pattern.test(str)
 }
 
@@ -26,4 +26,20 @@ export const validStrSpecial = str => {
   const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
   const isValid = regStr.test(str) || emojiRegStr.test(str)
   return isValid
+}
+
+// 验证IP地址是否合法
+export const validIpAddress = ip => {
+  const regStr = /^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/
+  return regStr.test(ip)
+}
+
+// 特殊字符表单校验
+export const verifySpecialStr = (rule, value, cb) => {
+  console.log(value, 'ddd')
+  if (validStrSpecial(value)) {
+    cb(new Error('该名称中包含不规范字符，请重新输入'))
+  } else {
+    cb()
+  }
 }

@@ -31,6 +31,7 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String SPACE_ID = "SPACE_ID";
     public static final String CATEGORY = "CATEGORY";
     public static final String DEL_FLAG = "DEL_FLAG";
+    public static final String URI = "uri";
 
     /**
      * 主键id
@@ -113,6 +114,11 @@ public class IcreditDatasourceEntity implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 是否展示密码：0-隐藏，1-展示，默认0
+     */
+    private Integer showPassword;
 
 
 }

@@ -31,7 +31,15 @@ public class TaskParamSaveParam {
      */
     private Integer scheduleType;
     /**
+     * 同步方式【0：增量同步，1：全量同步】
+     */
+    private Integer syncMode;
+    /**
      * cron表达式
      */
     private String cron;
+    /**
+     * 任务状态【0：启用，1：草稿，2：停用】
+     */
+    private Integer taskStatus;
 }

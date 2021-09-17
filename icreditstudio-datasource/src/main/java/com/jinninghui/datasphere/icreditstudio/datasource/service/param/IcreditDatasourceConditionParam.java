@@ -23,4 +23,8 @@ public class IcreditDatasourceConditionParam {
      * 数据源ID
      */
     private String datasourceId;
+    /**
+     * uri
+     */
+    private String uri;
 }

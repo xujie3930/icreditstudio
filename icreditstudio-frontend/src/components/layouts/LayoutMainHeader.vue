@@ -18,10 +18,11 @@
     <div class="iframe-layout-main-header-user">
       <!-- 工作空间 -->
       <el-select
+        v-if="workspaceCreateAuth"
         class="workspace-select"
         size="mini"
         placeholder="请选择"
-        v-model="workspaceId"
+        v-model="wid"
         @change="workspaceIdChange"
       >
         <el-option
@@ -109,7 +110,7 @@ import { base64UrlFilter } from '@/utils/util'
 import { getSystemTheme } from '@/utils/theme'
 // import LayoutHeaderSlot from '@/components/layout/LayoutHeaderSlot'
 import { pollingUnreadInfos } from '@/api/message'
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { SET_ACTIVE_MODULE_ID } from '@/store/mutation-types'
 import { DEFAULT_HEAD_IMG_URL } from '@/config/constant'
 import { settingUserShortMenuStatus } from '@/api/system'
@@ -136,7 +137,7 @@ export default {
   data() {
     this.getSystemTheme = getSystemTheme
     return {
-      workspaceId: null,
+      wid: undefined,
       isShowQuickMenu: 'N',
       activeModule: '',
       count: 1,
@@ -159,23 +160,15 @@ export default {
   },
 
   watch: {
-    workspaceList: {
-      deep: true,
-      immediate: true,
-      handler(nVal = []) {
-        localStorage.setItem('workspaceId', null)
-        if (nVal && nVal.length) {
-          const { id } = nVal[0]
-          this.workspaceId = id
-          localStorage.setItem('workspaceId', id)
-          this.setWorkspaceId(id)
-        }
-      }
+    workspaceId(nVal) {
+      this.wid = nVal
     }
   },
 
   computed: {
     ...mapGetters({
+      workspaceId: 'user/workspaceId',
+      workspaceCreateAuth: 'user/workspaceCreateAuth',
       workspaceList: 'user/workspaceList',
       userInfo: 'user/userInfo',
       isCollapse: 'common/isHeaderCollapse',
@@ -197,21 +190,22 @@ export default {
 
   mounted() {
     this.isShowQuickMenu = this.systemSetting.enableCustomMenu
+    this.setWorkspaceId(this.$ls.get('workspaceId') || 'all')
+    this.wid = this.workspaceId
   },
 
   methods: {
-    ...mapMutations('user', { setWorkspaceId: 'SET_WRKSPACE_ID' }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
     ...mapActions('user', [
       'logoutAction',
       'setMessageNoticeInfo',
       'setIsShowQuickMenu',
-      'getPermissionListAction'
+      'getPermissionListAction',
+      'setWorkspaceId'
     ]),
 
     workspaceIdChange(id) {
-      console.log(id, 'ididiidid')
-      localStorage.setItem('workspaceId', id)
+      this.$ls.set('workspaceId', id)
       this.setWorkspaceId(id)
     },
 

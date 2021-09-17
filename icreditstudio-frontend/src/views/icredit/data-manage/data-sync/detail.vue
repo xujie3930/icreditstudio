@@ -4,7 +4,12 @@
  * @Date: 2021-08-24
 -->
 <template>
-  <BaseDialog hideFooter title="查看同步任务" ref="baseDialog">
+  <BaseDialog
+    hideFooter
+    title="查看同步任务"
+    ref="taskDialog"
+    @on-close="close"
+  >
     <el-tabs
       class="data-detail-tab"
       v-model="activeName"
@@ -21,7 +26,11 @@
               v-for="item in taskDetailInfo"
             >
               <div class="label">
-                <span class="required-icon">*</span>
+                <span
+                  v-if="item.key !== 'taskDescription'"
+                  class="required-icon"
+                  >*
+                </span>
                 <span>{{ item.label }}</span>
               </div>
               <span class="text">{{ item.value }}</span>
@@ -34,32 +43,57 @@
           <!-- <div class="tab-wrap__title">数据源详情</div> -->
           <div class="tab-wrap__content">
             <el-row class="row">
-              <el-col class="col" :span="8">
+              <el-col class="col" :span="10">
                 <span>数据库源：</span>
-                <span>sssss</span>
+                <span>{{ datasourceName }}</span>
               </el-col>
 
-              <el-col class="col" :span="16">
+              <el-col class="col" :span="14">
                 <div>表间关联关系：</div>
-                <div class="pop-wrap">
+                <div v-if="datasourceDetailInfo.view.length" class="pop-wrap">
                   <el-popover placement="right-end" width="450" trigger="hover">
-                    <Figure />
+                    <Figure :data-source="datasourceDetailInfo.view" />
                     <div class="svg-wrap" slot="reference">
                       <JSvg name="left-link" class="icon" />
                     </div>
                   </el-popover>
                 </div>
+                <span v-else>无</span>
               </el-col>
             </el-row>
 
             <el-row class="row" style="margin-bottom: 20px">
-              <el-col class="col" :span="8">
+              <el-col class="col" :span="10">
                 <span> 宽表信息：</span>
-                <span>dddsdededeef</span>
+                <el-tooltip placement="top">
+                  <div slot="content">
+                    <span>{{ datasourceDetailInfo.targetSource }}</span>
+                    &nbsp;&nbsp;
+                    <span>{{ datasourceDetailInfo.wideTableName }}</span>
+                  </div>
+                  <div class="width-table-info">
+                    <span>{{ datasourceDetailInfo.targetSource }}</span>
+                    &nbsp;&nbsp;
+                    <span>{{ datasourceDetailInfo.wideTableName }}</span>
+                  </div>
+                </el-tooltip>
               </el-col>
-              <el-col class="col" :span="16">
-                <span> 分区字段：</span>
-                <span>ddadefrgdd</span>
+
+              <el-col class="col" :span="4">
+                <span> 增量字段：</span>
+                <span>
+                  {{ datasourceDetailInfo.syncCondition.incrementalField }}
+                </span>
+              </el-col>
+
+              <el-col class="col" :span="4">
+                <span> 日期格式：</span>
+                <span>{{ datasourceDetailInfo.syncCondition.partition }}</span>
+              </el-col>
+
+              <el-col class="col" :span="6">
+                <span> 时间过滤条件：</span>
+                <span>T + {{ datasourceDetailInfo.syncCondition.n }}</span>
               </el-col>
             </el-row>
 
@@ -67,7 +101,7 @@
               ref="leftTable"
               v-loading="tableLoading"
               :table-configuration="tableConfiguration"
-              :table-data="tableData"
+              :table-data="datasourceDetailInfo.fieldInfos"
             ></j-table>
           </div>
         </div>
@@ -112,7 +146,7 @@
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
               </div>
-              <span class="text">{{ buildDetailInfo.syncCycle }}</span>
+              <span class="text">{{ buildDetailInfo.cron }}</span>
             </div>
           </div>
         </div>
@@ -130,7 +164,9 @@ import { deepClone } from '@/utils/util'
 import {
   taskStatusMapping,
   createModeMapping,
-  scheduleTypeMapping
+  scheduleTypeMapping,
+  taskDetailInfo,
+  radioBtnOption
 } from './contant'
 
 export default {
@@ -141,6 +177,7 @@ export default {
       row: {},
       detailLoading: false,
       activeName: 'DefineDetial',
+      radioBtnOption,
 
       // 表格
       tableConfiguration,
@@ -148,24 +185,41 @@ export default {
       tableData: [],
 
       // 详情
-      datasourceDetailInfo: {},
+      datasourceDetailInfo: {
+        sourceType: undefined,
+        view: [],
+        syncCondition: {}
+      },
       buildDetailInfo: {},
-      taskDetailInfo: [
-        { key: 'taskName', label: '任务名', value: '' },
-        { key: 'enable', label: '任务启用', value: '' },
-        { key: 'buildMode', label: '创建方式', value: '' },
-        { key: 'taskDescription', label: '任务描述', value: '' }
-      ]
+      taskDetailInfo: []
+    }
+  },
+
+  computed: {
+    datasourceName() {
+      const { sourceType } = this.datasourceDetailInfo
+      return radioBtnOption[sourceType] ? radioBtnOption[sourceType].name : ''
     }
   },
 
   methods: {
-    open({ row, opType }) {
-      console.log(opType, 'King')
+    open({ row }) {
       this.activeName = 'DefineDetial'
       this.row = row
-      this.$refs.baseDialog.open()
+      this.initData()
+      this.$refs.taskDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
+    },
+
+    initData() {
+      this.datasourceDetailInfo = { view: [], syncCondition: {} }
+      this.buildDetailInfo = {}
+      this.taskDetailInfo = taskDetailInfo
+    },
+
+    close() {
+      this.datasourceDetailInfo = {}
+      this.buildDetailInfo = {}
     },
 
     handleTabClick() {
@@ -180,7 +234,7 @@ export default {
         this.taskDetailInfo = deepClone(this.taskDetailInfo).map(
           ({ key, label }) => {
             let value = ''
-            if (key === 'buildMode') {
+            if (key === 'createMode') {
               value = createModeMapping[data[key]]
             } else if (key === 'enable') {
               value = taskStatusMapping[data[key]].label
@@ -282,6 +336,14 @@ export default {
           @include flex(row, flex-start);
           height: 26px;
           line-height: 26px;
+
+          .width-table-info {
+            display: inline-block;
+            width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
 
         .pop-wrap {

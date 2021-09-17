@@ -1,7 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 
-import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
@@ -161,6 +160,19 @@ public class IcreditDatasourceController {
         DataSourceTableInfoParam param = new DataSourceTableInfoParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.getTableInfo(param);
+    }
+
+    /**
+     * 根据数据库名称获取
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/getDataSources")
+    BusinessResult<List<IcreditDatasourceEntity>> getDataSources(@RequestBody DataSourcesQueryRequest request) {
+        DataSourcesQueryParam param = new DataSourcesQueryParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.getDataSources(param);
     }
 }
 

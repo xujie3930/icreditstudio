@@ -11,7 +11,7 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: 10, label: '全部' },
+      { value: undefined, label: '全部' },
       { value: 1, label: 'MySQL' },
       { value: 2, label: 'oracle' },
       { value: 3, label: 'hive' },
@@ -37,7 +37,7 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: 2, label: '全部' },
+      { value: undefined, label: '全部' },
       { value: 0, label: '是' },
       { value: 1, label: '否' }
     ]

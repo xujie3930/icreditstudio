@@ -28,8 +28,8 @@ const states = () => ({
   messageNoticeInfo: {},
   shortMenus: [], // 快捷菜单列表
   workspaceList: [], // 工作空间下拉框
-  workspaceId: null, // 当前选中工作空间ID
-  workspaceCreateAuth: false // 当前登录账号是为root账号
+  workspaceId: undefined, // 当前选中工作空间ID
+  workspaceCreateAuth: false // 当前登录账号是否为root账号
 })
 
 const getters = {
@@ -40,7 +40,8 @@ const getters = {
   systemSetting: state => state.systemSetting,
   shortMenus: state => state.shortMenus,
   workspaceList: state => state.workspaceList,
-  workspaceCreateAuth: state => state.workspaceCreateAuth
+  workspaceCreateAuth: state => state.workspaceCreateAuth,
+  workspaceId: state => state.workspaceId
 }
 
 const mutations = {
@@ -116,11 +117,17 @@ const actions = {
           } = data
           const _menusTree = arrayToTree(menus || [], '0')
           if (_menusTree && _menusTree.length > 0) {
+            // 登录系统时-工作空间切换逻辑
+            const workspaceId = Vue.ls.get('workspaceId') || 'all'
+            const nWorkList = [{ name: '全部', id: 'all' }, ...workspaceList]
+            const idx = nWorkList.findIndex(({ id }) => workspaceId === id)
+            const wid = nWorkList.length > 1 ? nWorkList[1].id : nWorkList[0].id
+
+            idx < 0 && Vue.ls.set('workspaceId', wid)
+
+            commit(SET_WRKSPACE_ID, wid)
             commit(SET_WRKSPACE_AUTH, workspaceCreateAuth)
-            commit(SET_WRKSPACE_LIST, [
-              { name: '全部', id: 'all' },
-              ...workspaceList
-            ])
+            commit(SET_WRKSPACE_LIST, nWorkList)
             commit(SET_USERINFO, userInfo || {})
             commit(SET_AUTH, authList)
             commit(SET_PERMISSION_LIST, _menusTree)
@@ -144,6 +151,7 @@ const actions = {
         })
     })
   },
+
   // 登出
   logoutAction({ commit }) {
     return new Promise(resolve => {
@@ -159,9 +167,14 @@ const actions = {
         })
     })
   },
+
   // 消息提醒
   setMessageNoticeInfo({ commit }, messageInfo) {
     commit(SET_MESSAGE_NOTICE_INFO, messageInfo)
+  },
+
+  setWorkspaceId({ commit }, id) {
+    commit(SET_WRKSPACE_ID, id)
   }
 }
 

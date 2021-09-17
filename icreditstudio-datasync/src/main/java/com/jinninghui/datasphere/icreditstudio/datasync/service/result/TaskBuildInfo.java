@@ -18,9 +18,9 @@ public class TaskBuildInfo {
      */
     private String wideTableName;
     /**
-     * 分区字段
+     * 同步条件
      */
-    private String partition;
+    private SyncCondition syncCondition;
     /**
      * 【0：外部数据库，1：本地文件，2：区块链数据】
      */
@@ -36,5 +36,7 @@ public class TaskBuildInfo {
     /**
      * 宽表列表
      */
-    private List<WideTableFieldInfo> fieldInfos;
+    private List<WideTableFieldResult> fieldInfos;
+
+    private String sql;
 }

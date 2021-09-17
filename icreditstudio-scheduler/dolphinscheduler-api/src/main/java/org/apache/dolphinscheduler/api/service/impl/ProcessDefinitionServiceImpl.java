@@ -30,6 +30,7 @@ import org.apache.dolphinscheduler.api.service.SchedulerService;
 import org.apache.dolphinscheduler.api.utils.CheckUtils;
 import org.apache.dolphinscheduler.api.utils.FileUtils;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
+import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.api.utils.exportprocess.ProcessAddTaskParam;
 import org.apache.dolphinscheduler.api.utils.exportprocess.TaskNodeParamFactory;
 import org.apache.dolphinscheduler.common.Constants;
@@ -119,6 +120,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 
     private static final String PROCESSDEFINITIONCODE = "processDefinitionCode";
 
+    private static final String PROCESSDEFINITIONID = "processDefinitionId";
+
     private static final String RELEASESTATE = "releaseState";
 
     private static final String TASKS = "tasks";
@@ -201,6 +204,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             long processDefinitionCode = SnowFlakeUtils.getInstance().nextId();
             processDefinition.setCode(processDefinitionCode);
             processDefinition.setVersion(1);
+            processDefinition.setReleaseState(ReleaseState.ONLINE);
         } catch (SnowFlakeException e) {
             putMsg(result, Status.CREATE_PROCESS_DEFINITION);
             return result;
@@ -213,6 +217,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             putMsg(result, Status.SUCCESS);
             // return processDefinition object with ID
             result.put(Constants.DATA_LIST, processDefinition.getId());
+            result.put(PROCESSDEFINITIONID, saveResult);
         } else {
             putMsg(result, Status.CREATE_PROCESS_DEFINITION);
         }

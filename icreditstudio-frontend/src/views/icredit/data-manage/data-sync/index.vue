@@ -88,18 +88,16 @@
             >
               启用
             </el-button>
-            <!-- v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)" -->
             <el-button
               type="text"
-              v-if="row.taskStatus === 0"
+              v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)"
               @click="handleRunBtnClick(row, 'Run')"
             >
               立即执行
             </el-button>
-            <!-- v-if="row.taskStatus === 0 && row.execStatus === 2" -->
             <el-button
               type="text"
-              v-if="row.taskStatus === 0"
+              v-if="row.taskStatus === 0 && row.execStatus === 2"
               @click="handleStopBtnClick(row, 'Stop')"
             >
               停止执行
@@ -107,9 +105,9 @@
             <el-button
               type="text"
               v-if="row.taskStatus !== 0"
-              @click="handleOperateClick(row, 'Edit')"
+              @click="handleEditBtnClick(row, 'Edit')"
             >
-              编辑 {{ row.execStatus }}
+              编辑
             </el-button>
             <el-button
               v-if="[1, 2].includes(row.taskStatus)"
@@ -199,7 +197,6 @@ export default {
 
     // 查看操作
     handleViewBtnClick(row, opType) {
-      console.log('row', row)
       this.$refs.dataDetail.open({ row, opType })
     },
 
@@ -250,9 +247,14 @@ export default {
       })
     },
 
-    handleOperateClick(row, opType) {
-      console.log(row, 'row', opType)
-      this.$refs.dataSourceDialog.open(opType, 'xxxx工作空间')
+    // 编辑
+    handleEditBtnClick(row, opType) {
+      console.log(row, opType)
+      const params = {
+        path: '/data-manage/add-task',
+        query: { taskId: row.taskId }
+      }
+      this.$router.push(params)
     },
 
     // 弹窗提示回调函数
@@ -260,7 +262,8 @@ export default {
       console.log(row, opType, 'row')
       const methodName = `dataSync${opType}`
       const params = {
-        Disabled: { taskId: row.taskId }
+        Disabled: { taskId: row.taskId },
+        Delete: { taskId: row.taskId }
       }
       this[`handle${opType}Click`](methodName, params[opType], 'operateMessage')
     }

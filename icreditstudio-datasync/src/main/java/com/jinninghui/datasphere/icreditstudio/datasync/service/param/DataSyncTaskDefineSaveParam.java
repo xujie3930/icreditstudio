@@ -42,4 +42,8 @@ public class DataSyncTaskDefineSaveParam {
      */
     @Length(max = 255, message = "60000012")
     private String taskDescribe;
+    /**
+     * 任务状态【0：启用，1：草稿，2：停用】
+     */
+    private Integer taskStatus;
 }

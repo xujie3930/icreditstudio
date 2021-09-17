@@ -21,8 +21,8 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
-import prg.apache.dolphinscheduler.server.master.dispatch.host.assign.RandomSelector;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.RandomSelector;
 
 /**
  * random selector
