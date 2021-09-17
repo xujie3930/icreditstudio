@@ -17,4 +17,5 @@ public class IcreditDatasourceUpdateRequest {
     private String uri;//连接信息
     private int status = 0;//是否启用：0-启用，1-非启用
     private String descriptor;//数据源描述
+    private Integer showPassword;//是否展示密码：0-隐藏，1-展示，默认0
 }

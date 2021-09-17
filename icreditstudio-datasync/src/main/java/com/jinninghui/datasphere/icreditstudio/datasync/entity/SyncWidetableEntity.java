@@ -62,7 +62,7 @@ public class SyncWidetableEntity extends SyncBaseEntity implements Serializable 
     /**
      * 分区字段
      */
-    private String partitionField;
+    private String syncCondition;
 
     /**
      * 表名称

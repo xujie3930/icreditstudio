@@ -43,12 +43,12 @@
           <!-- <div class="tab-wrap__title">数据源详情</div> -->
           <div class="tab-wrap__content">
             <el-row class="row">
-              <el-col class="col" :span="8">
+              <el-col class="col" :span="10">
                 <span>数据库源：</span>
-                <span>{{ datasourceDetailInfo.sourceType }}</span>
+                <span>{{ datasourceName }}</span>
               </el-col>
 
-              <el-col class="col" :span="16">
+              <el-col class="col" :span="14">
                 <div>表间关联关系：</div>
                 <div v-if="datasourceDetailInfo.view.length" class="pop-wrap">
                   <el-popover placement="right-end" width="450" trigger="hover">
@@ -63,13 +63,37 @@
             </el-row>
 
             <el-row class="row" style="margin-bottom: 20px">
-              <el-col class="col" :span="8">
+              <el-col class="col" :span="10">
                 <span> 宽表信息：</span>
-                <span>{{ datasourceDetailInfo.wideTableName }}</span>
+                <el-tooltip placement="top">
+                  <div slot="content">
+                    <span>{{ datasourceDetailInfo.targetSource }}</span>
+                    &nbsp;&nbsp;
+                    <span>{{ datasourceDetailInfo.wideTableName }}</span>
+                  </div>
+                  <div class="width-table-info">
+                    <span>{{ datasourceDetailInfo.targetSource }}</span>
+                    &nbsp;&nbsp;
+                    <span>{{ datasourceDetailInfo.wideTableName }}</span>
+                  </div>
+                </el-tooltip>
               </el-col>
-              <el-col class="col" :span="16">
-                <span> 分区字段：</span>
-                <span>{{ datasourceDetailInfo.partition }}</span>
+
+              <el-col class="col" :span="4">
+                <span> 增量字段：</span>
+                <span>
+                  {{ datasourceDetailInfo.syncCondition.incrementalField }}
+                </span>
+              </el-col>
+
+              <el-col class="col" :span="4">
+                <span> 日期格式：</span>
+                <span>{{ datasourceDetailInfo.syncCondition.partition }}</span>
+              </el-col>
+
+              <el-col class="col" :span="6">
+                <span> 时间过滤条件：</span>
+                <span>T + {{ datasourceDetailInfo.syncCondition.n }}</span>
               </el-col>
             </el-row>
 
@@ -140,7 +164,9 @@ import { deepClone } from '@/utils/util'
 import {
   taskStatusMapping,
   createModeMapping,
-  scheduleTypeMapping
+  scheduleTypeMapping,
+  taskDetailInfo,
+  radioBtnOption
 } from './contant'
 
 export default {
@@ -151,6 +177,7 @@ export default {
       row: {},
       detailLoading: false,
       activeName: 'DefineDetial',
+      radioBtnOption,
 
       // 表格
       tableConfiguration,
@@ -158,25 +185,36 @@ export default {
       tableData: [],
 
       // 详情
-      datasourceDetailInfo: { view: [] },
+      datasourceDetailInfo: {
+        sourceType: undefined,
+        view: [],
+        syncCondition: {}
+      },
       buildDetailInfo: {},
-      taskDetailInfo: [
-        { key: 'taskName', label: '任务名', value: '' },
-        { key: 'enable', label: '任务启用', value: '' },
-        { key: 'createMode', label: '创建方式', value: '' },
-        { key: 'taskDescribe', label: '任务描述', value: '' }
-      ]
+      taskDetailInfo: []
+    }
+  },
+
+  computed: {
+    datasourceName() {
+      const { sourceType } = this.datasourceDetailInfo
+      return radioBtnOption[sourceType] ? radioBtnOption[sourceType].name : ''
     }
   },
 
   methods: {
-    open({ row, opType }) {
-      console.log(opType, 'King')
+    open({ row }) {
       this.activeName = 'DefineDetial'
       this.row = row
-      console.log(this.$refs, 'jijijijiji')
+      this.initData()
       this.$refs.taskDialog.open()
       this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
+    },
+
+    initData() {
+      this.datasourceDetailInfo = { view: [], syncCondition: {} }
+      this.buildDetailInfo = {}
+      this.taskDetailInfo = taskDetailInfo
     },
 
     close() {
@@ -209,7 +247,6 @@ export default {
       } else if (this.activeName === 'DispatchDetial') {
         this.buildDetailInfo = data
       } else {
-        console.log('data', data)
         this.datasourceDetailInfo = data
       }
     },
@@ -299,6 +336,14 @@ export default {
           @include flex(row, flex-start);
           height: 26px;
           line-height: 26px;
+
+          .width-table-info {
+            display: inline-block;
+            width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
 
         .pop-wrap {

@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncCondi
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldRequest;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -29,15 +30,19 @@ public class DataSyncSaveRequest {
     /**
      * 任务名称
      */
+    @NotBlank(message = "60000009")
     @Length(max = 15, message = "60000022")
     private String taskName;
     /**
      * 【0：未启用，1：启用】
      */
+    @Range(max = 1, message = "")
+    @NotNull(message = "60000010")
     private Integer enable;
     /**
      * 【0：可视化，1：sql】
      */
+    @NotNull(message = "60000011")
     private Integer createMode;
     /**
      * 任务描述
@@ -54,10 +59,6 @@ public class DataSyncSaveRequest {
      * 宽表名称
      */
     private String wideTableName;
-//    /**
-//     * 分区字段
-//     */
-//    private String partition;
     /**
      * 同步条件
      */

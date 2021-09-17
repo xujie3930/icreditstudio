@@ -40,7 +40,8 @@
         prop="databaseName"
       >
         <el-input
-          v-model="dataSourceForm.databaseName"
+          clearable
+          v-model.trim="dataSourceForm.databaseName"
           placeholder="请输入数据库名"
         ></el-input>
       </el-form-item>
@@ -53,7 +54,8 @@
           prop="uri"
         >
           <el-input
-            v-model="dataSourceForm.uri"
+            clearable
+            v-model.trim="dataSourceForm.uri"
             placeholder="请输入数据源路径"
           ></el-input>
         </el-form-item>
@@ -63,7 +65,7 @@
           label="文件格式"
           prop="resource"
         >
-          <el-radio-group v-model="dataSourceForm.docType">
+          <el-radio-group v-model.trim="dataSourceForm.docType">
             <el-radio label="TXT">TXT</el-radio>
             <el-radio label="XLS">XLS</el-radio>
             <el-radio label="CSV">CSV</el-radio>
@@ -72,6 +74,7 @@
 
         <el-form-item label="表头位置" prop="position">
           <el-select
+            clearable
             style="width: 100%"
             v-model="dataSourceForm.position"
             placeholder="请选择"
@@ -88,7 +91,8 @@
 
         <el-form-item label="分隔符" prop="separator">
           <el-input
-            v-model="dataSourceForm.separator"
+            clearable
+            v-model.trim="dataSourceForm.separator"
             placeholder="请输入分隔符"
           ></el-input>
         </el-form-item>
@@ -98,7 +102,8 @@
         <el-col :span="12">
           <el-form-item label="IP" prop="ip">
             <el-input
-              v-model="dataSourceForm.ip"
+              clearable
+              v-model.trim="dataSourceForm.ip"
               placeholder="请输入数据源连接IP"
             >
             </el-input>
@@ -106,10 +111,13 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="端口" prop="port">
-            <el-input
+            <el-input-number
+              :min="0"
+              controls-position="right"
               v-model="dataSourceForm.port"
               placeholder="请输入端口"
-            ></el-input>
+              style="width:100%"
+            ></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
@@ -118,8 +126,9 @@
         <el-col :span="12">
           <el-form-item label="用户名" prop="username">
             <el-input
-              v-model="dataSourceForm.username"
-              placeholder="请输入数据源连接用户名"
+              clearable
+              v-model.trim="dataSourceForm.username"
+              placeholder="请输入用户名"
             >
             </el-input>
           </el-form-item>
@@ -127,9 +136,17 @@
         <el-col :span="12">
           <el-form-item label="密码" prop="password">
             <el-input
-              show-password
-              v-model="dataSourceForm.password"
-              placeholder="请输入数据源连接密码"
+              clearable
+              :type="dataSourceForm.showPassword ? 'text' : 'password'"
+              v-model.trim="dataSourceForm.password"
+              placeholder="请输入密码"
+            >
+              <i
+                slot="suffix"
+                class="el-input__icon el-icon-view"
+                style="cursor:pointer"
+                @click="handleShowPassword"
+              ></i
             ></el-input>
           </el-form-item>
         </el-col>
@@ -147,7 +164,7 @@
           show-word-limit
           :maxlength="250"
           type="textarea"
-          v-model="dataSourceForm.descriptor"
+          v-model.trim="dataSourceForm.descriptor"
           placeholder="请输入数据源描述"
         ></el-input>
       </el-form-item>
@@ -195,6 +212,7 @@
 <script>
 import { mapState } from 'vuex'
 import { uriSplit } from '@/utils/util'
+import { validStrSpecial, validIpAddress } from '@/utils/validate'
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
 
@@ -235,11 +253,14 @@ export default {
         name: '',
         databaseName: '',
         ip: '',
-        port: '',
+        port: undefined,
         username: '',
         password: '',
-        status: 0
+        status: 0,
+        showPassword: 0,
+        descriptor: ''
       },
+
       rules: {
         name: [
           { required: true, message: '请输入数据源名称', trigger: 'blur' },
@@ -250,7 +271,8 @@ export default {
           { required: true, message: '请输入数据库名', trigger: 'blur' }
         ],
         ip: [
-          { required: true, message: '请输入数据源连接IP', trigger: 'blur' }
+          { required: true, message: '请输入数据源连接IP', trigger: 'blur' },
+          { validator: this.verifyIpAddress, trigger: 'blur' }
         ],
         port: [{ required: true, message: '请输入端口', trigger: 'blur' }],
         username: [
@@ -259,6 +281,7 @@ export default {
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         status: [{ required: true, message: '请选择是否启用', trigger: 'blur' }]
       },
+
       positionOptions: [
         { label: '第一行', value: 1 },
         { label: '第二行', value: 2 },
@@ -277,8 +300,8 @@ export default {
       this.opType = 'Add'
       this.dataType = type
       this.databaseType = name
-      // this.$refs.dataSourceForm.resetFields()
       this.$refs.baseDialog.open()
+      this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
     },
 
     // 编辑状态下打开弹窗
@@ -301,12 +324,7 @@ export default {
 
     // 验证是否已经存在数据源名称
     verifyDatasourceName(rule, value, cb) {
-      // 特殊符号
-      const regStr = /[`~!@#$%^&*()_\-+=<>?:"{}|,./;'\\[\]·~！@#￥%……&*（）——\-+={}|《》？：“”【】、；‘’，。、]/gi
-      // 表情包
-      const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
-      const isValid = regStr.test(value) || emojiRegStr.test(value)
-      if (isValid) {
+      if (validStrSpecial(value)) {
         cb(new Error('该名称中包含不规范字符，请重新输入'))
       } else {
         const {
@@ -315,7 +333,8 @@ export default {
           dataSourceForm: { name }
         } = this
         if (opType === 'Edit' && oldName === name) {
-          return cb()
+          cb()
+          return
         }
         this.timerId = null
         this.veifyNameLoading = true
@@ -331,11 +350,24 @@ export default {
       }
     },
 
+    // 验证IP地址
+    verifyIpAddress(rule, value, cb) {
+      validIpAddress(value)
+        ? cb()
+        : cb(new Error('输入的IP地址不合法，请重新输入'))
+    },
+
     // 上一步
     handlePrevious() {
       this.handleClose()
       this.$parent.open()
       this.$refs.dataSourceForm.resetFields()
+    },
+
+    // 是否展示显示密码
+    handleShowPassword() {
+      const { showPassword } = this.dataSourceForm
+      this.dataSourceForm.showPassword = showPassword ? 0 : 1
     },
 
     // 测试链接
@@ -370,11 +402,12 @@ export default {
 
     // 提交新增或编辑数据源表单
     handleConfirm() {
-      const { status, name, descriptor, id } = this.dataSourceForm
+      const { status, name, descriptor, id, showPassword } = this.dataSourceForm
       const params = {
         name,
         status,
         descriptor,
+        showPassword,
         category: dataTypeMapping[this.dataType],
         type: databaseTypeMapping[this.databaseType],
         spaceId: this.workspaceId,

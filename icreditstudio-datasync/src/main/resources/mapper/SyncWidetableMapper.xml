@@ -10,7 +10,7 @@
             <result property="sqlStr" column="sql_str" jdbcType="VARCHAR"/>
             <result property="datasourceId" column="datasource_id" jdbcType="VARCHAR"/>
             <result property="targetUrl" column="target_url" jdbcType="VARCHAR"/>
-            <result property="partitionStr" column="partition_field" jdbcType="VARCHAR"/>
+            <result property="partitionStr" column="sync_condition" jdbcType="VARCHAR"/>
             <result property="name" column="name" jdbcType="VARCHAR"/>
             <result property="version" column="version" jdbcType="INTEGER"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>

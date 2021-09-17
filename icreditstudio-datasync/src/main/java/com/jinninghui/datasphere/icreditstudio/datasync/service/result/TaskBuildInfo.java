@@ -17,11 +17,6 @@ public class TaskBuildInfo {
      * 宽表名称
      */
     private String wideTableName;
-//    /**
-//     * 分区字段
-//     */
-//    private String partition;
-
     /**
      * 同步条件
      */
@@ -41,5 +36,7 @@ public class TaskBuildInfo {
     /**
      * 宽表列表
      */
-    private List<WideTableFieldRequest> fieldInfos;
+    private List<WideTableFieldResult> fieldInfos;
+
+    private String sql;
 }

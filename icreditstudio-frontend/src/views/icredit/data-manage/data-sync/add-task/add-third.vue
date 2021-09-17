@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back path="/data-manage/data-sync" />
+    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="3" />
 
@@ -144,6 +144,7 @@ export default {
         scheduleType: 1,
         cron: ''
       },
+
       taskRules: {
         maxThread: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
@@ -157,7 +158,13 @@ export default {
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
-        cron: [{ required: true, message: '必填项不能为空', trigger: 'blur' }]
+        cron: [
+          {
+            required: true,
+            message: '必填项不能为空',
+            trigger: ['blur', 'change']
+          }
+        ]
       }
     }
   },
@@ -172,9 +179,7 @@ export default {
 
   methods: {
     initPage() {
-      const beforeStepForm = JSON.parse(
-        sessionStorage.getItem('taskForm') || '{}'
-      )
+      const beforeStepForm = this.$ls.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
       this.taskForm.taskId && this.getDetailData()
@@ -205,7 +210,7 @@ export default {
                 })
                 if (callStep === 4) {
                   this.$router.push('/data-manage/data-sync')
-                  sessionStorage.clear('taskForm')
+                  this.$ls.remove('taskForm')
                 }
               }
             })
@@ -216,10 +221,16 @@ export default {
       })
     },
 
+    // 返回提示
+    handleBackClick() {
+      this.$ls.remove('taskForm')
+      this.$router.push('/data-manage/data-sync')
+    },
+
     // 编辑情况下获取详情
     getDetailData() {
       this.detailLoading = true
-      API.dataSyncBuildDetial({ taskId: this.taskForm.taskId })
+      API.dataSyncDispatchDetial({ taskId: this.taskForm.taskId })
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {

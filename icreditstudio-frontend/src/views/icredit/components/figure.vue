@@ -6,38 +6,62 @@
 <template>
   <div class="figure">
     <div class="figure-wrap">
+      <!-- 第一张表 -->
       <div class="figure-box">
-        <span class="name"> h_data_source</span>
-        <span class="type">mysql</span>
+        <el-tooltip :content="dataSource[0].leftSource" placement="bottom">
+          <span class="name"> {{ dataSource[0].leftSource }}</span>
+        </el-tooltip>
+        <span class="type">{{ dataSource[0].leftSourceDatabase }}</span>
       </div>
-      <FigureLine icon-name="all-link" />
+
+      <!-- 第一个关联图标 -->
+      <FigureLine :icon-name="iconNameMapping(dataSource[0].associatedType)" />
+
+      <!-- 第二张表 -->
       <div class="figure-box">
-        <span class="name"> h_data_source</span>
-        <span class="type">mysql</span>
+        <el-tooltip :content="dataSource[0].rightSource" placement="bottom">
+          <span class="name">{{ dataSource[0].rightSource }}</span>
+        </el-tooltip>
+        <span class="type">{{ dataSource[0].rightSourceDatabase }}</span>
       </div>
     </div>
 
-    <div class="center-line">
-      <FigureLine class="left" icon-name="left-link" />
-      <FigureLine class="right" icon-name="cover-link" />
+    <!-- 第二个关联图标 -->
+    <div class="center-line" v-if="dataSource.length > 1">
+      <FigureLine
+        class="right"
+        :icon-name="iconNameMapping(dataSource[1].associatedType)"
+      />
     </div>
 
-    <div class="figure-wrap">
+    <div class="figure-wrap" v-if="dataSource.length > 1">
+      <!-- 第三张表 -->
       <div class="figure-box">
-        <span class="name"> h_data_source</span>
-        <span class="type">mysql</span>
+        <el-tooltip :content="dataSource[1].rightSource" placement="bottom">
+          <span class="name">{{ dataSource[1].rightSource }}</span>
+        </el-tooltip>
+        <span class="type">{{ dataSource[1].rightSourceDatabase }}</span>
       </div>
 
-      <div class="figure-lines"></div>
-      <div class="figure-box">
-        <span class="name"> h_data_source</span>
-        <span class="type">mysql</span>
+      <!-- 第三个关联图标 -->
+      <FigureLine
+        v-if="dataSource.length > 2"
+        :icon-name="iconNameMapping(dataSource[2].associatedType)"
+      />
+      <!-- 第四张表 -->
+      <div class="figure-box" v-if="dataSource.length > 2">
+        <el-tooltip :content="dataSource[2].rightSource" placement="bottom">
+          <span class="name">{{ dataSource[2].rightSource }}</span>
+        </el-tooltip>
+
+        <span class="type">{{ dataSource[2].rightSourceDatabase }}</span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { iconMapping } from '@/views/icredit/data-manage/data-sync/contant'
 import FigureLine from './line'
 
 export default {
@@ -46,7 +70,7 @@ export default {
   },
 
   data() {
-    return {}
+    return { iconMapping }
   },
 
   props: {
@@ -54,13 +78,19 @@ export default {
       type: Array,
       default: () => []
     }
+  },
+
+  methods: {
+    iconNameMapping(key) {
+      return this.iconMapping[key] ? this.iconMapping[key].icon : undefined
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 .figure-wrap {
-  @include flex;
+  @include flex(row, flex-end);
   margin: 30px 20px;
   margin-bottom: 0;
 
@@ -77,7 +107,14 @@ export default {
     font-weight: 500;
     text-align: center;
     color: #262626;
-    // z-index: 999;
+
+    .name {
+      width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 5px;
+    }
 
     .type {
       position: absolute;

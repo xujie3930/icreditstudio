@@ -26,6 +26,10 @@ public class DatasourceCatalogue {
      */
     private String url;
     /**
+     * 主机地址
+     */
+    private String host;
+    /**
      * 选中状态
      */
     private boolean select;

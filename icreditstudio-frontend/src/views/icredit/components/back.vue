@@ -13,14 +13,13 @@
 export default {
   props: {
     path: {
-      type: String,
-      default: '/'
+      type: String
     }
   },
 
   methods: {
     handleClick() {
-      this.$router.replace(this.path)
+      this.path && this.$router.replace(this.path)
       this.$emit('on-jump')
     }
   }

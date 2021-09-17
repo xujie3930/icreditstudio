@@ -86,13 +86,14 @@
               v-model="detailForm.director"
               :loading="userSelectLoading"
               :remote-method="getUsersFuzzySearch"
-              @clear="userOptions = []"
+              @clear="handleUserClearClick"
+              @change="handleUserChangeClick"
             >
               <el-option
                 v-for="(item, idx) in userOptions"
                 :key="`${item.id}-${idx}`"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               >
               </el-option>
             </el-select>
@@ -111,11 +112,10 @@
       <el-row>
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
-            <span v-if="detailForm.memberList && !detailForm.memberList.length"
+            <!-- <span v-if="detailForm.memberList && !detailForm.memberList.length"
               >无</span
-            >
+            > -->
             <j-table
-              v-else
               ref="table"
               v-loading="tableLoading"
               :table-data="detailForm.memberList"
@@ -155,7 +155,7 @@ import operate from '@/mixins/operate'
 import API from '@/api/icredit'
 import UserSelect from './users-select.vue'
 import { debounce } from 'lodash'
-import { validStrSpecial } from '@/utils/validate'
+import { verifySpecialStr } from '@/utils/validate'
 
 export default {
   mixins: [crud, operate],
@@ -174,6 +174,7 @@ export default {
       veifyNameLoading: false,
       timerId: null,
       oldName: '',
+      oldUserId: '',
 
       // 工作空间表单
       detailForm: {
@@ -195,7 +196,7 @@ export default {
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
         descriptor: [
-          { required: false, validator: this.verifyDes, trigger: 'blur' }
+          { required: false, validator: verifySpecialStr, trigger: 'blur' }
         ]
       },
       userOptions: []
@@ -214,6 +215,25 @@ export default {
   methods: {
     initPage() {
       const { query } = this.$route
+      const {
+        id,
+        roleName,
+        orgList,
+        userName,
+        functionalAuthority,
+        dataAuthority
+      } = this.userInfo
+      this.detailForm.memberList = [
+        {
+          id,
+          username: userName,
+          roleName,
+          functionalAuthority,
+          dataAuthority,
+          createTime: new Date().getTime(),
+          orgNames: orgList.map(({ orgName }) => orgName)
+        }
+      ]
       this.opType = query?.opType || ''
       this.id = query?.id || null
       this.id && this.handleEditClick('workspaceDetail', this.id)
@@ -244,6 +264,37 @@ export default {
       this.detailForm.director
         ? this.$refs.usersSelect.open('add')
         : this.$refs.detailForm.validateField('director')
+    },
+
+    handleUserClearClick() {
+      const { oldUserId: uid } = this
+      const idx = this.detailForm.memberList.findIndex(({ id }) => id === uid)
+      idx > -1 && this.detailForm.memberList.splice(idx, 1)
+      this.userOptions = []
+    },
+
+    handleUserChangeClick(uid) {
+      if (uid) {
+        this.oldUserId = uid
+        const user = this.userOptions.find(({ id }) => id === uid)
+        const {
+          id,
+          roleName,
+          orgList,
+          name,
+          functionalAuthority,
+          dataAuthority
+        } = user || {}
+        this.detailForm.memberList.push({
+          id,
+          username: name,
+          roleName,
+          functionalAuthority,
+          dataAuthority,
+          createTime: new Date().getTime(),
+          orgNames: orgList?.map(({ orgName }) => orgName)
+        })
+      }
     },
 
     // 选择负责人
@@ -346,14 +397,6 @@ export default {
         })
     },
 
-    verifyDes(rule, value, cb) {
-      if (validStrSpecial(value)) {
-        cb(new Error('该名称中包含不规范字符，请重新输入'))
-      } else {
-        cb()
-      }
-    },
-
     // 名称校验
     verifyName(rule, value, cb) {
       // 特殊符号
@@ -361,7 +404,6 @@ export default {
       // 表情包
       const emojiRegStr = /[^\u0020-\u007E\u00A0-\u00BE\u2E80-\uA4CF\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFFEF\u0080-\u009F\u2000-\u201f\u2026\u2022\u20ac\r\n]/gi
       const isValid = regStr.test(value) || emojiRegStr.test(value)
-      console.log(isValid, 'llplp')
       if (isValid) {
         cb(new Error('该名称中包含不规范字符，请重新输入'))
       } else {
