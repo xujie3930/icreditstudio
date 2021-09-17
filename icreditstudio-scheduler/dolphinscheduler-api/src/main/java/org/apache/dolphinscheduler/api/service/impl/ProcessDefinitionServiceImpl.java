@@ -195,10 +195,10 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         ProcessData processData = JSONUtils.parseObject(processDefinitionJson, ProcessData.class);
-        Map<String, Object> checkProcessJson = checkProcessNodeList(processData, processDefinitionJson);
+        /*Map<String, Object> checkProcessJson = checkProcessNodeList(processData, processDefinitionJson);
         if (checkProcessJson.get(Constants.STATUS) != Status.SUCCESS) {
             return checkProcessJson;
-        }
+        }*/
 
         try {
             long processDefinitionCode = SnowFlakeUtils.getInstance().nextId();

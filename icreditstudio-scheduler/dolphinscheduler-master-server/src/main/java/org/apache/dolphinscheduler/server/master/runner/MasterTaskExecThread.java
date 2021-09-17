@@ -127,9 +127,9 @@ public class MasterTaskExecThread extends MasterBaseTaskExecThread {
                     return true;
                 }
                 // task instance add queue , waiting worker to kill
-//                if (this.cancel || this.processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {
-//                    cancelTaskInstance();
-//                }
+                if (this.cancel || this.processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {
+                    cancelTaskInstance();
+                }
                 if (processInstance.getState() == ExecutionStatus.READY_PAUSE) {
                     pauseTask();
                 }

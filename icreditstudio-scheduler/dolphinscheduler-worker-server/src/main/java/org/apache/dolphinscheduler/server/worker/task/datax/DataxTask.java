@@ -135,9 +135,9 @@ public class DataxTask extends AbstractTask {
         logger.info("datax task params {}", taskExecutionContext.getTaskParams());
         dataXParameters = JSONUtils.parseObject(taskExecutionContext.getTaskParams(), DataxParameters.class);
 
-        if (!dataXParameters.checkParameters()) {
+        /*if (!dataXParameters.checkParameters()) {
             throw new RuntimeException("datax task params is not valid");
-        }
+        }*/
     }
 
     /**
@@ -324,7 +324,7 @@ public class DataxTask extends AbstractTask {
         contentList.add(content);*/
 
         List<JSONObject> readerConnArr = new ArrayList<>();
-        String taskParams = dataxTaskExecutionContext.getTaskParams();
+        String taskParams = taskExecutionContext.getTaskParams();
         JSONObject taskInfo =JSONObject.parseObject(taskParams);
         JSONObject readerConn = new JSONObject();
         readerConn.put("querySql", new String[] {dataXParameters.getSql()});
