@@ -772,7 +772,56 @@ public class ProcessService {
             }
         } else {
             // generate one new process instance
-            processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
+            if(commandType == CommandType.SCHEDULER){
+                processInstance = processInstanceMapper.queryByProcessDefineCode(processDefinition.getCode(), 1).get(0);
+                processInstance.setState(ExecutionStatus.RUNNING_EXECUTION);
+                processInstance.setRecovery(Flag.NO);
+                processInstance.setStartTime(new Date());
+                processInstance.setRunTimes(1);
+                processInstance.setIsSubProcess(Flag.NO);
+                processInstance.setTaskDependType(command.getTaskDependType());
+                processInstance.setFailureStrategy(command.getFailureStrategy());
+                processInstance.setExecutorId(command.getExecutorId());
+                WarningType warningType = command.getWarningType() == null ? WarningType.NONE : command.getWarningType();
+                processInstance.setWarningType(warningType);
+                Integer warningGroupId = command.getWarningGroupId() == null ? 0 : command.getWarningGroupId();
+                processInstance.setWarningGroupId(warningGroupId);
+
+                // schedule time
+                Date scheduleTime = getScheduleTime(command, cmdParam);
+                if(scheduleTime != null){
+                    processInstance.setScheduleTime(scheduleTime);
+                }
+                processInstance.setCommandStartTime(command.getStartTime());
+                processInstance.setLocations(processDefinition.getLocations());
+                processInstance.setConnects(processDefinition.getConnects());
+                // curing global params
+                processInstance.setGlobalParams(ParameterUtils.curingGlobalParams(
+                        processDefinition.getGlobalParamMap(),
+                        processDefinition.getGlobalParamList(),
+                        getCommandTypeIfComplement(processInstance, command),
+                        processInstance.getScheduleTime()));
+
+                //copy process define json to process instance
+                processInstance.setProcessInstanceJson(processDefinition.getProcessDefinitionJson());
+                // set process instance priority
+                processInstance.setProcessInstancePriority(command.getProcessInstancePriority());
+                String workerGroup = StringUtils.isBlank(command.getWorkerGroup()) ? Constants.DEFAULT_WORKER_GROUP : command.getWorkerGroup();
+                processInstance.setWorkerGroup(workerGroup);
+                processInstance.setTimeout(processDefinition.getTimeout());
+                processInstance.setTenantId(processDefinition.getTenantId());
+
+                Map<String,Object> paramMap = new HashMap<>();
+                paramMap.put("process_instance_id",processInstance.getId());
+                List<TaskInstance> taskInstanceList = taskInstanceMapper.selectByMap(paramMap);
+                if(taskInstanceList.size() > 0) {
+                    TaskInstance taskInstance = taskInstanceList.get(0);
+                    taskInstance.setState(ExecutionStatus.SUBMITTED_SUCCESS);
+                    taskInstanceMapper.updateById(taskInstance);
+                }
+            }else {
+                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
+            }
         }
         if (Boolean.FALSE.equals(checkCmdParam(command, cmdParam))) {
             logger.error("command parameter check failed!");
