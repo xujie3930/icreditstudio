@@ -39,6 +39,8 @@ public class DataxTaskExecutionContext implements Serializable{
      */
     private String sourceConnectionParams;
 
+    private String taskParams;
+
     /**
      * dataTargetId
      */
@@ -76,6 +78,14 @@ public class DataxTaskExecutionContext implements Serializable{
 
     public void setSourceConnectionParams(String sourceConnectionParams) {
         this.sourceConnectionParams = sourceConnectionParams;
+    }
+
+    public String getTaskParams() {
+        return taskParams;
+    }
+
+    public void setTaskParams(String taskParams) {
+        this.taskParams = taskParams;
     }
 
     public int getDataTargetId() {

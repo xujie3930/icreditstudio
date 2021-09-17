@@ -324,15 +324,19 @@ public class DataxTask extends AbstractTask {
         contentList.add(content);*/
 
         List<JSONObject> readerConnArr = new ArrayList<>();
+        String taskParams = dataxTaskExecutionContext.getTaskParams();
+        JSONObject taskInfo =JSONObject.parseObject(taskParams);
         JSONObject readerConn = new JSONObject();
         readerConn.put("querySql", new String[] {dataXParameters.getSql()});
         //readerConn.put("jdbcUrl", dataSourceCfg.getJdbcUrl());
-        readerConn.put("jdbcUrl", new String[]{"jdbc:mysql://192.0168.0.3:3306/iframe?useSSL=false&allowLoadLocalInfile=false&autoDeserialize=false&allowLocalInfile=false&allowUrlInLocalInfile=false"});
+        readerConn.put("jdbcUrl", new String[]{taskInfo.getString("sourceUri")});
         readerConnArr.add(readerConn);
 
         JSONObject readerParam = new JSONObject();
-        readerParam.put("username", dataSourceCfg.getUser());
-        readerParam.put("password", dataSourceCfg.getPassword());
+        //readerParam.put("username", dataSourceCfg.getUser());
+        readerParam.put("username", taskInfo.getString("username"));
+        //readerParam.put("password", dataSourceCfg.getPassword());
+        readerParam.put("password", taskInfo.getString("password"));
         readerParam.put("connection", readerConnArr);
 
         JSONObject reader = new JSONObject();

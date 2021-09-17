@@ -281,6 +281,7 @@ public class TaskPriorityQueueConsumer extends Thread {
             dataxTaskExecutionContext.setDataSourceId(dataxParameters.getDataSource());
             dataxTaskExecutionContext.setSourcetype(dbSource.getType().getCode());
             dataxTaskExecutionContext.setSourceConnectionParams(dbSource.getConnectionParams());
+            dataxTaskExecutionContext.setTaskParams(taskInstance.getTaskParams());
         }
 
         if (dbTarget != null) {
