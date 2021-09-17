@@ -4,7 +4,6 @@ import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractWideTableHandler;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.ConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
@@ -135,57 +134,6 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                 collect.forEach((k, v) -> {
                     results.add(v.get(0));
                 });
-            }
-        }
-        /*BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(new FeignDataSourcesRequest());
-        if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
-            List<DatasourceInfo> data = dataSources.getData();
-
-            Set<String> dataSourceFromSql = findDataSourceFromSql(sql);
-            List<DataSyncGenerateWideTableRequest.DatabaseInfo> collect = data.stream()
-                    .filter(Objects::nonNull)
-                    .filter(info -> {
-                        String uri = info.getUri();
-                        String prefix = StrUtil.subBefore(uri, "?", false);
-                        String database = StrUtil.subAfter(prefix, "/", true);
-                        return dataSourceFromSql.contains(database);
-                    })
-                    .map(info -> {
-                        DataSyncGenerateWideTableRequest.DatabaseInfo databaseInfo = new DataSyncGenerateWideTableRequest.DatabaseInfo();
-                        databaseInfo.setDatasourceId(info.getId());
-
-                        String uri = info.getUri();
-                        String prefix = StrUtil.subBefore(uri, "?", false);
-                        String database = StrUtil.subAfter(prefix, "/", true);
-                        databaseInfo.setDatabaseName(database);
-
-                        String temp = StrUtil.subBefore(prefix, ":", true);
-                        String host = StrUtil.subAfter(temp, "//", true);
-                        databaseInfo.setHost(host);
-                        return databaseInfo;
-                    }).collect(Collectors.toList());
-            for (DataSyncGenerateWideTableRequest.DatabaseInfo databaseInfo : collect) {
-                for (DataSyncGenerateWideTableRequest.DatabaseInfo info : collect) {
-                    if (!databaseInfo.getHost().equals(info.getHost()) && databaseInfo.getDatabaseName().equals(info.getDatabaseName())) {
-                        results.add(databaseInfo);
-                    }
-                }
-            }
-        }*/
-        return results;
-    }
-
-    private Set<String> findDataSourceFromSql(String selectSql) {
-        Set<String> results = Sets.newHashSet();
-        if (StringUtils.isNotBlank(selectSql)) {
-            List<String> split = StrUtil.split(selectSql, " ");
-            if (CollectionUtils.isNotEmpty(split)) {
-                results = split.stream()
-                        .filter(StringUtils::isNotBlank)
-                        .map(StringUtils::trim)
-                        .filter(s -> s.contains("."))
-                        .map(s -> StrUtil.subBefore(s, ".", false))
-                        .collect(Collectors.toSet());
             }
         }
         return results;
