@@ -48,6 +48,7 @@ import org.apache.dolphinscheduler.service.quartz.QuartzExecutors;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -183,6 +184,95 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         result.put("scheduleId", scheduleObj.getId());
         return result;
     }
+
+
+    @Override
+    @Transactional(rollbackFor = RuntimeException.class)
+    public Map<String, Object> myInsertSchedule(String startTime, String endTime, User loginUser, String projectName,
+                                                Integer processDefineId,
+                                                String schedule,
+                                                WarningType warningType,
+                                                int warningGroupId,
+                                                FailureStrategy failureStrategy,
+                                                String receivers,
+                                                String receiversCc,
+                                                Priority processInstancePriority,
+                                                String workerGroup) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        Project project = projectMapper.queryByName(projectName);
+
+        // check project auth
+        boolean hasProjectAndPerm = projectService.hasProjectAndPerm(loginUser, project, result);
+        if (!hasProjectAndPerm) {
+            return result;
+        }
+
+        // check work flow define release state
+        ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
+        result = executorService.checkProcessDefinitionValid(processDefinition, processDefineId);
+        if (result.get(Constants.STATUS) != Status.SUCCESS) {
+            return result;
+        }
+
+        Schedule scheduleObj = new Schedule();
+        Date now = new Date();
+
+        scheduleObj.setProjectName(projectName);
+        scheduleObj.setProcessDefinitionId(processDefinition.getId());
+        scheduleObj.setProcessDefinitionName(processDefinition.getName());
+
+//        ScheduleParam scheduleParam = JSONUtils.parseObject(schedule, ScheduleParam.class);
+//        if (DateUtils.differSec(scheduleParam.getStartTime(), scheduleParam.getEndTime()) == 0) {
+//            logger.warn("The start time must not be the same as the end");
+//            putMsg(result, Status.SCHEDULE_START_TIME_END_TIME_SAME);
+//            return result;
+//        }
+//        scheduleObj.setStartTime(scheduleParam.getStartTime());
+//        scheduleObj.setEndTime(scheduleParam.getEndTime());
+//        if (!org.quartz.CronExpression.isValidExpression(scheduleParam.getCrontab())) {
+//            logger.error("{} verify failure", scheduleParam.getCrontab());
+//
+//            putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, scheduleParam.getCrontab());
+//            return result;
+//        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            scheduleObj.setStartTime(sdf.parse(startTime));
+            scheduleObj.setEndTime(sdf.parse(endTime));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        scheduleObj.setCrontab(schedule);
+//        scheduleObj.setTimezoneId(scheduleParam.getTimezoneId());
+        scheduleObj.setWarningType(warningType);
+        scheduleObj.setWarningGroupId(warningGroupId);
+        scheduleObj.setFailureStrategy(failureStrategy);
+        scheduleObj.setCreateTime(now);
+        scheduleObj.setUpdateTime(now);
+        scheduleObj.setUserId(loginUser.getId());
+        scheduleObj.setUserName(loginUser.getUserName());
+        scheduleObj.setReleaseState(ReleaseState.OFFLINE);
+        scheduleObj.setProcessInstancePriority(processInstancePriority);
+        scheduleObj.setWorkerGroup(workerGroup);
+        scheduleMapper.insert(scheduleObj);
+
+        /**
+         * updateProcessInstance receivers and cc by process definition id
+         */
+        processDefinition.setWarningGroupId(warningGroupId);
+        processDefinitionMapper.updateById(processDefinition);
+
+        // return scheduler object with ID
+        result.put(Constants.DATA_LIST, scheduleMapper.selectById(scheduleObj.getId()));
+        putMsg(result, Status.SUCCESS);
+
+        result.put("scheduleId", scheduleObj.getId());
+        return result;
+    }
+
 
     /**
      * updateProcessInstance schedule

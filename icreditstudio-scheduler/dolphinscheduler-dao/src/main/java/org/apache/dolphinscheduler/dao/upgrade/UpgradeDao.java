@@ -96,11 +96,11 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (dbType != null) {
             switch (dbType) {
                 case MYSQL:
-                    initSqlPath = "/sql/create/release-1.0.0_schema/mysql/";
+                    initSqlPath = "/icreditstudio-scheduler/sql/create/release-1.0.0_schema/mysql/";
                     initSchema(initSqlPath);
                     break;
                 case POSTGRESQL:
-                    initSqlPath = "/sql/create/release-1.2.0_schema/postgresql/";
+                    initSqlPath = "/icreditstudio-scheduler/sql/create/release-1.2.0_schema/postgresql/";
                     initSchema(initSqlPath);
                     break;
                 default:
@@ -399,7 +399,7 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (StringUtils.isEmpty(rootDir)) {
             throw new RuntimeException("Environment variable user.dir not found");
         }
-        String sqlFilePath = MessageFormat.format("{0}/sql/upgrade/{1}/{2}/dolphinscheduler_dml.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
+        String sqlFilePath = MessageFormat.format("{0}/icreditstudio-scheduler/sql/upgrade/{1}/{2}/dolphinscheduler_dml.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
         logger.info("sqlSQLFilePath" + sqlFilePath);
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -475,7 +475,7 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (StringUtils.isEmpty(rootDir)) {
             throw new RuntimeException("Environment variable user.dir not found");
         }
-        String sqlFilePath = MessageFormat.format("{0}/sql/upgrade/{1}/{2}/dolphinscheduler_ddl.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
+        String sqlFilePath = MessageFormat.format("{0}/icreditstudio-scheduler/sql/upgrade/{1}/{2}/dolphinscheduler_ddl.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
