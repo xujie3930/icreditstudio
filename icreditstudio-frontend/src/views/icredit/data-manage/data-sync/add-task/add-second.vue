@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @click="handleBackClick" />
+    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="2" />
       <div class="add-task-content">
