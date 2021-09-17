@@ -1,7 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,16 +12,11 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignMetadataGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.StatementField;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
@@ -47,12 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -71,7 +59,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Resource
     private Parser<String, TaskScheduleInfo> taskScheduleInfoParser;
     @Resource
-    private DatasourceFeign datasourceFeign;
+    private Parser<String, SyncCondition> syncConditionParser;
     @Resource
     private MetadataFeign metadataFeign;
 
@@ -81,18 +69,21 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
+            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = oneStepSave(param);
         }
         if (CallStepEnum.TWO == CallStepEnum.find(param.getCallStep())) {
             taskId = twoStepSave(param);
         }
         if (CallStepEnum.THREE == CallStepEnum.find(param.getCallStep())) {
+            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = threeStepSave(param);
         }
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
             //创建宽表
             createWideTable(wideTableParam);
+            param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
             taskId = threeStepSave(param);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
@@ -110,6 +101,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         DataSyncTaskBuildSaveParam saveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskBuildSaveParam.class);
         saveParam.setTaskId(taskId);
         saveParam.setWideTableSql(param.getSql());
+        saveParam.setSourceType(param.getSourceType());
         syncTaskBuildSave(saveParam);
         return taskId;
     }
@@ -131,7 +123,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncTaskEntity entity = new SyncTaskEntity();
         BeanCopyUtils.copyProperties(param, entity);
         entity.setId(param.getTaskId());
-        entity.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
         saveOrUpdate(entity);
         return entity.getId();
     }
@@ -156,6 +147,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setSqlStr(param.getWideTableSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         entity.setVersion(param.getVersion());
+        entity.setSourceType(param.getSourceType());
         if (StringUtils.isNotBlank(param.getTaskId())) {
             Map<String, Object> columnMap = Maps.newHashMap();
             columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
@@ -213,8 +205,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         BeanCopyUtils.copyProperties(param, entity);
         entity.setId(param.getTaskId());
         entity.setCollectMode(param.getScheduleType());
-        entity.setSyncMode(param.getSyncMode());
-        entity.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
         TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
         entity.setTaskParamJson(JSONObject.toJSONString(info));
 
@@ -283,15 +273,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String id = byId.getId();
             Integer version = byId.getVersion();
-            SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(id, version);
-            if (Objects.nonNull(wideTableField)) {
+            SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, version);
+            if (Objects.nonNull(wideTable)) {
                 info = new TaskBuildInfo();
-                info.setWideTableName(wideTableField.getName());
-                info.setSourceType(wideTableField.getSourceType());
-//                info.setPartition(wideTableField.getPartitionField());
-                info.setTargetSource(wideTableField.getTargetUrl());
-                info.setView(fileAssociatedParser.parse(wideTableField.getViewJson()));
-                List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTableField.getId());
+                info.setWideTableName(wideTable.getName());
+                info.setSourceType(wideTable.getSourceType());
+                info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
+                info.setTargetSource(wideTable.getTargetSource());
+                info.setSql(wideTable.getSqlStr());
+                info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+                List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTable.getId());
                 info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
             }
         }
@@ -319,85 +310,39 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
-       /* String sql;
-        if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
-            AssociatedFormatterVo vo = new AssociatedFormatterVo();
-            vo.setDialect(param.getDialect());
-            vo.setSourceTables(BeanCopyUtils.copy(param.getSourceTables(), TableInfo.class));
-            vo.setAssoc(param.getView());
-            sql = AssociatedUtil.wideTableSql(vo);
-        } else {
-            DataSyncGenerateWideTableRequest.SqlInfo sqlInfo = param.getSqlInfo();
-            sql = sqlInfo.getSql();
-        }
-        WideTable wideTable;
-        Connection connection = null;
-        try {
-            wideTable = new WideTable();
-//            wideTable.setTableName(RandomUtil.randomString(10) + DateUtil.now());
-            ConnectionInfo info = getConnectionInfo(param.getDatasourceId());
-            connection = AssociatedUtil.getConnection(info);
-            ResultSetMetaData metaData = AssociatedUtil.getResultSetMetaData(connection, sql);
-
-            List<TableInfo> sourceTables = param.getSourceTables();
-            Map<String, String> tableFieldRemark = getDatabaseTableFieldRemark(sourceTables, info);
-
-            int columnCount = metaData.getColumnCount();
-            List<WideTableFieldInfo> fieldInfos = Lists.newArrayList();
-            for (int i = 1; i <= columnCount; i++) {
-                WideTableFieldResult fieldInfo = new WideTableFieldResult();
-                fieldInfo.setSort(i);
-                fieldInfo.setFieldName(metaData.getColumnName(i));
-                HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(metaData.getColumnTypeName(i));
-                fieldInfo.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
-                fieldInfo.setSourceTable(metaData.getTableName(i));
-                String key = new StringJoiner(".").add(metaData.getCatalogName(i)).add(metaData.getTableName(i)).add(metaData.getColumnName(i)).toString();
-                fieldInfo.setFieldChineseName(tableFieldRemark.get(key));
-                fieldInfos.add(fieldInfo);
-            }
-            wideTable.setFields(fieldInfos);
-            wideTable.setSql(sql);
-            //分区字段
-            wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), e.getName())).collect(Collectors.toList()));
-            //增量字段
-            wideTable.setIncrementalFields(fieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
-        } catch (Exception e) {
-            log.error("识别宽表失败", e);
-            throw new AppException("60000020");
-        } finally {
-            IoUtil.close(connection);
-        }*/
+        //根据参数确定源库类型
         GenerateWideTable generateWideTable = GenerateWideTableContainer.find(param);
+        if (Objects.isNull(generateWideTable)) {
+            throw new AppException("60000025");
+        }
+        //取得宽表sql
         String wideTableSql = generateWideTable.getWideTableSql(param);
-        generateWideTable.verifySql(param);
-        List<TableInfo> tableInfos = generateWideTable.getTableInfos(param);
-        String dataSourceId = generateWideTable.getDataSourceId(param);
-        WideTable wideTable = generateWideTable.generate(wideTableSql, dataSourceId, tableInfos);
+        //校验sql语法
+        generateWideTable.verifySql(wideTableSql, param);
+
+        List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = null;
+        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode())) {
+            databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+        }
+        //取得数据源ID
+        String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+        //生成宽表数据列
+        WideTable wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
+        wideTable.setSameNameDataBase(databaseInfos);
         return BusinessResult.success(wideTable);
     }
 
-    /*private ConnectionInfo getConnectionInfo(String datasourceId) {
-        FeignConnectionInfoRequest build = FeignConnectionInfoRequest.builder()
-                .datasourceId(datasourceId)
-                .build();
-        BusinessResult<ConnectionInfo> connectionInfo = datasourceFeign.getConnectionInfo(build);
-        if (connectionInfo.isSuccess() && Objects.nonNull(connectionInfo.getData())) {
-            return connectionInfo.getData();
-        }
-        throw new AppException("60000006");
-    }*/
-
-    private List<WideTableFieldRequest> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
-        List<WideTableFieldRequest> results = null;
+    private List<WideTableFieldResult> transferToWideTableFieldInfo(List<SyncWidetableFieldEntity> entities) {
+        List<WideTableFieldResult> results = null;
         if (CollectionUtils.isNotEmpty(entities)) {
             results = entities.parallelStream()
                     .map(entity -> {
-                        WideTableFieldRequest info = new WideTableFieldRequest();
+                        WideTableFieldResult info = new WideTableFieldResult();
                         BeanCopyUtils.copyProperties(entity, info);
                         info.setFieldChineseName(entity.getChinese());
                         info.setSourceTable(entity.getSource());
                         info.setAssociateDict(entity.getDictKey());
-                        info.setFieldType(entity.getType());
+                        info.setFieldType(Arrays.asList(HiveMapJdbcTypeEnum.find(entity.getType()).getCategoryEnum().getCode(), entity.getType()));
                         info.setFieldName(entity.getName());
                         info.setRemark(entity.getRemark());
                         return info;
@@ -447,62 +392,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         updateById(entity);
         return BusinessResult.success(true);
     }
-
-    /*private Map<String, String> getDatabaseTableFieldRemark(List<TableInfo> tableInfos, ConnectionInfo connectionInfo) {
-        Map<String, String> results = Maps.newHashMap();
-        if (CollectionUtils.isNotEmpty(tableInfos) && Objects.nonNull(connectionInfo)) {
-            ConnectionInfo connectionInfoCopy = BeanCopyUtils.copyProperties(connectionInfo, ConnectionInfo.class);
-            String url = connectionInfoCopy.getUrl();
-            //拆分数据库前后字符串
-            String s = StrUtil.subBefore(url, "?", true);
-            String suffix = StrUtil.subAfter(url, "?", true);
-            String prefix = StrUtil.subBefore(s, "/", true);
-            //url模板
-            Function<String, String> urlModel = database -> new StringJoiner("").add(prefix).add("/").add(database).add("?").add(suffix).toString();
-            tableInfos.parallelStream()
-                    .filter(Objects::nonNull)
-                    .forEach(tableInfo -> {
-                        Connection connection = null;
-                        Map<String, String> result = null;
-                        try {
-                            String database = tableInfo.getDatabase();
-                            String applyUrl = urlModel.apply(database);
-                            ConnectionInfo info = new ConnectionInfo();
-                            BeanCopyUtils.copyProperties(connectionInfoCopy, info);
-                            info.setUrl(applyUrl);
-                            connection = AssociatedUtil.getConnection(info);
-                            DatabaseMetaData metaData = connection.getMetaData();
-                            result = getTableFieldRemark(metaData, Lists.newArrayList(new ImmutablePair<>(tableInfo.getDatabase(), tableInfo.getTableName())));
-                            results.putAll(result);
-                        } catch (Exception e) {
-                            log.error("取得数据库表字段信息失败", e);
-                        } finally {
-                            IoUtil.close(connection);
-                        }
-                    });
-        }
-        return results;
-    }*/
-
-    /*private Map<String, String> getTableFieldRemark(DatabaseMetaData metaData, List<ImmutablePair<String, String>> pairs) throws Exception {
-        Map<String, String> results = Maps.newHashMap();
-        if (CollectionUtils.isNotEmpty(pairs)) {
-            for (ImmutablePair<String, String> pair : pairs) {
-                ResultSet columnResultSet = metaData.getColumns(null, "%", pair.getRight(), "%");
-                while (columnResultSet.next()) {
-                    // 字段名称
-                    String columnName = columnResultSet.getString("COLUMN_NAME");
-                    if (StringUtils.isNotBlank(columnName)) {
-                        String key = new StringJoiner(".").add(pair.getLeft()).add(pair.getRight()).add(columnName).toString();
-                        // 描述
-                        String remarks = columnResultSet.getString("REMARKS");
-                        results.put(key, remarks);
-                    }
-                }
-            }
-        }
-        return results;
-    }*/
 
     /**
      * 创建宽表

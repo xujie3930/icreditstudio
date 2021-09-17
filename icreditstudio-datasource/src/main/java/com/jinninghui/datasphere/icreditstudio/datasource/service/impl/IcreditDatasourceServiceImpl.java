@@ -82,7 +82,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
         IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
         BusinessResult<String> testConnResult = testConn(testConnectRequest);
-        if (!testConnResult.isSuccess()){
+        if (!testConnResult.isSuccess()) {
             return BusinessResult.fail(RESOURCE_CODE_70000000.code, RESOURCE_CODE_70000000.message);
         }
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
@@ -244,7 +244,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                         if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }
-                        catalogue.setUrl(icreditDatasourceEntity.getUri());
+                        catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
+                        catalogue.setHost(DatasourceSync.getHost(icreditDatasourceEntity.getUri()));
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());
@@ -344,6 +345,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .uri(param.getDatabaseName())
+                .datasourceId(param.getDatasourceId())
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);

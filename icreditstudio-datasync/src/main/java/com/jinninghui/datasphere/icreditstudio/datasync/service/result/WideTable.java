@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -26,7 +27,10 @@ public class WideTable {
      * 增量字段
      */
     private List<WideTable.Select> incrementalFields;
-
+    /**
+     * 不同主机的同名数据库
+     */
+    private List<DataSyncGenerateWideTableRequest.DatabaseInfo> sameNameDataBase;
     /**
      * 生成宽表sql
      */

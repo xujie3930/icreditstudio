@@ -9,4 +9,6 @@ import lombok.Data;
 public class DataSourcesQueryRequest {
 
     private String databaseName;
+
+    private String datasourceId;
 }

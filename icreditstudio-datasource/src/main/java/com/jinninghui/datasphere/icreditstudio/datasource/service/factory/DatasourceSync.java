@@ -5,6 +5,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +113,14 @@ public interface DatasourceSync {
             logger.error("获取连接失败", e);
         }
         return connection;
+    }
+
+    static String getHost(String uri) {
+        if (StringUtils.isNotBlank(uri)) {
+            String temp = StrUtil.subAfter(uri, "//", false);
+            return StrUtil.subBefore(temp, "/", false);
+        }
+        return null;
     }
 
     Map<String, String> syncDDL(Integer type, String uri) throws Exception;

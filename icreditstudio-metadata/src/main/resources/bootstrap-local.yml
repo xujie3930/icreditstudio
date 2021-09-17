@@ -33,7 +33,8 @@ knife4j:
     password: admin123456
   production: false #默认是false ,屏蔽所有Swagger的相关资源
   enable: true #是否开启swagger
-
+system:
+  errorCode: 500
 #数仓hive连接地址
 warehouse:
   hive:
@@ -42,3 +43,9 @@ warehouse:
         username: hadoop
         password: hadoop
         url: jdbc:hive2://192.168.0.23:10000/default
+
+hive:
+  driverClass: org.apache.hive.jdbc.HiveDriver
+  username: hadoop
+  password: hadoop
+  address: 192.168.0.23:10000

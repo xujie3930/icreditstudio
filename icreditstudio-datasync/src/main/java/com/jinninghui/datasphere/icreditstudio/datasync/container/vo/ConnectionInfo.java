@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.vo;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.container.ConnectionSource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConnectionInfo {
+public class ConnectionInfo implements ConnectionSource {
     /**
      * 连接驱动
      */
