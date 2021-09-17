@@ -16,7 +16,7 @@ public class ResourceCodeBean {
 
         RESOURCE_CODE_80000000("80000000", "执行hive语句失败"),
         RESOURCE_CODE_80000001("80000001", "未找到目标源"),
-        RESOURCE_CODE_80000002("80000002", "为获取hive连接"),
+        RESOURCE_CODE_80000002("80000002", "未获取hive连接"),
         ;
 
         public final String code;

@@ -26,6 +26,8 @@ public class HiveConnection implements MetadataConnection {
     @Autowired
     private AbstractClusterHiveConnectionSource connectionSource;
 
+    private String ipPort;
+
     @Override
     public Connection getConnection() {
         String username = connectionSource.getUsername();
@@ -39,6 +41,7 @@ public class HiveConnection implements MetadataConnection {
                 try {
                     connection = DriverManager.getConnection(url, username, password);
                     if (Objects.nonNull(connection)) {
+                        this.ipPort = ipPort;
                         break;
                     }
                 } catch (SQLException e) {
@@ -52,6 +55,11 @@ public class HiveConnection implements MetadataConnection {
         return connection;
     }
 
+    @Override
+    public String getIpPort() {
+        return ipPort;
+    }
+
     /**
      * 拼接hive连接信息
      *
@@ -62,6 +70,7 @@ public class HiveConnection implements MetadataConnection {
         StringBuilder sb = new StringBuilder();
         sb.append(HIVE_URL_PREFIX);
         sb.append(ipPort);
+        sb.append("/");
         sb.append(DEFAULT_DATABASE);
         return sb.toString();
     }

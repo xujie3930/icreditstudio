@@ -11,5 +11,10 @@ public abstract class AbstractClusterHiveConnectionSource implements ConnectionS
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * hive集群节点IP:PORT集合
+     *
+     * @return
+     */
     public abstract Set<String> getIpPorts();
 }
