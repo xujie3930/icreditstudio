@@ -51,4 +51,7 @@ stopApp
 SERVER_NAME=datasource
 stopApp
 
+SERVER_NAME=metadata
+stopApp
+
 echo "icreditstudio stop successfully"
