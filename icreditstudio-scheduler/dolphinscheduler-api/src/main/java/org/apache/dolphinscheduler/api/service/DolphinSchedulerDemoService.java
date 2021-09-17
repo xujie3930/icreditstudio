@@ -205,6 +205,7 @@ public class DolphinSchedulerDemoService {
         String username = (String) jsonObject.get("username");//目标数据源类型
         String password = (String) jsonObject.get("password");//目标数据源类型
         String sourceUri = (String) jsonObject.get("sourceUri");//目标数据源类型
+        List fields = (List) jsonObject.get("fields");//目标数据源类型
         String targetDataSourceId = (String) jsonObject.get("targetDataSourceId");//目标数据源Id
         String dsType = (String) jsonObject.get("dsType");//数据源类型
         String dataSourceId = (String) jsonObject.get("dataSourceId");//数据源Id
@@ -243,7 +244,7 @@ public class DolphinSchedulerDemoService {
         Tenant tenant = tenantService.findByTenantCode(tenantCode);
 
         //创建工作流定义，默认上线
-        String processDefJson = appendDataxProcessDefJson(targetDataSourceId, dataSourceId, tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri);//拼接工作流定义JSON
+        String processDefJson = appendDataxProcessDefJson(targetDataSourceId, dataSourceId, tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
 
         //启动工作流定义
@@ -261,7 +262,7 @@ public class DolphinSchedulerDemoService {
         return resultMap;
     }
 
-    private String appendDataxProcessDefJson(String targetDataSourceId, String dataSourceId, int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri) {
+    private String appendDataxProcessDefJson(String targetDataSourceId, String dataSourceId, int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
         Map<String,Object> outMap = new HashMap<>();
         List<String> emptyList = new ArrayList<>();
         List<Map<String,Object>> taskList = new ArrayList<>();
@@ -277,6 +278,7 @@ public class DolphinSchedulerDemoService {
         paramsMap.put("username", username);
         paramsMap.put("password", password);
         paramsMap.put("sourceUri", sourceUri);
+        paramsMap.put("fields", fields);
         paramsMap.put("jobSpeedByte", 0);
         paramsMap.put("jobSpeedRecord", 1000);
         paramsMap.put("preStatements", emptyList);
