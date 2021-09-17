@@ -42,3 +42,9 @@ warehouse:
         username: hadoop
         password: hadoop
         url: jdbc:hive2://192.168.0.23:10000/default
+
+hive:
+  driverClass: org.apache.hive.jdbc.HiveDriver
+  username: hadoop
+  password: hadoop
+  address: 192.168.0.23:10000
