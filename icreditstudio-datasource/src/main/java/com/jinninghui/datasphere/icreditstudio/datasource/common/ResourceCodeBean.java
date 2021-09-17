@@ -17,7 +17,10 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000000("70000000", "获取数据库连接失败"),
         RESOURCE_CODE_70000001("70000001", "表名称不能为空"),
         RESOURCE_CODE_70000002("70000002", "数据源ID不能为空"),
-        RESOURCE_CODE_70000003("70000003", "数据库同步失败")
+        RESOURCE_CODE_70000003("70000003", "数据库同步失败"),
+        RESOURCE_CODE_70000004("70000004", "未找到合适的uri解析器"),
+        RESOURCE_CODE_70000005("70000005", "工作空间ID不能为空"),
+        RESOURCE_CODE_70000006("70000006", "数据源分类不能为空"),
         ;
 
         public final String code;

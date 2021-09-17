@@ -10,6 +10,6 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class ConnectionInfoRequest {
     private String workspaceId;
-    @NotBlank(message = "")
+    @NotBlank(message = "70000002")
     private String datasourceId;
 }
