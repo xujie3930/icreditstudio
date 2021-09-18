@@ -22,6 +22,7 @@
               :loading="searchLoading"
               :remote-method="getFluzzyTableName"
               @clear="tableNameOptions = []"
+              @change="handleChangeTableName"
             >
               <el-option
                 v-for="item in tableNameOptions"
@@ -51,14 +52,14 @@
             </el-button-group>
 
             <el-tree
-              class="tree"
-              :data="treeData"
-              node-key="idx"
-              default-expand-all
               highlight-current
               check-on-click-node
+              class="tree"
+              node-key="idx"
               empty-text="暂无数据"
+              :data="treeData"
               :props="{ label: 'name', children: 'content' }"
+              :current-node-key="curNodeKey"
               v-loading="treeLoading"
             >
               <div
@@ -414,6 +415,7 @@ export default {
       searchTableName: '',
       checkList: [],
       oldFieldInfos: [],
+      curNodeKey: undefined,
 
       // 可视化-已拖拽的表
       selectedTable: [],
@@ -464,6 +466,10 @@ export default {
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
+    },
+
+    handleChangeTableName(name) {
+      console.log(name)
     },
 
     // 可视化-表拖拽
@@ -577,7 +583,6 @@ export default {
 
     // 可视化-删除已选择的的表
     handleDeleteTagClick(idx) {
-      console.log(idx, this.selectedTable, 'idx')
       // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
       switch (idx) {
         case 0:

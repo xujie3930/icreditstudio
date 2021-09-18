@@ -114,8 +114,7 @@ export default {
         ],
         createMode: [
           { required: true, message: '创建方式不能为空', trigger: 'change' }
-        ],
-        taskDescribe: [{ validator: verifySpecialStr, trigger: 'blur' }]
+        ]
       }
     }
   },
