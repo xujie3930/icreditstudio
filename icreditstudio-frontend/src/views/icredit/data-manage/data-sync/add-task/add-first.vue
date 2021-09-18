@@ -129,6 +129,7 @@ export default {
 
   methods: {
     initPage() {
+      this.$route.query?.opType === 'add' && this.$ls.remove('taskForm')
       this.taskForm = this.$ls.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm

@@ -88,9 +88,18 @@ export const iconMapping = {
   2: { icon: 'all-link', name: '全关联' }
 }
 
+// 任务详情接口字段映射
 export const taskDetailInfo = [
   { key: 'taskName', label: '任务名', value: '' },
   { key: 'enable', label: '任务启用', value: '' },
   { key: 'createMode', label: '创建方式', value: '' },
   { key: 'taskDescribe', label: '任务描述', value: '' }
 ]
+
+// 时间格式接口字段映射
+export const dateFieldMapping = {
+  hour: '时',
+  day: '天',
+  month: '月',
+  year: '年'
+}
