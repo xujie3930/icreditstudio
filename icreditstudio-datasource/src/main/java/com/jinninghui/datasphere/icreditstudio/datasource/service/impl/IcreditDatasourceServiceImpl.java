@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 
+import cn.hutool.core.io.IoUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,12 +15,13 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncE
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSourceParser;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
@@ -45,9 +47,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.*;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import static com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000000;
@@ -221,6 +225,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    @BusinessParamsValidate
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
@@ -294,17 +299,19 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
-    public BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param) {
+    public BusinessResult<ConnectionSource> getConnectionInfo(ConnectionInfoParam param) {
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
-        ConnectionInfo info = null;
+        ConnectionSource result = null;
         if (Objects.nonNull(byId)) {
-            info = new ConnectionInfo();
-            info.setDriverClass(DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDriver());
-            info.setUsername(DatasourceSync.getUsername(byId.getUri()));
-            info.setPassword(DatasourceSync.getPassword(byId.getUri()));
-            info.setUrl(DatasourceSync.getConnUrl(byId.getUri()));
+            String dialect = DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDesc();
+            String uri = byId.getUri();
+            ConnectionSourceParser sourceParser = DataSourceUrlParseContainer.getInstance().find(dialect);
+            if (Objects.isNull(sourceParser)) {
+                throw new AppException("70000004");
+            }
+            result = sourceParser.parse(uri);
         }
-        return BusinessResult.success(info);
+        return BusinessResult.success(result);
     }
 
     @Override
@@ -313,35 +320,37 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         List<SourceTableInfo> results = null;
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
         if (Objects.nonNull(byId)) {
+            String dialect = DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDesc();
             String uri = byId.getUri();
-//            String connUrl = DatasourceSync.getConnUrl(uri);
-            String username = DatasourceSync.getUsername(uri);
-            String password = DatasourceSync.getPassword(uri);
-            Connection conn = DatasourceSync.getConn(byId.getType(), uri, username, password);
-            if (Objects.isNull(conn)) {
-                throw new AppException("70000000");
+            ConnectionSourceParser sourceParser = DataSourceUrlParseContainer.getInstance().find(dialect);
+            if (Objects.isNull(sourceParser)) {
+                throw new AppException("70000004");
             }
-            try {
-                PreparedStatement stemt = conn.prepareStatement("select * from " + param.getTableName());
-                ResultSetMetaData metaData = stemt.getMetaData();
-                int columnCount = metaData.getColumnCount();
-                if (columnCount > 0) {
-                    results = Lists.newArrayList();
+            ConnectionSource connectionSource = sourceParser.parse(uri);
+            results = smartConnection(connectionSource, param, (conn, obj) -> {
+                List<SourceTableInfo> result = Lists.newArrayList();
+                try {
+                    PreparedStatement stmt = conn.prepareStatement("select * from " + obj.getTableName());
+                    ResultSetMetaData metaData = stmt.getMetaData();
+                    int columnCount = metaData.getColumnCount();
+
                     for (int i = 1; i <= columnCount; i++) {
                         SourceTableInfo info = new SourceTableInfo();
                         info.setName(metaData.getColumnName(i));
                         info.setFieldType(metaData.getColumnTypeName(i));
-                        results.add(info);
+                        result.add(info);
                     }
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
                 }
-            } catch (Exception e) {
-                log.error("获取数据库源信息失败", e);
-            }
+                return result;
+            });
         }
-        return BusinessResult.success(results);
+        return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
     }
 
     @Override
+    @BusinessParamsValidate
     public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .uri(param.getDatabaseName())
@@ -350,6 +359,23 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
         return BusinessResult.success(list);
+    }
+
+    static <R, T> T smartConnection(ConnectionSource connectionSource, R r, BiFunction<Connection, R, T> function) {
+        T apply = null;
+        Connection connection = null;
+        try {
+            String url = connectionSource.getUrl();
+            String username = connectionSource.getUsername();
+            String password = connectionSource.getPassword();
+            connection = DriverManager.getConnection(url, username, password);
+            apply = function.apply(connection, r);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        } finally {
+            IoUtil.close(connection);
+        }
+        return apply;
     }
 
     private QueryWrapper<IcreditDatasourceEntity> queryWrapper(IcreditDatasourceConditionParam param) {

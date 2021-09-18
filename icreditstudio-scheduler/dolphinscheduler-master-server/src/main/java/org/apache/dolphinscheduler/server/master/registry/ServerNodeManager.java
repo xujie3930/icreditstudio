@@ -138,7 +138,7 @@ public class ServerNodeManager implements InitializingBean {
         /**
          * init WorkerNodeListener listener
          */
-        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_WORKERS, new MasterDataListener());
+        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_WORKERS, new MasterDataListener());//WorkerGroupNodeListener
     }
 
     /**

@@ -2,7 +2,6 @@ package com.jinninghui.datasphere.icreditstudio.metadata.service;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
-import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseDataSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
@@ -20,13 +19,6 @@ public interface MetadataService {
      * @return
      */
     List<Database> getDatabases();
-
-    /**
-     * 获取仓库源列表
-     *
-     * @return
-     */
-    List<WarehouseDataSource> getWarehouseDataSources();
 
     /**
      * 获取目标库列表

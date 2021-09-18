@@ -13,8 +13,7 @@
 export default {
   props: {
     path: {
-      type: String,
-      default: '/'
+      type: String
     }
   },
 

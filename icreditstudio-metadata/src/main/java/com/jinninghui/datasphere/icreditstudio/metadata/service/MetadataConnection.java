@@ -12,4 +12,11 @@ public interface MetadataConnection {
      * @return
      */
     Connection getConnection();
+
+    /**
+     * 获得ipport
+     *
+     * @return
+     */
+    String getIpPort();
 }
