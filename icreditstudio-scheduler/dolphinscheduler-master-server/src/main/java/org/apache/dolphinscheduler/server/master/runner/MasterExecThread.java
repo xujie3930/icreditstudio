@@ -450,7 +450,7 @@ public class MasterExecThread implements Runnable {
      * @return TaskInstance
      */
     private TaskInstance findTaskIfExists(Long taskCode, int taskVersion) {
-        List<TaskInstance> taskInstanceList = processService.findValidTaskListByProcessId(this.processInstance.getId());
+        List<TaskInstance> taskInstanceList = processService.findPreviousTaskListByWorkProcessId(this.processInstance.getId());
         for (TaskInstance taskInstance : taskInstanceList) {
             if (taskInstance.getTaskCode() == taskCode && taskInstance.getTaskDefinitionVersion() == taskVersion) {
                 return taskInstance;
