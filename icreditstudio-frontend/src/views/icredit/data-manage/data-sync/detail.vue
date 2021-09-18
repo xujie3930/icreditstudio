@@ -88,12 +88,20 @@
 
               <el-col class="col" :span="4">
                 <span> 日期格式：</span>
-                <span>{{ datasourceDetailInfo.syncCondition.partition }}</span>
+                <span>{{
+                  dateFieldMapping[datasourceDetailInfo.syncCondition.partition]
+                }}</span>
               </el-col>
 
               <el-col class="col" :span="6">
                 <span> 时间过滤条件：</span>
-                <span>T + {{ datasourceDetailInfo.syncCondition.n }}</span>
+                <span
+                  v-if="
+                    datasourceDetailInfo.syncCondition.n ||
+                      datasourceDetailInfo.syncCondition.n === 0
+                  "
+                  >T + {{ datasourceDetailInfo.syncCondition.n }}</span
+                >
               </el-col>
             </el-row>
 
@@ -166,13 +174,16 @@ import {
   createModeMapping,
   scheduleTypeMapping,
   taskDetailInfo,
-  radioBtnOption
+  radioBtnOption,
+  dateFieldMapping
 } from './contant'
 
 export default {
   components: { BaseDialog, Figure },
   data() {
     this.scheduleTypeMapping = scheduleTypeMapping
+    this.dateFieldMapping = dateFieldMapping
+
     return {
       row: {},
       detailLoading: false,

@@ -1,5 +1,4 @@
 export default _this => {
-  console.log(_this.workspaceCreateAuth, 'workspaceCreateAuth')
   return {
     refName: 'workspace-setting',
     id: 'setting',

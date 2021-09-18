@@ -24,7 +24,8 @@ export default {
     {
       type: 'text',
       label: '字段类型',
-      prop: 'fieldType'
+      prop: 'fieldType',
+      formatter: row => row?.fieldType[1] || ''
     },
     {
       type: 'text',

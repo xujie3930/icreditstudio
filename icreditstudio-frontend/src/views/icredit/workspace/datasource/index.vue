@@ -212,6 +212,7 @@ export default {
               title: '操作提示',
               message: '数据源同步成功！'
             })
+            this.mixinRetrieveTableData()
           }
         })
         .catch(() => {
