@@ -90,6 +90,7 @@ export default {
 
   data() {
     return {
+      opType: '',
       detailLoading: false,
       saveSettingLoading: false,
       createModeOptions: [
@@ -129,7 +130,8 @@ export default {
 
   methods: {
     initPage() {
-      this.$route.query?.opType === 'add' && this.$ls.remove('taskForm')
+      this.opType = this.$route.query?.opType || 'add'
+      this.opType === 'add' && this.$ls.remove('taskForm')
       this.taskForm = this.$ls.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
@@ -203,10 +205,11 @@ export default {
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          const { createMode } = this.taskForm
           this.$ls.set('taskForm', this.taskForm)
           this.$router.push({
             path: '/data-manage/add-build',
-            query: { createMode: this.taskForm.createMode }
+            query: { createMode, opType: this.opType }
           })
         }
       })

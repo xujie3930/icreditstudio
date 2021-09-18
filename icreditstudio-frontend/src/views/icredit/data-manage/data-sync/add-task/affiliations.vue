@@ -9,6 +9,7 @@
     ref="baseDialog"
     width="1000px"
     :title="title"
+    :hideFooter="opType === 'edit'"
     @on-confirm="confirm"
   >
     <el-form ref="form" :model="form" label-width="100px" v-loading="loading">
@@ -49,7 +50,7 @@
                   style="width:100%"
                   v-model="item.left"
                   placeholder="请选择"
-                  @change="handleChangeLeftSelect(item, idx)"
+                  @change="handleChangeLeftSelect(item)"
                 >
                   <el-option
                     v-for="item in aTableOption"
@@ -80,7 +81,7 @@
                   style="width:100%"
                   v-model="item.right"
                   placeholder="请选择"
-                  @change="handleChangeRightSelect(item, idx)"
+                  @change="handleChangeRightSelect(item)"
                 >
                   <el-option
                     v-for="item in bTableOption"
@@ -97,6 +98,7 @@
                   type="primary"
                   icon="el-icon-plus"
                   circle
+                  :disabled="opType === 'edit'"
                   @click="handleAddClick"
                 >
                 </el-button>
@@ -104,7 +106,9 @@
                   type="danger"
                   icon="el-icon-minus"
                   circle
-                  :disabled="form.linkTypeData.conditions.length < 2"
+                  :disabled="
+                    form.linkTypeData.conditions.length < 2 || opType === 'edit'
+                  "
                   @click="handleMinusClick(idx)"
                 ></el-button>
               </el-col>
@@ -129,13 +133,11 @@ export default {
     return {
       valid: true,
       idx: null,
-      lfTbIdx: null,
-      rhTbIdx: null,
       leftSelectVal: {},
       rightSelectVal: {},
 
       title: '',
-      value: '',
+      opType: '',
       loading: false,
       aTableName: '',
       bTableName: '',
@@ -157,12 +159,10 @@ export default {
 
   methods: {
     open(options) {
-      console.log(options, 'option')
       const {
         idx,
-        lfTbIdx,
-        rhTbIdx,
         title,
+        opType,
         dialect,
         leftTable,
         rightTable,
@@ -173,8 +173,7 @@ export default {
       this.valid = true
       this.title = title
       this.idx = idx
-      this.lfTbIdx = lfTbIdx
-      this.rhTbIdx = rhTbIdx
+      this.opType = opType
       this.leftTable = leftTable
       this.rightTable = rightTable
       this.aTableName = leftTable.name
@@ -184,6 +183,7 @@ export default {
 
       this.$refs.baseDialog.open()
       this.getLinkTypeData(dialect)
+      if (opType === 'edit') return
       this.getTableField('aTableOption', {
         datasourceId: leftTable.datasourceId,
         tableName: leftTable.name
@@ -216,8 +216,6 @@ export default {
       } = this
       const relationData = {
         idx: this.idx,
-        lfTbIdx: this.lfTbIdx,
-        rhTbIdx: this.rhTbIdx,
         associatedType: form.associatedType,
         conditions: linkTypeData.conditions,
         leftSource: leftTable.name,
@@ -250,12 +248,10 @@ export default {
     },
 
     handleTagClick(curTag) {
-      console.log(curTag)
-      this.form.associatedType = curTag.code
+      this.opType !== 'edit' && (this.form.associatedType = curTag.code)
     },
 
-    handleChangeLeftSelect(item, idx) {
-      console.log('this.aTableOption[idx]', this.aTableOption[idx])
+    handleChangeLeftSelect(item) {
       const { left, right } = item
       this.leftSelectVal = this.aTableOption.find(({ name }) => name === left)
       if (right) {

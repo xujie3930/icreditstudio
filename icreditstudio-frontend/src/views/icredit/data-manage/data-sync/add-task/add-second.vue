@@ -63,7 +63,7 @@
             >
               <div
                 :id="node.id"
-                :draggable="node.level > 1"
+                :draggable="node.level > 1 && opType !== 'edit'"
                 class="custom-tree-node"
                 slot-scope="{ node, data }"
                 @dragstart="e => handleDragClick(e, data, node)"
@@ -118,7 +118,7 @@
                   v-if="item.type === 'tag'"
                 >
                   <el-tag
-                    closable
+                    :closable="opType !== 'edit'"
                     id="tagItem"
                     :class="[
                       'table-item',
@@ -388,6 +388,7 @@ export default {
     this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
 
     return {
+      opType: '',
       isCanJumpNext: false,
       isCanSaveSetting: false,
       isShowDot: false,
@@ -457,6 +458,7 @@ export default {
 
   methods: {
     initPage() {
+      this.opType = this.$route.query?.opType || 'add'
       const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
@@ -560,7 +562,7 @@ export default {
         (this.secondTaskForm.view = Array(len - 1).fill(
           deepClone(viewDefaultData)
         ))
-      console.log('SSSSAAA', this.secondTaskForm.view)
+
       this.secondTaskForm.view.splice((idx - 1) / 2, 1, options)
 
       // 显示已设置关联关系的表的状态
@@ -610,42 +612,36 @@ export default {
     handleLinkIconClick(options) {
       const { idx } = options
       // 目前只能新增四张表， 通过ICON的index找前后关联的两张表index
-      const lfTbIdx = idx - 1
-      const rhTbIdx = idx + 1
       const { dialect, datasourceId, name, database } = this.selectedTable[
-        lfTbIdx
+        idx - 1
       ]
       const {
         datasourceId: sid,
         name: rName,
         database: rDatabase
-      } = this.selectedTable[rhTbIdx]
+      } = this.selectedTable[idx + 1]
 
       const leftTable = { datasourceId, name, database }
       const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
       const { view } = this.secondTaskForm
       const vidx = (idx - 1) / 2
-      console.log(view[vidx], 'KPLKPLKPL')
       const { associatedType, conditions } =
         view[vidx] || deepClone(viewDefaultData)
-      console.log('associatedType, conditions', associatedType, conditions)
 
       this.$refs.linkDialog.open({
         idx,
-        lfTbIdx,
-        rhTbIdx,
-        title: '新增关联关系',
         dialect,
         leftTable,
         rightTable,
         associatedType,
-        conditions
+        conditions,
+        opType: this.opType,
+        title: `${this.opType === 'add' ? '新增' : '查看'}关联关系`
       })
     },
 
     // 中文名称
     handleChangeChineseName(name) {
-      console.log(name, validStrZh(name), 'name')
       if (name) {
         const valid = validStrZh(name)
         this.isCanSaveSetting = valid
@@ -743,7 +739,7 @@ export default {
       this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
 
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
-        ({ idx, lfTbIdx, rhTbIdx, ...item }) => item
+        ({ idx, ...item }) => item
       )
 
       this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
@@ -878,8 +874,7 @@ export default {
     },
 
     // 切换数据源类型
-    changeSourceType(value) {
-      console.log(value, 'value')
+    changeSourceType() {
       this.getDatasourceCatalog()
     },
 
@@ -1059,10 +1054,6 @@ export default {
 
     // 宽表信息下拉框
     getFluzzyStockName(name) {
-      // if (!this.dialect) {
-      //   this.$message.error('请先填写SQL表达式！')
-      //   return
-      // }
       this.searchStockLoading = true
       API.dataSyncTargetSource({ name, workspaceId: this.workspaceId })
         .then(({ success, data }) => {
