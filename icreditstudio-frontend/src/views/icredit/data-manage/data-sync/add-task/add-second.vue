@@ -190,6 +190,7 @@
                   style="margin-left:10px;"
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
+                  @blur="handleVerifyWidthTableName"
                 >
                   <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
@@ -262,7 +263,7 @@
                   v-model="row.fieldType"
                   :options="row.fieldTypeOptions"
                   :show-all-levels="false"
-                  @change="handleCascaderChange"
+                  @change="value => handleCascaderChange(row, value)"
                 ></el-cascader>
               </template>
 
@@ -353,7 +354,6 @@
 </template>
 
 <script>
-// import VueDraggable from 'vuedraggable'
 import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import Affiliations from './affiliations'
@@ -370,7 +370,7 @@ import {
   iconMapping
 } from '../contant'
 import { randomNum, deepClone, uriSplit } from '@/utils/util'
-import { validStrZh } from '@/utils/validate'
+import { validStrZh, validStrSpecial } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
 
 const viewDefaultData = {
@@ -412,6 +412,7 @@ export default {
       sameNameDataBase: [],
       searchTableName: '',
       checkList: [],
+      oldFieldInfos: [],
 
       // 可视化-已拖拽的表
       selectedTable: [],
@@ -486,6 +487,13 @@ export default {
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
+
+      // 最多只能关联四张表
+      const tagArr = this.selectedTable.filter(({ type }) => type === 'tag')
+      if (tagArr.length > 3) {
+        this.$message.error('目前最多只支持4张表进行关联，请重新操作！')
+        return
+      }
 
       // 不能重复拖动同一张表
       const isExistIdx = this.selectedTable.findIndex(
@@ -567,6 +575,7 @@ export default {
 
     // 可视化-删除已选择的的表
     handleDeleteTagClick(idx) {
+      console.log(idx, this.selectedTable, 'idx')
       // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
       switch (idx) {
         case 0:
@@ -589,7 +598,6 @@ export default {
         case 6:
           this.selectedTable.splice(6, 1)
           this.selectedTable.splice(6, 1)
-          this.selectedTable.splice(5, 1)
           this.secondTaskForm.view.splice(2, 1)
           break
 
@@ -682,6 +690,20 @@ export default {
       }
     },
 
+    // 验证宽表信息
+    handleVerifyWidthTableName() {
+      const { wideTableName } = this.secondTaskForm
+      const valid = validStrZh(wideTableName)
+      const validSp = validStrSpecial(wideTableName.replaceAll('_', ''))
+      if (!valid) {
+        this.$message.error('宽表名称不能输入中文！')
+        this.secondTaskForm.wideTableName = ''
+      } else if (validSp) {
+        this.$message.error('宽表名称只能输入英文字母、下划线和数字！')
+        this.secondTaskForm.wideTableName = ''
+      }
+    },
+
     // 返回提示
     handleBackClick() {
       this.$ls.remove('taskForm')
@@ -747,8 +769,14 @@ export default {
     },
 
     // 字段类型级联值发生改变
-    handleCascaderChange(value) {
-      console.log(value)
+    handleCascaderChange(row, value) {
+      const [idx] = value
+      const { fieldType } = this.oldFieldInfos[row.sort - 1]
+      if (idx !== fieldType[0]) {
+        this.$message.error('字段类型与源表值类型不匹配，请重新选择！')
+        // eslint-disable-next-line no-param-reassign
+        row.fieldType = []
+      }
     },
 
     // 数据库同名选择弹窗回调
@@ -800,6 +828,7 @@ export default {
             this.zoningOptions = partitions || []
             this.increFieldsOptions = incrementalFields || []
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields || [])
+            this.oldFieldInfos = this.hadleFieldInfos(fields || [])
 
             // 数据库同名的情况选择相应的库
             if (createMode && data.sameNameDataBase) {
@@ -820,7 +849,7 @@ export default {
         ({ type, isChecked }) => type === 'tag' && !isChecked
       )
       if (unlinkTable.length && this.selectedTable.length > 2) {
-        this.$message.error('相关的表未设置关联关系，请先设置！')
+        this.$message.error('识别失败，当前存在未关联的表！')
         return true
       }
       if (!this.verifyTableDisabled) {

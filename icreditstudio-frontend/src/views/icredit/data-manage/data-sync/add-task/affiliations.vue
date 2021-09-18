@@ -127,6 +127,7 @@ export default {
 
   data() {
     return {
+      valid: true,
       idx: null,
       lfTbIdx: null,
       rhTbIdx: null,
@@ -169,6 +170,7 @@ export default {
         conditions
       } = options
 
+      this.valid = true
       this.title = title
       this.idx = idx
       this.lfTbIdx = lfTbIdx
@@ -223,15 +225,24 @@ export default {
         rightSource: rightTable.name,
         rightSourceDatabase: rightTable.database
       }
-      this.validate(relationData)
+
+      // 关联条件必填
+      if (relationData.conditions.length) {
+        relationData.conditions.forEach(({ left, right, associate }) => {
+          this.valid = left && associate && right
+        })
+
+        !this.valid && this.$message.error('请先选择要关联的表字段及关联关系！')
+        this.closeBtnLoading()
+      }
+
+      this.valid && this.validate(relationData)
     },
 
     validate(relationData) {
-      console.log('relationData', relationData)
       this.$refs.form.validate(valid => {
         if (valid) {
           this.close()
-
           this.$emit('on-confirm', relationData)
         }
         this.closeBtnLoading()
@@ -262,14 +273,12 @@ export default {
       }
     },
 
-    handleChangeRightSelect(item, idx) {
-      console.log('this.bTableOption[idx]', this.bTableOption[idx])
+    handleChangeRightSelect(item) {
       const { left, right } = item
       this.rightSelectVal = this.bTableOption.find(({ name }) => name === right)
       if (left) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
-        console.log(fieldType, rType)
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
           item.right = ''
