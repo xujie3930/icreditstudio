@@ -3,13 +3,11 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.0.30:8848
-      config:
-        server-addr: 192.168.0.30:8848
-        file-extension: yml
+        namespace: dd8ede24-19c7-4547-8956-a566f800a823
   datasource:
-    url: "jdbc:mysql://worker:3306/metastore?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
+    url: "jdbc:mysql://192.168.0.17:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
+    username: 'icdstu'
+    password: 'icdstu@0902'
   redis:
     host: 192.168.0.201
     port: 6379
@@ -24,7 +22,8 @@ spring:
         max-idle: 8
         max-wait: -1
 #    password: 123456
-
+system:
+  errorCode: 500
 # swagger 登录认证
 knife4j:
   basic:
@@ -36,11 +35,8 @@ knife4j:
   production: false #默认是false ,屏蔽所有Swagger的相关资源
   enable: true #是否开启swagger
 
-#数仓hive连接地址
-warehouse:
-  hive:
-    address:
-      - driverClass: org.apache.hive.jdbc.HiveDriver
-        username: root
-        password: bd@0414
-        url: jdbc:hive2://192.168.0.174:10000/default
+hive:
+  driverClass: org.apache.hive.jdbc.HiveDriver
+  username: root
+  password: bd@0414
+  nodes: 192.168.0.174:10000

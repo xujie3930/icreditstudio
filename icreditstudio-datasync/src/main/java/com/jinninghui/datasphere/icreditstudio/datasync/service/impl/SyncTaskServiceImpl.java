@@ -320,15 +320,20 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //校验sql语法
         generateWideTable.verifySql(wideTableSql, param);
 
-        List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = null;
-        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode())) {
-            databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+        WideTable wideTable = new WideTable();
+        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode()) && CollectionUtils.isEmpty(param.getSqlInfo().getDatabaseHost())) {
+            List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+            //如何不同主机有相同数据库则返回给用户选择
+            if (CollectionUtils.isNotEmpty(databaseInfos)) {
+                wideTable.setSameNameDataBase(databaseInfos);
+                wideTable.setSql(wideTableSql);
+            }
+        } else {
+            //取得数据源ID
+            String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+            //生成宽表数据列
+            wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
         }
-        //取得数据源ID
-        String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
-        //生成宽表数据列
-        WideTable wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
-        wideTable.setSameNameDataBase(databaseInfos);
         return BusinessResult.success(wideTable);
     }
 

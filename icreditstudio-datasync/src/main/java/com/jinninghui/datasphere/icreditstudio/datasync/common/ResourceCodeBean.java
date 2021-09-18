@@ -40,6 +40,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000023("60000023", "任务描述不大于255个字符"),
         RESOURCE_CODE_60000024("60000024", "生成宽表sql为空"),
         RESOURCE_CODE_60000025("60000025", "未匹配到合适数据源"),
+        RESOURCE_CODE_60000026("60000026", "未找到合适的格式化器"),
         ;
 
         public final String code;

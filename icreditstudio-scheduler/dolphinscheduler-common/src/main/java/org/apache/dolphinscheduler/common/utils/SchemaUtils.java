@@ -50,7 +50,7 @@ public class SchemaUtils {
     @SuppressWarnings("unchecked")
     public static List<String> getAllSchemaList() {
         List<String> schemaDirList = new ArrayList<>();
-        File[] schemaDirArr = FileUtils.getAllDir("sql/upgrade");
+        File[] schemaDirArr = FileUtils.getAllDir("icreditstudio-scheduler/sql/upgrade");
         if (schemaDirArr == null || schemaDirArr.length == 0) {
             return null;
         }
@@ -122,7 +122,7 @@ public class SchemaUtils {
     public static String getSoftVersion() {
         String softVersion;
         try {
-            softVersion = FileUtils.readFile2Str(new FileInputStream(new File("sql/soft_version")));
+            softVersion = FileUtils.readFile2Str(new FileInputStream(new File("icreditstudio-scheduler/sql/soft_version")));
             softVersion = replaceBlank(softVersion);
         } catch (FileNotFoundException e) {
             logger.error(e.getMessage(), e);

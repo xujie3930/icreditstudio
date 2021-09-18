@@ -35,12 +35,12 @@ public class HiveConnectionSource extends AbstractClusterHiveConnectionSource {
 
     @PostConstruct
     public void init() {
-        try {
-            if (Objects.isNull(hiveProperties)) {
+        if (Objects.isNull(hiveProperties)) {
+            try {
                 throw new RuntimeException("未配置hive连接信息");
+            } finally {
+                Runtime.getRuntime().exit(0);
             }
-        } finally {
-            Runtime.getRuntime().exit(0);
         }
         try {
             Class.forName(getDriverClass());
@@ -86,15 +86,15 @@ public class HiveConnectionSource extends AbstractClusterHiveConnectionSource {
 
     @Override
     public Set<String> getIpPorts() {
-        String address = hiveProperties.getAddress();
-        if (StringUtils.isBlank(address)) {
+        String nodes = hiveProperties.getNodes();
+        if (StringUtils.isBlank(nodes)) {
             try {
                 throw new RuntimeException("未配置hive链接地址");
             } finally {
                 Runtime.getRuntime().exit(0);
             }
         }
-        String[] addrs = StringUtils.split(address, ",");
+        String[] addrs = StringUtils.split(nodes, ",");
         if (Objects.isNull(addrs) || addrs.length == 0) {
             try {
                 throw new RuntimeException("未配置正确的hive链接地址");

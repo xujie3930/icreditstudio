@@ -58,7 +58,7 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      * @param param
      * @return
      */
-    BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param);
+    BusinessResult<ConnectionSource> getConnectionInfo(ConnectionInfoParam param);
 
     BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request);
 

@@ -53,6 +53,17 @@ public interface SchedulerService {
                                        Priority processInstancePriority,
                                        String workerGroup);
 
+    Map<String, Object> myInsertSchedule(String startTime, String endTime, User loginUser, String projectName,
+                                         Integer processDefineId,
+                                         String schedule,
+                                         WarningType warningType,
+                                         int warningGroupId,
+                                         FailureStrategy failureStrategy,
+                                         String receivers,
+                                         String receiversCc,
+                                         Priority processInstancePriority,
+                                         String workerGroup);
+
     /**
      * updateProcessInstance schedule
      *

@@ -1,12 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
+import cn.hutool.core.io.IoUtil;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import com.jinninghui.datasphere.icreditstudio.metadata.common.DataSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
-import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseAddressProperties;
-import com.jinninghui.datasphere.icreditstudio.metadata.common.WarehouseDataSource;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataConnection;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
@@ -15,17 +14,16 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSou
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -33,63 +31,30 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@EnableConfigurationProperties(WarehouseAddressProperties.class)
 public class MetadataServiceImpl implements MetadataService {
     @Resource
-    private WarehouseAddressProperties addressProperties;
+    private MetadataConnection connection;
 
     @Override
     public List<Database> getDatabases() {
-        List<Database> results;
-        List<WarehouseDataSource> warehouseDataSources = getWarehouseDataSources();
-        results = warehouseDataSources.parallelStream()
-                .filter(Objects::nonNull)
-                .map(dataSource -> {
-                    List<Database> databases = Lists.newArrayList();
-                    String address = dataSource.getDataSourceInfo().getAddress();
-
-                    Statement stmt = dataSource.getStmt();
-                    String sql = "show databases";
-                    try {
-                        ResultSet resultSet = stmt.executeQuery(sql);
-                        while (resultSet.next()) {
-                            Database db = new Database();
-                            String database = resultSet.getString(1);
-                            db.setDatabaseName(database);
-                            db.setHost(address);
-                            databases.add(db);
-                        }
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    }
-                    return databases;
-                }).flatMap(databases -> databases.stream()).collect(Collectors.toList());
-        return Optional.ofNullable(results).orElse(Lists.newArrayList());
-    }
-
-    private Optional<WarehouseDataSource> getWarehouseDataSource(String address) {
-        List<WarehouseDataSource> warehouseDataSources = getWarehouseDataSources();
-        return warehouseDataSources.parallelStream()
-                .filter(Objects::nonNull)
-                .filter(dataSource -> {
-                    DataSourceInfo dataSourceInfo = dataSource.getDataSourceInfo();
-                    String address1 = dataSourceInfo.getAddress();
-                    return StringUtils.equals(address1, address);
-                }).findFirst();
-    }
-
-    @Override
-    public List<WarehouseDataSource> getWarehouseDataSources() {
-        List<WarehouseDataSource> results = null;
-        List<DataSourceInfo> address = addressProperties.getAddress();
-        results = Optional.ofNullable(address).orElse(Lists.newArrayList())
-                .parallelStream()
-                .map(dataSourceInfo -> {
-                    WarehouseDataSource dataSource = new WarehouseDataSource();
-                    dataSource.setDataSourceInfo(dataSourceInfo);
-                    return dataSource;
-                }).collect(Collectors.toList());
-        return Optional.ofNullable(results).orElse(Lists.newArrayList());
+        List<Database> results = Lists.newArrayList();
+        Connection connection = this.connection.getConnection();
+        String sql = "show databases";
+        try {
+            Statement stmt = connection.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sql);
+            while (resultSet.next()) {
+                Database db = new Database();
+                String database = resultSet.getString(1);
+                db.setDatabaseName(database);
+                db.setHost("*");
+                results.add(db);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new AppException("80000000", e.getMessage());
+        }
+        return results;
     }
 
     @Override
@@ -101,6 +66,7 @@ public class MetadataServiceImpl implements MetadataService {
                     TargetSourceInfo info = new TargetSourceInfo();
                     info.setName(database.getDatabaseName());
                     info.setUrl(database.getHost());
+                    info.setId("*");
                     return info;
                 }).filter(info -> StringUtils.isBlank(param.getName()) || info.getName().contains(param.getName()))
                 .collect(Collectors.toList());
@@ -110,24 +76,49 @@ public class MetadataServiceImpl implements MetadataService {
     @Override
     public BusinessResult<Boolean> generateWideTable(MetadataGenerateWideTableParam param) {
         String statementSql = generateWideTableStatement(param);
-        List<WarehouseDataSource> warehouseDataSources = getWarehouseDataSources();
-        if (CollectionUtils.isNotEmpty(warehouseDataSources)) {
-            WarehouseDataSource dataSource = warehouseDataSources.get(0);
+        Connection connection = this.connection.getConnection();
+        Boolean aBoolean = smartCloseConn(connection, statementSql, (conn, sql) -> {
             String useSql = "use " + param.getDatabaseName();
-            Statement stmt = dataSource.getStmt();
+            Statement stmt = null;
             try {
+                stmt = conn.createStatement();
                 stmt.execute(useSql);
-                stmt.execute(statementSql);
-            } catch (Exception ex) {
-                log.error("执行hive命令失败", ex);
-                throw new AppException("80000000", ex.getMessage());
+                stmt.execute(sql);
+            } catch (Exception e) {
+                log.error(e.getMessage(), e);
+                throw new AppException("80000000", e.getMessage());
             }
-        } else {
-            throw new AppException("80000001");
-        }
-        return BusinessResult.success(true);
+            return true;
+        });
+        return BusinessResult.success(aBoolean);
     }
 
+    /**
+     * 关闭连接
+     *
+     * @param connection 连接
+     * @param r          做为function的r参数
+     * @param function   处理函数
+     * @param <R>
+     * @param <T>
+     * @return
+     */
+    private <R, T> T smartCloseConn(Connection connection, R r, BiFunction<Connection, R, T> function) {
+        T apply;
+        try {
+            apply = function.apply(connection, r);
+        } finally {
+            IoUtil.close(connection);
+        }
+        return apply;
+    }
+
+    /**
+     * 拼接hive创建表语句
+     *
+     * @param param 建表参数
+     * @return
+     */
     private String generateWideTableStatement(MetadataGenerateWideTableParam param) {
         //语句前缀
         String prefix = "create table ";

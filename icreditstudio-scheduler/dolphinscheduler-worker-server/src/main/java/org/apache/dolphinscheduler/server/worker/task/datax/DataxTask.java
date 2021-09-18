@@ -17,7 +17,14 @@
 
 package org.apache.dolphinscheduler.server.worker.task.datax;
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.statement.*;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.datasource.BaseConnectionParam;
 import org.apache.dolphinscheduler.common.datasource.DatasourceUtil;
@@ -38,8 +45,7 @@ import org.apache.dolphinscheduler.server.utils.ParamUtils;
 import org.apache.dolphinscheduler.server.worker.task.AbstractTask;
 import org.apache.dolphinscheduler.server.worker.task.CommandExecuteResult;
 import org.apache.dolphinscheduler.server.worker.task.ShellCommandExecutor;
-
-import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -50,30 +56,13 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 /**
  * DataX task
@@ -135,9 +124,9 @@ public class DataxTask extends AbstractTask {
         logger.info("datax task params {}", taskExecutionContext.getTaskParams());
         dataXParameters = JSONUtils.parseObject(taskExecutionContext.getTaskParams(), DataxParameters.class);
 
-        if (!dataXParameters.checkParameters()) {
+        /*if (!dataXParameters.checkParameters()) {
             throw new RuntimeException("datax task params is not valid");
-        }
+        }*/
     }
 
     /**
@@ -324,15 +313,18 @@ public class DataxTask extends AbstractTask {
         contentList.add(content);*/
 
         List<JSONObject> readerConnArr = new ArrayList<>();
+        JSONObject taskParams =JSONObject.parseObject(taskExecutionContext.getTaskParams());
         JSONObject readerConn = new JSONObject();
         readerConn.put("querySql", new String[] {dataXParameters.getSql()});
         //readerConn.put("jdbcUrl", dataSourceCfg.getJdbcUrl());
-        readerConn.put("jdbcUrl", new String[]{"jdbc:mysql://192.0168.0.3:3306/iframe?useSSL=false&allowLoadLocalInfile=false&autoDeserialize=false&allowLocalInfile=false&allowUrlInLocalInfile=false"});
+        readerConn.put("jdbcUrl", new String[]{taskParams.getString("sourceUri")});
         readerConnArr.add(readerConn);
 
         JSONObject readerParam = new JSONObject();
-        readerParam.put("username", dataSourceCfg.getUser());
-        readerParam.put("password", dataSourceCfg.getPassword());
+        //readerParam.put("username", dataSourceCfg.getUser());
+        readerParam.put("username", taskParams.getString("username"));
+        //readerParam.put("password", dataSourceCfg.getPassword());
+        readerParam.put("password", taskParams.getString("password"));
         readerParam.put("connection", readerConnArr);
 
         JSONObject reader = new JSONObject();
@@ -351,14 +343,22 @@ public class DataxTask extends AbstractTask {
         writerParam.put("path", "/usr/local/software/hive/warehouse/dfstest.db/dfs_mysql");
 
         List<JSONObject> columnList = new ArrayList<>();
-        JSONObject column1 = new JSONObject();
+        JSONArray array = JSONObject.parseArray(taskParams.getString("fields"));
+        for (Object columnJson : array) {
+            JSONObject column = new JSONObject();
+            column.put("name", JSONObject.parseObject(columnJson.toString()).get("name"));
+            column.put("type", JSONObject.parseObject(columnJson.toString()).get("type"));
+            columnList.add(column);
+        }
+
+        /*JSONObject column1 = new JSONObject();
         column1.put("name", "id");
         column1.put("type", "STRING");
         JSONObject column2 = new JSONObject();
         column2.put("name", "form_name");
         column2.put("type", "STRING");
         columnList.add(column1);
-        columnList.add(column2);
+        columnList.add(column2);*/
 
         JSONObject config = new JSONObject();
         config.put("dfs.client.use.datanode.hostname",true);
