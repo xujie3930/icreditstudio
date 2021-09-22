@@ -206,9 +206,9 @@ public class DolphinSchedulerDemoService {
         String password = (String) jsonObject.get("password");//目标数据源类型
         String sourceUri = (String) jsonObject.get("sourceUri");//目标数据源类型
         List fields = (List) jsonObject.get("fields");//目标数据源类型
-        String targetDataSourceId = (String) jsonObject.get("targetDataSourceId");//目标数据源Id
+//        String targetDataSourceId = (String) jsonObject.get("targetDataSourceId");//目标数据源Id
         String dsType = (String) jsonObject.get("dsType");//数据源类型
-        String dataSourceId = (String) jsonObject.get("dataSourceId");//数据源Id
+//        String dataSourceId = (String) jsonObject.get("dataSourceId");//数据源Id
         String sql = (String) jsonObject.get("sql");//数据源sql
         String schedule = jsonObject.getString("schedule");//cron表达式
         String startTime = jsonObject.getString("startTime");//scheduler开始时间
@@ -244,7 +244,8 @@ public class DolphinSchedulerDemoService {
         Tenant tenant = tenantService.findByTenantCode(tenantCode);
 
         //创建工作流定义，默认上线
-        String processDefJson = appendDataxProcessDefJson(targetDataSourceId, dataSourceId, tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
+//        String processDefJson = appendDataxProcessDefJson(targetDataSourceId, dataSourceId, tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
+        String processDefJson = appendDataxProcessDefJson(tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
 
         //启动工作流定义
@@ -262,7 +263,8 @@ public class DolphinSchedulerDemoService {
         return resultMap;
     }
 
-    private String appendDataxProcessDefJson(String targetDataSourceId, String dataSourceId, int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
+//    private String appendDataxProcessDefJson(String targetDataSourceId, String dataSourceId, int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
+    private String appendDataxProcessDefJson(int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
         Map<String,Object> outMap = new HashMap<>();
         List<String> emptyList = new ArrayList<>();
         List<Map<String,Object>> taskList = new ArrayList<>();
@@ -271,8 +273,8 @@ public class DolphinSchedulerDemoService {
         paramsMap.put("customConfig", 0);
         paramsMap.put("dsType", dsType);
         paramsMap.put("dtType", dtType);
-        paramsMap.put("dataSource", dataSourceId);//Datasource 数据源ID  --   资源库
-        paramsMap.put("dataTarget", targetDataSourceId);//Datasource 数据源ID  --  目标库
+//        paramsMap.put("dataSource", dataSourceId);//Datasource 数据源ID  --   资源库
+//        paramsMap.put("dataTarget", targetDataSourceId);//Datasource 数据源ID  --  目标库
         paramsMap.put("sql", sql);
         paramsMap.put("targetTable", targetTable);
         paramsMap.put("username", username);
