@@ -38,6 +38,8 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Spa
 
   private var jobGroup: String = _
 
+  private var codeParser: Option[CodeParser] = None
+
   val queryNum = new AtomicLong(0)
 
 
@@ -52,7 +54,7 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Spa
   def executeLine(code: String): ExecuteResponse= Utils.tryFinally {
     if (sc.isStopped) {
       error("Spark application has already stopped, please restart it.")
-      throw new IllegalStateException("Spark application sc has already stopped, please restart it.")
+      throw new ApplicationAlreadyStoppedException(40004, "Spark application sc has already stopped, please restart it.")
     }
     val kind: Kind = getKind
     var preCode = code
@@ -81,6 +83,7 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Spa
   protected def getKind: Kind
 
   protected def runCode(executor: AbstractSparkEngineConnExecutor, code: String): ExecuteResponse
+  def setCodeParser(codeParser: CodeParser): Unit = this.codeParser = Some(codeParser)
 
 
 }
