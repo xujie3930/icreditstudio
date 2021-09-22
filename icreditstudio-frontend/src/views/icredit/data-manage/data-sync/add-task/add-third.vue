@@ -51,6 +51,7 @@
             label-width="35%"
             v-if="taskForm.syncRate"
             label="限流速率"
+            prop="limitRate"
           >
             <el-input
               clearable
@@ -132,6 +133,12 @@ export default {
   components: { HeaderStepBar, Back, Cron },
 
   data() {
+    const verifyLimitRate = (rule, value, cb) => {
+      const num = parseInt(value, 10) || 0
+      this.taskForm.limitRate = num
+      cb()
+    }
+
     return {
       detailLoading: false,
       settingBtnLoading: false,
@@ -158,6 +165,7 @@ export default {
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
+        limitRate: [{ validator: verifyLimitRate, trigger: 'blur' }],
         cron: [
           {
             required: true,

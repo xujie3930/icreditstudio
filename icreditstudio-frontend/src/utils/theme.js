@@ -113,11 +113,12 @@ export async function theme(val) {
     // .el-submenu__title:hover{background-color: ${
     //   newCluster[newCluster.length - 1]
     // }!important;}
+    // background-color:${newCluster[newCluster.length - 1]};
     newStyle += `
       .el-pagination {padding-top: 20px}
       .el-pager li.active {border-color:${
         newCluster[newCluster.length - 1]
-      };background-color:${newCluster[newCluster.length - 1]};color: #FFFFFF;
+      };color: #FFFFFF;
     }
       `
     return newStyle

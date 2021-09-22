@@ -179,7 +179,7 @@ export default {
 
   methods: {
     handleAddSyncTask() {
-      this.$router.push('/data-manage/add-task')
+      this.$router.push('/data-manage/add-task?opType=add')
     },
 
     // 删除
@@ -252,7 +252,7 @@ export default {
       console.log(row, opType)
       const params = {
         path: '/data-manage/add-task',
-        query: { taskId: row.taskId }
+        query: { opType: 'edit', taskId: row.taskId }
       }
       this.$router.push(params)
     },

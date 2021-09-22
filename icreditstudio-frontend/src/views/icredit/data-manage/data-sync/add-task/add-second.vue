@@ -22,6 +22,7 @@
               :loading="searchLoading"
               :remote-method="getFluzzyTableName"
               @clear="tableNameOptions = []"
+              @change="handleChangeTableName"
             >
               <el-option
                 v-for="item in tableNameOptions"
@@ -51,19 +52,19 @@
             </el-button-group>
 
             <el-tree
-              class="tree"
-              :data="treeData"
-              node-key="idx"
-              default-expand-all
               highlight-current
               check-on-click-node
+              class="tree"
+              node-key="idx"
               empty-text="暂无数据"
+              :data="treeData"
               :props="{ label: 'name', children: 'content' }"
+              :current-node-key="curNodeKey"
               v-loading="treeLoading"
             >
               <div
                 :id="node.id"
-                :draggable="node.level > 1"
+                :draggable="node.level > 1 && opType !== 'edit'"
                 class="custom-tree-node"
                 slot-scope="{ node, data }"
                 @dragstart="e => handleDragClick(e, data, node)"
@@ -101,7 +102,16 @@
             @drop="handleTagWrapDrop"
             @dragover="handlePreventDefault"
           >
-            <el-row class="row" type="flex" align="middle" justify="center">
+            <span v-if="!selectedTable.length" class="sql-tip">
+              请从左侧数据源中拖动要关联的表到该区域中
+            </span>
+            <el-row
+              v-else
+              class="row"
+              type="flex"
+              align="middle"
+              justify="center"
+            >
               <template v-for="(item, idx) in selectedTable">
                 <div
                   :key="idx"
@@ -109,7 +119,7 @@
                   v-if="item.type === 'tag'"
                 >
                   <el-tag
-                    closable
+                    :closable="opType !== 'edit'"
                     id="tagItem"
                     :class="[
                       'table-item',
@@ -181,6 +191,7 @@
                   style="margin-left:10px;"
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
+                  @blur="handleVerifyWidthTableName"
                 >
                   <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
@@ -253,7 +264,7 @@
                   v-model="row.fieldType"
                   :options="row.fieldTypeOptions"
                   :show-all-levels="false"
-                  @change="handleCascaderChange"
+                  @change="value => handleCascaderChange(row, value)"
                 ></el-cascader>
               </template>
 
@@ -328,23 +339,22 @@
         <h4 class="title">
           该SQL表达式中所选择的库存在同名情况，请在下列重新选择正确的库:
         </h4>
-        <el-checkbox-group class="group" v-model="checkList">
-          <el-checkbox
+        <el-radio-group class="group" v-model="checkList">
+          <el-radio
             class="box"
             v-for="(item, idx) in sameNameDataBase"
             :key="idx"
             :label="item.datasourceId"
           >
             {{ item.databaseName }}({{ item.host }})
-          </el-checkbox>
-        </el-checkbox-group>
+          </el-radio>
+        </el-radio-group>
       </div>
     </Dialog>
   </div>
 </template>
 
 <script>
-// import VueDraggable from 'vuedraggable'
 import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import Affiliations from './affiliations'
@@ -361,8 +371,13 @@ import {
   iconMapping
 } from '../contant'
 import { randomNum, deepClone, uriSplit } from '@/utils/util'
-import { validStrZh } from '@/utils/validate'
+import { validStrZh, validStrSpecial } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
+
+const viewDefaultData = {
+  associatedType: undefined,
+  conditions: [{ left: '', associate: '', right: '' }]
+}
 
 export default {
   components: { Back, HeaderStepBar, Affiliations, Dialog },
@@ -374,6 +389,7 @@ export default {
     this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
 
     return {
+      opType: '',
       isCanJumpNext: false,
       isCanSaveSetting: false,
       isShowDot: false,
@@ -395,20 +411,11 @@ export default {
       increFieldsOptions: [],
       tableNameOptions: [],
       stockNameOptions: [],
-      sameNameDataBase: [
-        // {
-        //   datasourceId: 1909,
-        //   databaseName: '数据库-100',
-        //   host: '192.168.0.90'
-        // },
-        // {
-        //   datasourceId: 1999,
-        //   databaseName: '数据库-1023ssd',
-        //   host: '192.168.0.93'
-        // }
-      ],
+      sameNameDataBase: [],
       searchTableName: '',
       checkList: [],
+      oldFieldInfos: [],
+      curNodeKey: undefined,
 
       // 可视化-已拖拽的表
       selectedTable: [],
@@ -440,8 +447,9 @@ export default {
 
     // 识别宽表按钮禁用状态
     verifyTableDisabled() {
-      const { sql, wideTableName, targetSource } = this.secondTaskForm
-      return Boolean(sql && targetSource && wideTableName)
+      const { sql } = this.secondTaskForm
+      // return Boolean(sql && targetSource && wideTableName)
+      return Boolean(sql) || this.selectedTable.length
     }
   },
 
@@ -452,11 +460,16 @@ export default {
 
   methods: {
     initPage() {
+      this.opType = this.$route.query?.opType || 'add'
       const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
       // taskId存在表明是编辑的情况
       this.secondTaskForm.taskId && this.getDetailData()
+    },
+
+    handleChangeTableName(name) {
+      console.log(name)
     },
 
     // 可视化-表拖拽
@@ -482,6 +495,13 @@ export default {
         { type: 'tag', isChecked: false, isShowDot: false, ...dataSource },
         { type: 'line', iconName: 'left-link', isShow: false }
       ]
+
+      // 最多只能关联四张表
+      const tagArr = this.selectedTable.filter(({ type }) => type === 'tag')
+      if (tagArr.length > 3) {
+        this.$message.error('目前最多只支持4张表进行关联，请重新操作！')
+        return
+      }
 
       // 不能重复拖动同一张表
       const isExistIdx = this.selectedTable.findIndex(
@@ -538,24 +558,23 @@ export default {
 
     // 点击图标设置关联字段回调
     handleVisualConfirm(options) {
-      const { idx } = options
-      const index = this.secondTaskForm.view.findIndex(item => item.idx === idx)
-      const updateViewData = () => {
-        this.secondTaskForm.view.splice(index, 1, options)
-      }
+      // 保存或更新关联关系
+      const { idx, associatedType } = options
+      const { length: len } = this.selectedTable.filter(
+        ({ type }) => type === 'line'
+      )
 
-      index > -1 ? updateViewData() : this.secondTaskForm.view.push(options)
+      len < 2 &&
+        (this.secondTaskForm.view = Array(len - 1).fill(
+          deepClone(viewDefaultData)
+        ))
 
-      console.log(this.secondTaskForm, 'this.secondTaskForm')
+      this.secondTaskForm.view.splice((idx - 1) / 2, 1, options)
+
       // 显示已设置关联关系的表的状态
-      const { length } = this.secondTaskForm.view
-      const { lfTbIdx, rhTbIdx, associatedType } = this.secondTaskForm.view[
-        length - 1
-      ]
-      this.selectedTable[lfTbIdx].isChecked = true
-      this.selectedTable[rhTbIdx].isChecked = true
-      this.selectedTable[idx].iconName =
-        iconMapping[associatedType]?.icon || 'left-link'
+      this.selectedTable[idx - 1].isChecked = true
+      this.selectedTable[idx + 1].isChecked = true
+      this.selectedTable[idx].iconName = iconMapping[associatedType].icon
     },
 
     handlePreventDefault(evt) {
@@ -586,7 +605,6 @@ export default {
         case 6:
           this.selectedTable.splice(6, 1)
           this.selectedTable.splice(6, 1)
-          this.selectedTable.splice(5, 1)
           this.secondTaskForm.view.splice(2, 1)
           break
 
@@ -599,48 +617,36 @@ export default {
     handleLinkIconClick(options) {
       const { idx } = options
       // 目前只能新增四张表， 通过ICON的index找前后关联的两张表index
-      const lfTbIdx = idx - 1
-      const rhTbIdx = idx + 1
-
-      console.log(idx, rhTbIdx, this.selectedTable)
-
       const { dialect, datasourceId, name, database } = this.selectedTable[
-        lfTbIdx
+        idx - 1
       ]
       const {
         datasourceId: sid,
         name: rName,
         database: rDatabase
-      } = this.selectedTable[rhTbIdx]
+      } = this.selectedTable[idx + 1]
 
       const leftTable = { datasourceId, name, database }
       const rightTable = { datasourceId: sid, name: rName, database: rDatabase }
-
-      const viewDefaultData = {
-        associatedType: undefined,
-        conditions: [{ left: '', associate: '', right: '' }]
-      }
       const { view } = this.secondTaskForm
-      const viewDataIdxMapping = { 1: 0, 3: 1, 5: 2 }
-      const vidx = viewDataIdxMapping[idx]
-      const { associatedType, conditions } = view[vidx] || viewDefaultData
+      const vidx = (idx - 1) / 2
+      const { associatedType, conditions } =
+        view[vidx] || deepClone(viewDefaultData)
 
       this.$refs.linkDialog.open({
         idx,
-        lfTbIdx,
-        rhTbIdx,
-        title: '新增关联关系',
         dialect,
         leftTable,
         rightTable,
         associatedType,
-        conditions
+        conditions,
+        opType: this.opType,
+        title: `${this.opType === 'add' ? '新增' : '查看'}关联关系`
       })
     },
 
     // 中文名称
     handleChangeChineseName(name) {
-      console.log(name, validStrZh(name), 'name')
       if (name) {
         const valid = validStrZh(name)
         this.isCanSaveSetting = valid
@@ -650,6 +656,7 @@ export default {
 
     // 保存设置
     handleSaveSetting() {
+      if (this.handleVerifyTip()) return
       this.saveSettingLoading = true
       API.dataSyncAdd(this.handleTaskFormParams())
         .then(({ success, data }) => {
@@ -663,16 +670,45 @@ export default {
         })
     },
 
+    // 下一步
+    handleStepClick() {
+      if (this.handleVerifyTip()) return
+      this.handleTaskFormParams()
+      this.$router.push('/data-manage/add-transfer')
+    },
+
+    // 验证宽表信息以及宽表名称是否已填
+    handleVerifyTip() {
+      const { targetSource, wideTableName } = this.secondTaskForm
+      if (!targetSource) {
+        this.$message.error('请先选择宽表信息！')
+        return true
+      } else if (!wideTableName) {
+        this.$message.error('请先填写宽表名称！')
+        return true
+      } else {
+        return false
+      }
+    },
+
+    // 验证宽表信息
+    handleVerifyWidthTableName() {
+      const { wideTableName } = this.secondTaskForm
+      const valid = validStrZh(wideTableName)
+      const validSp = validStrSpecial(wideTableName.replaceAll('_', ''))
+      if (!valid) {
+        this.$message.error('宽表名称不能输入中文！')
+        this.secondTaskForm.wideTableName = ''
+      } else if (validSp) {
+        this.$message.error('宽表名称只能输入英文字母、下划线和数字！')
+        this.secondTaskForm.wideTableName = ''
+      }
+    },
+
     // 返回提示
     handleBackClick() {
       this.$ls.remove('taskForm')
       this.$router.push('/data-manage/data-sync')
-    },
-
-    // 下一步
-    handleStepClick() {
-      this.handleTaskFormParams()
-      this.$router.push('/data-manage/add-transfer')
     },
 
     // 表单参数缓存以及过滤处理
@@ -698,7 +734,7 @@ export default {
       )
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
 
-      const params = { ...secondForm, ...firstFrom }
+      const params = { ...firstFrom, ...secondForm }
       this.$ls.set('taskForm', params)
       return params
     },
@@ -708,7 +744,7 @@ export default {
       this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
 
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
-        ({ idx, lfTbIdx, rhTbIdx, ...item }) => item
+        ({ idx, ...item }) => item
       )
 
       this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
@@ -734,8 +770,14 @@ export default {
     },
 
     // 字段类型级联值发生改变
-    handleCascaderChange(value) {
-      console.log(value)
+    handleCascaderChange(row, value) {
+      const [idx] = value
+      const { fieldType } = this.oldFieldInfos[row.sort - 1]
+      if (idx !== fieldType[0]) {
+        this.$message.error('字段类型与源表值类型不匹配，请重新选择！')
+        // eslint-disable-next-line no-param-reassign
+        row.fieldType = []
+      }
     },
 
     // 数据库同名选择弹窗回调
@@ -759,7 +801,6 @@ export default {
         view
       } = this.secondTaskForm
 
-      console.log(sql, this.sqlInfo)
       this.sqlInfo.sql = sql
       const sqlParams = {
         workspaceId: this.workspaceId,
@@ -779,26 +820,23 @@ export default {
 
       this.widthTableLoading = false
       this.tableLoading = true
+      this.$refs.baseDialog.close()
       API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
         .then(({ success, data }) => {
           if (success && data) {
             const { sql: sq, partitions, fields, incrementalFields } = data
-            this.zoningOptions = partitions
-            this.increFieldsOptions = incrementalFields
             this.secondTaskForm.sql = sq
-            this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields)
+            this.zoningOptions = partitions || []
+            this.increFieldsOptions = incrementalFields || []
+            this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields || [])
+            this.oldFieldInfos = this.hadleFieldInfos(fields || [])
 
             // 数据库同名的情况选择相应的库
             if (createMode && data.sameNameDataBase) {
-              this.sameNameDataBase = data?.sameNameDataBase || []
+              this.sameNameDataBase = data.sameNameDataBase || []
               data.sameNameDataBase.length && this.$refs.baseDialog.open()
-            } else {
-              this.$refs.baseDialog.close()
             }
           }
-        })
-        .catch(() => {
-          this.$refs.baseDialog.close()
         })
         .finally(() => {
           this.widthTableLoading = false
@@ -811,8 +849,18 @@ export default {
       const unlinkTable = this.selectedTable.filter(
         ({ type, isChecked }) => type === 'tag' && !isChecked
       )
-      if (unlinkTable.length) {
-        this.$message.error('相关的表未设置关联关系，请先设置')
+      if (unlinkTable.length && this.selectedTable.length > 2) {
+        this.$message.error('识别失败，当前存在未关联的表！')
+        return true
+      }
+      if (!this.verifyTableDisabled) {
+        this.$message.error(
+          `${
+            this.secondTaskForm.createMode
+              ? '请先填写SQL语句表达式！'
+              : '表关联区域至少存在一张表！'
+          }`
+        )
         return true
       }
       return false
@@ -820,7 +868,7 @@ export default {
 
     // 表格信息过滤
     hadleFieldInfos(fields = []) {
-      return deepClone(fields).map(item => {
+      return deepClone(fields)?.map(item => {
         return {
           fieldTypeOptions: this.fieldTypeOptions,
           dictLoading: false,
@@ -831,8 +879,7 @@ export default {
     },
 
     // 切换数据源类型
-    changeSourceType(value) {
-      console.log(value, 'value')
+    changeSourceType() {
       this.getDatasourceCatalog()
     },
 
@@ -842,6 +889,115 @@ export default {
         this.secondTaskForm.wideTableName = `widthtable_${dayjs(
           new Date()
         ).format('YYYYMMDD')}_${randomNum(100000, 11000000)}`
+      }
+    },
+
+    // 编辑情况下进行关联表的渲染
+    handleRenderLinkTable(graphicData) {
+      console.log('graphicData', graphicData)
+      // 根据接口的view字段数据整合成selectedTable字段相应的数据结构
+      const { length } = graphicData || []
+      const {
+        associatedType,
+        leftSource,
+        leftSourceDatabase,
+        rightSource,
+        rightSourceDatabase
+      } = graphicData[length - 1]
+      this.selectedTable[0] = {
+        type: 'tag',
+        isChecked: true,
+        isShowDot: false,
+        datasourceId: '', // 待后端返回
+        name: leftSource,
+        database: leftSourceDatabase
+      }
+      this.selectedTable[1] = {
+        type: 'line',
+        iconName: iconMapping[associatedType]?.icon,
+        isShow: true
+      }
+      this.selectedTable[2] = {
+        type: 'tag',
+        isChecked: true,
+        isShowDot: false,
+        datasourceId: '',
+        name: rightSource,
+        database: rightSourceDatabase
+      }
+
+      switch (length) {
+        case 1:
+          this.selectedTable[3] = {
+            type: 'line',
+            iconName: iconMapping[associatedType]?.icon,
+            isShow: true
+          }
+          break
+
+        case 2:
+          this.selectedTable[3] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[2].associatedType]?.icon,
+            isShow: true
+          }
+          this.selectedTable[4] = {
+            type: 'tag',
+            isChecked: true,
+            isShowDot: false,
+            datasourceId: '',
+            name: graphicData[2].rightSource,
+            database: graphicData[2].rightSourceDatabase
+          }
+          this.selectedTable[5] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[2].associatedType]?.icon,
+            isShow: true
+          }
+          break
+
+        case 3:
+          this.selectedTable[3] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[2].associatedType]?.icon,
+            isShow: true
+          }
+          this.selectedTable[4] = {
+            type: 'tag',
+            isChecked: true,
+            isShowDot: false,
+            datasourceId: '',
+            name: graphicData[2].rightSource,
+            database: graphicData[2].rightSourceDatabase
+          }
+          this.selectedTable[5] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[2].associatedType]?.icon,
+            isShow: true
+          }
+
+          this.selectedTable[5] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[3].associatedType]?.icon,
+            isShow: true
+          }
+          this.selectedTable[6] = {
+            type: 'tag',
+            isChecked: true,
+            isShowDot: false,
+            datasourceId: '',
+            name: graphicData[3].rightSource,
+            database: graphicData[3].rightSourceDatabase
+          }
+          this.selectedTable[7] = {
+            type: 'line',
+            iconName: iconMapping[graphicData[3].associatedType]?.icon,
+            isShow: true
+          }
+          break
+
+        default:
+          break
       }
     },
 
@@ -903,10 +1059,6 @@ export default {
 
     // 宽表信息下拉框
     getFluzzyStockName(name) {
-      // if (!this.dialect) {
-      //   this.$message.error('请先填写SQL表达式！')
-      //   return
-      // }
       this.searchStockLoading = true
       API.dataSyncTargetSource({ name, workspaceId: this.workspaceId })
         .then(({ success, data }) => {
@@ -946,10 +1098,17 @@ export default {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
               console.log(key, value)
-              if (key === 'fieldInfos') {
-                this.secondTaskForm[key] = this.hadleFieldInfos(value)
-              } else {
-                this.secondTaskForm[key] = value
+              switch (key) {
+                case 'fieldInfos':
+                  this.secondTaskForm[key] = this.hadleFieldInfos(value)
+                  break
+                case 'view':
+                  this.secondTaskForm[key] = value
+                  this.handleRenderLinkTable(value)
+                  break
+                default:
+                  this.secondTaskForm[key] = value
+                  break
               }
             }
           }
@@ -1102,6 +1261,15 @@ export default {
       height: 160px;
       overflow-y: auto;
       border-bottom: 1px solid #e9e9e9;
+
+      .sql-tip {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 16px;
+        color: #dcdfe6;
+      }
 
       .row {
         width: 100%;

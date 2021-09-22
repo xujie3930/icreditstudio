@@ -138,7 +138,7 @@ public class ServerNodeManager implements InitializingBean {
         /**
          * init WorkerNodeListener listener
          */
-        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_WORKERS, new MasterDataListener());//WorkerGroupNodeListener
+        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_WORKERS, new WorkerGroupNodeListener());//WorkerGroupNodeListener
     }
 
     /**
@@ -224,9 +224,9 @@ public class ServerNodeManager implements InitializingBean {
 
         private String parseGroup(String path) {
             String[] parts = path.split("/");
-            if (parts.length < 6) {
-                throw new IllegalArgumentException(String.format("worker group path : %s is not valid, ignore", path));
-            }
+//            if (parts.length < 6) {
+//                throw new IllegalArgumentException(String.format("worker group path : %s is not valid, ignore", path));
+//            }
             return parts[parts.length - 2];
         }
 
