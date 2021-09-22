@@ -328,7 +328,8 @@ public class DataxTask extends AbstractTask {
         readerParam.put("connection", readerConnArr);
 
         JSONObject reader = new JSONObject();
-        reader.put("name", DataxUtils.getReaderPluginName(DbType.of(dataxTaskExecutionContext.getSourcetype())));
+//        reader.put("name", DataxUtils.getReaderPluginName(DbType.of(dataxTaskExecutionContext.getSourcetype())));
+        reader.put("name", DataxUtils.getReaderPluginName(DbType.getDbTypeByDesc(dataXParameters.getDsType().toLowerCase())));
         reader.put("parameter", readerParam);
 
 //        List<JSONObject> writerConnArr = new ArrayList<>();
@@ -371,7 +372,8 @@ public class DataxTask extends AbstractTask {
         writerParam.put("compress", "NONE");
 
         JSONObject writer = new JSONObject();
-        writer.put("name", DataxUtils.getWriterPluginName(DbType.of(dataxTaskExecutionContext.getTargetType())));
+//        writer.put("name", DataxUtils.getWriterPluginName(DbType.of(dataxTaskExecutionContext.getTargetType())));
+        writer.put("name", DataxUtils.getWriterPluginName(DbType.getDbTypeByDesc(dataXParameters.getDtType().toLowerCase())));
         writer.put("parameter", writerParam);
 
         List<JSONObject> contentList = new ArrayList<>();

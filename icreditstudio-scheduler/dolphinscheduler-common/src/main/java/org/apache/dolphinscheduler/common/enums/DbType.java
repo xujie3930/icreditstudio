@@ -64,10 +64,12 @@ public enum DbType {
 
 
     private static HashMap<Integer, DbType> DB_TYPE_MAP =new HashMap<>();
+    private static HashMap<String, DbType> DB_TYPE_MAP_FOR_DESC =new HashMap<>();
 
     static {
         for (DbType dbType:DbType.values()){
             DB_TYPE_MAP.put(dbType.getCode(),dbType);
+            DB_TYPE_MAP_FOR_DESC.put(dbType.getDescp(),dbType);
         }
     }
 
@@ -77,4 +79,12 @@ public enum DbType {
         }
         return null;
     }
+
+    public static DbType getDbTypeByDesc(String desc){
+        if(DB_TYPE_MAP_FOR_DESC.containsKey(desc)){
+            return DB_TYPE_MAP_FOR_DESC.get(desc);
+        }
+        return null;
+    }
+
 }
