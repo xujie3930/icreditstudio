@@ -330,6 +330,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             if (CollectionUtils.isNotEmpty(databaseInfos)) {
                 wideTable.setSameNameDataBase(databaseInfos);
                 wideTable.setSql(wideTableSql);
+            } else {
+                //取得数据源ID
+                String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+                log.info("数据源ID", dataSourceId);
+                //生成宽表数据列
+                wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
             }
         } else {
             //取得数据源ID
