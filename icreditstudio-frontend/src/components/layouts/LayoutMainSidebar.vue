@@ -121,7 +121,7 @@ export default {
 
     menuIconName(item) {
       const url = item.url || item.path
-      const { icon } = secondMenuMapping[url]
+      const icon = secondMenuMapping[url]?.icon || 'menu-workspace'
       return icon
     },
 
