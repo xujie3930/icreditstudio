@@ -7,10 +7,9 @@ package com.jinninghui.datasphere.icreditstudio.framework.utils;
  **/
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.util.ReflectionUtils;
 
 import java.io.*;
 import java.net.URI;
@@ -19,7 +18,24 @@ import java.util.List;
 
 
 public class HDFSUtils {
-    public static String HDFS_URL = "hdfs://192.168.0.116:9000";
+    //TODO:这里改为配置文件配置
+    public static String HDFS_URL = "hdfs://192.168.0.17:8020";
+    static Configuration conf = new Configuration();
+    static {
+        conf.set("fs.defaultFS", HDFS_URL);
+        //hadoop的hdfs-site.xml文件,也要配置该impl参数
+        conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+    }
+
+    private static FileSystem createFileSystem(URI uri, Configuration conf) throws IOException {
+        Class<?> clazz = conf.getClass("fs." + uri.getScheme() + ".impl", null);
+        if (clazz == null) {
+            throw new IOException("No FileSystem for scheme: " + uri.getScheme());
+        }
+        FileSystem fs = (FileSystem) ReflectionUtils.newInstance(clazz, conf);
+        fs.initialize(uri, conf);
+        return fs;
+    }
 
 
     public static Boolean addPath(String filePath) throws IOException, InterruptedException {
@@ -77,22 +93,37 @@ public class HDFSUtils {
 
         FileInputStream fis = new FileInputStream(new File(srcFile));// 读取本地文件
         FileSystem fs = FileSystem.get(URI.create(HDFSUtils.HDFS_URL), new Configuration(), "root");
-        OutputStream os = fs.create(new Path(destPath));
+        OutputStream os = fs.create(new Path("/hdfs/"+destPath));
         // copy
         IOUtils.copyBytes(fis, os, 4096, true);
         fs.close();
     }
 
-    public static String copyStringToHDFS(String str, String destPath) throws Exception {
-
+    public static String copyStringToHDFS(String str, String destPath) throws Exception{
 
         InputStream fis = new ByteArrayInputStream(str.getBytes());
-        FileSystem fs = FileSystem.get(URI.create(HDFSUtils.HDFS_URL), new Configuration(), "root");
-        OutputStream os = fs.create(new Path(destPath));
+        FileSystem fs = FileSystem.get(URI.create(HDFSUtils.HDFS_URL), conf, "root");
+        String storePath = "/datasource/" + destPath + ".txt";
+        OutputStream os = fs.create(new Path(storePath));
         // copy
         IOUtils.copyBytes(fis, os, 4096, true);
         fs.close();
-        return URI.create(HDFSUtils.HDFS_URL) + destPath;
+        return storePath;
+    }
+
+    public static String getStringFromHDFS(String destPath) throws Exception{
+
+        StringBuffer stringBuffer = null;
+        FileSystem fs=FileSystem.get(URI.create(HDFSUtils.HDFS_URL),conf,"root");
+        FSDataInputStream in =fs.open(new Path(destPath));
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
+        String lineTxt = null;
+        stringBuffer = new StringBuffer();
+        while ((lineTxt = bufferedReader.readLine()) != null) {
+            stringBuffer.append(lineTxt);
+        }
+        fs.close();
+        return stringBuffer.toString();
     }
 
 
@@ -118,9 +149,8 @@ public class HDFSUtils {
 
 
     public static void main(String[] args) throws Exception {
-        FileSystem hdfs = FileSystem.get(URI.create(HDFSUtils.HDFS_URL), new Configuration(), "root");
-        HDFSUtils.recursiveHdfsPath(hdfs, new Path("/"));
-        HDFSUtils.copyStringToHDFS("hello", System.currentTimeMillis() + "");
+        String stringFromHDFS = getStringFromHDFS("/datasource/890255717552893952.txt");
+        System.out.println(stringFromHDFS);
     }
 
 }
