@@ -118,7 +118,7 @@ private[executor] object BDPConfiguration extends SparkLogging {
     else formatValue(commonVars.defaultValue, value)
   }
 
-  private[common] def formatValue[T](defaultValue: T, value: Option[String]): Option[T] = {
+  private[executor] def formatValue[T](defaultValue: T, value: Option[String]): Option[T] = {
     if(value.isEmpty || value.exists(StringUtils.isEmpty)) return Option(defaultValue)
     val formattedValue = defaultValue match {
       case _: String => value

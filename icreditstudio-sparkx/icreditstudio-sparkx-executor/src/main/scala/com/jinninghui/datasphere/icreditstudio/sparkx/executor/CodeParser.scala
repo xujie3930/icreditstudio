@@ -184,16 +184,6 @@ class PythonCodeParser extends SingleCodeParser {
 }
 
 
-object Main {
-  def main(args: Array[String]): Unit = {
-    val codeParser = new PythonCodeParser
-    val code = "if True: \n print 1 \nelif N=123: \n print 456 \nelse: \n print 789"
-    println(code)
-    val arrCodes = codeParser.parse(code)
-    print(arrCodes.mkString("||\n"))
-  }
-}
-
 class SQLCodeParser extends SingleCodeParser {
 
   override val codeType: CodeType = CodeType.SQL

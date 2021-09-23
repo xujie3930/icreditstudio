@@ -20,7 +20,7 @@
 
         <fileSet>
             <directory>
-                backend-microservices/target/jnh-datasphere-icreditstudio-services-${project.version}
+                backend-microservices/target/jnh-datasphere-icreditstudio-services-${project.version}-bin
             </directory>
             <outputDirectory>jnh-datasphere-icreditstudio-services</outputDirectory>
             <includes>
@@ -30,7 +30,7 @@
 
         <fileSet>
             <directory>
-                scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}
+                scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin
             </directory>
             <outputDirectory>jnh-datasphere-icreditstudio-scheduler</outputDirectory>
             <includes>

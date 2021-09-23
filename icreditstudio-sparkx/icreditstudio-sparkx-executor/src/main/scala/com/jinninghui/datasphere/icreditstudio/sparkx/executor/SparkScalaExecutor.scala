@@ -16,8 +16,7 @@
 
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
-import java.io.{BufferedReader, File}
-
+import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream}
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.exception.ExceptionUtils
@@ -52,12 +51,11 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
   private var bindFlag: Boolean = false
 
+  private var jobGroup: String = _
 
-  private val lineOutputStream = new RsOutputStream
+  private var lineOutputStream: OutputStream = _
 
-  private val jOut = new JPrintWriter(lineOutputStream, true)
-
-  private val jobGroup = new java.lang.StringBuilder
+  private var jOut: JPrintWriter = _
 
   private var executeCount = 0
 
@@ -71,6 +69,10 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
     System.setProperty("scala.repl.name.line", ("$line" + this.hashCode).replace('-', '0'))
 
+    val outFile: File = new File("/home/hadoop/桌面/out.text")
+    if (!outFile.exists()) outFile.createNewFile()
+    lineOutputStream = new BufferedOutputStream(new FileOutputStream(outFile))
+    jOut = new JPrintWriter(lineOutputStream, true)
     setCodeParser(new ScalaCodeParser)
 
     if (sparkILoop == null) {
@@ -103,17 +105,14 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
   override protected def getKind: Kind = SparkScala()
 
-  override def runCode(executor: AbstractSparkEngineConnExecutor, code: String): ExecuteResponse = {
-
-
-    this.jobGroup.append(jobGroup)
+  def runCode(code: String): ExecuteResponse = {
     if (null != sparkILoop.intp && null != sparkILoop.intp.classLoader) {
       Thread.currentThread().setContextClassLoader(sparkILoop.intp.classLoader)
     }
 
 
     lazyLoadILoop
-    lineOutputStream.ready()
+    //    lineOutputStream.ready()
 
     var res: ExecuteResponse = null
 
@@ -137,34 +136,49 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     res
   }
 
-  override def executeLine(code: String): ExecuteResponse = synchronized {
-    if (sparkContext.isStopped) {
-      error("Spark application has already stopped, please restart it.")
-      throw new ApplicationAlreadyStoppedException(40004, "Spark application has already stopped, please restart it.")
+  def executeLine(code: String): ExecuteResponse = synchronized {
+    val kind: Kind = getKind
+    var preCode = code
+    val _code = Kind.getRealCode(preCode)
+    info(s"Ready to run code with kind $kind.")
+    jobGroup = String.valueOf("linkis-spark-mix-code-" + queryNum.incrementAndGet())
+    //    val executeCount = queryNum.get().toInt - 1
+    info("Set jobGroup to " + jobGroup)
+    sc.setJobGroup(jobGroup, _code, true)
+    //    val executeCount = queryNum.get().toInt - 1
+    val response = Utils.tryFinally(executeLine0(_code)) {
+      jobGroup = null
+      sc.clearJobGroup()
     }
+    //Post-execution hook
+    response
+  }
+
+  def executeLine0(code: String): ExecuteResponse = {
+    info(s"Start to run code $code")
     executeCount += 1
     val originalOut = System.out
-    val result = scala.Console.withOut(lineOutputStream) {
+    val result = scala.Console.withOut(originalOut) {
       Utils.tryCatch(sparkILoop.interpret(code)) { t =>
         error("task error info:", t)
         val msg = ExceptionUtils.getRootCauseMessage(t)
         if (msg.contains("OutOfMemoryError")) {
           error("engine oom now to set status to shutdown")
-//          ExecutorManager.getInstance.getReportExecutor.tryShutdown()
+          //          ExecutorManager.getInstance.getReportExecutor.tryShutdown()
         }
         Results.Error
       } match {
         case Results.Success =>
           lineOutputStream.flush()
-          val outStr = lineOutputStream.toString()
-          if (outStr.length > 0) {
-//            val output = Utils.tryQuietly(ResultSetWriter.getRecordByRes(outStr, SparkConfiguration.SPARK_CONSOLE_OUTPUT_NUM.getValue))
-//            val res = if (output != null) output.map(x => x.toString).toList.mkString("\n") else ""
-//            if (res.length > 0) {
-//              engineExecutionContext.appendStdout(res)
-//            }
-            print(outStr)
-          }
+          //          val outStr = lineOutputStream.
+          //          if (outStr.nonEmpty) {
+          ////            val output = Utils.tryQuietly(ResultSetWriter.getRecordByRes(outStr, SparkConfiguration.SPARK_CONSOLE_OUTPUT_NUM.getValue))
+          ////            val res = if (output != null) output.map(x => x.toString).toList.mkString("\n") else ""
+          ////            if (res.length > 0) {
+          ////              engineExecutionContext.appendStdout(res)
+          ////            }
+          //            print(outStr)
+          //          }
           SuccessExecuteResponse()
         case Results.Incomplete =>
           //error("incomplete code.")
@@ -175,7 +189,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
           IOUtils.closeQuietly(lineOutputStream)
           var errorMsg: String = null
           if (StringUtils.isNotBlank(output)) {
-//            errorMsg = Utils.tryCatch(EngineUtils.getResultStrByDolphinTextContent(output))(t => t.getMessage)
+            //            errorMsg = Utils.tryCatch(EngineUtils.getResultStrByDolphinTextContent(output))(t => t.getMessage)
             error("Execute code error for " + output)
           } else {
             error("No error message is captured, please see the detailed log")
@@ -184,6 +198,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       }
     }
     // reset the java stdout
+    originalOut.flush()
     System.setOut(originalOut)
     result
   }
@@ -208,7 +223,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   }
 
   private def initSparkILoop = {
-    val settings = new GenericRunnerSettings(error(_))
+    val settings = new GenericRunnerSettings(info(_))
     val sparkJars = sparkConf.getOption("spark.jars")
     val jars = if (sparkConf.get("spark.master").contains("yarn")) {
       val yarnJars = sparkConf.getOption("spark.yarn.dist.jars")
@@ -227,8 +242,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     settings.embeddedDefaults(Thread.currentThread().getContextClassLoader())
     sparkILoop.settings = settings
     sparkILoop.createInterpreter()
-
-    val in0 = getField(sparkILoop, "scala$tools$nsc$interpreter$ILoop$$in0").asInstanceOf[Option[BufferedReader]]
+    val in0 = getDeclaredField(sparkILoop, "in0").asInstanceOf[Option[BufferedReader]]
     val reader = in0.fold(sparkILoop.chooseReader(settings))(r => SimpleReader(r,
       jOut, interactive = true))
 
@@ -237,8 +251,8 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     SparkScalaExecutor.loopPostInit(sparkILoop)
   }
 
-  protected def getField(obj: Object, name: String): Object = {
-    val field = obj.getClass.getField(name)
+  protected def getDeclaredField(obj: Object, name: String): Object = {
+    val field = obj.getClass.getDeclaredField(name)
     field.setAccessible(true)
     field.get(obj)
   }
