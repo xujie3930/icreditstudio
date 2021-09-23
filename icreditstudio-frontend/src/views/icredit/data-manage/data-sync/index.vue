@@ -159,7 +159,7 @@ export default {
           execStatus: ''
         }
       },
-      tableConfiguration: tableConfiguration(this),
+      tableConfiguration,
       fetchConfig: { retrieve: { url: '/datasync/syncTasks', method: 'post' } },
 
       // 任务状态值映射
