@@ -10,8 +10,12 @@
         >
           <j-svg
             class="j-svg"
-            v-if="customMenuIcon.includes(item.url || item.path)"
-            :name="menuIconName(item)"
+            v-if="customMenuIcon.includes(item.path)"
+            :name="
+              activeModuleId === item.id
+                ? `${menuIconName(item)}-active`
+                : menuIconName(item)
+            "
           />
           <i v-else :class="[item.iconPath, 'menu-icon']" />
           <span slot="title">{{ item.label }}</span>
