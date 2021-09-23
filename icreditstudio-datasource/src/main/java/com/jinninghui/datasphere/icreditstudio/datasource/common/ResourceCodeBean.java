@@ -21,6 +21,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000004("70000004", "未找到合适的uri解析器"),
         RESOURCE_CODE_70000005("70000005", "工作空间ID不能为空"),
         RESOURCE_CODE_70000006("70000006", "数据源分类不能为空"),
+        RESOURCE_CODE_70000007("70000007", "测试连接失败")
         ;
 
         public final String code;

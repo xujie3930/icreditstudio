@@ -22,6 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSync
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
@@ -35,6 +36,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.HDFSUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -138,43 +140,52 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
+        Date date = new Date();
         //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
         IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null) {
-            return BusinessResult.success("");
+            throw new AppException("70000003");
         }
         //开始同步的时间，更新到表中
         dataEntity.setLastSyncTime(new Date());
         datasourceMapper.updateById(dataEntity);
         //这里根据不同type类型，连接不同的数据库，同步其表
         DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
-        String ddlInfo = null;
         String key = sequenceService.nextValueString();
-        String hdfsPath;
+        String hdfsPath = null;
         Map<String, String> map;
         try {
             map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
-            if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)) {
-                throw new AppException("70000003");
-            }
-            //hdfsPath = HDFSUtils.copyStringToHDFS(key, ddlInfo);
+            hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
         } catch (Exception e) {
-            return BusinessResult.success(e.getMessage());
+            throw new AppException("70000003");
+        }
+        if (com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils.isEmpty(map)) {
+            log.error("该数据源:{}获取表为空", id);
+            throw new AppException("70000003");
         }
         IcreditDdlSyncEntity ddlEntity = new IcreditDdlSyncEntity();
         BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
         ddlEntity.setId(sequenceService.nextValueString());
+        ddlEntity.setUpdateTime(date);
         //建立外键关联
         ddlEntity.setDatasourceId(dataEntity.getId());
-        //这里先存存储hdfs的路径
-        ddlEntity.setColumnsInfo(map.get("datasourceInfo"));
-        ddlEntity.setCreateTime(new Date());
+        //这里改为存储hdfs的路径
+        ddlEntity.setColumnsInfo(hdfsPath);
         //TODO：这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
         IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
         if (oldEntity == null) {
+            ddlEntity.setCreateTime(new Date());
             ddlSyncMapper.insert(ddlEntity);
         } else {
-            if (!oldEntity.getColumnsInfo().equals(ddlEntity.getColumnsInfo())) {
+            String oldColumnsInfo = null;
+            try {
+                oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
+            } catch (Exception e) {
+                log.error("从hdfs读取失败");
+                throw new AppException("70000003");
+            }
+            if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
                 ddlEntity.setVersion(oldEntity.getVersion() + 1);
                 ddlSyncMapper.insert(ddlEntity);
             }
@@ -299,9 +310,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
-    public BusinessResult<ConnectionSource> getConnectionInfo(ConnectionInfoParam param) {
+    public BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param) {
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
-        ConnectionSource result = null;
+        ConnectionInfo result = null;
         if (Objects.nonNull(byId)) {
             String dialect = DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDesc();
             String uri = byId.getUri();
@@ -309,7 +320,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             if (Objects.isNull(sourceParser)) {
                 throw new AppException("70000004");
             }
-            result = sourceParser.parse(uri);
+            ConnectionSource parse = sourceParser.parse(uri);
+            result = new ConnectionInfo();
+            result.setUsername(parse.getUsername());
+            result.setPassword(parse.getPassword());
+            result.setUrl(parse.getUrl());
+            result.setDriverClass(parse.getDriverClass());
         }
         return BusinessResult.success(result);
     }

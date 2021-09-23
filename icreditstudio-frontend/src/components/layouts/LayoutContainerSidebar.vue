@@ -16,21 +16,22 @@
       >
         <template v-for="item in menu.filter(({ isShow }) => isShow)">
           <el-menu-item
+            v-if="getThreeLevelMenu(item)"
             :key="item.name"
             :index="item.name"
-            class="menu-left-item"
             @click="handleMenuSelected(item)"
           >
-            <i :class="[item.iconPath, 'menu-icon']" />
+            <!-- <i :class="item.iconPath" /> -->
             <span slot="title">{{ item.name }}</span>
           </el-menu-item>
-          <!-- <el-submenu :key="item.name" :index="item.url">
+
+          <el-submenu v-else :key="item.name" :index="item.name">
             <template #title>
               <div
                 class="custom-submenu-item"
-                @click="handleThreeLevelMenuChange(item, $event)"
+                @click="handleThreeLevelMenuChange(item)"
               >
-                <i :class="[item.iconPath]" />
+                <!-- <i :class="[item.iconPath]" /> -->
                 <span>{{ item.name }}</span>
               </div>
             </template>
@@ -38,14 +39,13 @@
               <el-menu-item
                 v-for="son in item.children"
                 :key="son.url"
-                :index="renderPath(son)"
-                class="menu-left-item"
-                @click="handleFourLevelMenuChange(son, $event)"
+                :index="son.name"
+                @click="handleFourLevelMenuChange(son)"
               >
                 {{ son.name }}
               </el-menu-item>
             </el-menu-item-group>
-          </el-submenu> -->
+          </el-submenu>
         </template>
       </el-menu>
     </el-aside>
@@ -88,39 +88,30 @@ export default {
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
 
+    // 三级菜单
     handleMenuSelected(item) {
-      const showChildArr = item.children
-        ? item.children.filter(({ isShow }) => isShow)
-        : []
-      console.log(showChildArr, 'showChildArr')
-      // !showChildArr.length && this.$router.push(item.url)
       this.$router.push(item.url)
       this.$emit('getChildMenus', item)
     },
 
-    handleThreeLevelMenuChange(curMenu, evt) {
-      console.log(curMenu, evt)
+    // 存在四级菜单的三级菜单
+    handleThreeLevelMenuChange(curMenu) {
       this.$emit('threeMenuChange', curMenu)
     },
 
-    handleFourLevelMenuChange(curMenu, evt) {
-      console.log(curMenu, evt)
+    handleFourLevelMenuChange(curMenu) {
+      this.$router.push(curMenu.url)
       this.$emit('fourMenuChange', curMenu)
     },
 
-    isExistChildren(item) {
-      console.log('三级菜单item::', item)
-      const { children } = item
-      const moreThirdMore = []
-      if (!children || !children.length) return 0
-      children.forEach(list => {
-        if (!list.children || !list.children.length) return
-        list.children.forEach(
-          cList => cList.isShow && moreThirdMore.push(cList)
-        )
+    // 只渲染三级菜单
+    getThreeLevelMenu({ children = [] }) {
+      // 是否存在四级菜单
+      const fourthMenuArr = children.filter(menu => {
+        const { isShow, filePath, url, deleteFlag } = menu
+        return isShow && !deleteFlag && filePath && url
       })
-
-      return moreThirdMore.length
+      return !fourthMenuArr.length
     },
 
     getBaseConfig(key) {
@@ -173,15 +164,6 @@ export default {
 
 .menu-icon {
   font-size: 24px;
-}
-
-.menu-left-item {
-  /deep/ .el-tooltip {
-    height: unset !important;
-    width: unset !important;
-    left: unset !important;
-    top: unset !important;
-  }
 }
 
 .iframe-layout-aside-wrap {

@@ -144,6 +144,7 @@ export default {
 
     // 二级菜单切换
     getChildMenus(curMenu) {
+      console.log(curMenu, 'ssss')
       const { children: childMenus = [], ...rest } = curMenu
       const showMenuArr = childMenus.filter(
         item => item.isShow && !item.deleteFlag
@@ -151,6 +152,7 @@ export default {
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
       this.isExistThreeMenus = !!showMenuArr.length
       this.threeChildrenMenus = showMenuArr
+      showMenuArr.length && this.$router.push(showMenuArr[0].url)
     },
 
     // 三级菜单切换
