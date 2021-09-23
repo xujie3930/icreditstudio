@@ -41,6 +41,10 @@
           @handleSizeChange="mixinHandleSizeChange"
           @handleCurrentChange="mixinHandleCurrentChange"
         >
+          <!-- <template #empty>
+            <Empty />
+          </template> -->
+
           <!-- 任务状态 -->
           <template #taskStatusColumn="{row: {taskStatus}}">
             <span :style="{ color: taskStatusMapping[taskStatus || 0].color }">
@@ -134,6 +138,7 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-manage-
 import formOption from '@/views/icredit/configuration/form/data-manage-sync'
 import Message from '@/views/icredit/components/message'
 import Detail from './detail'
+// import Empty from '@/views/icredit/components/empty'
 import API from '@/api/icredit'
 
 export default {
@@ -197,6 +202,7 @@ export default {
 
     // 查看操作
     handleViewBtnClick(row, opType) {
+      console.log('row', row)
       this.$refs.dataDetail.open({ row, opType })
     },
 

@@ -21,8 +21,17 @@
             class="menu-left-item"
             @click="handleMenuSelected(item)"
           >
-            <i :class="[item.iconPath, 'menu-icon']" />
-            <span slot="title">{{ item.name }}</span>
+            <j-svg
+              class="j-svg"
+              v-if="customMenuIcon.includes(item.url || item.path)"
+              :name="
+                item.name === defalutActived
+                  ? `${menuIconName(item)}-active`
+                  : menuIconName(item)
+              "
+            />
+            <i v-else :class="[item.iconPath, 'menu-icon']" />
+            <span slot="title" style="margin-top:10px">{{ item.name }}</span>
           </el-menu-item>
         </template>
       </el-menu>
@@ -42,6 +51,7 @@ import variables from '@/styles/common/_variables.scss'
 import { mapGetters, mapActions } from 'vuex'
 import { DEFAULT_LOGO_IMG } from '@/config/constant'
 import { base64UrlFilter } from '@/utils/util'
+import { secondMenuMapping } from '@/config/menu'
 
 export default {
   props: {
@@ -52,8 +62,10 @@ export default {
   },
 
   data() {
+    this.customMenuIcon = Object.keys(secondMenuMapping)
     return {
-      DEFAULT_LOGO_IMG
+      DEFAULT_LOGO_IMG,
+      defalutActived: ''
     }
   },
 
@@ -69,11 +81,13 @@ export default {
       systemSetting: 'user/systemSetting',
       workspaceList: 'user/workspaceList',
       workspaceId: 'user/workspaceId'
-    }),
+    })
+  },
 
-    defalutActived() {
-      return this.menu.filter(e => e.isShow && !e.deleteFlag)[0]?.name
-    }
+  created() {
+    this.defalutActived = this.menu.filter(
+      e => e.isShow && !e.deleteFlag
+    )[0]?.name
   },
 
   methods: {
@@ -81,6 +95,8 @@ export default {
     ...mapActions('user', ['setWorkspaceId']),
 
     handleMenuSelected(item) {
+      this.defalutActived = item.name
+      this.menuIconName(item)
       if (this.changeWorkspaceMsg(item)) {
         const showChildArr = item.children
           ? item.children.filter(({ isShow }) => isShow)
@@ -101,6 +117,12 @@ export default {
 
     getBaseConfig(key) {
       return variables[key]
+    },
+
+    menuIconName(item) {
+      const url = item.url || item.path
+      const { icon } = secondMenuMapping[url]
+      return icon
     },
 
     renderPath(item) {
@@ -168,10 +190,17 @@ export default {
   left: 0;
   z-index: 999;
 
+  .menu-left-item {
+    .j-svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
   ::v-deep {
     .el-menu-item,
     .el-submenu__title {
-      height: 70px;
+      height: 80px;
     }
   }
 }

@@ -24,6 +24,7 @@ export default _this => {
     id: 'sync',
     isBorder: true,
     hasPage: true,
+    isCustomEmpty: false,
     customBtnConfig: [
       {
         label: '新增同步任务',
