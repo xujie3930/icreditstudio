@@ -22,6 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSync
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
@@ -299,9 +300,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
-    public BusinessResult<ConnectionSource> getConnectionInfo(ConnectionInfoParam param) {
+    public BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param) {
         IcreditDatasourceEntity byId = getById(param.getDatasourceId());
-        ConnectionSource result = null;
+        ConnectionInfo result = null;
         if (Objects.nonNull(byId)) {
             String dialect = DatasourceTypeEnum.findDatasourceTypeByType(byId.getType()).getDesc();
             String uri = byId.getUri();
@@ -309,7 +310,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             if (Objects.isNull(sourceParser)) {
                 throw new AppException("70000004");
             }
-            result = sourceParser.parse(uri);
+            ConnectionSource parse = sourceParser.parse(uri);
+            result = new ConnectionInfo();
+            result.setUsername(parse.getUsername());
+            result.setPassword(parse.getPassword());
+            result.setUrl(parse.getUrl());
+            result.setDriverClass(parse.getDriverClass());
         }
         return BusinessResult.success(result);
     }
