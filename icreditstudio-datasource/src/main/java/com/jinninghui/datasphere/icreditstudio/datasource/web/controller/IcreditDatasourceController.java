@@ -5,7 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasour
 import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
