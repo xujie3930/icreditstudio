@@ -318,12 +318,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         //取得宽表sql
         String wideTableSql = generateWideTable.getWideTableSql(param);
+        log.info("取得宽表的sql语句", wideTableSql);
         //校验sql语法
         generateWideTable.verifySql(wideTableSql, param);
 
         WideTable wideTable = new WideTable();
         if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode()) && CollectionUtils.isEmpty(param.getSqlInfo().getDatabaseHost())) {
             List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+            log.info("相同数据库信息", JSONObject.toJSONString(databaseInfos));
             //如何不同主机有相同数据库则返回给用户选择
             if (CollectionUtils.isNotEmpty(databaseInfos)) {
                 wideTable.setSameNameDataBase(databaseInfos);
@@ -332,6 +334,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         } else {
             //取得数据源ID
             String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+            log.info("数据源ID", dataSourceId);
             //生成宽表数据列
             wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
         }
