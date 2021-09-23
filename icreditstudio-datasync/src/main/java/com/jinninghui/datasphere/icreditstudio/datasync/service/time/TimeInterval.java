@@ -21,8 +21,8 @@ public class TimeInterval implements TimeIntervalFactory {
         String name = PartitionTypeEnum.find(partition).getName();
         ITimeInterval iTimeInterval = TimeIntervalContainer.getInstance().find(name);
         Date date = iTimeInterval.beforeTime(new Date(), n);
-        interval.setStartTime(iTimeInterval.getBeginTime(date).getTime());
-        interval.setEndTime(iTimeInterval.getEndTime(date).getTime());
+        interval.setStartTime(iTimeInterval.getBeginTime(date));
+        interval.setEndTime(iTimeInterval.getEndTime(date));
         interval.setTimeFormat(iTimeInterval.getFormat(date));
 
         interval.setExec(predicate.test(interval));

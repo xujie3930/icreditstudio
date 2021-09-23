@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
@@ -57,7 +58,7 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      * @param param
      * @return
      */
-    BusinessResult<ConnectionSource> getConnectionInfo(ConnectionInfoParam param);
+    BusinessResult<ConnectionInfo> getConnectionInfo(ConnectionInfoParam param);
 
     BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request);
 
