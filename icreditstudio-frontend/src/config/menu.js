@@ -5,15 +5,28 @@
  */
 
 // 一级菜单
-const rootMenuArr = {
-  '/': { icon: 'home', name: '首页' },
-  '/a': { icon: 'home', name: '工作空间' },
-  '/b': { icon: 'home', name: '数据管理' },
-  '/c': { icon: 'home', name: '系统管理' }
+export const rootMenuMapping = {
+  '/': { icon: 'menu-home', iconActive: 'menu-home-active', name: '首页' },
+  '/workspace': {
+    icon: 'menu-space',
+    iconActive: 'menu-space-active',
+    name: '工作空间'
+  },
+  '/data-manage': {
+    icon: 'menu-data',
+    iconActive: 'menu-data-active',
+    name: '数据管理'
+  }
+  // '/system': { icon: 'home', name: '系统管理' }
 }
 
 // 二级菜单
 export const secondMenuMapping = {
+  '/home': {
+    name: '概述',
+    icon: 'menu-summary',
+    iconActive: 'menu-summary-active'
+  },
   '/workspace/space-setting': {
     name: '空间设置',
     icon: 'menu-workspace',
@@ -28,17 +41,22 @@ export const secondMenuMapping = {
     name: '数据同步',
     icon: 'menu-sync',
     iconActive: 'menu-sync-active'
+  },
+  '/data-manage/data-schedule': {
+    name: '调度中心',
+    icon: 'menu-schedule',
+    iconActive: 'menu-schedule-active'
   }
 }
 
 // 三级菜单
-const thirdMenuArr = []
+export const thirdMenuArr = []
 
 // 四级菜单
-const fourthMenuArr = []
+export const fourthMenuArr = []
 
 export default {
-  rootMenuArr,
+  rootMenuMapping,
   secondMenuMapping,
   thirdMenuArr,
   fourthMenuArr

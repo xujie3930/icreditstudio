@@ -23,7 +23,7 @@
           >
             <j-svg
               class="j-svg"
-              v-if="customMenuIcon.includes(item.url || item.path)"
+              v-if="customMenuIcon.includes(item.url)"
               :name="
                 item.name === defalutActived
                   ? `${menuIconName(item)}-active`
@@ -119,9 +119,8 @@ export default {
       return variables[key]
     },
 
-    menuIconName(item) {
-      const url = item.url || item.path
-      const { icon } = secondMenuMapping[url]
+    menuIconName({ url }) {
+      const icon = secondMenuMapping[url]?.icon || 'menu-workspace'
       return icon
     },
 
