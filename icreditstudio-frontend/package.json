@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@antv/x6": "^1.26.2",
     "@jnh/icredit-ui": "^1.0.8",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",

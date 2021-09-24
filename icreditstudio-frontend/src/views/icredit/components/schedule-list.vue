@@ -38,7 +38,9 @@ export default {
   mixins: [crud],
 
   data() {
-    return {}
+    return {
+      mixinTableData: [{ userName: 'ss' }]
+    }
   },
 
   props: {
@@ -65,8 +67,6 @@ export default {
         this.fetchConfig = nVal
       }
     }
-  },
-
-  methods: {}
+  }
 }
 </script>

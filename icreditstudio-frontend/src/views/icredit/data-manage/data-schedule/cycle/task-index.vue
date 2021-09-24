@@ -24,6 +24,17 @@ export default {
       formOption,
       tableConfiguration: tableConfiguration(this)
     }
+  },
+
+  methods: {
+    handleViewLog(row) {
+      console.log('row', row)
+    },
+
+    handleOpenDagPage(row) {
+      console.log('row', row)
+      this.$router.push('/data-manage/data-schedule/dag')
+    }
   }
 }
 </script>

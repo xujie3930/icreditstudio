@@ -57,15 +57,15 @@ export default _this => {
         fixed: 'right',
         operationList: [
           {
-            func: _this.mixinHandleDelete,
+            func: _this.handleOpenDagPage,
             label: 'DAG',
             key: 'dag',
             show: true
           },
           {
-            func: _this.mixinHandleDelete,
+            func: _this.handleViewLog,
             label: '查看日志',
-            key: 'stop',
+            key: 'viewLog',
             show: true
           }
         ]
