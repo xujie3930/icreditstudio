@@ -13,7 +13,7 @@
         <div
           class="tab-item"
           v-for="(item, idx) in scheduleSituation"
-          :key="item"
+          :key="idx"
         >
           <div class="count">
             <span :class="['num', idx === 1 ? 'err' : '']"
@@ -29,14 +29,31 @@
     <div class="schedule-chart">
       <div class="schedule-chart-left">
         <div class="title">
-          <span class="left">近一天运行时长排行</span>
-          <span class="right">上次更新： 2021-07-06</span>
+          <span class="left">当天运行情况</span>
         </div>
+        <div id="pieChart" style="height:300px"></div>
       </div>
       <div class="schedule-chart-right">
         <div class="title">
           <span class="left">近一天运行时长排行</span>
-          <span class="right">上次更新： 2021-07-06</span>
+          <el-date-picker
+            v-model="date"
+            style="width: 300px"
+            type="daterange"
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            size="small"
+          >
+          </el-date-picker>
+          <el-tabs v-model="activeName">
+            <el-tab-pane label="周期实例" name="first"></el-tab-pane>
+            <el-tab-pane label="手动实例" name="second"></el-tab-pane>
+          </el-tabs>
+        </div>
+        <div class="right-wrap">
+          <div class="right-wrap-header"></div>
+          <div id="lineChart" class="line-chart" style="height:250px"></div>
         </div>
       </div>
     </div>
@@ -78,6 +95,8 @@
 <script>
 import lfTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runtime'
 import rgTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runerror'
+import { renderChart, defaultHightLight, chartResize } from '@/utils/echarts'
+import { optionsMapping } from './contant'
 
 export default {
   data() {
@@ -94,7 +113,30 @@ export default {
         { key: '', value: 15000, name: '新增数据量条数', unit: '万条' },
         { key: '', value: 0, name: '新增总数据量', unit: 'KB' },
         { key: '', value: 8, name: '实时任务记录速度', unit: 'RPS ' }
-      ]
+      ],
+      date: [],
+      activeName: 'first'
+    }
+  },
+
+  mounted() {
+    this.renderPieChart('pieChart')
+    this.renderLineChart('lineChart')
+  },
+
+  destroyed() {
+    window.onresize = null
+  },
+
+  methods: {
+    renderPieChart(id) {
+      const chartInstance = renderChart(id, optionsMapping[id])
+      defaultHightLight(chartInstance, 4)
+    },
+
+    renderLineChart(id) {
+      const chartInstance = renderChart(id, optionsMapping[id])
+      window.onresize = chartResize(chartInstance)
     }
   }
 }
@@ -207,6 +249,7 @@ export default {
 
     &-left,
     &-right {
+      height: 320px;
       @include header;
     }
 
