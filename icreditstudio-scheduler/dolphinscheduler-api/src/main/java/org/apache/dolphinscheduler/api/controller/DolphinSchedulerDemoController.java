@@ -1,14 +1,13 @@
 package org.apache.dolphinscheduler.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.dolphinscheduler.api.enums.ExecuteType;
 import org.apache.dolphinscheduler.api.service.DolphinSchedulerDemoService;
+import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
@@ -18,6 +17,9 @@ public class DolphinSchedulerDemoController {
 
     @Autowired
     private DolphinSchedulerDemoService dolphinSchedulerDemoService;
+
+    @Autowired
+    private ExecutorService execService;
 
     @PostMapping("/dol/demo/test")
     public String test(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser, @RequestBody JSONObject jsonObject) throws Exception {
@@ -31,6 +33,24 @@ public class DolphinSchedulerDemoController {
     @PostMapping("/dol/demo/dataxTest")
     public Map<String,String> dataxTest(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser, @RequestBody JSONObject jsonObject) throws Exception {
         return dolphinSchedulerDemoService.dataxTest(loginUser, jsonObject);
+    }
+
+    /**
+     *
+     * @param loginUser
+     * @param processInstanceId
+     * @param executeType
+     * @return
+     * 重跑：executeType:=REPEAT_RUNNING
+     * 恢复失败：ecuteType=START_FAILURE_TASK_PROCESS
+     */
+    @PostMapping(value = "/execute")
+    public Map<String, Object> execute(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+                          @RequestParam("processInstanceId") Integer processInstanceId,
+                          @RequestParam("executeType") ExecuteType executeType
+    ) {
+        Map<String, Object> result = execService.execute(loginUser, null, processInstanceId, executeType);
+        return result;
     }
 
 }
