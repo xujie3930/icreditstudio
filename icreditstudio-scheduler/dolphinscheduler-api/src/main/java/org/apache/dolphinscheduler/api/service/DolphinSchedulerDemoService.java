@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -266,9 +267,8 @@ public class DolphinSchedulerDemoService {
         //这里写入所有自定义参数
         Field[] fields = request.getClass().getDeclaredFields();
         for(Field field : fields){
-            String fieldName = field.getName();
-            Class<?> type = field.getType();
-            paramsMap.put(fieldName, type);
+            Object value = getFieldValueByName(field.getName(), request);
+            paramsMap.put(field.getName(), value);
         }
         paramsMap.put("jobSpeedByte", 0);
         paramsMap.put("jobSpeedRecord", 1000);
@@ -308,6 +308,19 @@ public class DolphinSchedulerDemoService {
         outMap.put("tenantId",tenantId);
         outMap.put("timeout",0);
         return ((JSONObject) JSONObject.toJSON(outMap)).toJSONString();
+    }
+
+    private static Object getFieldValueByName(String fieldName, Object o) {
+        try {
+            String firstLetter = fieldName.substring(0, 1).toUpperCase();
+            String getter = "get" + firstLetter + fieldName.substring(1);
+            Method method = o.getClass().getMethod(getter, new Class[] {});
+            Object value = method.invoke(o, new Object[] {});
+            return value;
+        } catch (Exception e) {
+            logger.error("获取属性值失败！" + e, e);
+        }
+        return null;
     }
 
 }

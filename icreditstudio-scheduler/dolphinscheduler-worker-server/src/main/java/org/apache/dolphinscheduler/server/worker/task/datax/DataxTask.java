@@ -331,9 +331,9 @@ public class DataxTask extends AbstractTask {
         reader.put("parameter", readerParam);
 
         JSONObject writerParam = new JSONObject();
-        writerParam.put("defaultFS", "hdfs://192.168.0.17:8020");
+        writerParam.put("defaultFS", "hdfs://192.168.0.190:9000");
         writerParam.put("fileType", "orc");
-        String writePath = "/usr/local/software/hive/warehouse/" + params.getTargetTable() + ".db/" + params.getTargetTable();
+        String writePath = "/usr/local/software/hive/warehouse/" + params.getTargetDatabase() + ".db/" + params.getTargetTable();
         writerParam.put("path", writePath);
 
         List<JSONObject> columnList = new ArrayList<>();
