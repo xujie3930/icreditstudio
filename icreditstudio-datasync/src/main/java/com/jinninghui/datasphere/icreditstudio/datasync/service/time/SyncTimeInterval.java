@@ -2,6 +2,8 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.time;
 
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @author Peng
  */
@@ -15,11 +17,11 @@ public class SyncTimeInterval {
     /**
      * 起始时间
      */
-    private Long startTime;
+    private Date startTime;
     /**
      * 结束时间
      */
-    private Long endTime;
+    private Date endTime;
     /**
      * 增量字段
      */

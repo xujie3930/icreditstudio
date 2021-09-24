@@ -32,13 +32,9 @@ import org.apache.spark.SparkContext
  *
  * @author liyanhui
  */
-abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends SparkLogging{
+abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Logging{
 
   private var initialized: Boolean = false
-
-  private var jobGroup: String = _
-
-  private var codeParser: Option[CodeParser] = None
 
   val queryNum = new AtomicLong(0)
 
@@ -51,39 +47,6 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Spa
   protected def setInitialized(inited: Boolean = true): Unit = this.initialized = inited
 
 
-  def executeLine(code: String): ExecuteResponse= Utils.tryFinally {
-    if (sc.isStopped) {
-      error("Spark application has already stopped, please restart it.")
-      throw new ApplicationAlreadyStoppedException(40004, "Spark application sc has already stopped, please restart it.")
-    }
-    val kind: Kind = getKind
-    var preCode = code
-    val _code = Kind.getRealCode(preCode)
-    info(s"Ready to run code with kind $kind.")
-    jobGroup = String.valueOf("linkis-spark-mix-code-" + queryNum.incrementAndGet())
-    //    val executeCount = queryNum.get().toInt - 1
-    info("Set jobGroup to " + jobGroup)
-    sc.setJobGroup(jobGroup, _code, true)
-    //    val executeCount = queryNum.get().toInt - 1
-    val response = Utils.tryFinally(runCode(this, _code)) {
-      jobGroup = null
-      sc.clearJobGroup()
-    }
-    //Post-execution hook
-    response
-  } {
-  }
-
-  def executeCompletely(code: String, completedLine: String): ExecuteResponse = {
-    val newcode = completedLine + code
-    info("newcode is " + newcode)
-    executeLine(newcode)
-  }
-
   protected def getKind: Kind
-
-  protected def runCode(executor: AbstractSparkEngineConnExecutor, code: String): ExecuteResponse
-  def setCodeParser(codeParser: CodeParser): Unit = this.codeParser = Some(codeParser)
-
 
 }

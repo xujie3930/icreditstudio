@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractWideTableHandler;
@@ -237,6 +238,7 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                 .datasourceId(datasourceId)
                 .build();
         BusinessResult<ConnectionInfo> connectionInfo = datasourceFeign.getConnectionInfo(build);
+        log.info("获取的连接信息", JSONObject.toJSONString(connectionInfo));
         if (connectionInfo.isSuccess() && Objects.nonNull(connectionInfo.getData())) {
             return connectionInfo.getData();
         }

@@ -33,31 +33,22 @@ import org.apache.spark.{SparkConf, SparkContext}
  *
  * @author liyanhui
  */
-object Main extends SparkLogging {
-  protected def createEngineConnSession(): SparkEngineSession = {
+object Main extends Logging {
+
+  def createEngineConnSession(): SparkEngineSession = {
     val useSparkSubmit = true
     val sparkConf: SparkConf = new SparkConf(true)
-    val master = sparkConf.getOption("spark.master").getOrElse(CommonVars("spark.master", "yarn").getValue)
+    //use yarn cluster
+    val master = "yarn"
     info(s"------ Create new SparkContext {$master} -------")
-    val pysparkBasePath = SparkConfiguration.SPARK_HOME.getValue
+    val pysparkBasePath = sys.env("SPARK_HOME")
     val pysparkPath = new File(pysparkBasePath, "python" + File.separator + "lib")
     val pythonLibUris = pysparkPath.listFiles().map(_.toURI.toString).filter(_.endsWith(".zip"))
-    if (pythonLibUris.length == 2) {
-      val sparkConfValue1 = Utils.tryQuietly(CommonVars("spark.yarn.dist.files", "").getValue)
-      val sparkConfValue2 = Utils.tryQuietly(sparkConf.get("spark.yarn.dist.files"))
-      if (StringUtils.isEmpty(sparkConfValue1) && StringUtils.isEmpty(sparkConfValue2))
-        sparkConf.set("spark.yarn.dist.files", pythonLibUris.mkString(","))
-      else if (StringUtils.isEmpty(sparkConfValue1))
-        sparkConf.set("spark.yarn.dist.files", sparkConfValue2 + "," + pythonLibUris.mkString(","))
-      else if (StringUtils.isEmpty(sparkConfValue2))
-        sparkConf.set("spark.yarn.dist.files", sparkConfValue1 + "," + pythonLibUris.mkString(","))
-      else
-        sparkConf.set("spark.yarn.dist.files", sparkConfValue1 + "," + sparkConfValue2 + "," + pythonLibUris.mkString(","))
-      //      if (!useSparkSubmit) sparkConf.set("spark.files", sparkConf.get("spark.yarn.dist.files"))
-      //      sparkConf.set("spark.submit.pyFiles", pythonLibUris.mkString(","))
-    }
-    // Distributes needed libraries to workers
-    // when spark version is greater than or equal to 1.5.0
+    sparkConf.set("spark.yarn.dist.files", pythonLibUris.mkString(","))
+    sparkConf.set("spark.files", sparkConf.get("spark.yarn.dist.files"))
+    sparkConf.set("spark.submit.pyFiles", sparkConf.get("spark.yarn.dist.files"))
+//     Distributes needed libraries to workers
+//     when spark version is greater than or equal to 1.5.0
     if (master.contains("yarn")) sparkConf.set("spark.yarn.isPython", "true")
 
     val outputDir = createOutputDir(sparkConf)
@@ -71,13 +62,13 @@ object Main extends SparkLogging {
 
     val sc = sparkSession.sparkContext
     val sqlContext = createSQLContext(sc, sparkSession)
-    sc.hadoopConfiguration.set("mapred.output.compress", "true")
-    sc.hadoopConfiguration.set("mapred.output.compression.codec", "rg.apache.hadoop.io.compress.GzipCodec")
+//    sc.hadoopConfiguration.set("mapred.output.compress", "true")
+//    sc.hadoopConfiguration.set("mapred.output.compression.codec", "rg.apache.hadoop.io.compress.GzipCodec")
     println("Application report for " + sc.applicationId)
     SparkEngineSession(sc, sqlContext, sparkSession, outputDir)
   }
 
-  def createSparkSession(outputDir: File, conf: SparkConf, addPythonSupport: Boolean = false): SparkSession = {
+  private def createSparkSession(outputDir: File, conf: SparkConf, addPythonSupport: Boolean = false): SparkSession = {
     val execUri = System.getenv("SPARK_EXECUTOR_URI")
     val sparkJars = conf.getOption("spark.jars")
 
@@ -90,7 +81,7 @@ object Main extends SparkLogging {
       }
     }
 
-    val master = conf.getOption("spark.master").getOrElse(SparkConfiguration.SPARK_MASTER.getValue)
+    val master = "yarn"
     info(s"------ Create new SparkContext {$master} -------")
     if (StringUtils.isNotEmpty(master)) {
       conf.setMaster(master)
@@ -108,14 +99,15 @@ object Main extends SparkLogging {
 
     if (jars.nonEmpty) conf.setJars(jars)
     if (execUri != null) conf.set("spark.executor.uri", execUri)
-    if (System.getenv("SPARK_HOME") != null) conf.setSparkHome(System.getenv("SPARK_HOME"))
+//    if (System.getenv("SPARK_HOME") != null)
+    conf.setSparkHome("/opt/spark/spark-3.0.3-hadoop-2.7/spark-3.0.3-bin-hadoop2.7")
     conf.set("spark.scheduler.mode", "FAIR")
 
     val builder = SparkSession.builder.config(conf)
     builder.enableHiveSupport().getOrCreate()
   }
 
-  def createSQLContext(sc: SparkContext, sparkSession: SparkSession): SQLContext = {
+  private def createSQLContext(sc: SparkContext, sparkSession: SparkSession): SQLContext = {
     var sqlc: SQLContext = null
     val name = "org.apache.spark.sql.hive.HiveContext"
     var hc: Constructor[_] = null
@@ -129,7 +121,7 @@ object Main extends SparkLogging {
     sqlc
   }
 
-  def createOutputDir(conf: SparkConf): File = {
+  private def createOutputDir(conf: SparkConf): File = {
     val rootDir = conf.get("spark.repl.classdir", System.getProperty("java.io.tmpdir"))
     Utils.tryThrow {
       val output = SparkUtils.createTempDir(root = rootDir, namePrefix = "repl")
@@ -144,11 +136,4 @@ object Main extends SparkLogging {
     })
   }
 
-  def main(args: Array[String]): Unit = {
-    var sparkEngineSession: SparkEngineSession = createEngineConnSession()
-    var sparkScalaExecutor: SparkScalaExecutor = new SparkScalaExecutor(sparkEngineSession)
-    sparkScalaExecutor.init()
-    var executeResponse : ExecuteResponse = sparkScalaExecutor.executeLine("1+1")
-
-  }
 }

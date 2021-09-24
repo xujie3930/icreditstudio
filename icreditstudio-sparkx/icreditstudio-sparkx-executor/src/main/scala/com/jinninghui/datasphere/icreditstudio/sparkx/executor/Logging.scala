@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory
  *
  * @author liyanhui
  */
-trait SparkLogging {
+trait Logging {
   protected lazy implicit val logger = LoggerFactory.getLogger(getClass)
 
   def trace(message: => String) = {

@@ -2,9 +2,9 @@ package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
@@ -143,7 +143,7 @@ public class IcreditDatasourceController {
      * @return
      */
     @PostMapping("/getConnectionInfo")
-    public BusinessResult<ConnectionSource> getConnectionInfo(@RequestBody ConnectionInfoRequest request) {
+    public BusinessResult<ConnectionInfo> getConnectionInfo(@RequestBody ConnectionInfoRequest request) {
         ConnectionInfoParam param = new ConnectionInfoParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.getConnectionInfo(param);

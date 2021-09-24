@@ -8,7 +8,16 @@
           class="menu-left-item"
           @click="handleMenuSelected(item)"
         >
-          <i :class="[item.iconPath, 'menu-icon']" />
+          <j-svg
+            class="j-svg"
+            v-if="customMenuIcon.includes(item.path)"
+            :name="
+              activeModuleId === item.id
+                ? `${menuIconName(item)}-active`
+                : menuIconName(item)
+            "
+          />
+          <i v-else :class="[item.iconPath, 'menu-icon']" />
           <span slot="title">{{ item.label }}</span>
         </el-menu-item>
       </template>
@@ -22,6 +31,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { SET_ACTIVE_MODULE_ID } from '@/store/mutation-types'
 import { DEFAULT_LOGO_IMG } from '@/config/constant'
 import { base64UrlFilter } from '@/utils/util'
+import { rootMenuMapping } from '@/config/menu'
 
 export default {
   props: {
@@ -41,6 +51,8 @@ export default {
   },
 
   data() {
+    this.customMenuIcon = Object.keys(rootMenuMapping)
+
     return {
       DEFAULT_LOGO_IMG
     }
@@ -73,6 +85,12 @@ export default {
       return variables[key]
     },
 
+    menuIconName(item) {
+      const url = item.url || item.path
+      const icon = rootMenuMapping[url]?.icon || 'menu-workspace'
+      return icon
+    },
+
     // 点击一级菜单，如没有子菜单则跳转，有则展开/收缩菜单
     handleLinkOrToggle({ children, url, redirectPath }, e) {
       if (children && children.length >= 1) return
@@ -99,6 +117,14 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    margin-right: 10px;
+  }
+}
+
+.menu-left-item {
+  .j-svg {
+    width: 20px;
+    height: 20px;
     margin-right: 10px;
   }
 }

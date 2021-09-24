@@ -147,7 +147,7 @@ export default {
       mixinSearchFormConfig: {
         models: { name: '', type: '', status: '' }
       },
-      tableConfiguration: tableConfiguration(this),
+      tableConfiguration,
       fetchConfig: {
         retrieve: {
           url: '/datasource/pageList',

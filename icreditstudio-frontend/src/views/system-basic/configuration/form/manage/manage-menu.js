@@ -6,16 +6,9 @@ export default _this => {
       ruleProp: 'type',
       model: '',
       options: [
-        {
-          value: 'D',
-          label: '顶部模块'
-        }, {
-          value: 'M',
-          label: '菜单'
-        }, {
-          value: 'B',
-          label: '按钮'
-        }
+        { value: 'D', label: '顶部模块' },
+        { value: 'M', label: '菜单' },
+        { value: 'B', label: '按钮' }
       ],
       change: _this.handleTypeChange
     },
@@ -49,7 +42,8 @@ export default _this => {
       label: '文件路径',
       model: '',
       isHide: false,
-      ruleProp: 'filePath'
+      ruleProp: 'filePath',
+      maxlength: 200
     },
     {
       type: 'text',
@@ -68,7 +62,8 @@ export default _this => {
         {
           value: 'Y',
           label: '是'
-        }, {
+        },
+        {
           value: 'N',
           label: '否'
         }
@@ -85,7 +80,8 @@ export default _this => {
         {
           value: 'Y',
           label: '是'
-        }, {
+        },
+        {
           value: 'N',
           label: '否'
         }
