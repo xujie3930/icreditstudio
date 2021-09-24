@@ -14,7 +14,7 @@ public class SparkScalaExecutorTest {
         SparkEngineSession sparkEngineSession = Main.createEngineConnSession();
         SparkScalaExecutor sparkScalaExecutor = new SparkScalaExecutor(sparkEngineSession);
         sparkScalaExecutor.init();
-        ExecuteResponse executeResponse = sparkScalaExecutor.runCode("1+1");
+        ExecuteResponse executeResponse = sparkScalaExecutor.runCode("sql(\"show databases\").show");
         System.out.println(executeResponse);
     }
 }

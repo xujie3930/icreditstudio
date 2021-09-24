@@ -36,9 +36,6 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Log
 
   private var initialized: Boolean = false
 
-
-  private var codeParser: Option[CodeParser] = None
-
   val queryNum = new AtomicLong(0)
 
 
@@ -51,8 +48,5 @@ abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Log
 
 
   protected def getKind: Kind
-
-  def setCodeParser(codeParser: CodeParser): Unit = this.codeParser = Some(codeParser)
-
 
 }

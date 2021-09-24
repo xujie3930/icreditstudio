@@ -16,7 +16,7 @@
 
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
-import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream}
+import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream, PrintStream}
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.exception.ExceptionUtils
@@ -53,9 +53,9 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
   private var jobGroup: String = _
 
-  private var lineOutputStream: OutputStream = _
+  private val lineOutputStream: OutputStream = System.out
 
-  private var jOut: JPrintWriter = _
+  private val jOut : JPrintWriter = new JPrintWriter(lineOutputStream)
 
   private var executeCount = 0
 
@@ -68,13 +68,6 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   override def init(): Unit = {
 
     System.setProperty("scala.repl.name.line", ("$line" + this.hashCode).replace('-', '0'))
-
-    val outFile: File = new File("/home/hadoop/桌面/out.text")
-    if (!outFile.exists()) outFile.createNewFile()
-    lineOutputStream = new BufferedOutputStream(new FileOutputStream(outFile))
-    jOut = new JPrintWriter(lineOutputStream, true)
-    setCodeParser(new ScalaCodeParser)
-
     if (sparkILoop == null) {
       synchronized {
         if (sparkILoop == null) createSparkILoop
@@ -157,8 +150,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   def executeLine0(code: String): ExecuteResponse = {
     info(s"Start to run code $code")
     executeCount += 1
-    val originalOut = System.out
-    val result = scala.Console.withOut(originalOut) {
+    val result = scala.Console.withOut(lineOutputStream) {
       Utils.tryCatch(sparkILoop.interpret(code)) { t =>
         error("task error info:", t)
         val msg = ExceptionUtils.getRootCauseMessage(t)
@@ -170,6 +162,8 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       } match {
         case Results.Success =>
           lineOutputStream.flush()
+          var ps :PrintStream = new PrintStream(lineOutputStream)
+          ps.println()
           //          val outStr = lineOutputStream.
           //          if (outStr.nonEmpty) {
           ////            val output = Utils.tryQuietly(ResultSetWriter.getRecordByRes(outStr, SparkConfiguration.SPARK_CONSOLE_OUTPUT_NUM.getValue))
@@ -198,8 +192,6 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       }
     }
     // reset the java stdout
-    originalOut.flush()
-    System.setOut(originalOut)
     result
   }
 
@@ -248,6 +240,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
     sparkILoop.in = reader
     sparkILoop.initializeSynchronous()
+    sparkILoop.printWelcome()
     SparkScalaExecutor.loopPostInit(sparkILoop)
   }
 
