@@ -2,6 +2,7 @@ package org.apache.dolphinscheduler.api.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.api.enums.ExecuteType;
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.api.service.DolphinSchedulerDemoService;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.common.Constants;
@@ -31,25 +32,24 @@ public class DolphinSchedulerDemoController {
     }
 
     @PostMapping("/dol/demo/dataxTest")
-    public Map<String,String> dataxTest(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser, @RequestBody JSONObject jsonObject) throws Exception {
-        return dolphinSchedulerDemoService.dataxTest(loginUser, jsonObject);
+    public Map<String,String> dataxTest(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser, @RequestBody InstanceCreateRequest request) throws Exception {
+        return dolphinSchedulerDemoService.dataxTest(loginUser, request);
     }
 
     /**
-     *
+     * 重跑：executeType:=REPEAT_RUNNING
+     *恢复失败：ecuteType=START_FAILURE_TASK_PROCESS
      * @param loginUser
-     * @param processInstanceId
+     * @param processDefinitionId
      * @param executeType
      * @return
-     * 重跑：executeType:=REPEAT_RUNNING
-     * 恢复失败：ecuteType=START_FAILURE_TASK_PROCESS
      */
     @PostMapping(value = "/execute")
     public Map<String, Object> execute(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                          @RequestParam("processInstanceId") Integer processInstanceId,
+                          @RequestParam("processDefinitionId") Integer processDefinitionId,
                           @RequestParam("executeType") ExecuteType executeType
     ) {
-        Map<String, Object> result = execService.execute(loginUser, null, processInstanceId, executeType);
+        Map<String, Object> result = execService.newExecute(loginUser, null, processDefinitionId, executeType);
         return result;
     }
 

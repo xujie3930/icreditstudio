@@ -307,6 +307,92 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         return result;
     }
 
+    @Override
+    public Map<String, Object> newExecute(User loginUser, String projectName, Integer processDefinitionId, ExecuteType executeType) {
+        Map<String, Object> result = new HashMap<>();
+        Project project = projectMapper.queryByName(projectName);
+
+        Map<String, Object> checkResult = checkResultAndAuth(loginUser, projectName, project);
+        if (checkResult != null) {
+            return checkResult;
+        }
+
+        // check master exists
+        if (!checkMasterExists(result)) {
+            return result;
+        }
+
+        //项目中一个定义对应一个实例，所以可以不做空指针异常判断
+        int processInstanceId = processService.findProcessDefinitionId(processDefinitionId).getProcessDefinitionId();
+        ProcessInstance processInstance = processService.findProcessInstanceDetailById(processInstanceId);
+        if (processInstance == null) {
+            putMsg(result, Status.PROCESS_INSTANCE_NOT_EXIST, processInstanceId);
+            return result;
+        }
+
+        ProcessDefinition processDefinition = processService.findProcessDefinition(processInstance.getProcessDefinitionCode(),
+                processInstance.getProcessDefinitionVersion());
+        if (executeType != ExecuteType.STOP && executeType != ExecuteType.PAUSE) {
+            result = checkProcessDefinitionValid(processDefinition, processInstance.getProcessDefinitionCode());
+            if (result.get(Constants.STATUS) != Status.SUCCESS) {
+                return result;
+            }
+        }
+
+        checkResult = checkExecuteType(processInstance, executeType);
+        Status status = (Status) checkResult.get(Constants.STATUS);
+        if (status != Status.SUCCESS) {
+            return checkResult;
+        }
+        if (!checkTenantSuitable(processDefinition)) {
+            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
+                    processDefinition.getId(), processDefinition.getName());
+            putMsg(result, Status.TENANT_NOT_SUITABLE);
+        }
+
+        //get the startParams user specified at the first starting while repeat running is needed
+        Map<String, Object> commandMap = JSONUtils.toMap(processInstance.getCommandParam(), String.class, Object.class);
+        String startParams = null;
+        if (MapUtils.isNotEmpty(commandMap) && executeType == ExecuteType.REPEAT_RUNNING) {
+            Object startParamsJson = commandMap.get(Constants.CMD_PARAM_START_PARAMS);
+            if (startParamsJson != null) {
+                startParams = startParamsJson.toString();
+            }
+        }
+
+        switch (executeType) {
+            case REPEAT_RUNNING:
+                result = insertCommand(loginUser, processInstanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING, startParams);
+                break;
+            case RECOVER_SUSPENDED_PROCESS:
+                result = insertCommand(loginUser, processInstanceId, processDefinition.getId(), CommandType.RECOVER_SUSPENDED_PROCESS, startParams);
+                break;
+            case START_FAILURE_TASK_PROCESS:
+                result = insertCommand(loginUser, processInstanceId, processDefinition.getId(), CommandType.START_FAILURE_TASK_PROCESS, startParams);
+                break;
+            case STOP:
+                if (processInstance.getState() == ExecutionStatus.READY_STOP) {
+                    putMsg(result, Status.PROCESS_INSTANCE_ALREADY_CHANGED, processInstance.getName(), processInstance.getState());
+                } else {
+                    result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
+                }
+                break;
+            case PAUSE:
+                if (processInstance.getState() == ExecutionStatus.READY_PAUSE) {
+                    putMsg(result, Status.PROCESS_INSTANCE_ALREADY_CHANGED, processInstance.getName(), processInstance.getState());
+                } else {
+                    result = updateProcessInstancePrepare(processInstance, CommandType.PAUSE, ExecutionStatus.READY_PAUSE);
+                }
+                break;
+            default:
+                logger.error("unknown execute type : {}", executeType);
+                putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "unknown execute type");
+
+                break;
+        }
+        return result;
+    }
+
     /**
      * check tenant suitable
      *

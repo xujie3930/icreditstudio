@@ -82,6 +82,9 @@ public interface ExecutorService {
      */
     Map<String, Object> execute(User loginUser, String projectName, Integer processInstanceId, ExecuteType executeType);
 
+
+    Map<String, Object> newExecute(User loginUser, String projectName, Integer processDefinitionId, ExecuteType executeType);
+
     /**
      * check if sub processes are offline before starting process definition
      *

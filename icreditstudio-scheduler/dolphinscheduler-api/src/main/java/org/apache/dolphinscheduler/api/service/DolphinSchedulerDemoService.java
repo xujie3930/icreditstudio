@@ -3,6 +3,7 @@ package org.apache.dolphinscheduler.api.service;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.dao.entity.Tenant;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -198,24 +200,14 @@ public class DolphinSchedulerDemoService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> dataxTest(User loginUser, JSONObject jsonObject) throws Exception {
-        String tenantCode = (String) jsonObject.get("tenantCode");//租户编码
-        String targetTable = (String) jsonObject.get("targetTable");//目标源数据库表名
-        String dtType = (String) jsonObject.get("dtType");//目标数据源类型
-        String username = (String) jsonObject.get("username");//目标数据源类型
-        String password = (String) jsonObject.get("password");//目标数据源类型
-        String sourceUri = (String) jsonObject.get("sourceUri");//目标数据源类型
-        List fields = (List) jsonObject.get("fields");//目标数据源类型
-//        String targetDataSourceId = (String) jsonObject.get("targetDataSourceId");//目标数据源Id
-        String dsType = (String) jsonObject.get("dsType");//数据源类型
-//        String dataSourceId = (String) jsonObject.get("dataSourceId");//数据源Id
-        String sql = (String) jsonObject.get("sql");//数据源sql
-        String schedule = jsonObject.getString("schedule");//cron表达式
-        String startTime = jsonObject.getString("startTime");//scheduler开始时间
-        String endTime = jsonObject.getString("endTime");//scheduler结束时间
+    public Map<String, String> dataxTest(User loginUser, InstanceCreateRequest request) throws Exception {
+        String tenantCode = request.getTenantCode();//租户编码
+        String schedule = request.getScheduler();//cron表达式
+        String startTime = request.getStartTime();//scheduler开始时间
+        String endTime = request.getEndTime();//scheduler结束时间
 
         long currTime = System.currentTimeMillis();
-        String projectName = "项目名称" + currTime;//生成 自定义 项目名称， 可替换成工作空间
+        String projectName = "项目" + currTime;//生成 自定义 项目名称， 可替换成工作空间
         String projectDescription = "";//项目描述  可为空
 
         String processDefName = "processDefinition" + currTime;//工作流定义名称
@@ -244,8 +236,7 @@ public class DolphinSchedulerDemoService {
         Tenant tenant = tenantService.findByTenantCode(tenantCode);
 
         //创建工作流定义，默认上线
-//        String processDefJson = appendDataxProcessDefJson(targetDataSourceId, dataSourceId, tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
-        String processDefJson = appendDataxProcessDefJson(tenant.getId(), taskId, taskName, dsType, dtType, sql, targetTable, username, password, sourceUri, fields);//拼接工作流定义JSON
+        String processDefJson = appendDataxProcessDefJson(tenant.getId(), taskId, taskName, request);//拼接工作流定义JSON
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
 
         //启动工作流定义
@@ -253,34 +244,32 @@ public class DolphinSchedulerDemoService {
         Map<String, Object> execProcessInstanceResult = execService.execProcessInstance(loginUser, projectName, processDefinitionId, scheduleTime, execType, failureStrategy,startNodeList,
                 taskDependType, warningType,warningGroupId, runMode, processInstancePriority, workerGroup, timeout, null);
 
-        Map<String, Object> scheduleResult = schedulerService.myInsertSchedule(startTime, endTime, loginUser, projectName, processDefinitionId, schedule,
-                warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup);
-        schedulerService.setScheduleState(loginUser, projectName, (int) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
+        if (StringUtils.isNotBlank(schedule) && StringUtils.isNotBlank(startTime) && StringUtils.isNotBlank(endTime)){
+            Map<String, Object> scheduleResult = schedulerService.myInsertSchedule(startTime, endTime, loginUser, projectName, processDefinitionId, schedule,
+                    warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup);
+            schedulerService.setScheduleState(loginUser, projectName, (int) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
+        }
 
-        Map<String,String> resultMap = new HashMap<>(0);
-        resultMap.put("","");
+        Map<String,String> resultMap = new HashMap<>();
+        resultMap.put("processDefinitionId", processDefinitionId+"");
         resultMap.put("","");
         return resultMap;
     }
 
-//    private String appendDataxProcessDefJson(String targetDataSourceId, String dataSourceId, int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
-    private String appendDataxProcessDefJson(int tenantId, String taskId, String taskName, String dsType, String dtType, String sql, String targetTable, String username, String password, String sourceUri, List fields) {
+    private String appendDataxProcessDefJson(int tenantId, String taskId, String taskName, InstanceCreateRequest request) {
         Map<String,Object> outMap = new HashMap<>();
         List<String> emptyList = new ArrayList<>();
         List<Map<String,Object>> taskList = new ArrayList<>();
         Map<String,Object> taskFirstMap = new HashMap<>();
         Map<String,Object> paramsMap = new HashMap<>();
         paramsMap.put("customConfig", 0);
-        paramsMap.put("dsType", dsType);
-        paramsMap.put("dtType", dtType);
-//        paramsMap.put("dataSource", dataSourceId);//Datasource 数据源ID  --   资源库
-//        paramsMap.put("dataTarget", targetDataSourceId);//Datasource 数据源ID  --  目标库
-        paramsMap.put("sql", sql);
-        paramsMap.put("targetTable", targetTable);
-        paramsMap.put("username", username);
-        paramsMap.put("password", password);
-        paramsMap.put("sourceUri", sourceUri);
-        paramsMap.put("fields", fields);
+        //这里写入所有自定义参数
+        Field[] fields = request.getClass().getDeclaredFields();
+        for(Field field : fields){
+            String fieldName = field.getName();
+            Class<?> type = field.getType();
+            paramsMap.put(fieldName, type);
+        }
         paramsMap.put("jobSpeedByte", 0);
         paramsMap.put("jobSpeedRecord", 1000);
         paramsMap.put("preStatements", emptyList);
