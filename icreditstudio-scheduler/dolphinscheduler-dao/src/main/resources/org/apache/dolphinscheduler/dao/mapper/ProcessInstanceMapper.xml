@@ -228,6 +228,6 @@
         <include refid="baseSql"/>
         from t_ds_process_instance
         where process_definition_Id=#{processDefinitionId}
-       limit1
+       limit 1
     </select>
 </mapper>
