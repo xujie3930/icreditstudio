@@ -16,7 +16,7 @@ public class LineRecord  extends ResultRecord{
     }
 
     String line;
-    String getLine(){
+    public String getLine(){
         return line;
     }
 

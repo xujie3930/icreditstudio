@@ -43,11 +43,12 @@ public class SparkOutputStream extends OutputStream {
                     } else {
                         line.add(b);
                     }
+                }else {
+                    logger.warn("writer is null");
                 }
             }
-        } else {
-            logger.warn("writer is null");
         }
+        {}
     }
 
     public void reset() throws IOException {
@@ -85,18 +86,18 @@ public class SparkOutputStream extends OutputStream {
     }
 
     void flush0() throws IOException {
+        StringBuilder sb = new StringBuilder();
         for (Integer b : line) {
             String outStr = new String(intToByteArray(b), StandardCharsets.UTF_8);
-            writer.addRecord(new LineRecord(outStr));
+            sb.append(outStr);
         }
+        writer.addRecord(new LineRecord(sb.toString()));
+
     }
 
     byte[] intToByteArray(int i) {
-        byte[] result = new byte[4];
-        result[0] = (byte) ((i >> 24) & 0xFF);
-        result[1] = (byte) ((i >> 16) & 0xFF);
-        result[2] = (byte) ((i >> 8) & 0xFF);
-        result[3] = (byte) (i & 0xFF);
+        byte[] result = new byte[1];
+        result[0] = (byte) (i & 0xFF);
         return result;
     }
 }
