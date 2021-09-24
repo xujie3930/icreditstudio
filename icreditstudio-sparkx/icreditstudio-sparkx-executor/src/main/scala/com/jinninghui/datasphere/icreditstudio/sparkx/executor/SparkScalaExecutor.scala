@@ -17,6 +17,8 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
 import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream, PrintStream}
+
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.SparkOutputStream
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.exception.ExceptionUtils
@@ -54,7 +56,8 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   private var jobGroup: String = _
 
 //  private val lineOutputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(new File("/home/hadoop/桌面/out.text")))
-private val lineOutputStream: OutputStream = System.out
+//private val lineOutputStream: OutputStream = System.out
+  private val lineOutputStream :SparkOutputStream = new SparkOutputStream
 
   private val jOut : JPrintWriter = new JPrintWriter(lineOutputStream, true)
 
@@ -106,7 +109,8 @@ private val lineOutputStream: OutputStream = System.out
 
 
     lazyLoadILoop
-//    lineOutputStream.ready()
+    lineOutputStream.reday()
+    lineOutputStream.reset()
 
     var res: ExecuteResponse = null
 
@@ -164,7 +168,7 @@ private val lineOutputStream: OutputStream = System.out
       } match {
         case Results.Success =>
           //TODO chuli yunxing jieguo
-//          lineOutputStream.flush()
+          lineOutputStream.flush()
 //          var ps :PrintStream = new PrintStream(lineOutputStream)
 //          ps.println()
           //          val outStr = lineOutputStream.
