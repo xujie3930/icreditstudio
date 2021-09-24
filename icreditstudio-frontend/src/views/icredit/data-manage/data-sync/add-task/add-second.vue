@@ -306,7 +306,10 @@
       </div>
 
       <footer class="footer-btn-wrap">
-        <el-button class="btn" @click="$router.push('/data-manage/add-task')">
+        <el-button
+          class="btn"
+          @click="$router.push('/data-manage/add-task?opType=edit')"
+        >
           上一步
         </el-button>
         <el-button
@@ -894,7 +897,6 @@ export default {
 
     // 编辑情况下进行关联表的渲染
     handleRenderLinkTable(graphicData) {
-      console.log('graphicData', graphicData)
       // 根据接口的view字段数据整合成selectedTable字段相应的数据结构
       const { length } = graphicData || []
       const {
@@ -1097,14 +1099,14 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value)
               switch (key) {
                 case 'fieldInfos':
                   this.secondTaskForm[key] = this.hadleFieldInfos(value)
                   break
                 case 'view':
                   this.secondTaskForm[key] = value
-                  this.handleRenderLinkTable(value)
+                  !this.secondTaskForm.createMode &&
+                    this.handleRenderLinkTable(value)
                   break
                 default:
                   this.secondTaskForm[key] = value

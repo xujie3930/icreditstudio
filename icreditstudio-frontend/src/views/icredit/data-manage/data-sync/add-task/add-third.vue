@@ -96,7 +96,10 @@
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button class="btn" @click="$router.push('/data-manage/add-build')">
+        <el-button
+          class="btn"
+          @click="$router.push('/data-manage/add-build?opType=edit')"
+        >
           上一步
         </el-button>
         <el-button
