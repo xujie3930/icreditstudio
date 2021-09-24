@@ -95,7 +95,7 @@
 <script>
 import lfTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runtime'
 import rgTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runerror'
-import { renderChart, defaultHightLight, chartResize } from '@/utils/echarts'
+import { renderChart } from '@/utils/echarts'
 import { optionsMapping } from './contant'
 
 export default {
@@ -124,19 +124,13 @@ export default {
     this.renderLineChart('lineChart')
   },
 
-  destroyed() {
-    window.onresize = null
-  },
-
   methods: {
     renderPieChart(id) {
-      const chartInstance = renderChart(id, optionsMapping[id])
-      defaultHightLight(chartInstance, 4)
+      renderChart(id, optionsMapping[id])
     },
 
     renderLineChart(id) {
-      const chartInstance = renderChart(id, optionsMapping[id])
-      window.onresize = chartResize(chartInstance)
+      renderChart(id, optionsMapping[id])
     }
   }
 }

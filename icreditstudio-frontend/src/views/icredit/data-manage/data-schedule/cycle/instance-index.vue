@@ -1,15 +1,29 @@
 <!--
  * @Author: lizheng
- * @Description: 实例
+ * @Description: 周期实例
  * @Date: 2021-09-23
 -->
 
 <template>
-  <div>dinstance</div>
+  <ScheduleList
+    :form-option="formOption"
+    :table-configuration="tableConfiguration"
+  />
 </template>
 
 <script>
-export default {}
-</script>
+import ScheduleList from '@/views/icredit/components/schedule-list'
+import formOption from '@/views/icredit/configuration/form/schedule-cycle-instance'
+import tableConfiguration from '@/views/icredit/configuration/table/schedule-cycle-instance'
 
-<style></style>
+export default {
+  components: { ScheduleList },
+
+  data() {
+    return {
+      formOption,
+      tableConfiguration: tableConfiguration(this)
+    }
+  }
+}
+</script>
