@@ -144,7 +144,6 @@ export default {
 
     // 二级菜单切换
     getChildMenus(curMenu) {
-      console.log(curMenu, 'ssss')
       const { children: childMenus = [], ...rest } = curMenu
       const showMenuArr = childMenus.filter(
         item => item.isShow && !item.deleteFlag
@@ -152,7 +151,15 @@ export default {
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
       this.isExistThreeMenus = !!showMenuArr.length
       this.threeChildrenMenus = showMenuArr
-      showMenuArr.length && this.$router.push(showMenuArr[0].url)
+      // 自动加载三级菜单的一个菜单或四级菜单的第一个
+      if (showMenuArr.length) {
+        const { url, children = [] } = showMenuArr[0]
+        const fourthMenuArr = children.filter(
+          ({ isShow, filePath, url: path, deleteFlag }) =>
+            isShow && !deleteFlag && filePath && path
+        )
+        this.$router.push(fourthMenuArr.length ? fourthMenuArr[0].url : url)
+      }
     },
 
     // 三级菜单切换
