@@ -375,6 +375,10 @@ public class ProcessService {
         return processInstanceMapper.selectById(processId);
     }
 
+    public ProcessInstance findProcessDefinitionId(int processDefinitionId) {
+        return processInstanceMapper.selectByDefinitionId(processDefinitionId);
+    }
+
     /**
      * find process define by id.
      *
@@ -810,6 +814,7 @@ public class ProcessService {
                 processInstance.setWorkerGroup(workerGroup);
                 processInstance.setTimeout(processDefinition.getTimeout());
                 processInstance.setTenantId(processDefinition.getTenantId());
+                processInstance.setProcessDefinitionId(command.getProcessDefinitionId());
 
                 Map<String,Object> paramMap = new HashMap<>();
                 paramMap.put("process_instance_id",processInstance.getId());
