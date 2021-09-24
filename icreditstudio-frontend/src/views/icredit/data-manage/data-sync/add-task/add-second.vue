@@ -330,6 +330,7 @@
       </footer>
     </div>
 
+    <!-- 设置关联关系 -->
     <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
 
     <Dialog
@@ -563,16 +564,25 @@ export default {
     handleVisualConfirm(options) {
       // 保存或更新关联关系
       const { idx, associatedType } = options
-      const { length: len } = this.selectedTable.filter(
-        ({ type }) => type === 'line'
-      )
+      // const { length: len } = this.selectedTable.filter(
+      //   ({ type }) => type === 'line'
+      // )
 
-      len < 2 &&
-        (this.secondTaskForm.view = Array(len - 1).fill(
+      // console.log(' this.selectedTable', this.selectedTable, len, idx)
+
+      // view为空
+      // len < 2 &&
+      //   (this.secondTaskForm.view = Array(len - 1).fill(
+      //     deepClone(viewDefaultData)
+      //   ))
+      const { length } = this.secondTaskForm.view
+      const curIndex = (idx - 1) / 2
+      if (!length) {
+        this.secondTaskForm.view = Array(curIndex + 1).fill(
           deepClone(viewDefaultData)
-        ))
-
-      this.secondTaskForm.view.splice((idx - 1) / 2, 1, options)
+        )
+      }
+      this.secondTaskForm.view.splice(curIndex, 1, options)
 
       // 显示已设置关联关系的表的状态
       this.selectedTable[idx - 1].isChecked = true
@@ -597,6 +607,8 @@ export default {
           this.selectedTable.splice(2, 1)
           this.selectedTable.splice(2, 1)
           this.secondTaskForm.view.splice(1, 1)
+          this.secondTaskForm.view.splice(0, 1)
+          this.selectedTable[0].isChecked = false
           break
         case 4:
           this.selectedTable.splice(4, 1)
