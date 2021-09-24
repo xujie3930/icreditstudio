@@ -306,7 +306,10 @@
       </div>
 
       <footer class="footer-btn-wrap">
-        <el-button class="btn" @click="$router.push('/data-manage/add-task')">
+        <el-button
+          class="btn"
+          @click="$router.push('/data-manage/add-task?opType=edit')"
+        >
           上一步
         </el-button>
         <el-button
@@ -327,6 +330,7 @@
       </footer>
     </div>
 
+    <!-- 设置关联关系 -->
     <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
 
     <Dialog
@@ -560,16 +564,25 @@ export default {
     handleVisualConfirm(options) {
       // 保存或更新关联关系
       const { idx, associatedType } = options
-      const { length: len } = this.selectedTable.filter(
-        ({ type }) => type === 'line'
-      )
+      // const { length: len } = this.selectedTable.filter(
+      //   ({ type }) => type === 'line'
+      // )
 
-      len < 2 &&
-        (this.secondTaskForm.view = Array(len - 1).fill(
+      // console.log(' this.selectedTable', this.selectedTable, len, idx)
+
+      // view为空
+      // len < 2 &&
+      //   (this.secondTaskForm.view = Array(len - 1).fill(
+      //     deepClone(viewDefaultData)
+      //   ))
+      const { length } = this.secondTaskForm.view
+      const curIndex = (idx - 1) / 2
+      if (!length) {
+        this.secondTaskForm.view = Array(curIndex + 1).fill(
           deepClone(viewDefaultData)
-        ))
-
-      this.secondTaskForm.view.splice((idx - 1) / 2, 1, options)
+        )
+      }
+      this.secondTaskForm.view.splice(curIndex, 1, options)
 
       // 显示已设置关联关系的表的状态
       this.selectedTable[idx - 1].isChecked = true
@@ -594,6 +607,8 @@ export default {
           this.selectedTable.splice(2, 1)
           this.selectedTable.splice(2, 1)
           this.secondTaskForm.view.splice(1, 1)
+          this.secondTaskForm.view.splice(0, 1)
+          this.selectedTable[0].isChecked = false
           break
         case 4:
           this.selectedTable.splice(4, 1)
@@ -894,7 +909,6 @@ export default {
 
     // 编辑情况下进行关联表的渲染
     handleRenderLinkTable(graphicData) {
-      console.log('graphicData', graphicData)
       // 根据接口的view字段数据整合成selectedTable字段相应的数据结构
       const { length } = graphicData || []
       const {
@@ -1097,14 +1111,14 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value)
               switch (key) {
                 case 'fieldInfos':
                   this.secondTaskForm[key] = this.hadleFieldInfos(value)
                   break
                 case 'view':
                   this.secondTaskForm[key] = value
-                  this.handleRenderLinkTable(value)
+                  !this.secondTaskForm.createMode &&
+                    this.handleRenderLinkTable(value)
                   break
                 default:
                   this.secondTaskForm[key] = value

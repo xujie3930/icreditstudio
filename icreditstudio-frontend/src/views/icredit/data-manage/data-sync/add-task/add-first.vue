@@ -153,7 +153,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value, typeof value)
               this.taskForm[key] = value
             }
           }
@@ -165,7 +164,6 @@ export default {
 
     // 自动生成任务名规则
     autoGenerateTaskName(name) {
-      console.log(name, 'kokoo')
       if (name) return false
       const prefixStrArr = ['mysql', 'oracle', 'postSql', 'excel']
       const suffixStrArr = ['hive', 'hdfs']

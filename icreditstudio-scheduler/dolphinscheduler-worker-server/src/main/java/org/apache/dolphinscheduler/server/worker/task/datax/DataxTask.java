@@ -42,6 +42,7 @@ import org.apache.dolphinscheduler.server.entity.DataxTaskExecutionContext;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.utils.DataxUtils;
 import org.apache.dolphinscheduler.server.utils.ParamUtils;
+import org.apache.dolphinscheduler.server.worker.entity.InstanceCreateEntity;
 import org.apache.dolphinscheduler.server.worker.task.AbstractTask;
 import org.apache.dolphinscheduler.server.worker.task.CommandExecuteResult;
 import org.apache.dolphinscheduler.server.worker.task.ShellCommandExecutor;
@@ -314,52 +315,35 @@ public class DataxTask extends AbstractTask {
 
         List<JSONObject> readerConnArr = new ArrayList<>();
         JSONObject taskParams =JSONObject.parseObject(taskExecutionContext.getTaskParams());
+        InstanceCreateEntity params = JSONObject.toJavaObject(taskParams, InstanceCreateEntity.class);
         JSONObject readerConn = new JSONObject();
         readerConn.put("querySql", new String[] {dataXParameters.getSql()});
-        //readerConn.put("jdbcUrl", dataSourceCfg.getJdbcUrl());
-        readerConn.put("jdbcUrl", new String[]{taskParams.getString("sourceUri")});
+        readerConn.put("jdbcUrl", new String[]{params.getSourceUri()});
         readerConnArr.add(readerConn);
 
         JSONObject readerParam = new JSONObject();
-        //readerParam.put("username", dataSourceCfg.getUser());
-        readerParam.put("username", taskParams.getString("username"));
-        //readerParam.put("password", dataSourceCfg.getPassword());
-        readerParam.put("password", taskParams.getString("password"));
+        readerParam.put("username", params.getUsername());
+        readerParam.put("password", params.getPassword());
         readerParam.put("connection", readerConnArr);
 
         JSONObject reader = new JSONObject();
-//        reader.put("name", DataxUtils.getReaderPluginName(DbType.of(dataxTaskExecutionContext.getSourcetype())));
         reader.put("name", DataxUtils.getReaderPluginName(DbType.getDbTypeByDesc(dataXParameters.getDsType().toLowerCase())));
         reader.put("parameter", readerParam);
 
-//        List<JSONObject> writerConnArr = new ArrayList<>();
-//        JSONObject writerConn = new JSONObject();
-//        writerConn.put("table", new String[] {dataXParameters.getTargetTable()});
-//        writerConn.put("jdbcUrl", dataTargetCfg.getJdbcUrl());
-//        writerConnArr.add(writerConn);
-
         JSONObject writerParam = new JSONObject();
-        writerParam.put("defaultFS", "hdfs://192.168.0.17:8020");
+        writerParam.put("defaultFS", "hdfs://192.168.0.190:9000");
         writerParam.put("fileType", "orc");
-        writerParam.put("path", "/usr/local/software/hive/warehouse/dfstest.db/dfs_mysql");
+        String writePath = "/usr/local/software/hive/warehouse/" + params.getTargetDatabase() + ".db/" + params.getTargetTable();
+        writerParam.put("path", writePath);
 
         List<JSONObject> columnList = new ArrayList<>();
-        JSONArray array = JSONObject.parseArray(taskParams.getString("fields"));
-        for (Object columnJson : array) {
+        List<Object> fields = params.getFields();
+        for (Object columnJson : fields) {
             JSONObject column = new JSONObject();
             column.put("name", JSONObject.parseObject(columnJson.toString()).get("name"));
             column.put("type", JSONObject.parseObject(columnJson.toString()).get("type"));
             columnList.add(column);
         }
-
-        /*JSONObject column1 = new JSONObject();
-        column1.put("name", "id");
-        column1.put("type", "STRING");
-        JSONObject column2 = new JSONObject();
-        column2.put("name", "form_name");
-        column2.put("type", "STRING");
-        columnList.add(column1);
-        columnList.add(column2);*/
 
         JSONObject config = new JSONObject();
         config.put("dfs.client.use.datanode.hostname",true);
@@ -372,7 +356,6 @@ public class DataxTask extends AbstractTask {
         writerParam.put("compress", "NONE");
 
         JSONObject writer = new JSONObject();
-//        writer.put("name", DataxUtils.getWriterPluginName(DbType.of(dataxTaskExecutionContext.getTargetType())));
         writer.put("name", DataxUtils.getWriterPluginName(DbType.getDbTypeByDesc(dataXParameters.getDtType().toLowerCase())));
         writer.put("parameter", writerParam);
 

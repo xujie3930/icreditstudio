@@ -49,6 +49,11 @@ public class ProcessInstance {
     private int id;
 
     /**
+     * process definition 表对应的id
+     */
+    private int processDefinitionId;
+
+    /**
      * process definition code
      */
     private Long processDefinitionCode;
@@ -259,6 +264,14 @@ public class ProcessInstance {
                 + "-"
                 +
                 DateUtils.getCurrentTimeStamp();
+    }
+
+    public int getProcessDefinitionId() {
+        return processDefinitionId;
+    }
+
+    public void setProcessDefinitionId(int processDefinitionId) {
+        this.processDefinitionId = processDefinitionId;
     }
 
     public String getVarPool() {
