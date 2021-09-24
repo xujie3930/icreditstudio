@@ -45,13 +45,9 @@ object  CodeParserFactory {
 
   def initCodeParsers(): Unit = {
     defaultCodeParsers.put(CodeType.SQL, new SQLCodeParser)
-    if (GovernanceCommonConf.PYTHON_CODE_PARSER_SWITCH.getValue) {
-      defaultCodeParsers.put(CodeType.Python, new PythonCodeParser)
-    }
-    if (GovernanceCommonConf.SCALA_CODE_PARSER_SWITCH.getValue){
-      defaultCodeParsers.put(CodeType.Scala, new ScalaCodeParser)
-    }
-//    defaultCodeParsers.put(CodeType.Other, new EmptyCodeParser)
+    defaultCodeParsers.put(CodeType.Python, new PythonCodeParser)
+    defaultCodeParsers.put(CodeType.Scala, new ScalaCodeParser)
+    //    defaultCodeParsers.put(CodeType.Other, new EmptyCodeParser)
   }
 
 }
@@ -78,7 +74,7 @@ abstract class CombinedEngineCodeParser extends CodeParser {
   }
 }
 
-class ScalaCodeParser extends SingleCodeParser with SparkLogging {
+class ScalaCodeParser extends SingleCodeParser with Logging {
 
   override val codeType: CodeType = CodeType.Scala
 
@@ -190,7 +186,7 @@ class SQLCodeParser extends SingleCodeParser {
 
   val separator = ";"
 
-  val defaultLimit: Int = GovernanceCommonConf.ENGINE_DEFAULT_LIMIT.getValue
+  val defaultLimit: Int = 5000
 
   override def parse(code: String): Array[String] = {
     //val realCode = StringUtils.substringAfter(code, "\n")

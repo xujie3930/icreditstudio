@@ -30,7 +30,7 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutorService}
 import scala.util.control.ControlThrowable
 
-object Utils extends SparkLogging {
+object Utils extends Logging {
 
   def tryQuietly[T](tryOp: => T): T = tryQuietly(tryOp, _ => ())
 

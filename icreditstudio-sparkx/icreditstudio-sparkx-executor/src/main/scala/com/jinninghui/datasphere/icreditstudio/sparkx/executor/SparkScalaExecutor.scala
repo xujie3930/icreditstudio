@@ -99,7 +99,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     } else {
       throw new SparkSessionNullException(40006, "sparkILoop is null")
     }
-    Utils.waitUntil(() => sparkILoopInited && sparkILoop.intp != null, SparkConfiguration.SPARK_LOOP_INIT_TIME.getValue.toDuration)
+    Utils.waitUntil(() => sparkILoopInited && sparkILoop.intp != null, new TimeType("120s").toDuration)
     super.init()
   }
 
@@ -263,7 +263,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     require(_sqlContext != null)
     //Wait up to 10 seconds（最多等待10秒）
     val startTime = System.currentTimeMillis()
-    Utils.waitUntil(() => sparkILoop.intp != null && sparkILoop.intp.isInitializeComplete, SparkConfiguration.SPARK_LANGUAGE_REPL_INIT_TIME.getValue.toDuration)
+    Utils.waitUntil(() => sparkILoop.intp != null && sparkILoop.intp.isInitializeComplete, new TimeType("30s").toDuration)
     warn(s"Start to init sparkILoop cost ${System.currentTimeMillis() - startTime}.")
     sparkILoop.beSilentDuring {
       sparkILoop.command(":silent")
@@ -288,11 +288,6 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       bindFlag = true
       warn(s"Finished to init sparkILoop cost ${System.currentTimeMillis() - startTime}.")
     }
-  }
-
-  def getOption(key: String): Option[String] = {
-    val value = SparkConfiguration.SPARK_REPL_CLASSDIR.getValue
-    Some(value)
   }
 
   protected def getExecutorIdPreFix: String = "SparkScalaExecutor_"

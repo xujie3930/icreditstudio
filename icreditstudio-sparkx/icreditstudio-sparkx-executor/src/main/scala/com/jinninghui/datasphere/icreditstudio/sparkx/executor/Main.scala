@@ -33,7 +33,7 @@ import org.apache.spark.{SparkConf, SparkContext}
  *
  * @author liyanhui
  */
-object Main extends SparkLogging {
+object Main extends Logging {
 
   def createEngineConnSession(): SparkEngineSession = {
     val useSparkSubmit = true
@@ -81,7 +81,7 @@ object Main extends SparkLogging {
       }
     }
 
-    val master = conf.getOption("spark.master").getOrElse(SparkConfiguration.SPARK_MASTER.getValue)
+    val master = "yarn"
     info(s"------ Create new SparkContext {$master} -------")
     if (StringUtils.isNotEmpty(master)) {
       conf.setMaster(master)

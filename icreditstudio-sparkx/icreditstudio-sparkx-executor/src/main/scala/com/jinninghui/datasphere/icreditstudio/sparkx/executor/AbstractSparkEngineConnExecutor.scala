@@ -32,7 +32,7 @@ import org.apache.spark.SparkContext
  *
  * @author liyanhui
  */
-abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends SparkLogging{
+abstract class AbstractSparkEngineConnExecutor(val sc: SparkContext) extends Logging{
 
   private var initialized: Boolean = false
 
