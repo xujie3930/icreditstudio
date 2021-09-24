@@ -14,7 +14,13 @@ public class SparkScalaExecutorTest {
         SparkEngineSession sparkEngineSession = Main.createEngineConnSession();
         SparkScalaExecutor sparkScalaExecutor = new SparkScalaExecutor(sparkEngineSession);
         sparkScalaExecutor.init();
-        ExecuteResponse executeResponse = sparkScalaExecutor.runCode("sql(\"show databases\").show");
-        System.out.println(executeResponse);
+        sparkScalaExecutor.runCode("sc.getConf.getAll");
+
+        sparkScalaExecutor.runCode("sql(\"show databases\").show");
+        sparkScalaExecutor.runCode("sql(\"drop database hive_test\")");
+
+        sparkScalaExecutor.runCode("sql(\"create database hive_test\")");
+        sparkScalaExecutor.runCode("sql(\"show databases\").show");
+
     }
 }
