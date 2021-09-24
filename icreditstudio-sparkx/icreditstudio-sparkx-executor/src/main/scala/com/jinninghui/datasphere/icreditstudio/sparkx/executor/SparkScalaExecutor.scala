@@ -53,9 +53,10 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
   private var jobGroup: String = _
 
-  private val lineOutputStream: OutputStream = System.out
+//  private val lineOutputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(new File("/home/hadoop/桌面/out.text")))
+private val lineOutputStream: OutputStream = System.out
 
-  private val jOut : JPrintWriter = new JPrintWriter(lineOutputStream)
+  private val jOut : JPrintWriter = new JPrintWriter(lineOutputStream, true)
 
   private var executeCount = 0
 
@@ -105,7 +106,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
 
     lazyLoadILoop
-    //    lineOutputStream.ready()
+//    lineOutputStream.ready()
 
     var res: ExecuteResponse = null
 
@@ -150,6 +151,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   def executeLine0(code: String): ExecuteResponse = {
     info(s"Start to run code $code")
     executeCount += 1
+    var originalOut = System.out
     val result = scala.Console.withOut(lineOutputStream) {
       Utils.tryCatch(sparkILoop.interpret(code)) { t =>
         error("task error info:", t)
@@ -161,9 +163,10 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
         Results.Error
       } match {
         case Results.Success =>
-          lineOutputStream.flush()
-          var ps :PrintStream = new PrintStream(lineOutputStream)
-          ps.println()
+          //TODO chuli yunxing jieguo
+//          lineOutputStream.flush()
+//          var ps :PrintStream = new PrintStream(lineOutputStream)
+//          ps.println()
           //          val outStr = lineOutputStream.
           //          if (outStr.nonEmpty) {
           ////            val output = Utils.tryQuietly(ResultSetWriter.getRecordByRes(outStr, SparkConfiguration.SPARK_CONSOLE_OUTPUT_NUM.getValue))
@@ -192,6 +195,8 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       }
     }
     // reset the java stdout
+
+    System.setOut(originalOut)
     result
   }
 
