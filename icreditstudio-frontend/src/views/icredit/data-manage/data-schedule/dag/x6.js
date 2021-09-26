@@ -2,6 +2,22 @@ import { Graph } from '@antv/x6'
 
 const customLineStyle = { line: { stroke: '#d6e4ff' } }
 
+export const customNodeStyle = (nodeConfig, cusAttrs) => {
+  const defaultAttrs = {
+    body: {
+      fill: '#f4f4f4', // 背景颜色
+      stroke: '#f4f4f4', // 边框颜色
+      rx: 4,
+      ry: 4
+    }
+  }
+  const attrs = cusAttrs || defaultAttrs
+  return {
+    ...nodeConfig,
+    attrs
+  }
+}
+
 export const x6Json = {
   // 节点
   nodes: [

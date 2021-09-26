@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { x6Json, renderGraph } from './x6'
+import { x6Json, customNodeStyle, renderGraph } from './x6'
 
 export default {
   data() {
@@ -64,9 +64,10 @@ export default {
 
     // 渲染流程图
     renderFlowGraph() {
+      const { nodes, ...rest } = x6Json
+      const newNodes = nodes.map(item => customNodeStyle(item))
       const graph = renderGraph()
-      graph.fromJSON(x6Json)
-      console.log('graph==', graph)
+      graph.fromJSON({ nodes: newNodes, ...rest })
     }
   }
 }

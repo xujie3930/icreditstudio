@@ -757,7 +757,6 @@ export default {
     // 处理可视化表单参数
     handleVisualizationParams() {
       this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
-
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
         ({ idx, ...item }) => item
       )
@@ -920,6 +919,7 @@ export default {
         rightSource,
         rightSourceDatabase
       } = graphicData[length - 1]
+
       this.selectedTable[0] = {
         type: 'tag',
         isChecked: true,
@@ -928,92 +928,95 @@ export default {
         name: leftSource,
         database: leftSourceDatabase
       }
-      this.selectedTable[1] = {
-        type: 'line',
-        iconName: iconMapping[associatedType]?.icon,
-        isShow: true
-      }
-      this.selectedTable[2] = {
-        type: 'tag',
-        isChecked: true,
-        isShowDot: false,
-        datasourceId: '',
-        name: rightSource,
-        database: rightSourceDatabase
-      }
 
-      switch (length) {
-        case 1:
-          this.selectedTable[3] = {
-            type: 'line',
-            iconName: iconMapping[associatedType]?.icon,
-            isShow: true
-          }
-          break
+      if (associatedType && rightSource && rightSourceDatabase) {
+        this.selectedTable[1] = {
+          type: 'line',
+          iconName: iconMapping[associatedType]?.icon,
+          isShow: true
+        }
+        this.selectedTable[2] = {
+          type: 'tag',
+          isChecked: true,
+          isShowDot: false,
+          datasourceId: '',
+          name: rightSource,
+          database: rightSourceDatabase
+        }
 
-        case 2:
-          this.selectedTable[3] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[2].associatedType]?.icon,
-            isShow: true
-          }
-          this.selectedTable[4] = {
-            type: 'tag',
-            isChecked: true,
-            isShowDot: false,
-            datasourceId: '',
-            name: graphicData[2].rightSource,
-            database: graphicData[2].rightSourceDatabase
-          }
-          this.selectedTable[5] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[2].associatedType]?.icon,
-            isShow: true
-          }
-          break
+        switch (length) {
+          case 1:
+            this.selectedTable[3] = {
+              type: 'line',
+              iconName: iconMapping[associatedType]?.icon,
+              isShow: true
+            }
+            break
 
-        case 3:
-          this.selectedTable[3] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[2].associatedType]?.icon,
-            isShow: true
-          }
-          this.selectedTable[4] = {
-            type: 'tag',
-            isChecked: true,
-            isShowDot: false,
-            datasourceId: '',
-            name: graphicData[2].rightSource,
-            database: graphicData[2].rightSourceDatabase
-          }
-          this.selectedTable[5] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[2].associatedType]?.icon,
-            isShow: true
-          }
+          case 2:
+            this.selectedTable[3] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              isShow: true
+            }
+            this.selectedTable[4] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[2].rightSource,
+              database: graphicData[2].rightSourceDatabase
+            }
+            this.selectedTable[5] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              isShow: true
+            }
+            break
 
-          this.selectedTable[5] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[3].associatedType]?.icon,
-            isShow: true
-          }
-          this.selectedTable[6] = {
-            type: 'tag',
-            isChecked: true,
-            isShowDot: false,
-            datasourceId: '',
-            name: graphicData[3].rightSource,
-            database: graphicData[3].rightSourceDatabase
-          }
-          this.selectedTable[7] = {
-            type: 'line',
-            iconName: iconMapping[graphicData[3].associatedType]?.icon,
-            isShow: true
-          }
-          break
+          case 3:
+            this.selectedTable[3] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              isShow: true
+            }
+            this.selectedTable[4] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[2].rightSource,
+              database: graphicData[2].rightSourceDatabase
+            }
+            this.selectedTable[5] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              isShow: true
+            }
 
-        default:
-          break
+            this.selectedTable[5] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[3].associatedType]?.icon,
+              isShow: true
+            }
+            this.selectedTable[6] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[3].rightSource,
+              database: graphicData[3].rightSourceDatabase
+            }
+            this.selectedTable[7] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[3].associatedType]?.icon,
+              isShow: true
+            }
+            break
+
+          default:
+            break
+        }
       }
     },
 
