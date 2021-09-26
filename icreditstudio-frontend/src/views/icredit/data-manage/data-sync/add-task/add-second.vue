@@ -128,7 +128,7 @@
                     ]"
                     @mouseenter.native="item.isShowDot = true"
                     @mouseleave.native="item.isShowDot = false"
-                    @close="handleDeleteTagClick(idx)"
+                    @close="handleDeleteTagClick(idx, item.name)"
                   >
                     <el-tooltip
                       effect="dark"
@@ -308,7 +308,7 @@
       <footer class="footer-btn-wrap">
         <el-button
           class="btn"
-          @click="$router.push('/data-manage/add-task?opType=edit')"
+          @click="$router.push('/data-manage/add-task?opType=previousStep')"
         >
           上一步
         </el-button>
@@ -452,7 +452,6 @@ export default {
     // 识别宽表按钮禁用状态
     verifyTableDisabled() {
       const { sql } = this.secondTaskForm
-      // return Boolean(sql && targetSource && wideTableName)
       return Boolean(sql) || this.selectedTable.length
     }
   },
@@ -564,17 +563,6 @@ export default {
     handleVisualConfirm(options) {
       // 保存或更新关联关系
       const { idx, associatedType } = options
-      // const { length: len } = this.selectedTable.filter(
-      //   ({ type }) => type === 'line'
-      // )
-
-      // console.log(' this.selectedTable', this.selectedTable, len, idx)
-
-      // view为空
-      // len < 2 &&
-      //   (this.secondTaskForm.view = Array(len - 1).fill(
-      //     deepClone(viewDefaultData)
-      //   ))
       const { length } = this.secondTaskForm.view
       const curIndex = (idx - 1) / 2
       if (!length) {
@@ -595,37 +583,49 @@ export default {
     },
 
     // 可视化-删除已选择的的表
-    handleDeleteTagClick(idx) {
-      // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
-      switch (idx) {
-        case 0:
-          this.selectedTable.splice(0, 1)
-          this.selectedTable.splice(0, 1)
-          this.secondTaskForm.view.splice(0, 1)
-          break
-        case 2:
-          this.selectedTable.splice(2, 1)
-          this.selectedTable.splice(2, 1)
-          this.secondTaskForm.view.splice(1, 1)
-          this.secondTaskForm.view.splice(0, 1)
-          this.selectedTable[0].isChecked = false
-          break
-        case 4:
-          this.selectedTable.splice(4, 1)
-          this.selectedTable.splice(4, 1)
-          this.secondTaskForm.view.splice(1, 1)
-          this.secondTaskForm.view.length === 2 &&
-            this.secondTaskForm.view.splice(1, 1)
-          break
-        case 6:
-          this.selectedTable.splice(6, 1)
-          this.selectedTable.splice(6, 1)
-          this.secondTaskForm.view.splice(2, 1)
-          break
+    handleDeleteTagClick(idx, name) {
+      this.$confirm(
+        `当前表中字段已被宽表识别，删除后宽表中的信息将会丢失，确认要删除${name}`,
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }
+      )
+        .then(() => {
+          // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
+          switch (idx) {
+            case 0:
+              this.selectedTable.splice(0, 1)
+              this.selectedTable.splice(0, 1)
+              this.secondTaskForm.view.splice(0, 1)
+              break
+            case 2:
+              this.selectedTable.splice(2, 1)
+              this.selectedTable.splice(2, 1)
+              this.secondTaskForm.view.splice(1, 1)
+              this.secondTaskForm.view.splice(0, 1)
+              this.selectedTable[0].isChecked = false
+              break
+            case 4:
+              this.selectedTable.splice(4, 1)
+              this.selectedTable.splice(4, 1)
+              this.secondTaskForm.view.splice(1, 1)
+              this.secondTaskForm.view.length === 2 &&
+                this.secondTaskForm.view.splice(1, 1)
+              break
+            case 6:
+              this.selectedTable.splice(6, 1)
+              this.selectedTable.splice(6, 1)
+              this.secondTaskForm.view.splice(2, 1)
+              break
 
-        default:
-          break
-      }
+            default:
+              break
+          }
+        })
+        .catch(() => {})
     },
 
     // 可视化-点击关联图标打开关联弹窗
@@ -865,7 +865,9 @@ export default {
         ({ type, isChecked }) => type === 'tag' && !isChecked
       )
       if (unlinkTable.length && this.selectedTable.length > 2) {
-        this.$message.error('识别失败，当前存在未关联的表！')
+        this.$message.error(
+          '识别失败，当前存在未进行关联的表，请关联后再进行识别！'
+        )
         return true
       }
       if (!this.verifyTableDisabled) {

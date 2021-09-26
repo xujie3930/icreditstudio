@@ -25,7 +25,7 @@
         <el-input
           clearable
           show-word-limit
-          :maxlength="15"
+          :maxlength="50"
           v-model="dataSourceForm.name"
           placeholder="请输入自定义数据源名称"
           @blur="verifyDatasourceName"
