@@ -18,7 +18,7 @@ import java.net.URI;
 
 public class HDFSUtils {
     //TODO:这里改为配置文件配置，，同时引入hadoop-hdfs的pom版本得和hadoop安装的版本一致
-    public static String HDFS_URL = "hdfs://192.168.0.17:8020";
+    public static String HDFS_URL = "hdfs://192.168.0.174:8020";
     static Configuration conf = new Configuration();
     static FileSystem fs;
     static {
@@ -38,7 +38,6 @@ public class HDFSUtils {
         String storePath = "/datasource/" + destPath + ".txt";
         OutputStream os = fs.create(new Path(storePath));
         IOUtils.copyBytes(fis, os, 4096, true);
-        fs.close();
         return storePath;
     }
 
