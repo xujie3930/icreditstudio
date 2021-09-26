@@ -21,8 +21,10 @@ import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_FAILURE;
 import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_KILL;
 import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_SUCCESS;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
+import org.apache.dolphinscheduler.common.task.datax.DataxParameters;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.common.thread.ThreadUtils;
 import org.apache.dolphinscheduler.common.utils.CommonUtils;
@@ -34,6 +36,7 @@ import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.utils.ProcessUtils;
 import org.apache.dolphinscheduler.server.worker.cache.TaskExecutionContextCacheManager;
 import org.apache.dolphinscheduler.server.worker.cache.impl.TaskExecutionContextCacheManagerImpl;
+import org.apache.dolphinscheduler.server.worker.entity.InstanceCreateEntity;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
 
 import java.io.BufferedReader;
@@ -54,6 +57,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -133,7 +137,10 @@ public abstract class AbstractCommandExecutor {
         if (!OSUtils.isWindows() && CommonUtils.isSudoEnable()) {
             command.add("sudo");
             command.add("-u");
-            command.add(taskExecutionContext.getTenantCode());
+            //command.add(taskExecutionContext.getTenantCode());
+            JSONObject taskParams =JSONObject.parseObject(taskExecutionContext.getTaskParams());
+            InstanceCreateEntity params = JSONObject.toJavaObject(taskParams, InstanceCreateEntity.class);
+            command.add(params.getTenantCode());
         }
         command.add(commandInterpreter());
         command.addAll(commandOptions());

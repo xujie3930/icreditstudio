@@ -133,10 +133,10 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
         Project project = projectMapper.queryByName(projectName);
-        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
+        /*Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
         if (checkResultAndAuth != null) {
             return checkResultAndAuth;
-        }
+        }*/
 
         // check process define release state
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
