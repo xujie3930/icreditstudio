@@ -64,9 +64,9 @@ public class IcreditDatasourceController {
     @Logable
     public BusinessResult<Boolean> update(@RequestBody IcreditDatasourceUpdateRequest request) {
 
-        IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
-        return BusinessResult.success(datasourceService.updateById(entity));
+        IcreditDatasourceUpdateParam param = new IcreditDatasourceUpdateParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.updateDef(param);
     }
 
     /**

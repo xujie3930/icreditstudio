@@ -44,6 +44,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,10 +89,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
         IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
-        BusinessResult<String> testConnResult = testConn(testConnectRequest);
-        if (!testConnResult.isSuccess()) {
-            return BusinessResult.fail(RESOURCE_CODE_70000000.code, RESOURCE_CODE_70000000.message);
-        }
+        checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
@@ -371,6 +369,23 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
         return BusinessResult.success(list);
+    }
+
+    @Override
+    public BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param) {
+        IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
+        IcreditDatasourceTestConnectRequest testConnectRequest = new IcreditDatasourceTestConnectRequest(datasourceEntity.getType(), param.getUri());
+        checkDatabase(testConnectRequest);
+        IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
+        BeanCopyUtils.copyProperties(param, entity);
+        return BusinessResult.success(updateById(entity));
+    }
+
+    private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {
+        BusinessResult<String> testConnResult = testConn(testConnectRequest);
+        if (!testConnResult.isSuccess()) {
+            throw new AppException("70000008");
+        }
     }
 
     static <R, T> T smartConnection(ConnectionSource connectionSource, R r, BiFunction<Connection, R, T> function) {
