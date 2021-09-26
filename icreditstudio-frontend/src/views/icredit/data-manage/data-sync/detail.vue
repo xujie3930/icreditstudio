@@ -8,6 +8,7 @@
     hideFooter
     title="查看同步任务"
     ref="taskDialog"
+    width="65vw"
     @on-close="close"
   >
     <el-tabs

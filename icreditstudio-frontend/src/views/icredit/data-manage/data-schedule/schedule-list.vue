@@ -26,16 +26,20 @@
       :handleAdd="mixinHandleAdd"
     >
     </crud-basic>
+    <ViewLog ref="viewLog" />
   </div>
 </template>
 
 <script>
+import ViewLog from './view'
 import crud from '@/mixins/crud'
 
 export default {
   name: 'schedulePageList',
 
   mixins: [crud],
+
+  components: { ViewLog },
 
   data() {
     return {
@@ -67,6 +71,8 @@ export default {
         this.fetchConfig = nVal
       }
     }
-  }
+  },
+
+  methods: {}
 }
 </script>

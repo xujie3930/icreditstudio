@@ -43,23 +43,26 @@ export default that => {
       {
         type: 'date',
         label: '当前同步节点',
-        prop: 'createTime'
+        prop: 'createTime',
+        width: 120
       },
       {
         type: 'date',
         label: '开始时间',
-        prop: 'createTime'
+        prop: 'createTime',
+        width: 150
       },
       {
         type: 'date',
         label: '结束时间',
-        prop: 'createTime'
+        prop: 'createTime',
+        width: 150
       },
       {
         type: 'operation',
         label: '操作',
         prop: 'operation',
-        width: '250px',
+        width: 120,
         fixed: 'right',
         operationList: [
           {

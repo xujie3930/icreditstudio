@@ -6,13 +6,14 @@
 
 <template>
   <ScheduleList
+    ref="scheduleList"
     :form-option="formOption"
     :table-configuration="tableConfiguration"
   />
 </template>
 
 <script>
-import ScheduleList from '@/views/icredit/components/schedule-list'
+import ScheduleList from '../schedule-list'
 import formOption from '@/views/icredit/configuration/form/schedule-cycle-task'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-cycle-task'
 
@@ -28,7 +29,8 @@ export default {
 
   methods: {
     handleViewLog(row) {
-      console.log('row', row)
+      console.log('row', row, this.$refs)
+      this.$refs.scheduleList.$refs.viewLog.$refs.baseDialog.open()
     },
 
     handleOpenDagPage(row) {

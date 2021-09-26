@@ -42,31 +42,31 @@ export default _this => {
       {
         type: 'date',
         label: '任务创建时间',
-        prop: 'createTime'
+        prop: 'createTime',
+        width: 170
       },
       {
         type: 'date',
         label: '近一次调度时间',
-        prop: 'createTime'
+        prop: 'createTime',
+        width: 170
       },
       {
         type: 'operation',
         label: '操作',
         prop: 'operation',
-        width: '250px',
         fixed: 'right',
+        width: 150,
         operationList: [
           {
             func: _this.handleOpenDagPage,
             label: 'DAG',
-            key: 'dag',
-            show: true
+            key: 'dag'
           },
           {
             func: _this.handleViewLog,
             label: '查看日志',
-            key: 'viewLog',
-            show: true
+            key: 'viewLog'
           }
         ]
       }
