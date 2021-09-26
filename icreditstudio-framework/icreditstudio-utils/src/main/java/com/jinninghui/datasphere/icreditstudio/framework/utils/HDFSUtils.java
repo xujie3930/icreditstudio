@@ -50,12 +50,11 @@ public class HDFSUtils {
         while ((lineTxt = bufferedReader.readLine()) != null) {
             stringBuffer.append(lineTxt);
         }
-        fs.close();
         return stringBuffer.toString();
     }
 
     public static void main(String[] args) throws Exception {
-        String stringFromHDFS = getStringFromHDFS("/datasource/890255717552893952.txt");
+        String stringFromHDFS = getStringFromHDFS("/datasource/891684917153370112.txt");
         System.out.println(stringFromHDFS.length());
         System.out.println(stringFromHDFS);
     }
