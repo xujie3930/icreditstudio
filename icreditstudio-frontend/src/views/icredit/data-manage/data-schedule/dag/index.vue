@@ -4,29 +4,19 @@
 -->
 <template>
   <div class="dag w100 h100">
-    <div ref="content" class="dag-content">
-      <el-button @click="isShowFooter = true">show</el-button>
+    <div ref="content" id="container" class="dag-content">
+      <!-- <el-button @click="isShowFooter = !isShowFooter">show</el-button> -->
     </div>
-    <div ref="footer" class="dag-footer" v-if="isShowFooter">
+
+    <div
+      ref="footer"
+      :class="['dag-footer', isTabsCollapse ? 'dag-footer-collapse' : '']"
+      v-if="isShowFooter"
+    >
       <el-tabs class="tabs" v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane
-          label="属性"
-          name="first"
-          :class="[isTabsCollapse ? 'hide-pane' : '']"
-          >sedwdw</el-tab-pane
-        >
-        <el-tab-pane
-          label="操作日志"
-          name="second"
-          :class="[isTabsCollapse ? 'hide-pane' : '']"
-          >dsdssdsds</el-tab-pane
-        >
-        <el-tab-pane
-          label="代码"
-          name="third"
-          :class="[isTabsCollapse ? 'hide-pane' : '']"
-          >sddssdsd</el-tab-pane
-        >
+        <el-tab-pane label="属性" name="first">sedwdw</el-tab-pane>
+        <el-tab-pane label="操作日志" name="second">dsdssdsds</el-tab-pane>
+        <el-tab-pane label="代码" name="third">sddssdsd</el-tab-pane>
       </el-tabs>
       <div class="icon-wrap">
         <i
@@ -44,6 +34,8 @@
 </template>
 
 <script>
+import { x6Json, renderGraph } from './x6'
+
 export default {
   data() {
     return {
@@ -51,6 +43,10 @@ export default {
       isShowFooter: false,
       activeName: 'second'
     }
+  },
+
+  mounted() {
+    this.renderFlowGraph()
   },
 
   methods: {
@@ -64,6 +60,13 @@ export default {
 
     handleArrowClick() {
       this.isTabsCollapse = !this.isTabsCollapse
+    },
+
+    // 渲染流程图
+    renderFlowGraph() {
+      const graph = renderGraph()
+      graph.fromJSON(x6Json)
+      console.log('graph==', graph)
     }
   }
 }
@@ -71,27 +74,18 @@ export default {
 
 <style lang="scss" scoped>
 .dag {
+  @include flex(column, space-between);
   height: calc(100vh - 124px);
   background-color: #fff;
-
-  &-content {
-    height: calc(100% - 240px);
-  }
 
   &-footer {
     position: relative;
     height: 240px;
     width: 100%;
     overflow: auto;
-    // padding: 0 16px;
 
     .tabs {
       ::v-deep {
-        .el-tabs__header {
-          padding-left: 33px;
-          background-color: #f4f4f4;
-        }
-
         .el-tabs__nav-wrap::after {
           display: none;
         }
@@ -119,6 +113,32 @@ export default {
       .arrow-top {
         transform: rotate(90deg);
       }
+    }
+  }
+
+  .el-tabs__header {
+    padding-left: 33px;
+    background-color: #f4f4f4;
+  }
+
+  &-footer-collapse {
+    height: 40px;
+    overflow: hidden;
+
+    .icon-wrap {
+      background-color: #fff;
+    }
+  }
+
+  ::v-deep {
+    .dag-footer .el-tabs__header {
+      padding-left: 33px;
+      background-color: #f4f4f4;
+    }
+
+    .dag-footer-collapse .el-tabs__header {
+      padding-left: 33px;
+      background-color: #fff;
     }
   }
 }

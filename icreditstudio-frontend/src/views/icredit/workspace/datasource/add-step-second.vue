@@ -35,7 +35,7 @@
       </el-form-item>
 
       <el-form-item
-        v-if="dataType === 'relational'"
+        v-if="dataType === 'relational' || dataSourceForm.type === 1"
         label="数据库名"
         prop="databaseName"
       >
