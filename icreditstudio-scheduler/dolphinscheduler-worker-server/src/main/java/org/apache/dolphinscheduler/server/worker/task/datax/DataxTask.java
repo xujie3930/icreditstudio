@@ -22,7 +22,6 @@ import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.FileUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -38,11 +37,11 @@ import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.OSUtils;
 import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.server.entity.DataxTaskExecutionContext;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.utils.DataxUtils;
 import org.apache.dolphinscheduler.server.utils.ParamUtils;
 import org.apache.dolphinscheduler.server.worker.entity.InstanceCreateEntity;
+import org.apache.dolphinscheduler.server.worker.service.factory.PluginFactory;
 import org.apache.dolphinscheduler.server.worker.task.AbstractTask;
 import org.apache.dolphinscheduler.server.worker.task.CommandExecuteResult;
 import org.apache.dolphinscheduler.server.worker.task.ShellCommandExecutor;
@@ -225,140 +224,13 @@ public class DataxTask extends AbstractTask {
      * @throws SQLException if error throws SQLException
      */
     private List<JSONObject> buildDataxJobContentJson() {
-
-        DataxTaskExecutionContext dataxTaskExecutionContext = taskExecutionContext.getDataxTaskExecutionContext();
-
-        BaseConnectionParam dataSourceCfg = (BaseConnectionParam) DatasourceUtil.buildConnectionParams(
-                DbType.of(dataxTaskExecutionContext.getSourcetype()),
-                dataxTaskExecutionContext.getSourceConnectionParams());
-
-        BaseConnectionParam dataTargetCfg = (BaseConnectionParam) DatasourceUtil.buildConnectionParams(
-                DbType.of(dataxTaskExecutionContext.getTargetType()),
-                dataxTaskExecutionContext.getTargetConnectionParams());
-
-        /*List<ObjectNode> readerConnArr = new ArrayList<>();
-        ObjectNode readerConn = JSONUtils.createObjectNode();
-
-        ArrayNode sqlArr = readerConn.putArray("querySql");
-        for (String sql : new String[]{dataXParameters.getSql()}) {
-            sqlArr.add(sql);
-        }
-
-        ArrayNode urlArr = readerConn.putArray("jdbcUrl");
-        urlArr.add(DatasourceUtil.getJdbcUrl(DbType.valueOf(dataXParameters.getDsType()), dataSourceCfg));
-
-        readerConnArr.add(readerConn);
-
-        ObjectNode readerParam = JSONUtils.createObjectNode();
-        readerParam.put("username", dataSourceCfg.getUser());
-        readerParam.put("password", CommonUtils.decodePassword(dataSourceCfg.getPassword()));
-        readerParam.putArray("connection").addAll(readerConnArr);
-
-        ObjectNode reader = JSONUtils.createObjectNode();
-        reader.put("name", DataxUtils.getReaderPluginName(DbType.of(dataxTaskExecutionContext.getSourcetype())));
-        reader.set("parameter", readerParam);
-
-        List<ObjectNode> writerConnArr = new ArrayList<>();
-        ObjectNode writerConn = JSONUtils.createObjectNode();
-        ArrayNode tableArr = writerConn.putArray("table");
-        tableArr.add(dataXParameters.getTargetTable());
-
-        writerConn.put("jdbcUrl", dataTargetCfg.getJdbcUrl());
-        writerConnArr.add(writerConn);
-
-        ObjectNode writerParam = JSONUtils.createObjectNode();
-        writerParam.put("username", dataTargetCfg.getUser());
-        writerParam.put("password", CommonUtils.decodePassword(dataTargetCfg.getPassword()));
-        //
-        writerParam.put("defaultFS", "hdfs://192.168.0.17:8020");
-        writerParam.put("fileType", "orc");
-        writerParam.put("path", "/usr/local/software/hive/warehouse/dfstest.db/dfs_mysql");
-        writerParam.put("fileName", "formDefinition");
-        writerParam.put("writeMode", "append");
-        writerParam.put("fieldDelimiter", ",");
-        writerParam.put("compress", "NONE");
-
-        String[] columns = parsingSqlColumnNames(DbType.of(dataxTaskExecutionContext.getSourcetype()),
-                DbType.of(dataxTaskExecutionContext.getTargetType()),
-                dataSourceCfg, dataXParameters.getSql());
-
-        ArrayNode columnArr = writerParam.putArray("column");
-        for (String column : columns) {
-            columnArr.add(column);
-        }
-        writerParam.putArray("connection").addAll(writerConnArr);
-
-        if (CollectionUtils.isNotEmpty(dataXParameters.getPreStatements())) {
-            ArrayNode preSqlArr = writerParam.putArray("preSql");
-            for (String preSql : dataXParameters.getPreStatements()) {
-                preSqlArr.add(preSql);
-            }
-
-        }
-
-        if (CollectionUtils.isNotEmpty(dataXParameters.getPostStatements())) {
-            ArrayNode postSqlArr = writerParam.putArray("postSql");
-            for (String postSql : dataXParameters.getPostStatements()) {
-                postSqlArr.add(postSql);
-            }
-        }
-
-        ObjectNode writer = JSONUtils.createObjectNode();
-        writer.put("name", DataxUtils.getWriterPluginName(DbType.of(dataxTaskExecutionContext.getTargetType())));
-        writer.set("parameter", writerParam);
-
-        List<ObjectNode> contentList = new ArrayList<>();
-        ObjectNode content = JSONUtils.createObjectNode();
-        content.set("reader", reader);
-        content.set("writer", writer);
-        contentList.add(content);*/
-
-        List<JSONObject> readerConnArr = new ArrayList<>();
+        //获取参数
         JSONObject taskParams =JSONObject.parseObject(taskExecutionContext.getTaskParams());
         InstanceCreateEntity params = JSONObject.toJavaObject(taskParams, InstanceCreateEntity.class);
-        JSONObject readerConn = new JSONObject();
-        readerConn.put("querySql", new String[] {dataXParameters.getSql()});
-        readerConn.put("jdbcUrl", new String[]{params.getSourceUri()});
-        readerConnArr.add(readerConn);
-
-        JSONObject readerParam = new JSONObject();
-        readerParam.put("username", params.getUsername());
-        readerParam.put("password", params.getPassword());
-        readerParam.put("connection", readerConnArr);
-
-        JSONObject reader = new JSONObject();
-        reader.put("name", DataxUtils.getReaderPluginName(DbType.getDbTypeByDesc(dataXParameters.getDsType().toLowerCase())));
-        reader.put("parameter", readerParam);
-
-        JSONObject writerParam = new JSONObject();
-        writerParam.put("defaultFS", "hdfs://192.168.0.190:9000");
-        writerParam.put("fileType", "orc");
-        String writePath = "/usr/local/software/hive/warehouse/" + params.getTargetDatabase() + ".db/" + params.getTargetTable();
-        writerParam.put("path", writePath);
-
-        List<JSONObject> columnList = new ArrayList<>();
-        List<Object> fields = params.getFields();
-        for (Object columnJson : fields) {
-            JSONObject column = new JSONObject();
-            column.put("name", JSONObject.parseObject(columnJson.toString()).get("name"));
-            column.put("type", JSONObject.parseObject(columnJson.toString()).get("type"));
-            columnList.add(column);
-        }
-
-        JSONObject config = new JSONObject();
-        config.put("dfs.client.use.datanode.hostname",true);
-
-        writerParam.put("hadoopConfig", config);
-        writerParam.put("column", columnList);
-        writerParam.put("fileName", "formDefinition");
-        writerParam.put("writeMode", "append");
-        writerParam.put("fieldDelimiter", ",");
-        writerParam.put("compress", "NONE");
-
-        JSONObject writer = new JSONObject();
-        writer.put("name", DataxUtils.getWriterPluginName(DbType.getDbTypeByDesc(dataXParameters.getDtType().toLowerCase())));
-        writer.put("parameter", writerParam);
-
+        //获取reader和writer
+        JSONObject reader = PluginFactory.getReader(params);
+        JSONObject writer = PluginFactory.getWriter(params);
+        //生成dataxJson的content列表
         List<JSONObject> contentList = new ArrayList<>();
         JSONObject content = new JSONObject();
         content.put("reader", reader);
