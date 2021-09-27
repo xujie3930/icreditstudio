@@ -7,10 +7,13 @@
   <div class="x6-flow-node" :style="style">
     <JSvg :name="nodeInfo.iconName" class="jsvg" />
     <div class="text">{{ nodeInfo.nodeName }}</div>
+    <Detail v-if="nodeInfo.id === 'node1'" @open="openCallBack" />
   </div>
 </template>
 
 <script>
+import Detail from './detail'
+
 const nodeStyleColor = {
   success: { bgColor: 'rgba(82,196,26,0.08)', lineColor: '#52c41a' },
   error: { bgColor: 'rgba(255,77,79,0.08)', lineColor: '#ff4d4f' },
@@ -18,6 +21,8 @@ const nodeStyleColor = {
 }
 
 export default {
+  components: { Detail },
+
   props: {
     nodeInfo: {
       type: Object,
@@ -37,6 +42,12 @@ export default {
         backgroundColor: bgColor
       }
     }
+  },
+
+  methods: {
+    openCallBack() {
+      console.log('MMM==', this)
+    }
   }
 }
 </script>
@@ -44,8 +55,10 @@ export default {
 <style lang="scss" scoped>
 .x6-flow-node {
   @include flex(row, flex-start);
+  position: relative;
   width: 100%;
   height: 100%;
+  background-color: #fff;
 
   .jsvg {
     width: 20px;

@@ -148,7 +148,7 @@
                 {{ scheduleTypeMapping[buildDetailInfo.scheduleType] }}
               </span>
             </div>
-            <div class="content-item">
+            <div class="content-item" v-if="buildDetailInfo.scheduleType">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
