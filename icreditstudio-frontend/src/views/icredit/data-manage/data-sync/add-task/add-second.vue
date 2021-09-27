@@ -1245,7 +1245,7 @@ export default {
       }
 
       .tree {
-        max-height: calc(100% - 93px);
+        max-height: calc(100vh - 424px);
         overflow-y: auto;
 
         .custom-tree-node {
