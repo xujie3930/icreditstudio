@@ -1,8 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.MetaData;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.Record;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.ResultSerializer;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.MetaData;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.Record;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultSerializer;
 
 /**
  * Project：iCreditStudio

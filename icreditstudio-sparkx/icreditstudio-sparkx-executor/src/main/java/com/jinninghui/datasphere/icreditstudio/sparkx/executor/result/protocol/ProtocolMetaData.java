@@ -1,4 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
+
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.MetaData;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultMetaData;
 
 /**
  * Project：iCreditStudio
@@ -9,11 +12,11 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
  *
  * @author liyanhui
  */
-public class LineMetaData extends ResultMetaData{
+public class ProtocolMetaData extends ResultMetaData {
 
     private String metaData;
 
-    public LineMetaData(String metaData) {
+    public ProtocolMetaData(String metaData) {
         this.metaData = metaData;
     }
 
@@ -28,6 +31,6 @@ public class LineMetaData extends ResultMetaData{
 
     @Override
     public MetaData cloneMeta() {
-        return new LineMetaData(metaData);
+        return new ProtocolMetaData(metaData);
     }
 }

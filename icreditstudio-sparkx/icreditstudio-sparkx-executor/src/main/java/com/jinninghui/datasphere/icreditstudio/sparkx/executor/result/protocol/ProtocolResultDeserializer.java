@@ -1,8 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.MetaData;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.Record;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.ResultDeserializer;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultDeserializer;
 
 /**
  * Project：iCreditStudio
@@ -13,14 +11,14 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.ResultDese
  *
  * @author liyanhui
  */
-public class ProtocolResultDeserializer implements ResultDeserializer {
+public class ProtocolResultDeserializer implements ResultDeserializer<ProtocolMetaData, ProtocolRecord> {
     @Override
-    public MetaData createMetaData(byte[] bytes) {
+    public ProtocolMetaData createMetaData(byte[] bytes) {
         return null;
     }
 
     @Override
-    public Record createRecord(byte[] bytes) {
+    public ProtocolRecord createRecord(byte[] bytes) {
         return null;
     }
 }

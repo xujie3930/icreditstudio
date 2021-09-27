@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
 
 import java.io.Closeable;
 import java.io.Flushable;

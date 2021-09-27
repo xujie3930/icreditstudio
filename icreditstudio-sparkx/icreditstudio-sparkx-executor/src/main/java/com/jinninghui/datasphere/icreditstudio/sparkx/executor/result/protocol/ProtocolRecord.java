@@ -1,4 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
+
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.Record;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultRecord;
 
 /**
  * Project：iCreditStudio
@@ -9,9 +12,9 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
  *
  * @author liyanhui
  */
-public class LineRecord  extends ResultRecord{
+public class ProtocolRecord extends ResultRecord {
 
-    public LineRecord(String line) {
+    public ProtocolRecord(String line) {
         this.line = line;
     }
 
@@ -26,7 +29,7 @@ public class LineRecord  extends ResultRecord{
 
     @Override
     public Record cloneRecord() {
-        return new LineRecord(line);
+        return new ProtocolRecord(line);
     }
 
     @Override

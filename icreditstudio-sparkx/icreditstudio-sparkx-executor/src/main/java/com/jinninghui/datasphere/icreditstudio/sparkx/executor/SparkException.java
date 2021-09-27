@@ -19,17 +19,17 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class LinkisException extends Exception{
+public abstract class SparkException extends Exception{
 
     static String applicationName;
     static String hostname;
     static int hostPort;
 
-    public LinkisException(int errCode, String desc){
+    public SparkException(int errCode, String desc){
         this(errCode, desc, hostname, hostPort, applicationName);
     }
 
-    public LinkisException(int errCode, String desc, String ip, int port, String serviceKind){
+    public SparkException(int errCode, String desc, String ip, int port, String serviceKind){
         super("errCode: " + errCode + " ,desc: " + desc + " ,ip: " + ip +
                 " ,port: " + port + " ,serviceKind: " + serviceKind);
         this.errCode = errCode;
@@ -40,7 +40,7 @@ public abstract class LinkisException extends Exception{
     }
 
     public static void setApplicationName(String applicationName) {
-        LinkisException.applicationName = applicationName;
+        SparkException.applicationName = applicationName;
     }
 
     /**
@@ -57,11 +57,11 @@ public abstract class LinkisException extends Exception{
     private String serviceKind;
 
     public static void setHostname(String hostname) {
-        LinkisException.hostname = hostname;
+        SparkException.hostname = hostname;
     }
 
     public static void setHostPort(int hostPort) {
-        LinkisException.hostPort = hostPort;
+        SparkException.hostPort = hostPort;
     }
 
     public int getErrCode() {

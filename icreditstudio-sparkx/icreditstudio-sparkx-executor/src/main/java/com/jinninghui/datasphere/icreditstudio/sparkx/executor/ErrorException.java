@@ -17,7 +17,7 @@
 
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor;
 
-public class ErrorException extends LinkisException {
+public class ErrorException extends SparkException {
     private ExceptionLevel level = ExceptionLevel.ERROR;
     public ErrorException(int errCode, String desc){
         super(errCode, desc);
