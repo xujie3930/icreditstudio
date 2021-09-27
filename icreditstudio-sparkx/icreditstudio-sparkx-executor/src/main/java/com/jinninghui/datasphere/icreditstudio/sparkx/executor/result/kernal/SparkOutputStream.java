@@ -1,6 +1,8 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
 
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolMetaData;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolRecord;
 import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolResultSet;
 import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolResultSetWriter;
 import org.slf4j.Logger;
@@ -8,9 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 拿到Spark执行的结果进行输出，
@@ -25,11 +26,12 @@ import java.util.List;
  */
 public class SparkOutputStream extends OutputStream {
 
-    private Logger logger = LoggerFactory.getLogger(SparkOutputStream.class);
+    private final Logger logger = LoggerFactory.getLogger(SparkOutputStream.class);
     private boolean isReady = false;
 
-    private List<Integer> line = new ArrayList<>();
-    private ResultSetWriter writer;
+    //    private List<Integer> line = new ArrayList<>();
+    private final ByteBuffer bb = ByteBuffer.allocate(4096);
+    private ResultSetWriter<ProtocolMetaData, ProtocolRecord> writer;
 
     @Override
     public void write(int b) throws IOException {
@@ -39,16 +41,17 @@ public class SparkOutputStream extends OutputStream {
                 if (writer != null) {
                     if (b == '\n') {
                         flush0();
-                        line.clear();
+                        bb.clear();
                     } else {
-                        line.add(b);
+                        bb.put(intToByteArray(b));
                     }
-                }else {
+                } else {
                     logger.warn("writer is null");
                 }
             }
         }
-        {}
+        {
+        }
     }
 
     public void reset() throws IOException {
@@ -56,14 +59,15 @@ public class SparkOutputStream extends OutputStream {
         writer.addMetaData(null);
     }
 
-    public void reday(){
+    public void reday() {
         this.isReady = true;
     }
+
     @Override
     public void flush() throws IOException {
-        if (writer != null && !line.isEmpty()) {
+        if (writer != null && !bb.hasRemaining()) {
             flush0();
-            line.clear();
+            bb.clear();
         }
     }
 
@@ -86,12 +90,8 @@ public class SparkOutputStream extends OutputStream {
     }
 
     void flush0() throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (Integer b : line) {
-            String outStr = new String(intToByteArray(b), StandardCharsets.UTF_8);
-            sb.append(outStr);
-        }
-        writer.addRecord(new LineRecord(sb.toString()));
+        String outStr = new String(bb.array(), StandardCharsets.UTF_8);
+        writer.addRecord(new ProtocolRecord(outStr));
 
     }
 

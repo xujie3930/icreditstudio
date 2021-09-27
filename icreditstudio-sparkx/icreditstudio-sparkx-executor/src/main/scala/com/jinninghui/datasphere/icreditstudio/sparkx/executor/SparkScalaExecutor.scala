@@ -18,7 +18,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
 import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream, PrintStream}
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.SparkOutputStream
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.SparkOutputStream
 import org.apache.commons.io.IOUtils
 import org.apache.commons.lang.StringUtils
 import org.apache.commons.lang.exception.ExceptionUtils
