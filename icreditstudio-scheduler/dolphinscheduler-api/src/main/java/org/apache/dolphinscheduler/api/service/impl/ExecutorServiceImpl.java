@@ -133,10 +133,10 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
         Project project = projectMapper.queryByName(projectName);
-        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
+        /*Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
         if (checkResultAndAuth != null) {
             return checkResultAndAuth;
-        }
+        }*/
 
         // check process define release state
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
@@ -310,12 +310,12 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     @Override
     public Map<String, Object> newExecute(User loginUser, String projectName, Integer processDefinitionId, ExecuteType executeType) {
         Map<String, Object> result = new HashMap<>();
-        Project project = projectMapper.queryByName(projectName);
+        /*Project project = projectMapper.queryByName(projectName);
 
         Map<String, Object> checkResult = checkResultAndAuth(loginUser, projectName, project);
         if (checkResult != null) {
             return checkResult;
-        }
+        }*/
 
         // check master exists
         if (!checkMasterExists(result)) {
@@ -323,7 +323,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         }
 
         //项目中一个定义对应一个实例，所以可以不做空指针异常判断
-        int processInstanceId = processService.findProcessDefinitionId(processDefinitionId).getProcessDefinitionId();
+        int processInstanceId = processService.findProcessDefinitionId(processDefinitionId).getId();
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(processInstanceId);
         if (processInstance == null) {
             putMsg(result, Status.PROCESS_INSTANCE_NOT_EXIST, processInstanceId);
@@ -339,11 +339,11 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             }
         }
 
-        checkResult = checkExecuteType(processInstance, executeType);
+        /*Map<String, Object> checkResult = checkExecuteType(processInstance, executeType);
         Status status = (Status) checkResult.get(Constants.STATUS);
         if (status != Status.SUCCESS) {
             return checkResult;
-        }
+        }*/
         if (!checkTenantSuitable(processDefinition)) {
             logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
                     processDefinition.getId(), processDefinition.getName());

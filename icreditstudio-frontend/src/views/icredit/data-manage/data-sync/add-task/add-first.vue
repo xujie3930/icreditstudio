@@ -21,7 +21,7 @@
             v-model.trim="taskForm.taskName"
             placeholder="请输入任务名"
             clearable
-            :maxlength="14"
+            :maxlength="50"
             show-word-limit
           ></el-input>
         </el-form-item>

@@ -187,11 +187,11 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
         // check project auth
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+        /*Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
         Status resultStatus = (Status) checkResult.get(Constants.STATUS);
         if (resultStatus != Status.SUCCESS) {
             return checkResult;
-        }
+        }*/
 
         ProcessDefinition processDefinition = new ProcessDefinition();
         ProcessData processData = JSONUtils.parseObject(processDefinitionJson, ProcessData.class);
