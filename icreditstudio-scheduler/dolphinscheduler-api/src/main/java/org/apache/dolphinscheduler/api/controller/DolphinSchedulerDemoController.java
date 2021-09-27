@@ -32,8 +32,8 @@ public class DolphinSchedulerDemoController {
     }
 
     @PostMapping("/dol/demo/dataxTest")
-    public Map<String,String> dataxTest(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser, @RequestBody InstanceCreateRequest request) throws Exception {
-        return dolphinSchedulerDemoService.dataxTest(loginUser, request);
+    public Map<String,String> dataxTest(@RequestHeader(value = "x-userid") String userId, @RequestBody InstanceCreateRequest request) throws Exception {
+        return dolphinSchedulerDemoService.dataxTest(request);
     }
 
     /**

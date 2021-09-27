@@ -204,10 +204,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         Project project = projectMapper.queryByName(projectName);
 
         // check project auth
-        boolean hasProjectAndPerm = projectService.hasProjectAndPerm(loginUser, project, result);
+        /*boolean hasProjectAndPerm = projectService.hasProjectAndPerm(loginUser, project, result);
         if (!hasProjectAndPerm) {
             return result;
-        }
+        }*/
 
         // check work flow define release state
         ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
@@ -401,10 +401,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         Project project = projectMapper.queryByName(projectName);
         // check project auth
-        boolean hasProjectAndPerm = projectService.hasProjectAndPerm(loginUser, project, result);
+        /*boolean hasProjectAndPerm = projectService.hasProjectAndPerm(loginUser, project, result);
         if (!hasProjectAndPerm) {
             return result;
-        }
+        }*/
 
         // check schedule exists
         Schedule scheduleObj = scheduleMapper.selectById(id);

@@ -1,14 +1,17 @@
 package org.apache.dolphinscheduler.api.service;
 
 import com.alibaba.fastjson.JSONObject;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.lang.StringUtils;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.feign.SystemFeignClient;
 import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.dao.entity.Tenant;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.UserMapper;
+import org.apache.dolphinscheduler.feign.result.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,8 @@ public class DolphinSchedulerDemoService {
     private SchedulerService schedulerService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SystemFeignClient systemFeign;
 
     @Transactional(rollbackFor = Exception.class)
     public void test(User loginUser, JSONObject jsonObject) throws Exception {
@@ -201,7 +206,15 @@ public class DolphinSchedulerDemoService {
 
 
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, String> dataxTest(User loginUser, InstanceCreateRequest request) throws Exception {
+    public Map<String, String> dataxTest(InstanceCreateRequest request) throws Exception {
+        Map<String,String> resultMap = new HashMap<>();
+        BusinessResult<UserEntity> loginUserInfo = systemFeign.getLoginUserInfo();
+        if (!loginUserInfo.isSuccess() || loginUserInfo.getData() == null){
+            return resultMap;
+        }
+        User loginUser = null;
+        loginUser.setId(Integer.parseInt(loginUserInfo.getData().getId()));
+        loginUser.setUserName(loginUserInfo.getData().getUserName());
         String tenantCode = request.getTenantCode();//租户编码
         String schedule = request.getScheduler();//cron表达式
         String startTime = request.getStartTime();//scheduler开始时间
@@ -234,10 +247,10 @@ public class DolphinSchedulerDemoService {
 
         Map<String, Object> projectResult = projectService.createProject(loginUser , projectName, projectDescription);
 
-        Tenant tenant = tenantService.findByTenantCode(tenantCode);
+        //Tenant tenant = tenantService.findByTenantCode(tenantCode);
 
         //创建工作流定义，默认上线
-        String processDefJson = appendDataxProcessDefJson(tenant.getId(), taskId, taskName, request);//拼接工作流定义JSON
+        String processDefJson = appendDataxProcessDefJson(loginUser.getId(), taskId, taskName, request);//拼接工作流定义JSON
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
 
         //启动工作流定义
@@ -251,7 +264,6 @@ public class DolphinSchedulerDemoService {
             schedulerService.setScheduleState(loginUser, projectName, (int) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
         }
 
-        Map<String,String> resultMap = new HashMap<>();
         resultMap.put("processDefinitionId", processDefinitionId+"");
         resultMap.put("","");
         return resultMap;

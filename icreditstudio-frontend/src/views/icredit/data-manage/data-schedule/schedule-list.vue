@@ -26,10 +26,12 @@
       :handleAdd="mixinHandleAdd"
     >
     </crud-basic>
+    <ViewLog ref="viewLog" />
   </div>
 </template>
 
 <script>
+import ViewLog from './view'
 import crud from '@/mixins/crud'
 
 export default {
@@ -37,8 +39,12 @@ export default {
 
   mixins: [crud],
 
+  components: { ViewLog },
+
   data() {
-    return {}
+    return {
+      mixinTableData: [{ userName: 'ss' }]
+    }
   },
 
   props: {

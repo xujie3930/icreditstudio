@@ -11,4 +11,12 @@ import lombok.Data;
 public class IcreditDatasourceTestConnectRequest {
     private Integer type;//数据源类型
     private String uri;//连接信息串
+
+    public IcreditDatasourceTestConnectRequest() {
+    }
+
+    public IcreditDatasourceTestConnectRequest(Integer type, String uri) {
+        this.type = type;
+        this.uri = uri;
+    }
 }

@@ -6,7 +6,7 @@
 
 export default {
   refName: 'data-sync-add',
-  id: '',
+  id: 'dataSyncAdd',
   isBorder: true,
   hasPage: false,
   maxHeight: 360,

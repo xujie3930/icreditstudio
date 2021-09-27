@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import ScheduleList from '@/views/icredit/components/schedule-list'
+import ScheduleList from '../schedule-list'
 import formOption from '@/views/icredit/configuration/form/schedule-manual-instance'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-cycle-instance'
 

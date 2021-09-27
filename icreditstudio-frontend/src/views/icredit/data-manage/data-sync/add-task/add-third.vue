@@ -98,7 +98,7 @@
       <footer class="footer-btn-wrap">
         <el-button
           class="btn"
-          @click="$router.push('/data-manage/add-build?opType=edit')"
+          @click="$router.push('/data-manage/add-build?opType=previousStep')"
         >
           上一步
         </el-button>
