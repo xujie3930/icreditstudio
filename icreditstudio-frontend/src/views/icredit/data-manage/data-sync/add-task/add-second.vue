@@ -929,7 +929,7 @@ export default {
         database: leftSourceDatabase
       }
 
-      if (associatedType && rightSource && rightSourceDatabase) {
+      if (rightSource && rightSourceDatabase) {
         this.selectedTable[1] = {
           type: 'line',
           iconName: iconMapping[associatedType]?.icon,
