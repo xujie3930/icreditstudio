@@ -27,9 +27,7 @@
               v-for="item in taskDetailInfo"
             >
               <div class="label">
-                <span
-                  v-if="item.key !== 'taskDescription'"
-                  class="required-icon"
+                <span v-if="item.key !== 'taskDescribe'" class="required-icon"
                   >*
                 </span>
                 <span>{{ item.label }}</span>
