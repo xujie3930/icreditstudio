@@ -1,11 +1,13 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultSet;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultSetWriter;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultSet;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultSetWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Project：iCreditStudio
@@ -19,6 +21,8 @@ import java.io.IOException;
 public class ProtocolResultSetWriter extends ResultSetWriter<ProtocolMetaData, ProtocolRecord> {
 
     private final Logger logger = LoggerFactory.getLogger(ProtocolResultSetWriter.class);
+
+    private final Collection<ProtocolRecord> records = new ArrayList<>();
     public ProtocolResultSetWriter(ResultSet<ProtocolMetaData, ProtocolRecord> resultSet, Long maxCacheSize) {
         super(resultSet, maxCacheSize);
     }
@@ -60,6 +64,11 @@ public class ProtocolResultSetWriter extends ResultSetWriter<ProtocolMetaData, P
 
     @Override
     public void addRecord(ProtocolRecord protocolRecord) throws IOException {
-        logger.info(protocolRecord.getLine());
+        records.add(protocolRecord);
+    }
+
+    @Override
+    public Collection<ProtocolRecord> getRecords() {
+        return records;
     }
 }

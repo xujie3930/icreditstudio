@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset;
 
 /**
  * Project：iCreditStudio

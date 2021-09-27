@@ -1,7 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.Record;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultRecord;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.Record;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultRecord;
 
 /**
  * Project：iCreditStudio

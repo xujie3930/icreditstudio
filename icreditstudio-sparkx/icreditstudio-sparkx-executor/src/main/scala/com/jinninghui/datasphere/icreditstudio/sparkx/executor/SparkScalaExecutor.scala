@@ -16,18 +16,17 @@
 
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
-import java.io.{BufferedOutputStream, BufferedReader, File, FileOutputStream, OutputStream, PrintStream}
-
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.SparkOutputStream
-import org.apache.commons.io.IOUtils
-import org.apache.commons.lang.StringUtils
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.response.{ErrorExecuteResponse, UnknownExecuteResponse, ExecuteResponse, IncompleteExecuteResponse, SuccessExecuteResponse}
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol.ProtocolOutputStream
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.spark.repl.SparkILoop
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.util.SparkUtils
 
+import java.io.{BufferedReader, File}
 import scala.tools.nsc.GenericRunnerSettings
+import scala.tools.nsc.interpreter.Results.Result
 import scala.tools.nsc.interpreter.{IMain, JPrintWriter, NamedParam, Results, SimpleReader, StdReplTags, isReplPower, replProps}
 
 /**
@@ -55,11 +54,9 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
   private var jobGroup: String = _
 
-//  private val lineOutputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(new File("/home/hadoop/桌面/out.text")))
-//private val lineOutputStream: OutputStream = System.out
-  private val lineOutputStream :SparkOutputStream = new SparkOutputStream
+  private val lineOutputStream: ProtocolOutputStream = new ProtocolOutputStream
 
-  private val jOut : JPrintWriter = new JPrintWriter(lineOutputStream, true)
+  private val jOut: JPrintWriter = new JPrintWriter(lineOutputStream, true)
 
   private var executeCount = 0
 
@@ -109,32 +106,43 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
 
     lazyLoadILoop
-    lineOutputStream.reday()
+    lineOutputStream.ready()
     lineOutputStream.reset()
 
-    var res: ExecuteResponse = null
+    var res: Result = null
 
     Utils.tryCatch {
       res = executeLine(code)
     } {
       case e: Exception =>
         sparkContext.clearJobGroup()
+        var outs  = lineOutputStream.finalFlush()
         error("Interpreter exception", e)
+        lineOutputStream.close()
         // _state = Idle()
-        return ErrorExecuteResponse("Interpreter exception", e)
-    }
-    res match {
-      case SuccessExecuteResponse() =>
-      case IncompleteExecuteResponse(_) =>
-      case _ =>
-        sparkContext.clearJobGroup()
-        return res
+        return new ErrorExecuteResponse(outs)
     }
 
-    res
+    var outs  = lineOutputStream.finalFlush()
+
+    res match {
+      case Results.Success =>
+        return new SuccessExecuteResponse(outs)
+      case Results.Incomplete =>
+        return new IncompleteExecuteResponse
+      case Results.Error =>
+        sparkContext.clearJobGroup()
+        return new ErrorExecuteResponse(outs)
+      case _ =>
+        return new UnknownExecuteResponse
+    }
+
+    lineOutputStream.close()
+
+    new UnknownExecuteResponse
   }
 
-  def executeLine(code: String): ExecuteResponse = synchronized {
+  def executeLine(code: String): Result = synchronized {
     val kind: Kind = getKind
     var preCode = code
     val _code = Kind.getRealCode(preCode)
@@ -152,7 +160,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     response
   }
 
-  def executeLine0(code: String): ExecuteResponse = {
+  def executeLine0(code: String): Result = {
     info(s"Start to run code $code")
     executeCount += 1
     var originalOut = System.out
@@ -162,44 +170,22 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
         val msg = ExceptionUtils.getRootCauseMessage(t)
         if (msg.contains("OutOfMemoryError")) {
           error("engine oom now to set status to shutdown")
-          //          ExecutorManager.getInstance.getReportExecutor.tryShutdown()
         }
         Results.Error
       } match {
         case Results.Success =>
-          //TODO chuli yunxing jieguo
           lineOutputStream.flush()
-//          var ps :PrintStream = new PrintStream(lineOutputStream)
-//          ps.println()
-          //          val outStr = lineOutputStream.
-          //          if (outStr.nonEmpty) {
-          ////            val output = Utils.tryQuietly(ResultSetWriter.getRecordByRes(outStr, SparkConfiguration.SPARK_CONSOLE_OUTPUT_NUM.getValue))
-          ////            val res = if (output != null) output.map(x => x.toString).toList.mkString("\n") else ""
-          ////            if (res.length > 0) {
-          ////              engineExecutionContext.appendStdout(res)
-          ////            }
-          //            print(outStr)
-          //          }
-          SuccessExecuteResponse()
+          info("Succeed to execute code.")
+          Results.Success
         case Results.Incomplete =>
-          //error("incomplete code.")
-          IncompleteExecuteResponse(null)
+          error("incomplete code.")
+          Results.Incomplete
         case Results.Error =>
           lineOutputStream.flush()
-          val output = lineOutputStream.toString
-          IOUtils.closeQuietly(lineOutputStream)
-          var errorMsg: String = null
-          if (StringUtils.isNotBlank(output)) {
-            //            errorMsg = Utils.tryCatch(EngineUtils.getResultStrByDolphinTextContent(output))(t => t.getMessage)
-            error("Execute code error for " + output)
-          } else {
-            error("No error message is captured, please see the detailed log")
-          }
-          ErrorExecuteResponse(errorMsg, new IllegalStateException("execute sparkScala failed!"))
+          error("No error message is captured, please see the detailed log")
+          Results.Error
       }
     }
-    // reset the java stdout
-
     System.setOut(originalOut)
     result
   }

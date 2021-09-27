@@ -1,17 +1,15 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol;
 
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolMetaData;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolRecord;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolResultSet;
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol.ProtocolResultSetWriter;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultOutputStream;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultSetWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 /**
  * 拿到Spark执行的结果进行输出，
@@ -24,13 +22,12 @@ import java.nio.charset.StandardCharsets;
  *
  * @author liyanhui
  */
-public class SparkOutputStream extends OutputStream {
+public class ProtocolOutputStream extends ResultOutputStream<ProtocolRecord> {
 
-    private final Logger logger = LoggerFactory.getLogger(SparkOutputStream.class);
+    private final Logger logger = LoggerFactory.getLogger(ProtocolOutputStream.class);
     private boolean isReady = false;
 
-    //    private List<Integer> line = new ArrayList<>();
-    private final ByteBuffer bb = ByteBuffer.allocate(4096);
+    private final ByteBuffer bb = ByteBuffer.allocate(8096);
     private ResultSetWriter<ProtocolMetaData, ProtocolRecord> writer;
 
     @Override
@@ -59,7 +56,7 @@ public class SparkOutputStream extends OutputStream {
         writer.addMetaData(null);
     }
 
-    public void reday() {
+    public void ready() {
         this.isReady = true;
     }
 
@@ -86,18 +83,26 @@ public class SparkOutputStream extends OutputStream {
             flush();
             writer.close();
             writer = null;
+            isReady = false;
         }
     }
 
     void flush0() throws IOException {
-        String outStr = new String(bb.array(), StandardCharsets.UTF_8);
+        bb.flip();
+        byte[] dist = new byte[bb.limit()];
+        bb.get(dist);
+        String outStr = new String(dist, StandardCharsets.UTF_8);
         writer.addRecord(new ProtocolRecord(outStr));
-
     }
 
     byte[] intToByteArray(int i) {
         byte[] result = new byte[1];
         result[0] = (byte) (i & 0xFF);
         return result;
+    }
+
+    @Override
+    public Collection<ProtocolRecord> finalFlush() {
+        return writer.getRecords();
     }
 }

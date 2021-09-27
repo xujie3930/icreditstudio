@@ -1,6 +1,6 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.protocol;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal.ResultDeserializer;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultDeserializer;
 
 /**
  * Project：iCreditStudio

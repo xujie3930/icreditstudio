@@ -1,8 +1,9 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset;
 
 import java.io.Closeable;
 import java.io.Flushable;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * Project：iCreditStudio
@@ -13,11 +14,13 @@ import java.io.IOException;
  *
  * @author liyanhui
  */
-public interface SparkWriter<K extends MetaData, V extends Record> extends Closeable, Flushable {
+public interface Writer<K extends MetaData, V extends Record> extends Closeable, Flushable {
 
     void addMetaData(K k) throws IOException;
 
 
     void addRecord(V v) throws IOException;
+
+    Collection<V> getRecords();
 
 }

@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
+package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset;
 
 /**
  * Project：iCreditStudio
@@ -9,7 +9,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor.result.kernal;
  *
  * @author liyanhui
  */
-public abstract class ResultSetWriter<K extends MetaData, V extends Record> implements SparkWriter<K, V> {
+public abstract class ResultSetWriter<K extends MetaData, V extends Record> implements Writer<K, V> {
 
 
     ResultSet<K, V> resultSet;
@@ -24,5 +24,7 @@ public abstract class ResultSetWriter<K extends MetaData, V extends Record> impl
 
     protected abstract void addMetaDataAndRecordString(String content);
     protected abstract void addRecordString(String content);
+
+
 
 }
