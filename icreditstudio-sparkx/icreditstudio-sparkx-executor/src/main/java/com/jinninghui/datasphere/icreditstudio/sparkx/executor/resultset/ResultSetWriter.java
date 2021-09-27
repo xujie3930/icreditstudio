@@ -9,7 +9,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset;
  *
  * @author liyanhui
  */
-public abstract class ResultSetWriter<K extends MetaData, V extends Record> implements Writer<K, V> {
+public abstract class ResultSetWriter<K extends MetaData, V extends Record> implements ResultWriter<K, V> {
 
 
     ResultSet<K, V> resultSet;

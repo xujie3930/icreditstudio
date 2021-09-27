@@ -14,7 +14,7 @@ import java.util.Collection;
  *
  * @author liyanhui
  */
-public interface Writer<K extends MetaData, V extends Record> extends Closeable, Flushable {
+public interface ResultWriter<K extends MetaData, V extends Record> extends Closeable, Flushable {
 
     void addMetaData(K k) throws IOException;
 
