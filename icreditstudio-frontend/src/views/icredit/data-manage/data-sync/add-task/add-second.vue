@@ -202,7 +202,7 @@
                     ]"
                     slot="append"
                     :loading="widthTableLoading"
-                    @click="handleIdentifyTable"
+                    @click="handleIdentifyTable(false)"
                   >
                     {{ secondTaskForm.createMode ? '执行SQL' : '识别宽表' }}
                   </el-button>
@@ -796,16 +796,21 @@ export default {
 
     // 数据库同名选择弹窗回调
     handleSelectBatabase() {
-      this.sqlInfo.databaseHost = deepClone(
-        this.sameNameDataBase
-      ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
-      this.handleIdentifyTable()
+      this.handleIdentifyTable(true)
     },
 
     // 识别宽表
-    handleIdentifyTable() {
+    handleIdentifyTable(isChooseIp) {
       if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
+
+      if (isChooseIp) {
+        this.sqlInfo.databaseHost = deepClone(
+          this.sameNameDataBase
+        ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
+      } else {
+        this.sqlInfo.databaseHost = undefined
+      }
 
       const {
         createMode,
@@ -851,6 +856,10 @@ export default {
               data.sameNameDataBase.length && this.$refs.baseDialog.open()
             }
           }
+        })
+        .catch(err => {
+          console.log('error', err)
+          this.sameNameDataBase = []
         })
         .finally(() => {
           this.widthTableLoading = false
