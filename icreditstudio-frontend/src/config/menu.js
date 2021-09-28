@@ -42,6 +42,11 @@ export const secondMenuMapping = {
     icon: 'menu-sync',
     iconActive: 'menu-sync-active'
   },
+  '/data-manage/data-develop': {
+    name: '数据开发',
+    icon: 'menu-develop',
+    iconActive: 'menu-develop-active'
+  },
   '/data-manage/data-schedule': {
     name: '调度中心',
     icon: 'menu-schedule',
