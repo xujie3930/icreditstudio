@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl.MysqlDatasource;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl.OracleDatasource;
 
 /**
  * @author xujie
@@ -15,6 +16,8 @@ public class DatasourceFactory {
         switch (datasourceTypeEnum) {
             case MYSQL:
                 return new MysqlDatasource();
+            case ORACLE:
+                return new OracleDatasource();
             default:
                 return new MysqlDatasource();
         }
