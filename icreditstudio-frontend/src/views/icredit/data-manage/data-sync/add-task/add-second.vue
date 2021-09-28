@@ -852,6 +852,10 @@ export default {
             }
           }
         })
+        .catch(err => {
+          console.log('error', err)
+          this.sameNameDataBase = []
+        })
         .finally(() => {
           this.widthTableLoading = false
           this.tableLoading = false
