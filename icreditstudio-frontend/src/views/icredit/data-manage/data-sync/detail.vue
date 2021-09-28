@@ -57,7 +57,7 @@
                     </div>
                   </el-popover>
                 </div>
-                <span v-else>无</span>
+                <span v-else>略</span>
               </el-col>
             </el-row>
 
