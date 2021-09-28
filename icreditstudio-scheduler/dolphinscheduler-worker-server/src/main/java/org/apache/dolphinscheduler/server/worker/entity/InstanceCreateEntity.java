@@ -76,4 +76,9 @@ public class InstanceCreateEntity {
      * 定时结束时间
      */
     private String endTime;
+
+    /**
+     *切分主键,用于oracle
+     */
+    private String splitPk;
 }

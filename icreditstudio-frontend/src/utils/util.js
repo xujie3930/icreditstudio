@@ -416,3 +416,16 @@ export const randomNum = function(minNum, maxNum) {
       return 0
   }
 }
+
+// 数组去重
+export const unique = arr => {
+  const obj = {}
+  return arr.filter(item => {
+    // eslint-disable-next-line no-prototype-builtins
+    const flag = obj.hasOwnProperty(typeof item + item)
+      ? false
+      : (obj[typeof item + item] = true)
+
+    return flag
+  })
+}

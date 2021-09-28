@@ -64,10 +64,12 @@ export default {
 
     // 渲染流程图
     renderFlowGraph() {
-      const { nodes, ...rest } = x6Json
-      const newNodes = nodes.map(item => customNodeStyle(item))
+      const { nodes, edges } = x6Json
+      console.log(edges)
       const graph = renderGraph()
-      graph.fromJSON({ nodes: newNodes, ...rest })
+      nodes.forEach(item => graph.addNode(customNodeStyle(item)))
+      edges.forEach(item => graph.addEdge(item))
+      graph.centerContent()
     }
   }
 }
@@ -78,6 +80,10 @@ export default {
   @include flex(column, space-between);
   height: calc(100vh - 124px);
   background-color: #fff;
+
+  &-content {
+    position: relative;
+  }
 
   &-footer {
     position: relative;

@@ -27,9 +27,7 @@
               v-for="item in taskDetailInfo"
             >
               <div class="label">
-                <span
-                  v-if="item.key !== 'taskDescription'"
-                  class="required-icon"
+                <span v-if="item.key !== 'taskDescribe'" class="required-icon"
                   >*
                 </span>
                 <span>{{ item.label }}</span>
@@ -150,7 +148,7 @@
                 {{ scheduleTypeMapping[buildDetailInfo.scheduleType] }}
               </span>
             </div>
-            <div class="content-item">
+            <div class="content-item" v-if="buildDetailInfo.scheduleType">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
