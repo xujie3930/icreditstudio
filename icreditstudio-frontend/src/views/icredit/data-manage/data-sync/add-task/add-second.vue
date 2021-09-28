@@ -796,9 +796,6 @@ export default {
 
     // 数据库同名选择弹窗回调
     handleSelectBatabase() {
-      this.sqlInfo.databaseHost = deepClone(
-        this.sameNameDataBase
-      ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
       this.handleIdentifyTable(true)
     },
 
@@ -806,6 +803,14 @@ export default {
     handleIdentifyTable(isChooseIp) {
       if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
+
+      if (isChooseIp) {
+        this.sqlInfo.databaseHost = deepClone(
+          this.sameNameDataBase
+        ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
+      } else {
+        this.sqlInfo.databaseHost = undefined
+      }
 
       const {
         createMode,
@@ -819,7 +824,7 @@ export default {
       const sqlParams = {
         workspaceId: this.workspaceId,
         createMode,
-        sqlInfo: isChooseIp ? this.sqlInfo : undefined
+        sqlInfo: this.sqlInfo
       }
 
       const visualParams = {
