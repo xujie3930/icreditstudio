@@ -68,7 +68,7 @@ export default {
       console.log(edges)
       const graph = renderGraph()
       nodes.forEach(item => graph.addNode(customNodeStyle(item)))
-      // edges.forEach(item => graph.addEdge(customNodeStyle(item)))
+      edges.forEach(item => graph.addEdge(item))
       graph.centerContent()
     }
   }
@@ -80,6 +80,10 @@ export default {
   @include flex(column, space-between);
   height: calc(100vh - 124px);
   background-color: #fff;
+
+  &-content {
+    position: relative;
+  }
 
   &-footer {
     position: relative;

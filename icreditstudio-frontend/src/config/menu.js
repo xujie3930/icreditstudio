@@ -46,6 +46,11 @@ export const secondMenuMapping = {
     name: '调度中心',
     icon: 'menu-schedule',
     iconActive: 'menu-schedule-active'
+  },
+  '/data-manage/data-dictionary': {
+    name: '字典表',
+    icon: 'menu-dictionary',
+    iconActive: 'menu-dictionary-active'
   }
 }
 

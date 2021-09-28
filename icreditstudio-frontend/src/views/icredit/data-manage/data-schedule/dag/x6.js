@@ -26,7 +26,8 @@ export const customNodeStyle = (nodeConfig, cusAttrs) => {
           nodeInfo: {
             bgColor: '#f4f4f4',
             lineColor: '#d6e4ff',
-            ...nodeConfig.data
+            ...nodeConfig.data,
+            ...nodeConfig
           }
         }
       }
@@ -127,7 +128,6 @@ export const x6Json = {
     {
       source: 'node1', // String，必须，起始节点 id
       target: 'node2', // String，必须，目标节点 id
-
       attrs: {
         line: {
           stroke: '#52C41A' // 指定 path 元素的填充色
