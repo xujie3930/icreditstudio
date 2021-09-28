@@ -57,11 +57,11 @@
               @click="handleAddRow(row, column, index)"
             ></el-button>
             <el-button
-              size="mini"
               plain
-              type="error"
-              icon="el-icon-minus"
               circle
+              size="mini"
+              icon="el-icon-minus"
+              :disabled="tableData.length < 2"
               @click="handleMinusRow(row, column, index)"
             ></el-button>
           </template>
@@ -122,7 +122,7 @@ export default {
     // 删减一行
     handleMinusRow(row, column, index) {
       console.log(row, column, index, 'row')
-      index && this.tableData.splice(index, 1)
+      this.tableData.splice(index, 1)
     },
 
     handleClose() {
