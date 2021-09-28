@@ -60,7 +60,10 @@ export default {
   },
 
   methods: {
-    handleImportDict() {},
+    handleImportDict(options) {
+      this.$refs.addDialog.open(options)
+    },
+
     handleAddDict(options) {
       console.log(options, 'kokololo')
       this.$refs.addDialog.open(options)

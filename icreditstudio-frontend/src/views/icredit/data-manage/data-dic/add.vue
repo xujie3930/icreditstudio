@@ -7,7 +7,7 @@
   <BaseDialog
     ref="baseDialog"
     width="800px"
-    :title="`${opType === 'add' ? '新增' : '编辑'}字典表`"
+    :title="title"
     @onClose="handleClose"
     @onConfirm="handleConfirm"
   >
@@ -16,31 +16,45 @@
       :rules="dictRules"
       ref="dictForm"
       label-width="150px"
+      class="dict-form"
     >
       <el-form-item label="字典表英文名称" prop="name">
-        <el-input v-model="dictForm.name"></el-input>
+        <el-input
+          v-model="dictForm.name"
+          maxlength="50"
+          placeholder="请输入英文名称"
+        ></el-input>
       </el-form-item>
-      <el-form-item label=" 字典表中文名称" prop="name">
-        <el-input v-model="dictForm.name"></el-input>
+      <el-form-item label="字典表中文名称" prop="name">
+        <el-input
+          v-model="dictForm.name"
+          maxlength="50"
+          placeholder="请输入中文名称"
+        ></el-input>
       </el-form-item>
       <el-form-item label="字典表描述" prop="name">
-        <el-input type="textarea" v-model="dictForm.name"></el-input>
+        <el-input
+          type="textarea"
+          maxlength="250"
+          placeholder="请输入字典表描述"
+          v-model="dictForm.name"
+        ></el-input>
       </el-form-item>
-      <el-form-item label="字典表内容" prop="table">
-        <el-table border :data="tableData" max-height="300" style="width: 100%">
-          <el-table-column prop="date" label="日期" width="180">
-          </el-table-column>
-          <el-table-column prop="name" label="姓名" width="180">
-          </el-table-column>
-          <el-table-column prop="address" label="地址"> </el-table-column>
-          <el-table-column prop="operate" label="操作">
-            <template slot="header"></template>
+      <el-form-item v-if="opType !== 'import'" label="字典表内容" prop="table">
+        <j-table
+          ref="table"
+          v-loading="tableLoading"
+          :table-configuration="tableConfiguration"
+          :table-data="tableData"
+        >
+          <template #operationColumn="{row, column, index}">
             <el-button
               size="mini"
               plain
               type="primary"
               icon="el-icon-plus"
               circle
+              @click="handleAddRow(row, column, index)"
             ></el-button>
             <el-button
               size="mini"
@@ -48,9 +62,21 @@
               type="error"
               icon="el-icon-minus"
               circle
+              @click="handleMinusRow(row, column, index)"
             ></el-button>
-          </el-table-column>
-        </el-table>
+          </template>
+        </j-table>
+      </el-form-item>
+      <el-form-item v-else label="上传文件">
+        <div class="dict-btn">
+          <el-button icon="el-icon-download" type="text">
+            下载模板
+          </el-button>
+        </div>
+        <el-upload class="dict-upload" drag multiple>
+          <i class="el-icon-upload"></i>
+          <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        </el-upload>
       </el-form-item>
     </el-form>
   </BaseDialog>
@@ -58,49 +84,45 @@
 
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
+import tableConfiguration from '@/views/icredit/configuration/table/data-dictionary-add'
 
 export default {
   components: { BaseDialog },
 
   data() {
     return {
+      title: '',
       opType: '',
       dictForm: {},
       dictRules: {
         name: [{ required: true, message: '必填项不能为空', trigger: 'blur' }]
       },
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      tableLoading: false,
+      tableConfiguration,
+      tableData: [{ key: '', value: '' }]
     }
   },
 
   methods: {
     open(options) {
-      const { row, opType = 'add' } = options
+      const { row, title, opType = 'add' } = options
       this.opType = opType
+      this.title = title
       console.log('deddeded', row, options)
 
       this.$nextTick(() => this.$refs.baseDialog.open())
+    },
+
+    // 新增一行
+    handleAddRow(row) {
+      console.log(row)
+      this.tableData.push({ key: '', value: '', remark: '' })
+    },
+
+    // 删减一行
+    handleMinusRow(row, column, index) {
+      console.log(row, column, index, 'row')
+      index && this.tableData.splice(index, 1)
     },
 
     handleClose() {
@@ -115,4 +137,27 @@ export default {
 }
 </script>
 
-<style></style>
+<style lang="scss" scoped>
+.dict-form {
+  .dict-btn {
+    text-align: right;
+  }
+
+  .dict-upload {
+    width: 100%;
+    border-radius: 4px;
+    border: 1px dashed rgba(0, 0, 0, 0.15);
+
+    ::v-deep {
+      .el-upload-dragger {
+        @include flex(column);
+        height: 130px;
+        .el-icon-upload {
+          margin: 0;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+}
+</style>

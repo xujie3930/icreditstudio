@@ -15,6 +15,8 @@ export default _this => {
         type: 'primary',
         key: 'importDict',
         options: {
+          title: '导入字典表',
+          opType: 'import',
           eventType: 'click',
           eventName: 'handleImportDict'
         }
@@ -24,6 +26,8 @@ export default _this => {
         type: 'primary',
         key: 'addDict',
         options: {
+          title: '新增字典表',
+          opType: 'add',
           eventType: 'click',
           eventName: 'handleAddDict'
         }
@@ -77,7 +81,8 @@ export default _this => {
             show: true
           },
           {
-            func: ({ row }) => _this.handleAddDict({ row, opType: 'edit' }),
+            func: ({ row }) =>
+              _this.handleAddDict({ row, opType: 'edit', title: '编辑字典表' }),
             label: '编辑',
             key: 'edit',
             show: true
