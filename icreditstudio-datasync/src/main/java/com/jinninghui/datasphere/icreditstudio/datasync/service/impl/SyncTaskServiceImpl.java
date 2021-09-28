@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,6 +13,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
@@ -150,6 +152,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         entity.setVersion(param.getVersion());
         entity.setSourceType(param.getSourceType());
+        entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
         if (StringUtils.isNotBlank(param.getTaskId())) {
             Map<String, Object> columnMap = Maps.newHashMap();
             columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
@@ -283,7 +286,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
                 info.setTargetSource(wideTable.getTargetSource());
                 info.setSql(wideTable.getSqlStr());
-                info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+
+                List<TableInfo> tableInfos = JSONArray.parseArray(wideTable.getSourceTables(), TableInfo.class);
+                if (CollectionUtils.size(tableInfos) == 1) {
+                    TableInfo tableInfo = tableInfos.get(0);
+                    AssociatedData data = new AssociatedData();
+                    data.setLeftSourceDatabase(tableInfo.getDatabase());
+                    data.setLeftSource(tableInfo.getTableName());
+                    info.setView(Lists.newArrayList(data));
+                } else {
+                    info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+                }
                 List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTable.getId());
                 info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
             }
