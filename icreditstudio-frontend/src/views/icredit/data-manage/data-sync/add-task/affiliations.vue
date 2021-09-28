@@ -123,7 +123,7 @@
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
-import { deepClone } from '@/utils/util'
+import { deepClone, unique } from '@/utils/util'
 import { iconMapping } from '../contant'
 
 export default {
@@ -217,7 +217,7 @@ export default {
       const relationData = {
         idx: this.idx,
         associatedType: form.associatedType,
-        conditions: linkTypeData.conditions,
+        conditions: unique(linkTypeData.conditions),
         leftSource: leftTable.name,
         leftSourceDatabase: leftTable.database,
         rightSource: rightTable.name,
@@ -254,10 +254,10 @@ export default {
     handleChangeLeftSelect(item) {
       const { left, right } = item
       this.leftSelectVal = this.aTableOption.find(({ name }) => name === left)
+
       if (right) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
-        console.log(fieldType, rType)
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
           item.left = ''
@@ -272,6 +272,7 @@ export default {
     handleChangeRightSelect(item) {
       const { left, right } = item
       this.rightSelectVal = this.bTableOption.find(({ name }) => name === right)
+
       if (left) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal

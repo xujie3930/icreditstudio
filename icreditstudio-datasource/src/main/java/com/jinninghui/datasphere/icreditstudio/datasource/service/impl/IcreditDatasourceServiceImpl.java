@@ -374,8 +374,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param) {
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
-        IcreditDatasourceTestConnectRequest testConnectRequest = new IcreditDatasourceTestConnectRequest(datasourceEntity.getType(), param.getUri());
-        checkDatabase(testConnectRequest);
+        //若数据源发生改动，则需要判断uri是否正确
+        if (StringUtils.isNotBlank(param.getUri())){
+            IcreditDatasourceTestConnectRequest testConnectRequest = new IcreditDatasourceTestConnectRequest(datasourceEntity.getType(), param.getUri());
+            checkDatabase(testConnectRequest);
+        }
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, entity);
         return BusinessResult.success(updateById(entity));

@@ -929,7 +929,7 @@ export default {
         database: leftSourceDatabase
       }
 
-      if (associatedType && rightSource && rightSourceDatabase) {
+      if (rightSource && rightSourceDatabase) {
         this.selectedTable[1] = {
           type: 'line',
           iconName: iconMapping[associatedType]?.icon,
@@ -1245,7 +1245,7 @@ export default {
       }
 
       .tree {
-        max-height: calc(100% - 93px);
+        max-height: calc(100vh - 424px);
         overflow-y: auto;
 
         .custom-tree-node {
