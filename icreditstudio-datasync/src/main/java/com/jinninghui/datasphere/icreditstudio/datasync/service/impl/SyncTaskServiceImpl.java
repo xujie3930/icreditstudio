@@ -73,6 +73,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             taskId = oneStepSave(param);
         }
         if (CallStepEnum.TWO == CallStepEnum.find(param.getCallStep())) {
+            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = twoStepSave(param);
         }
         if (CallStepEnum.THREE == CallStepEnum.find(param.getCallStep())) {
