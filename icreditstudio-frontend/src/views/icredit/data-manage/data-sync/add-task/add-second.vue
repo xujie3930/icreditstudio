@@ -202,7 +202,7 @@
                     ]"
                     slot="append"
                     :loading="widthTableLoading"
-                    @click="handleIdentifyTable"
+                    @click="handleIdentifyTable(false)"
                   >
                     {{ secondTaskForm.createMode ? '执行SQL' : '识别宽表' }}
                   </el-button>
