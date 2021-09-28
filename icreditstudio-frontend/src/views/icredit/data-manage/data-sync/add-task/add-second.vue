@@ -799,11 +799,11 @@ export default {
       this.sqlInfo.databaseHost = deepClone(
         this.sameNameDataBase
       ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
-      this.handleIdentifyTable()
+      this.handleIdentifyTable(true)
     },
 
     // 识别宽表
-    handleIdentifyTable() {
+    handleIdentifyTable(isChooseIp) {
       if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
 
@@ -819,7 +819,7 @@ export default {
       const sqlParams = {
         workspaceId: this.workspaceId,
         createMode,
-        sqlInfo: this.sqlInfo
+        sqlInfo: isChooseIp ? this.sqlInfo : undefined
       }
 
       const visualParams = {
