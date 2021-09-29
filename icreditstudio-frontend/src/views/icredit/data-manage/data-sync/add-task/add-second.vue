@@ -468,8 +468,14 @@ export default {
       const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
+      const { createMode, taskId } = this.secondTaskForm
       // taskId存在表明是编辑的情况
-      this.secondTaskForm.taskId && this.getDetailData()
+      if (taskId) {
+        this.getDetailData()
+      } else if (!createMode && this.opType === 'previousStep') {
+        // 没有点击保存设置， 上一步或下一步跳转到本页面的情况
+        this.selectedTable = this.$ls.get('selectedTable') || []
+      }
     },
 
     handleChangeTableName(name) {
@@ -558,6 +564,7 @@ export default {
           }
         })
       }
+      this.$ls.set('selectedTable', this.selectedTable)
     },
 
     // 点击图标设置关联字段回调
@@ -732,6 +739,7 @@ export default {
     // 返回提示
     handleBackClick() {
       this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
       this.$router.push('/data-manage/data-sync')
     },
 
