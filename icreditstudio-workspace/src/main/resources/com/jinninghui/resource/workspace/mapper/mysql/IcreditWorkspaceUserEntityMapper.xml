@@ -3,12 +3,16 @@
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceUserMapper">
 
     <select id="getWorkspaceByUserId" parameterType="java.lang.String" resultType="map">
-        select w.id, w.name
+        select DISTINCT w.id, w.name
         from icredit_workspace_user u,
              icredit_workspace w
-        where u.space_id = w.id
-          and w.del_flag = 'N'
-          and u.user_id = #{id}
+        <where>
+            <if test="id != null and id != '' ">
+                and u.user_id = #{id}
+            </if>
+            AND u.space_id = w.id
+            AND w.del_flag = 'N'
+        </where>
           order by w.update_time desc;
     </select>
 
