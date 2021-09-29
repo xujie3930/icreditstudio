@@ -216,7 +216,7 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
         //查询用户所有的工作空间并赋值
         String userId = userAuthParams.getUserId();
         if (authResult.getWorkspaceCreateAuth()){
-            userId = null;
+            userId = "";
         }
         BusinessResult<List<Map<String, String>>> workspaceList = workspaceFeignClient.getWorkspaceListByUserId(userId);
         if (workspaceList.isSuccess() & CollectionUtils.isNotEmpty(workspaceList.getData())) {
