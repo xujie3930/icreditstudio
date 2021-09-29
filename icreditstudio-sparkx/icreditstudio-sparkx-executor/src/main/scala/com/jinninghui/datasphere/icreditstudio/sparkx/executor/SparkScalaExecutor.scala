@@ -150,7 +150,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
     var preCode = code
     val _code = Kind.getRealCode(preCode)
     info(s"Ready to run code with kind $kind.")
-    jobGroup = String.valueOf("linkis-spark-mix-code-" + queryNum.incrementAndGet())
+    jobGroup = String.valueOf("icredit-spark-mix-code-" + queryNum.incrementAndGet())
     //    val executeCount = queryNum.get().toInt - 1
     info("Set jobGroup to " + jobGroup)
     sc.setJobGroup(jobGroup, _code, true)
@@ -164,7 +164,7 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
   }
 
   def executeLine0(code: String): Result = {
-    info(s"Start to run code $code")
+    info(s"Start to run code: \n$code")
     executeCount += 1
     var originalOut = System.out
     val result = scala.Console.withOut(lineOutputStream) {
@@ -238,7 +238,6 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
 
     sparkILoop.in = reader
     sparkILoop.initializeSynchronous()
-    sparkILoop.printWelcome()
     SparkScalaExecutor.loopPostInit(sparkILoop)
   }
 
@@ -276,6 +275,12 @@ class SparkScalaExecutor(sparkEngineSession: SparkEngineSession) extends Abstrac
       sparkILoop.interpret("import org.apache.spark.sql.execution.datasources.csv._")
       sparkILoop.interpret("import org.apache.spark.sql.UDFRegistration")
       sparkILoop.interpret("implicit val sparkSession = spark")
+      sparkILoop.interpret("import com.jinninghui.datasphere.icreditstudio.sparkx.engine._")
+      sparkILoop.interpret("import org.slf4j.LoggerFactory")
+      sparkILoop.interpret("implicit val appLogger = LoggerFactory.getLogger(\"SparkEngine\")")
+      sparkILoop.interpret("appLogger.info(s\"App imported. App version : ${App.version()}\")")
+      sparkILoop.interpret("appLogger.info(\"Spark Executor init successfully.\")")
+
       bindFlag = true
       warn(s"Finished to init sparkILoop cost ${System.currentTimeMillis() - startTime}.")
     }

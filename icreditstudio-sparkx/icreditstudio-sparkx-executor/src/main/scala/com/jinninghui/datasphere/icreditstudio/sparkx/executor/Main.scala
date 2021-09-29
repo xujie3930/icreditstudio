@@ -39,7 +39,6 @@ import org.apache.spark.{SparkConf, SparkContext}
 object Main extends Logging {
 
   def createEngineConnSession(): SparkEngineSession = {
-    val useSparkSubmit = true
     val sparkConf: SparkConf = new SparkConf(true)
     //use yarn cluster
     val master = "yarn"
@@ -102,8 +101,6 @@ object Main extends Logging {
 
     if (jars.nonEmpty) conf.setJars(jars)
     if (execUri != null) conf.set("spark.executor.uri", execUri)
-//    if (System.getenv("SPARK_HOME") != null)
-    conf.setSparkHome("/opt/spark/spark-3.0.3-hadoop-2.7/spark-3.0.3-bin-hadoop2.7")
     conf.set("spark.scheduler.mode", "FAIR")
 
     val builder = SparkSession.builder.config(conf)

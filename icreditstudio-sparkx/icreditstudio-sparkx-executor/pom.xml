@@ -16,6 +16,10 @@
             <groupId>com.jinninghui.datasphere</groupId>
             <artifactId>icreditstudio-sparkx-common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.jinninghui.datasphere</groupId>
+            <artifactId>icreditstudio-sparkx-engine</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

@@ -18,7 +18,7 @@ public class ProtocolRecord extends ResultRecord {
         this.line = line;
     }
 
-    String line;
+    private String line;
     public String getLine(){
         return line;
     }

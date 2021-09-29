@@ -65,6 +65,7 @@ public class ProtocolResultSetWriter extends ResultSetWriter<ProtocolMetaData, P
     @Override
     public void addRecord(ProtocolRecord protocolRecord) throws IOException {
         records.add(protocolRecord);
+        logger.info(protocolRecord.getLine());
     }
 
     @Override

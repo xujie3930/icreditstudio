@@ -53,4 +53,8 @@ object App extends Logging {
     CacheConstants.rdds.clear()
     CacheConstants.tables.clear()
   }
+
+  def version() : String = {
+    "0.0.1"
+  }
 }

@@ -11,6 +11,11 @@ public class SparkScalaExecutorTest {
 
     private static Logger logger = LoggerFactory.getLogger(SparkScalaExecutorTest.class);
 
+    static String code =
+            "    val configFile1 = \"full-batch.yaml\"\n" +
+            "    val date = \"20191211\"\n" +
+            "    App.main(Array(\"-d\", date, \"-c\", configFile1, \"--debug\"))";
+
     public static void main(String[] args) {
 
 
@@ -18,8 +23,9 @@ public class SparkScalaExecutorTest {
         SparkScalaExecutor sparkScalaExecutor = new SparkScalaExecutor(sparkEngineSession);
         sparkScalaExecutor.init();
 //        sparkScalaExecutor.runCode("sc.getConf.getAll");
+//        ExecuteResponse executeResponse = sparkScalaExecutor.runCode("sql(\"show databases\").show");
 
-        ExecuteResponse executeResponse = sparkScalaExecutor.runCode("sql(\"show databases\").show");
+        ExecuteResponse executeResponse = sparkScalaExecutor.runCode(code);
         logger.info(executeResponse.code().name());
         logger.info("" + executeResponse.success());
         logger.info("" + executeResponse.data());
