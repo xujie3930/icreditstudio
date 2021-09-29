@@ -309,7 +309,9 @@
       <footer class="footer-btn-wrap">
         <el-button
           class="btn"
-          @click="$router.push('/data-manage/add-task?opType=previousStep')"
+          @click="
+            $router.push(`/data-manage/add-task?opType=${opType}&step=second`)
+          "
         >
           上一步
         </el-button>
@@ -394,6 +396,7 @@ export default {
     this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
 
     return {
+      step: '',
       opType: '',
       isCanJumpNext: false,
       isCanSaveSetting: false,
@@ -465,14 +468,16 @@ export default {
   methods: {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
+      this.step = this.$route.query?.step || ''
       const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
+
       const { createMode, taskId } = this.secondTaskForm
       // taskId存在表明是编辑的情况
       if (taskId) {
         this.getDetailData()
-      } else if (!createMode && this.opType === 'previousStep') {
+      } else if (!createMode && this.opType === 'add' && this.step) {
         // 没有点击保存设置， 上一步或下一步跳转到本页面的情况
         this.selectedTable = this.$ls.get('selectedTable') || []
       }
@@ -697,7 +702,7 @@ export default {
     handleStepClick() {
       if (this.handleVerifyTip()) return
       this.handleTaskFormParams()
-      this.$router.push('/data-manage/add-transfer')
+      this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
     },
 
     // 验证宽表信息以及宽表名称是否已填
@@ -1134,6 +1139,12 @@ export default {
 
     // 编辑情况下获取详情
     getDetailData() {
+      if (this.opType === 'edit') {
+        this.$message.warning({
+          duration: 4000,
+          message: '编辑模式下， 可视化区域的表以及关联关系不可编辑！'
+        })
+      }
       this.detailLoading = true
       API.dataSyncBuildDetial({ taskId: this.secondTaskForm.taskId })
         .then(({ success, data }) => {

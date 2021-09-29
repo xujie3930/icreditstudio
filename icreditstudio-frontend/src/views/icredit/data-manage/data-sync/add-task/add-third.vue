@@ -98,7 +98,9 @@
       <footer class="footer-btn-wrap">
         <el-button
           class="btn"
-          @click="$router.push('/data-manage/add-build?opType=previousStep')"
+          @click="
+            $router.push(`/data-manage/add-build?step=third&opType=${opType}`)
+          "
         >
           上一步
         </el-button>
@@ -143,6 +145,7 @@ export default {
     }
 
     return {
+      opType: '',
       detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
@@ -190,6 +193,7 @@ export default {
 
   methods: {
     initPage() {
+      this.opType = this.$route.query?.opType || 'add'
       const beforeStepForm = this.$ls.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
@@ -222,6 +226,7 @@ export default {
                 if (callStep === 4) {
                   this.$router.push('/data-manage/data-sync')
                   this.$ls.remove('taskForm')
+                  this.$ls.remove('selectedTable')
                 }
               }
             })
@@ -235,6 +240,7 @@ export default {
     // 返回提示
     handleBackClick() {
       this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
       this.$router.push('/data-manage/data-sync')
     },
 
