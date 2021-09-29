@@ -15,12 +15,12 @@ trait BaseWorker extends Logging {
   def process(bean: BaseConfig)(implicit ss: SparkSession): Unit
 
   protected def initVariables()(implicit ss: SparkSession): Unit = {
-    val str = ss.sparkContext.getConf.get("com.hellowzk.light.spark.variables")
+    val str = ss.sparkContext.getConf.get("com.jinninghui.datasphere.icreditstudio.sparkx.engine.variables")
     variables = JSON.parseObject(str, classOf[java.util.HashMap[String, String]])
   }
 
   protected def getVariableStr()(implicit ss: SparkSession): String = {
-    ss.sparkContext.getConf.get("com.hellowzk.light.spark.variables")
+    ss.sparkContext.getConf.get("com.jinninghui.datasphere.icreditstudio.sparkx.engine.variables")
   }
 
   /**

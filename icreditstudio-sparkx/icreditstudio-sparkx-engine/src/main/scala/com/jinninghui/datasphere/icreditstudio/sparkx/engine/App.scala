@@ -8,37 +8,35 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.{BusConfig, 
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.{AppConstants, SysConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.{BatchPip, StreamPip}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.SparkUtil
-import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 object App extends Logging {
-  def main(args: Array[String]): Unit = {
+  def run(args: Array[String])(implicit  sparkSession: SparkSession): Unit = {
     val appConfig = BusConfig.apply.parseOptions(args)
     logger.info(s"load config success, event date is ${appConfig.eventDate}, config file is ${appConfig.configFile}.")
     val confMap: java.util.Map[String, String] = AppConstants.variables
     val strConf = JSON.toJSONString(confMap, new Array[SerializeFilter](0))
-
-    val sparkConf = SparkUtil.getSparkConf(appConfig, strConf)
+    SparkUtil.getSparkConf(appConfig, strConf, sparkSession.sparkContext.getConf)
     if (appConfig.isStreaming) {
-      stream(appConfig, sparkConf)
+      stream(appConfig,sparkSession)
     } else {
-      batch(appConfig, sparkConf)
+      batch(appConfig, sparkSession)
     }
     cleanUp()
     logger.info(s"context exit success.")
   }
 
-  private def batch(appConfig: BusinessConfig, sparkConf: SparkConf): Unit = {
+  private def batch(appConfig: BusinessConfig, sparkSession: SparkSession): Unit = {
     logger.info("start batch process.")
-    implicit val sparkSession: SparkSession = SparkUtil.initSparkSession(sparkConf, appConfig.hiveEnabled)
+    implicit val ss: SparkSession = sparkSession
     BatchPip.startPip(appConfig)
     sparkSession.stop()
   }
 
-  private def stream(appConfig: BusinessConfig, sparkConf: SparkConf): Unit = {
+  private def stream(appConfig: BusinessConfig, sparkSession: SparkSession): Unit = {
     logger.info("start stream process.")
-    implicit val sparkSession: SparkSession = SparkUtil.initSparkSession(sparkConf, appConfig.hiveEnabled)
+    implicit val ss: SparkSession = sparkSession
     implicit val ssc: StreamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(appConfig.streamBatchSeconds))
     StreamPip.startPip(appConfig)
     ssc.stop()

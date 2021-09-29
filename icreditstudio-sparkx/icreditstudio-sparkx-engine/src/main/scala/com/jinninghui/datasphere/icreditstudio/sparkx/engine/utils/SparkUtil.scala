@@ -4,7 +4,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.CacheConstants
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.SysConstants
-import org.apache.commons.lang3.StringUtils
 import org.apache.spark.SparkConf
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
@@ -12,22 +11,6 @@ import org.apache.spark.sql.SparkSession
 import scala.collection.JavaConversions._
 
 object SparkUtil extends Logging {
-  /**
-   * 初始化 SparkSession
-   */
-  def initSparkSession(conf: SparkConf, hiveEnabled: Boolean): SparkSession = {
-    val sessionConf = SparkSession
-      .builder()
-      .config(conf)
-    Option(hiveEnabled).filter(b => b)
-      .foreach(s => {
-        sessionConf.enableHiveSupport()
-        logger.info("set enableHiveSupport.")
-      })
-    val session = sessionConf.getOrCreate
-    logger.info("Spark session initialized success.")
-    session
-  }
 
   /**
    * 获取 sparkConf
@@ -36,50 +19,8 @@ object SparkUtil extends Logging {
    * @param variables variables
    * @return
    */
-  def getSparkConf(appConf: BusinessConfig, variables: String): SparkConf = {
-    val debug = appConf.isDebug
-    val date = appConf.eventDate
-    val conf = new SparkConf()
-    conf.set("com.hellowzk.light.spark.variables", variables)
-
-    /**
-     * 设置appName
-     */
-    Option(appConf.getName)
-      .filter(name => !conf.contains("spark.app.name"))
-      .foreach(_ => {
-        val appName = appConf.configFile
-        val name = s"$appName $date"
-        conf.setAppName(name)
-        logger.debug(s"set spark app name to: $name")
-      })
-
-    /**
-     * master
-     */
-    Option(StringUtils.EMPTY)
-      .filter(s => !conf.contains("spark.master"))
-      .foreach(s => {
-        val master = "local[1]"
-        conf.setMaster(master)
-        System.setProperty("HADOOP_USER_NAME", "hadoop")
-        logger.warn(s"set spark master url to '$master' by default.")
-        conf.set("spark.sql.warehouse.dir", "file:///spark-warehouse")
-        conf.set("spark.testing.memory", "471859200")
-      })
-
-    Option(debug).filter(d => d).foreach(d => {
-      conf.set("spark.logConf", "true")
-      logger.debug("show spark conf as INFO log")
-      conf.set("spark.logLineage", "true")
-      logger.debug("show rdd lineage in log")
-    })
-
-    Option(debug).filter(d => !d).foreach(d => {
-      conf.set("spark.ui.showConsoleProgress", "false")
-      logger.debug("disabled spark progress info")
-    })
-
+  def getSparkConf(appConf: BusinessConfig, variables: String, conf: SparkConf): Unit = {
+    conf.set("com.jinninghui.datasphere.icreditstudio.sparkx.engine.variables", variables)
     conf.set("spark.sql.crossJoin.enabled", "true")
       .set("hive.exec.dynamic.partition", "true")
       .set("hive.exec.dynamic.partition.mode", "nonstrict")
@@ -92,7 +33,6 @@ object SparkUtil extends Logging {
       logger.info(s"Spark config set - $key=$v.")
       conf.set(key, v)
     }
-    conf
   }
 
   private[engine] def uncacheData()(implicit ss: SparkSession): Unit = {

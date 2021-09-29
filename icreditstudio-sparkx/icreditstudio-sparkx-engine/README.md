@@ -66,7 +66,7 @@
   - 在 yaml 中使用，可以直接通过 ${variable} 使用预定义的变量
   - 在类中使用，如下
     ```
-    import com.hellowzk.light.spark.constants.AppConstants
+    import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.AppConstants
     AppConstants.variables("mysql_url")
     // 类型 variables: Map[String, String]
    ```
@@ -204,7 +204,7 @@ inputs:
 | name| |是|定义该步生成的表的名称，可以在下面处理中引用|
 | type| |是|固定值 customClasspath|
 |path| |是|文件在 classpath 的路径|
-|clazz| |是| 自定义的加载逻辑类，必须继承 com.hellowzk.light.spark.stages.custom.CustomBaseInput 实现 process 方法|
+|clazz| |是| 自定义的加载逻辑类，必须继承 com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom.CustomBaseInput 实现 process 方法|
 |partations|0|否| 进行重新分区的数量，不配置不重分区|
 |cache|false|否| 是否缓存，如果下面的操作多次使用该表，建议设置为true|
 |show|0|否| 开发时 debug 使用，对表进行 show 操作，配置成需要 show 的条数|
@@ -217,7 +217,7 @@ inputs:
   - name: custompersonClass
     type: customClasspath
     path: person2.txt
-    clazz: com.hellowzk.light.spark.stages.Process1
+    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process1
 ...
 ```
 
@@ -250,7 +250,7 @@ inputs:
 
 ##### 5.2.4. 加载 customHdfs 数据
 自定义加载 customHdfs 的数据，生成表
-- 自定义加载逻辑类必须继承 com.hellowzk.light.spark.stages.custom.CustomBaseInput 特质，实现 process 方法，如 [Process1](example/src/main/scala/com/hellowzk/light/spark/stages/Process1.scala)
+- 自定义加载逻辑类必须继承 com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom.CustomBaseInput 特质，实现 process 方法，如 [Process1](example/src/main/scala/com/hellowzk/light/spark/stages/Process1.scala)
 
 ###### 配置说明  
 
@@ -272,7 +272,7 @@ inputs:
   - name: customPersonHdfs
     type: customHdfs
     path: /tmp/zhaokui/testdata/test/20200706/
-    clazz: com.hellowzk.light.spark.stages.Process1
+    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process1
 ...
 ```
 
@@ -410,7 +410,7 @@ processes:
 ```
 
 ##### 5.3.2 自定义编码处理
-自定义处理类，必须继承 com.hellowzk.light.spark.stages.custom.CustomBaseTransform 类，实现 doProcess 方法，如 [Process2](example/src/main/scala/com/hellowzk/light/spark/stages/Process2.scala)
+自定义处理类，必须继承 com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom.CustomBaseTransform 类，实现 doProcess 方法，如 [Process2](example/src/main/scala/com/hellowzk/light/spark/stages/Process2.scala)
 ###### 配置说明  
 
 | 配置项 | 默认值|是否必填 | 说明 |
@@ -428,7 +428,7 @@ processes:
 ...
 processes:
   - name: customProcessShow
-    clazz: "com.hellowzk.light.spark.stages.Process2"
+    clazz: "com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process2"
     cache: true
     store: true
     show: 20

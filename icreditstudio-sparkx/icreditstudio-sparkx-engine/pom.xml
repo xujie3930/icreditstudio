@@ -28,22 +28,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.10</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.code.gson</groupId>
-                    <artifactId>gson</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>hadoop-lzo</groupId>
             <artifactId>hadoop-lzo</artifactId>
             <version>0.4.15</version>
@@ -67,7 +51,7 @@
         </dependency>
         <dependency>
             <groupId>com.github.scopt</groupId>
-            <artifactId>scopt_2.11</artifactId>
+            <artifactId>scopt_${scala.binary.version}</artifactId>
             <version>3.5.0</version>
         </dependency>
         <dependency>

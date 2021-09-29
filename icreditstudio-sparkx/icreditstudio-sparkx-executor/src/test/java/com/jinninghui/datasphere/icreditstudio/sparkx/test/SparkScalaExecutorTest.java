@@ -14,7 +14,7 @@ public class SparkScalaExecutorTest {
     static String code =
             "    val configFile1 = \"full-batch.yaml\"\n" +
             "    val date = \"20191211\"\n" +
-            "    App.main(Array(\"-d\", date, \"-c\", configFile1, \"--debug\"))";
+            "    App.run(Array(\"-d\", date, \"-c\", configFile1, \"--debug\"))\n";
 
     public static void main(String[] args) {
 

@@ -8,7 +8,7 @@ persistHiveDb: "${outputDB}"
 #enableShow: false # 是否允许 show，为 false 时，下面定义的 show 将不生效
 
 # 自定义常量类，可以在SQL path 中替换 ${} 中已定义的变量
-constansCls: com.jinninghui.datasphere.icreditstudio.sparkx.engine.MyConstants
+constansCls: com.jinninghui.datasphere.icreditstudio.sparkx.test.MyConstants
 
 constansMap:
   appjdbcurl: "${jdbcurl}"
@@ -25,7 +25,7 @@ udaf:
 
 # 自定义 udf函数，可以在下面sql中使用
 udf:
-  - com.jinninghui.datasphere.icreditstudio.sparkx.engine.MyUDF
+  - com.jinninghui.datasphere.icreditstudio.sparkx.test.MyUDF
 
 inputs:
   - name: person
@@ -37,7 +37,7 @@ inputs:
   - name: custompersonClass
     type: customClasspath
     path: person2.txt
-    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process1
+    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.test.Process1
 
   - name: person_hdfs
     type: hdfsfile
@@ -48,7 +48,7 @@ inputs:
   - name: customPersonHdfs
     type: customHdfs
     path: /tmp/zhaokui/testdata/test/20200706/
-    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process1
+    clazz: com.jinninghui.datasphere.icreditstudio.sparkx.test.Process1
 
 #  - name: mysql1
 #    type: jdbc
@@ -107,7 +107,7 @@ processes:
     show: 20
     partations: 1
   - name: customProcessShow
-    clazz: "com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process2"
+    clazz: "com.jinninghui.datasphere.icreditstudio.sparkx.test.Process2"
     cache: true
     store: true
     show: 20
@@ -141,7 +141,7 @@ processes:
     partations: 1
 
   - name: table7
-    clazz: "com.jinninghui.datasphere.icreditstudio.sparkx.engine.Process2"
+    clazz: "com.jinninghui.datasphere.icreditstudio.sparkx.test.Process2"
     cache: true
     store: true
     show: 20
