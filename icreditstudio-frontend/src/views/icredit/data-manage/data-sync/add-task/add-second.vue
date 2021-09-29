@@ -192,6 +192,7 @@
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
                   @blur="handleVerifyWidthTableName"
+                  @clear="isCanJumpNext = false"
                 >
                   <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
@@ -694,12 +695,20 @@ export default {
 
     // 验证宽表信息以及宽表名称是否已填
     handleVerifyTip() {
-      const { targetSource, wideTableName } = this.secondTaskForm
+      const { targetSource, wideTableName, createMode } = this.secondTaskForm
       if (!targetSource) {
         this.$message.error('请先选择宽表信息！')
         return true
       } else if (!wideTableName) {
         this.$message.error('请先填写宽表名称！')
+        return true
+      } else if (
+        !this.isCanJumpNext &&
+        !['edit', 'previousStep'].includes(this.opType)
+      ) {
+        this.$message.error(
+          `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
+        )
         return true
       } else {
         return false
@@ -837,6 +846,7 @@ export default {
         dialect
       }
 
+      this.isCanJumpNext = false
       this.widthTableLoading = false
       this.tableLoading = true
       this.$refs.baseDialog.close()
@@ -844,6 +854,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             const { sql: sq, partitions, fields, incrementalFields } = data
+            this.isCanJumpNext = true
             this.secondTaskForm.sql = sq
             this.zoningOptions = partitions || []
             this.increFieldsOptions = incrementalFields || []
@@ -856,10 +867,6 @@ export default {
               data.sameNameDataBase.length && this.$refs.baseDialog.open()
             }
           }
-        })
-        .catch(err => {
-          console.log('error', err)
-          this.sameNameDataBase = []
         })
         .finally(() => {
           this.widthTableLoading = false
@@ -1092,7 +1099,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.stockNameOptions = data
-            this.isCanJumpNext = true
           }
         })
         .finally(() => {
