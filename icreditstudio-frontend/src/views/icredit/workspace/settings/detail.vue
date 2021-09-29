@@ -82,6 +82,7 @@
               clearable
               remote
               size="small"
+              value-key="name"
               placeholder="请输入负责人名称进行查询"
               v-model="detailForm.director"
               :loading="userSelectLoading"
@@ -93,7 +94,7 @@
                 v-for="(item, idx) in userOptions"
                 :key="`${item.id}-${idx}`"
                 :label="item.name"
-                :value="item.id"
+                :value="item"
               >
               </el-option>
             </el-select>
@@ -112,9 +113,6 @@
       <el-row>
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
-            <!-- <span v-if="detailForm.memberList && !detailForm.memberList.length"
-              >无</span
-            > -->
             <j-table
               ref="table"
               v-loading="tableLoading"
@@ -176,6 +174,11 @@ export default {
       oldName: '',
       oldUserId: '',
 
+      // 当前登录用户
+      currentUser: {},
+      // 选择的负责人
+      selectedUser: {},
+
       // 工作空间表单
       detailForm: {
         name: '',
@@ -223,22 +226,25 @@ export default {
         functionalAuthority,
         dataAuthority
       } = this.userInfo
-      this.detailForm.memberList = [
-        {
-          id,
-          username: userName,
-          roleName,
-          functionalAuthority,
-          dataAuthority,
-          createTime: new Date().getTime(),
-          orgNames: orgList.map(({ orgName }) => orgName)
-        }
-      ]
+
+      // 当前登录用户
+      this.currentUser = {
+        id,
+        username: userName,
+        roleName,
+        functionalAuthority,
+        dataAuthority,
+        createTime: new Date().getTime(),
+        orgNames: orgList.map(({ orgName }) => orgName)
+      }
+
+      this.detailForm.memberList.unshift(this.currentUser)
       this.opType = query?.opType || ''
       this.id = query?.id || null
       this.id && this.handleEditClick('workspaceDetail', this.id)
     },
 
+    // 点击打开添加成员信息弹窗
     handleUserSelect() {
       // id存在说明是编辑情况
       if (this.id) {
@@ -266,6 +272,7 @@ export default {
         : this.$refs.detailForm.validateField('director')
     },
 
+    // 清空负责人
     handleUserClearClick() {
       const { oldUserId: uid } = this
       const idx = this.detailForm.memberList.findIndex(({ id }) => id === uid)
@@ -273,7 +280,9 @@ export default {
       this.userOptions = []
     },
 
-    handleUserChangeClick(uid) {
+    // 选中负责人
+    handleUserChangeClick(item) {
+      const { id: uid } = item
       if (uid) {
         this.oldUserId = uid
         const user = this.userOptions.find(({ id }) => id === uid)
@@ -285,7 +294,8 @@ export default {
           functionalAuthority,
           dataAuthority
         } = user || {}
-        this.detailForm.memberList.push({
+
+        this.selectedUser = {
           id,
           username: name,
           roleName,
@@ -293,34 +303,41 @@ export default {
           dataAuthority,
           createTime: new Date().getTime(),
           orgNames: orgList?.map(({ orgName }) => orgName)
-        })
+        }
+        this.detailForm.memberList.splice(1, 1, this.selectedUser)
       }
     },
 
-    // 选择负责人
+    // 选择成员
     userSelectCallback({ opType, users }) {
-      console.log(users, 'users')
       this.$refs.usersSelect.close()
       if (opType === 'confirm') {
-        this.detailForm.memberList = users.map(item => {
-          const {
-            id: userId,
-            userName: username,
-            roleName: userRole,
-            orgNames,
-            functionalAuthority,
-            dataAuthority
-          } = item
-          return {
-            userId,
-            username,
-            userRole,
-            orgNames,
-            functionalAuthority,
-            dataAuthority,
-            createTime: new Date().getTime()
-          }
-        })
+        this.detailForm.memberList = users
+          .map(item => {
+            const {
+              id: userId,
+              userName: username,
+              roleName: userRole,
+              orgNames,
+              functionalAuthority,
+              dataAuthority
+            } = item
+            return {
+              userId,
+              username,
+              userRole,
+              orgNames,
+              functionalAuthority,
+              dataAuthority,
+              createTime: new Date().getTime()
+            }
+          })
+          .filter(
+            ({ userId }) =>
+              this.currentUser.id !== userId && this.selectedUser.id !== userId
+          )
+        this.detailForm.memberList.unshift(this.selectedUser)
+        this.detailForm.memberList.unshift(this.currentUser)
       }
     },
 

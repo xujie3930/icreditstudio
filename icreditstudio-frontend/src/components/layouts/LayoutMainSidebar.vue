@@ -97,13 +97,13 @@ export default {
     handleMenuSelected(item) {
       this.defalutActived = item.name
       this.menuIconName(item)
-      if (this.changeWorkspaceMsg(item)) {
-        const showChildArr = item.children
-          ? item.children.filter(({ isShow }) => isShow)
-          : []
-        !showChildArr.length && this.$router.push(item.url)
-        this.$emit('getChildMenus', item)
-      }
+      // if (this.changeWorkspaceMsg(item)) {
+      const showChildArr = item.children
+        ? item.children.filter(({ isShow }) => isShow)
+        : []
+      !showChildArr.length && this.$router.push(item.url)
+      this.$emit('getChildMenus', item)
+      // }
     },
 
     // 切换菜单前必须先切换工作空间（不能为 全部 选项）
