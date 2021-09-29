@@ -5,19 +5,6 @@ import java.util.Properties
 import org.apache.commons.lang3.StringUtils
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerConfig, ProducerRecord}
 
-/**
- * <p>
- * 日期： 2020/4/15
- * <p>
- * 时间： 13:53
- * <p>
- * 星期： 星期三
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object KafkaUtils {
   /**
    * 获取 kafka producer

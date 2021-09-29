@@ -2,7 +2,6 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.config
 
 import com.alibaba.fastjson.serializer.SerializeFilter
 import com.alibaba.fastjson.{JSON, JSONObject}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.App.logger
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.ConfigMapping
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.BaseTransformConfig
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, BusinessConfig, InputTypes, NodeTypes, PersistTypes, ProcessTypes}
@@ -14,19 +13,6 @@ import org.apache.commons.lang3.StringUtils
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 15:13
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object AppConfigLoader extends ConfigLoader {
 
   // 存放定义的表名，检查是否重复定义

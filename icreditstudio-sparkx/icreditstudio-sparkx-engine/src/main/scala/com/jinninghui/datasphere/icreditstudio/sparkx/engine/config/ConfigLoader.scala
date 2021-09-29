@@ -2,24 +2,13 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{Logging, ResourceUtil}
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.ResourceUtil
 import org.yaml.snakeyaml.Yaml
 
 import scala.reflect.ClassTag
 
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 15:13
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：全局 cached 表信息存储
- * <p>
- * 作者： zhaokui
- *
- **/
+
 trait ConfigLoader extends Logging {
   /**
    * 根据 Bean 解析yaml

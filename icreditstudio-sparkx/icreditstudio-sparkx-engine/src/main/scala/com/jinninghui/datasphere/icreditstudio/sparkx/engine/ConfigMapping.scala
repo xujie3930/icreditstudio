@@ -5,19 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input._
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform._
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output._
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:08
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object ConfigMapping {
   // input 支持的类型
   val inputBeans = Map(InputTypes.classpathFile.toString -> classOf[ClasspathFileInputConfig],

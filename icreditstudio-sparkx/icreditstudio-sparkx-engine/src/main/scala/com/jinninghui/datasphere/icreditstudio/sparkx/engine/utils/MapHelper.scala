@@ -1,18 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 
-/**
- * <p>
- * 日期： 2019/12/15
- * <p>
- * 时间： 1:46
- * <p>
- * 星期： 星期日
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
+
 object MapHelper {
   def apply(map: Map[String, Any]): MapHelper = new MapHelper(map)
 }

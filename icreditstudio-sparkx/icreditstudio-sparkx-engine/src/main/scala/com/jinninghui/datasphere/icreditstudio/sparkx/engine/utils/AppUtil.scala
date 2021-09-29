@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 import java.lang.reflect.Field
 import java.util.regex.Pattern
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.types.{StringType, StructField, StructType}
@@ -10,19 +11,6 @@ import org.apache.spark.sql.{Row, SparkSession}
 
 import scala.collection.mutable.ListBuffer
 
-/**
- * <p>
- * 日期： 2020/4/25
- * <p>
- * 时间： 14:21
- * <p>
- * 星期： 星期六
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object AppUtil extends Logging {
   /**
    * bean 转 List， javaBean 的属性值放到一个 List 中，顺序和 bean 中属性索引位置一致

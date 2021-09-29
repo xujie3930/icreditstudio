@@ -16,6 +16,8 @@
         <module>icreditstudio-sparkx-executor</module>
         <module>icreditstudio-sparkx-codegen</module>
         <module>icreditstudio-sparkx-engine</module>
+        <module>icreditstudio-sparkx-common</module>
+
     </modules>
 
     <dependencyManagement>

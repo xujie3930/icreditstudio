@@ -8,19 +8,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
 
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:08
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object JDBCSparkUtils {
   /**
    * spark options 处理只支持 string 值

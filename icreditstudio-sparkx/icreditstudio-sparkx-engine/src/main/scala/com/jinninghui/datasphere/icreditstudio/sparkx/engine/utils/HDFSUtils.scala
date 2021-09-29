@@ -7,6 +7,7 @@ import java.io.{File, IOException}
 import java.nio.file.Paths
 
 import com.hadoop.compression.lzo.LzopCodec
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import org.apache.commons.io.FileUtils
 import org.apache.hadoop.fs.{FileSystem, Path}
 import org.apache.spark.SparkContext
@@ -16,19 +17,6 @@ import org.apache.spark.sql.DataFrame
 import scala.collection.JavaConversions._
 import scala.language.implicitConversions
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:08
- * <p>
- * 星期：
- * <p>
- * 描述：hdfs 操作工具类
- * <p>
- * 作者： zhaokui
- *
- **/
 object HDFSUtils {
   def apply: HDFSUtils = new HDFSUtils()
 }

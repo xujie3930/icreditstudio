@@ -11,19 +11,6 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2020/1/6
- * <p>
- * 时间： 13:52
- * <p>
- * 星期： 星期一
- * <p>
- * 描述：结果写入到 jdbc
- * <p>
- * 作者： zhaokui
- *
- **/
 class JdbcOutputWorker extends BaseWorker {
   override def process(config: BaseConfig)(implicit ss: SparkSession): Unit = {
     val item = config.asInstanceOf[JDBCOutputConfig]

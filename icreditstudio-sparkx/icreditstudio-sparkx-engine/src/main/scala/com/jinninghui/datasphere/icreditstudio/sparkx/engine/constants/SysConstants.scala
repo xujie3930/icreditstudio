@@ -1,18 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 11:20
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object SysConstants {
 
   private[engine] val SYS_DEFALUT_VARIABLES = scala.collection.mutable.Map.empty[String, String]

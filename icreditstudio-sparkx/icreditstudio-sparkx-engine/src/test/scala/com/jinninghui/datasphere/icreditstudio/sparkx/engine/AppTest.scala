@@ -1,17 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine
 
-/**
- * <p>
- * 日期： 2020/7/3
- * <p>
- * 时间： 11:16
- * <p>
- * 星期： 星期五
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- **/
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.ReflectUtils
+
 object AppTest {
   def main(args: Array[String]): Unit = {
     setUp()

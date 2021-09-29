@@ -3,25 +3,14 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans
 import java.lang.reflect.Field
 import java.util
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{ConfigException, Logging}
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.ConfigException
 import org.apache.commons.collections4.{CollectionUtils, Predicate}
 import org.apache.commons.lang3.StringUtils
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 11:14
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
+
 class BaseConfig extends Logging with Serializable {
   @BeanProperty
   var tag = NodeTypes.root.toString

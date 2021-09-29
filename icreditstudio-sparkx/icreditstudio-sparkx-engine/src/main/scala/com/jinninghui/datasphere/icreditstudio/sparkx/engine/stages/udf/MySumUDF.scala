@@ -4,19 +4,6 @@ import org.apache.spark.sql.Row
 import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
 import org.apache.spark.sql.types._
 
-/**
- * <p>
- * 日期： 2019/11/29
- * <p>
- * 时间： 15:42
- * <p>
- * 星期： 星期五
- * <p>
- * 描述： count 函数
- * <p>
- * 作者： zhaokui
- *
- **/
 class MySumUDF extends UserDefinedAggregateFunction {
   override def inputSchema: StructType = {
     DataTypes.createStructType(Array(DataTypes.createStructField("type", StringType, true)))

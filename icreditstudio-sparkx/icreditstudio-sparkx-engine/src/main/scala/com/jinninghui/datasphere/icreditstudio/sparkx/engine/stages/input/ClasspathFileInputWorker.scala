@@ -6,18 +6,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{AppUtil, HDFSUtils}
 import org.apache.spark.sql.SparkSession
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:45
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- **/
 object ClasspathFileInputWorker {
   def apply(): ClasspathFileInputWorker = new ClasspathFileInputWorker()
 }

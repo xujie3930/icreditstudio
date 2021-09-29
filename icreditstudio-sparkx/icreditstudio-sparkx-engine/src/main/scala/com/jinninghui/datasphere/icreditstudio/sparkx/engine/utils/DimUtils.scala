@@ -3,12 +3,6 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 import scala.collection.mutable
 import scala.collection.mutable.Map
 
-/**
- * 排列组合
- *
- * @author 郭振
- *         2019/4/24 15:26
- */
 object DimUtils {
 
   /**

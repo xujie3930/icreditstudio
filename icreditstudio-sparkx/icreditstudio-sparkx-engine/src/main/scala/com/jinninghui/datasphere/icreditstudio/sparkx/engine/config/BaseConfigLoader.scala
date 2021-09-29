@@ -1,11 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.config
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.Logging
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.typesafe.config.Config
 
-/**
- * @author zhaokui
- */
 abstract class BaseConfigLoader(optionsParser: Array[String] => Config) extends Logging {
   private var optionsConfig: Config = _
 

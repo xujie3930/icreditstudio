@@ -6,19 +6,6 @@ import java.util.Date
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
 import org.apache.commons.lang3.time.DateFormatUtils
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 16:21
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object BusConfig {
   private var baseWorkdir: String = _
   private var eventDate: String = DateFormatUtils.format(new Date(), "yyyyMMdd")

@@ -7,9 +7,6 @@ import com.typesafe.config.{ConfigFactory, Config => ConfigObject}
 
 import scala.collection.JavaConverters._
 
-/**
- * @author zhaokui
- */
 case class Options(
                     date: String = "",
                     config: String = "",

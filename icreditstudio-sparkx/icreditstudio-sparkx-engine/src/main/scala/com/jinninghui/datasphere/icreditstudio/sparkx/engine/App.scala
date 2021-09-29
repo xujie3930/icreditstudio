@@ -2,28 +2,16 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine
 
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializeFilter
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.{BusConfig, CacheConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.{AppConstants, SysConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.{BatchPip, StreamPip}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{Logging, SparkUtil}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.SparkUtil
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:08
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object App extends Logging {
   def main(args: Array[String]): Unit = {
     val appConfig = BusConfig.apply.parseOptions(args)

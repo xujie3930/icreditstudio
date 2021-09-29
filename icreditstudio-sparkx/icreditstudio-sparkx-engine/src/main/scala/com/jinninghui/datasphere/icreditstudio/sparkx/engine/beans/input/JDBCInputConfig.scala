@@ -5,19 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.JdbcIn
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 15:19
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：详细参数 http://spark.apache.org/docs/latest/sql-data-sources-jdbc.html
- * <p>
- * 作者： zhaokui
- *
- **/
 class JDBCInputConfig extends BaseInputConfig {
 
   @BeanProperty

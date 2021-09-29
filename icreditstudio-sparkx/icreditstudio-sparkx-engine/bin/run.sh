@@ -16,7 +16,7 @@ else
   echo "useage: $0 <date-yyyyMMdd> <conf>"
   exit 1
 fi
-STREAM_APP="com.hellowzk.light.spark.App" # 程序入口
+STREAM_APP="com.jinninghui.datasphere.icreditstudio.sparkx.engine.App" # 程序入口
 echo "__________________________ light-spark start __________________________"
 
 CLASSPATH="$APP_HOME/conf"

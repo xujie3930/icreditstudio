@@ -1,25 +1,10 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 
-//import java.text.SimpleDateFormat
-
 import java.util.{Calendar, Date}
 
 import org.apache.commons.lang3.StringUtils
 import org.apache.commons.lang3.time.{DateFormatUtils, DateUtils}
 
-/**
- * <p>
- * 日期： 2020/6/30
- * <p>
- * 时间： 16:20
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object DateUtil {
   /**
    * 计算日期，如表达式 "DATE([yyyy-MM-dd, 2020-08-01][+3d])" 中第一位指定基准日期和输出格式，方法中也传入了基准日期，表达式中的优先级高，基准日期定义格式有：<br>

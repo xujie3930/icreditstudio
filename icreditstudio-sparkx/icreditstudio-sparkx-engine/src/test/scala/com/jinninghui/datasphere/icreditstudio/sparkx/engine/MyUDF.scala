@@ -3,18 +3,6 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.function.BaseUDF
 import org.apache.spark.sql.{SparkSession, functions}
 
-/**
- * <p>
- * 日期： 2020/7/10
- * <p>
- * 时间： 16:38
- * <p>
- * 星期： 星期五
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- **/
 class MyUDF extends BaseUDF {
   def addSuffix(str: String): String = {
     s"${str}_suffix"

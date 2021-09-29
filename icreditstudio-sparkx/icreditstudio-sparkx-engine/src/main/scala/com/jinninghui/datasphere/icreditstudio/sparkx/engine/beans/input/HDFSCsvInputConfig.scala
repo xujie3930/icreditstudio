@@ -4,19 +4,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.HDFSCs
 
 import scala.beans.BeanProperty
 
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 15:22
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 class HDFSCsvInputConfig extends BaseInputConfig {
 
   @BeanProperty

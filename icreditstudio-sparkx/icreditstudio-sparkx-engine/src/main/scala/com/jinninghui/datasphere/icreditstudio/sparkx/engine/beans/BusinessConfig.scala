@@ -8,19 +8,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.Bas
 
 import scala.beans.BeanProperty
 
-/**
- * <p>
- * 日期： 2020/5/19
- * <p>
- * 时间： 11:14
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 class BusinessConfig extends BaseConfig {
   var configFile: String = _
   var eventDate: String = _

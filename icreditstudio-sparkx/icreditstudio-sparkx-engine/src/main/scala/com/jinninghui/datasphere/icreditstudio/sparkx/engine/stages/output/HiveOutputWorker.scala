@@ -7,19 +7,6 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 16:20
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object HiveOutputWorker {
   def apply: HiveOutputWorker = new HiveOutputWorker()
 }

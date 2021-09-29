@@ -1,10 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, BusinessConfig}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.{BaseInputConfig, StreamInputConfig}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.function.BaseUDF
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom.CustomBaseInput
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{Logging, ReflectUtils, SparkUtil}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{ReflectUtils, SparkUtil}
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.StreamingContext
@@ -12,20 +13,6 @@ import org.apache.spark.streaming.dstream.DStream
 import org.apache.spark.streaming.kafka010.{CanCommitOffsets, HasOffsetRanges}
 
 import scala.collection.JavaConversions._
-
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 11:23
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 
 object StreamPip extends Logging {
 

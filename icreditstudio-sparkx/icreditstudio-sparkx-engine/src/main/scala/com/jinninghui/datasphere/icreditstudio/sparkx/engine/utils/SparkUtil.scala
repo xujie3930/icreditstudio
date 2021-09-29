@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.CacheConstants
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.SysConstants
@@ -10,19 +11,6 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 13:56
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object SparkUtil extends Logging {
   /**
    * 初始化 SparkSession

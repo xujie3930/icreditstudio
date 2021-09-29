@@ -3,19 +3,6 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.BusConfig
 import org.apache.commons.lang3.time.DateFormatUtils
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 11:30
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object AppConstants {
   var variables = new java.util.HashMap[String, String]()
 

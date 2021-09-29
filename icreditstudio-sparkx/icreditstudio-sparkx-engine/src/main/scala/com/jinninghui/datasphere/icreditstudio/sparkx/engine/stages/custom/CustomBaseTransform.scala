@@ -5,19 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.Cus
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import org.apache.spark.sql.SparkSession
 
-/**
- * <p>
- * 日期： 2020/7/6
- * <p>
- * 时间： 17:52
- * <p>
- * 星期： 星期一
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 trait CustomBaseTransform extends BaseWorker {
   def process(bean: BaseConfig)(implicit ss: SparkSession): Unit = {}
 

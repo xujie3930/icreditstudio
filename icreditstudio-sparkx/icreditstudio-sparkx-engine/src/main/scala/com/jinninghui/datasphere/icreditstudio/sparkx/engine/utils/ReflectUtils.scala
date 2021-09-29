@@ -3,21 +3,9 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 import java.io.File
 import java.net.{URL, URLClassLoader}
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import org.apache.commons.lang3.StringUtils
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 14:59
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object ReflectUtils {
   def apply: ReflectUtils = new ReflectUtils()
 }

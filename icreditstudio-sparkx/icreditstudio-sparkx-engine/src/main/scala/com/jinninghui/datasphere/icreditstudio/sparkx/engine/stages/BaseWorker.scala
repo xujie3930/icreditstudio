@@ -1,26 +1,14 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages
 
 import com.alibaba.fastjson.JSON
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, PersistTypes}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.{BusConfig, CacheConstants}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{HDFSUtils, Logging}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.HDFSUtils
 import org.apache.hadoop.fs.Path
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 
-/**
- * <p>
- * 日期： 2020/4/22
- * <p>
- * 时间： 13:58
- * <p>
- * 星期： 星期三
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 trait BaseWorker extends Logging {
   protected var variables: java.util.HashMap[String, String] = _
 

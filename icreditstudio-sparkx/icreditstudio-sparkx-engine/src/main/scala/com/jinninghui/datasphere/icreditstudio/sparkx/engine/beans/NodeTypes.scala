@@ -1,18 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans
 
-/**
- * <p>
- * 日期： 2020/7/3
- * <p>
- * 时间： 17:38
- * <p>
- * 星期： 星期五
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object NodeTypes extends Enumeration {
   type NodeTypes = Value
   val root,

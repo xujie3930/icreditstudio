@@ -8,19 +8,6 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
 
-/**
- * <p>
- * 日期： 2019/12/24
- * <p>
- * 时间： 16:10
- * <p>
- * 星期： 星期二
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 class JdbcInputWorker extends BaseWorker {
   /**
    * 加载 jdbc 数据，参考 http://spark.apache.org/docs/latest/sql-data-sources-jdbc.html

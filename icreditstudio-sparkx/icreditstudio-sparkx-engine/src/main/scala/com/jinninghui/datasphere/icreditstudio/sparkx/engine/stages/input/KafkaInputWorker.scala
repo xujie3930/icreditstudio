@@ -15,19 +15,6 @@ import org.apache.spark.streaming.kafka010._
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 
-/**
- * <p>
- * 日期： 2020/7/10
- * <p>
- * 时间： 9:49
- * <p>
- * 星期： 星期五
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 class KafkaInputWorker extends StreamBaseInputWorker {
   /**
    * 加载数据

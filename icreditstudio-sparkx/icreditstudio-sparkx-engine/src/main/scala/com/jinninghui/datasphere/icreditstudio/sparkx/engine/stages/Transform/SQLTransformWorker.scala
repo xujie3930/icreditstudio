@@ -8,19 +8,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import org.apache.commons.lang3.StringUtils
 import org.apache.spark.sql.SparkSession
 
-/**
- * <p>
- * 日期： 2019/11/22
- * <p>
- * 时间： 15:43
- * <p>
- * 星期：
- * <p>
- * 描述：
- * <p>
- * 作者： zhaokui
- *
- **/
 object SQLTransformWorker {
   def apply: SQLTransformWorker = new SQLTransformWorker()
 }

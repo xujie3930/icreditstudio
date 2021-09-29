@@ -6,19 +6,6 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.HDFSUtils
 import org.apache.spark.sql.SparkSession
 
-/**
- * <p>
- * 日期： 2019/11/25
- * <p>
- * 时间： 14:39
- * <p>
- * 星期： 星期一
- * <p>
- * 描述：HdfsOutput
- * <p>
- * 作者： zhaokui
- *
- **/
 object HdfsOutputWorker {
   def apply: HdfsOutputWorker = new HdfsOutputWorker()
 }

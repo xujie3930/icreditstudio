@@ -1,9 +1,7 @@
-Light-Spark 开发脚架
-==============================
-[toc]
+
 ## 1. 概述
 
-本人从 2014 年开始使用 Apache Spark，基于以往项目经验，为了降低项目开发复杂度，减少开发成本，开发了 light-spark 框架。
+为了降低项目开发复杂度，减少开发成本,
 本框架屏蔽了底层技术细节，让开发人员面向 SQL 编程，更专注于业务逻辑，减少开发过程中 Debug 工作，让 Apache Spark 更方便使用。
   
 ## 2. 适用场景
@@ -30,46 +28,13 @@ Light-Spark 开发脚架
 ![yaml3](img/yaml3.png)
 ![yaml4](img/yaml4.png)
 
-## 4. 使用
 
-### 4.1 maven 引用
-本项目已发布到 maven 中央仓库，暂时支持 Spark 2.2.x、Spark 2.3.x、Spark 2.4.x
-#### 针对 Spark 2.2.x
-```xml
-<dependency>
-    <groupId>com.github.hellowzk</groupId>
-    <artifactId>light-spark-core_2.2</artifactId>
-    <version>1.0.4-release</version>
-</dependency>
-```
-#### 针对 Spark 2.3.x
-```xml
-<dependency>
-    <groupId>com.github.hellowzk</groupId>
-    <artifactId>light-spark-core_2.3</artifactId>
-    <version>1.0.4-release</version>
-</dependency>
-```
-#### 针对 Spark 2.4.x
-```xml
-<dependency>
-    <groupId>com.github.hellowzk</groupId>
-    <artifactId>light-spark-core_2.4</artifactId>
-    <version>1.0.4-release</version>
-</dependency>
-```
-### 4.2 依赖配置
-参考 [pom 文件](example/pom.xml)
+## 4. 组件
 
-### 4.3 启动脚本样例
-参考 [run](example/src/bin/run.sh)
-
-### 4.4 组件
-
-#### 4.4.1 debug 开发工具
+### 4.1 debug 开发工具
 开发过程中，可以通过配置，自动把指定步骤的结果持久化存储，支持 hdfs csv、hive 表
 
-#### 4.4.2 input - 数据加载
+### 4.2 input - 数据加载
 
 1. 支持读取 hive 数据；
 2. 支持读取 hdfs 数据，配置中定义好字段信息后自动加载成表；
@@ -77,20 +42,20 @@ Light-Spark 开发脚架
 4. 支持数据源类型比较复杂时，支持 自定义 处理源数据为表；
 5. 支持读取 JDBC 的源数据，jdbcOpts 中参数请看 SparkSQL[官方文档][spark2.2.0]；
 
-#### 4.4.3 process - 业务计算
+### 4.3 process - 业务计算
 
 1. 支持 SparkSQL 处理。
 2. 处理逻辑较复杂，SQL 叫难实现时，支持硬编码实现业务需求。
 
-#### 4.4.4 output - 结果保存
+### 4.4 output - 结果保存
 
 1. 存储到 HDFS ，格式可以选择为 txt / lzo 。
 2. 存储到 HIVE 。
 3. 存储到支持 JDBC 的数据库。 
 
-#### 4.4.5 变量
+### 4.5 变量
 
-##### 4.4.5.1 定义及使用
+#### 4.5.1 定义及使用
 本框架支持在配置中自定义及使用变量，支持变量嵌套使用
 
 - 灵活的定义位置  
@@ -107,7 +72,7 @@ Light-Spark 开发脚架
    ```
    所有可用变量存放在 AppConstants.variables 中
   
-##### 4.4.5.2 日期表达式
+#### 4.5.2 日期表达式
 支持通过日期表达式定义日期，表达式格式为
 ```shell script
 DATE([yyyy-MM-dd, 20200722, yyyyMMdd][+3d][-1m][+1y]...)
@@ -701,11 +666,4 @@ outputs:
 ...
 ```
 
-
-### 版权
-请参考 [LICENSE](LICENSE) 文件.
-
-
-[spark2.2.0]:http://spark.apache.org/docs/2.2.0/sql-programming-guide.html#jdbc-to-other-databases
-[spark2.4.4]:http://spark.apache.org/docs/latest/sql-data-sources-jdbc.html
 

@@ -2,11 +2,9 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 
 import java.net.URL
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import org.apache.commons.lang3.StringUtils
 
-/**
- * @author zhaokui
- **/
 object ResourceUtil {
   def apply: ResourceUtil = new ResourceUtil()
 }
