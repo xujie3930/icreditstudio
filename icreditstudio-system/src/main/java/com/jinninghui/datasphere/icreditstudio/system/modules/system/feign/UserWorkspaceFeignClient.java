@@ -19,5 +19,5 @@ import java.util.Map;
 public interface UserWorkspaceFeignClient {
 
     @GetMapping("/workspace/user/getWorkspaceByUserId/{id}")
-    BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable("id") String id);
+    BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable(value = "id", required = false) String id);
 }
