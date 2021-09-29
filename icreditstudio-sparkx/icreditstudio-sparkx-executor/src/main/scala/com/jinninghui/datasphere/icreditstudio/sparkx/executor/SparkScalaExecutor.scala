@@ -16,15 +16,18 @@
 
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.response.{ErrorExecuteResponse, UnknownExecuteResponse, ExecuteResponse, IncompleteExecuteResponse, SuccessExecuteResponse}
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.protocol.ProtocolOutputStream
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.response.{ErrorExecuteResponse, ExecuteResponse, IncompleteExecuteResponse, SuccessExecuteResponse, UnknownExecuteResponse}
 import org.apache.commons.lang.exception.ExceptionUtils
 import org.apache.spark.repl.SparkILoop
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.util.SparkUtils
-
 import java.io.{BufferedReader, File}
+
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.utils.{TimeType, Utils}
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.exception.SparkSessionNullException
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.protocol.ProtocolOutputStream
+
 import scala.tools.nsc.GenericRunnerSettings
 import scala.tools.nsc.interpreter.Results.Result
 import scala.tools.nsc.interpreter.{IMain, JPrintWriter, NamedParam, Results, SimpleReader, StdReplTags, isReplPower, replProps}

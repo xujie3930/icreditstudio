@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.executor.response;
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.executor.resultset.ResultRecord;
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.ResultRecord;
 
 import java.util.Collection;
 

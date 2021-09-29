@@ -20,6 +20,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 
 import java.util.concurrent.atomic.AtomicLong
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
 import org.apache.spark.SparkContext
 
 

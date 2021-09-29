@@ -11,90 +11,80 @@ export default _this => {
     hasPage: true,
     customBtnConfig: [
       {
-        label: '导出模板',
+        label: '导入字典表',
         type: 'primary',
-        key: 'exportModel',
+        key: 'importDict',
         options: {
+          title: '导入字典表',
+          opType: 'import',
           eventType: 'click',
-          eventName: 'handleExportTemplate'
+          eventName: 'handleImportDict'
+        }
+      },
+      {
+        label: '新增字典表',
+        type: 'primary',
+        key: 'addDict',
+        options: {
+          title: '新增字典表',
+          opType: 'add',
+          eventType: 'click',
+          eventName: 'handleAddDict'
         }
       }
     ],
     group: [
       {
-        type: 'selection',
-        width: '50px',
-        prop: 'selection'
+        type: 'index',
+        width: '80px',
+        label: '序号'
       },
+
       {
-        type: 'img',
-        label: '头像',
-        imgBase64: true,
-        prop: 'photo',
-        width: 90,
-        height: '32px'
+        type: 'text',
+        label: '字典表英文名称',
+        prop: 'enName'
       },
       {
         type: 'text',
-        label: '用户姓名',
-        prop: 'userName'
+        label: '字典表中文名称',
+        prop: 'zhName'
       },
+
       {
         type: 'text',
-        label: '部门',
-        prop: 'orgName'
+        label: '添加人',
+        prop: 'user'
       },
-      // {
-      //   type: 'text',
-      //   label: '编码',
-      //   prop: 'userCode'
-      // },
-      {
-        type: 'text',
-        label: '登录账号',
-        prop: 'accountIdentifier'
-      },
-      {
-        type: 'text',
-        label: '手机号',
-        prop: 'telPhone'
-      },
-      // {
-      //   type: 'text',
-      //   label: '排序',
-      //   prop: 'sortNumber',
-      //   width: 90
-      // },
       {
         type: 'date',
-        label: '创建时间',
-        prop: 'createTime'
+        label: '添加时间',
+        prop: 'telPhone'
       },
       {
-        type: 'switch',
-        label: '是否启用',
-        prop: 'deleteFlag',
-        width: 100,
-        activeValue: 'N',
-        inactiveValue: 'Y',
-        change: _this.handleStatusChange
+        type: 'text',
+        label: '描述',
+        prop: 'sortNumber'
       },
+
       {
         type: 'operation',
         label: '操作',
         prop: 'operation',
         width: '250px',
+        fixed: 'right',
         operationList: [
           {
-            func: _this.mixinHandleRoleSet,
-            label: '配置角色',
-            key: 'roleSet',
+            func: _this.handleViewClick,
+            label: '查看',
+            key: 'view',
             show: true
           },
           {
-            func: _this.mixinHandleEdit,
-            label: '修改',
-            key: 'update',
+            func: ({ row }) =>
+              _this.handleAddDict({ row, opType: 'edit', title: '编辑字典表' }),
+            label: '编辑',
+            key: 'edit',
             show: true
           },
           {
@@ -102,15 +92,8 @@ export default _this => {
             label: '删除',
             key: 'delete',
             show: true
-          },
-          {
-            func: _this.mixinHandleResetPwd,
-            label: '重置密码',
-            key: 'reset',
-            show: true
           }
-        ],
-        fixed: 'right'
+        ]
       }
     ]
   }

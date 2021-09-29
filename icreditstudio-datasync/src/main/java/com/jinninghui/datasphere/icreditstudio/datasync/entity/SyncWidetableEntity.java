@@ -63,6 +63,10 @@ public class SyncWidetableEntity extends SyncBaseEntity implements Serializable 
      * 分区字段
      */
     private String syncCondition;
+    /**
+     * 可视化创建的表信息
+     */
+    private String sourceTables;
 
     /**
      * 表名称

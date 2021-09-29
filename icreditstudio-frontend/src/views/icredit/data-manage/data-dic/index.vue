@@ -6,6 +6,7 @@
   <div class="w100 h100">
     <crud-basic
       ref="crud"
+      title="字典表列表"
       :form-items-search="mixinSearchFormItems"
       :form-func-search="mixinSearchFormFunc"
       :form-config-search="mixinSearchFormConfig"
@@ -23,8 +24,12 @@
       :handleSearch="mixinHandleSearch"
       :handleReset="mixinHandleReset"
       :handleAdd="mixinHandleAdd"
+      @handleAddDict="handleAddDict"
+      @handleImportDict="handleImportDict"
     >
     </crud-basic>
+    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
+    <AddDialog ref="addDialog" />
   </div>
 </template>
 
@@ -32,12 +37,16 @@
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-dictionary'
 import formOption from '@/views/icredit/configuration/form/data-manage-dictionary'
 
+import Message from '@/views/icredit/components/message'
+import AddDialog from './add'
+
 import crud from '@/mixins/crud'
 
 export default {
   name: 'schedulePageList',
 
   mixins: [crud],
+  components: { Message, AddDialog },
 
   data() {
     return {
@@ -45,10 +54,42 @@ export default {
       mixinSearchFormConfig: {
         models: { name: '' }
       },
+      mixinTableData: [{ enName: 'sdsdsds', zhName: '莫得感情的敲代码机器' }],
       tableConfiguration: tableConfiguration(this)
     }
   },
 
-  methods: {}
+  methods: {
+    handleImportDict(options) {
+      this.$refs.addDialog.open(options)
+    },
+
+    handleAddDict(options) {
+      console.log(options, 'kokololo')
+      this.$refs.addDialog.open(options)
+    },
+
+    handleViewClick() {
+      console.log(this.$refs)
+      this.$refs.addDialog.open()
+    },
+
+    // 删除
+    mixinHandleDelete({ row }) {
+      const { enName, zhName } = row
+      const options = {
+        row,
+        name: zhName,
+        opType: 'Delete',
+        title: `删除字典表${enName}`,
+        beforeOperateMsg: '删除后，',
+        afterOperateMsg:
+          '将不再在列表中呈现，字段不能再关联该字典表，确认删除吗？'
+      }
+      this.$refs.operateMessage.open(options)
+    },
+
+    messageOperateCallback() {}
+  }
 }
 </script>

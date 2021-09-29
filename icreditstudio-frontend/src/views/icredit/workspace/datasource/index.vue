@@ -44,9 +44,21 @@
           <!-- 最近一次同步状态 -->
           <template #lastSyncStatusColumn="{row}">
             <span
-              :style="{ color: !row.lastSyncStatus ? '#52c41a' : '#ff4d4f' }"
+              :style="{
+                color: !row.lastSyncStatus
+                  ? '#52c41a'
+                  : row.lastSyncStatus === 1
+                  ? '#ff4d4f'
+                  : '#606266'
+              }"
             >
-              {{ !row.lastSyncStatus ? '成功' : '失败' }}
+              {{
+                !row.lastSyncStatus
+                  ? '成功'
+                  : row.lastSyncStatus === 1
+                  ? '失败'
+                  : '-'
+              }}
             </span>
           </template>
 

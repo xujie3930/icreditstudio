@@ -85,7 +85,21 @@
                 <artifactId>icreditstudio-system-code</artifactId>
                 <version>${icredit.studio.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.jinninghui.datasphere</groupId>
+                <artifactId>icreditstudio-sparkx-executor</artifactId>
+                <version>${icredit.studio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jinninghui.datasphere</groupId>
+                <artifactId>icreditstudio-sparkx-common</artifactId>
+                <version>${icredit.studio.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jinninghui.datasphere</groupId>
+                <artifactId>icreditstudio-sparkx-engine</artifactId>
+                <version>${icredit.studio.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

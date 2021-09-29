@@ -19,6 +19,9 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.executor
 import java.io.File
 import java.lang.reflect.Constructor
 
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
+import com.jinninghui.datasphere.icreditstudio.sparkx.common.utils.Utils
+import com.jinninghui.datasphere.icreditstudio.sparkx.executor.exception.{SparkCreateFileException, SparkSessionNullException}
 import org.apache.commons.lang.StringUtils
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.util.SparkUtils
