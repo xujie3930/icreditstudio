@@ -48,7 +48,8 @@ export default {
       type: 'text',
       label: '连接信息',
       prop: 'uri',
-      width: 300
+      width: 300,
+      formatter: ({ uri }) => uri.split('?')[0]
     },
     {
       type: 'text',
@@ -60,12 +61,14 @@ export default {
     {
       type: 'text',
       label: '最近一次同步时间',
-      prop: 'lastSyncTime'
+      prop: 'lastSyncTime',
+      width: 170
     },
     {
       type: 'slot',
       label: '最近一次同步状态',
-      prop: 'lastSyncStatus'
+      prop: 'lastSyncStatus',
+      width: 150
     },
     {
       type: 'text',

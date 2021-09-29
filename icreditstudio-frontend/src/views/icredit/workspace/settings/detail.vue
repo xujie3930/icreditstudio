@@ -220,28 +220,29 @@ export default {
       const { query } = this.$route
       const {
         id,
-        roleName,
-        orgList,
+        userRole,
+        orgNames,
         userName,
-        functionalAuthority,
-        dataAuthority
+        dataAuthority,
+        functionalAuthority
       } = this.userInfo
 
       // 当前登录用户
       this.currentUser = {
-        id,
+        userId: id,
         username: userName,
-        roleName,
-        functionalAuthority,
+        userRole,
+        orgNames,
         dataAuthority,
-        createTime: new Date().getTime(),
-        orgNames: orgList.map(({ orgName }) => orgName)
+        functionalAuthority,
+        createTime: new Date().getTime()
       }
 
-      this.detailForm.memberList.unshift(this.currentUser)
       this.opType = query?.opType || ''
       this.id = query?.id || null
-      this.id && this.handleEditClick('workspaceDetail', this.id)
+      this.id
+        ? this.handleEditClick('workspaceDetail', this.id)
+        : this.detailForm.memberList.unshift(this.currentUser)
     },
 
     // 点击打开添加成员信息弹窗
@@ -275,34 +276,35 @@ export default {
     // 清空负责人
     handleUserClearClick() {
       const { oldUserId: uid } = this
-      const idx = this.detailForm.memberList.findIndex(({ id }) => id === uid)
+      const idx = this.detailForm.memberList.findIndex(
+        ({ userId }) => userId === uid
+      )
       idx > -1 && this.detailForm.memberList.splice(idx, 1)
       this.userOptions = []
     },
 
     // 选中负责人
     handleUserChangeClick(item) {
-      const { id: uid } = item
-      if (uid) {
-        this.oldUserId = uid
-        const user = this.userOptions.find(({ id }) => id === uid)
+      console.log(item, 'ite')
+      if (item) {
         const {
-          id,
-          roleName,
-          orgList,
-          name,
-          functionalAuthority,
-          dataAuthority
-        } = user || {}
-
-        this.selectedUser = {
-          id,
-          username: name,
-          roleName,
-          functionalAuthority,
+          id: userId,
+          name: username,
+          orgNames,
+          userRole,
           dataAuthority,
-          createTime: new Date().getTime(),
-          orgNames: orgList?.map(({ orgName }) => orgName)
+          functionalAuthority
+        } = item || {}
+
+        this.oldUserId = userId
+        this.selectedUser = {
+          userId,
+          userRole,
+          username,
+          orgNames,
+          dataAuthority,
+          functionalAuthority,
+          createTime: new Date().getTime()
         }
         this.detailForm.memberList.splice(1, 1, this.selectedUser)
       }
@@ -334,7 +336,8 @@ export default {
           })
           .filter(
             ({ userId }) =>
-              this.currentUser.id !== userId && this.selectedUser.id !== userId
+              this.currentUser.userId !== userId &&
+              this.selectedUser.userId !== userId
           )
         this.detailForm.memberList.unshift(this.selectedUser)
         this.detailForm.memberList.unshift(this.currentUser)
@@ -371,14 +374,16 @@ export default {
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {
-          const { id: userId, userName: username } = this.userInfo
-          const { memberList, ...restParams } = this.detailForm
-          const newMemberList = memberList.map(
-            ({ createTime, ...item }) => item
-          )
+          const {
+            memberList: [createUser, ...mList],
+            director: { name },
+            ...restParams
+          } = this.detailForm
+          const newMemberList = mList.map(({ createTime, ...item }) => item)
           const params = {
             memberList: newMemberList,
-            createUser: { userId, username },
+            director: name,
+            createUser,
             ...restParams
           }
 

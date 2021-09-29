@@ -56,6 +56,10 @@ export default {
       this.btnLoading = false
     },
 
+    btnLoadingClose() {
+      this.btnLoading = false
+    },
+
     handleConfirm() {
       this.btnLoading = true
       this.$emit('onConfirm', this.opType, this.row)
