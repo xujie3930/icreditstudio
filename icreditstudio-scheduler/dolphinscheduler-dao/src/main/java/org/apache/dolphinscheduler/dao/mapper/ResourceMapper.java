@@ -17,14 +17,12 @@
 
 package org.apache.dolphinscheduler.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.dolphinscheduler.dao.entity.Resource;
-
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * resource mapper interface
@@ -33,59 +31,65 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     /**
      * query resource list
+     *
      * @param fullName full name
-     * @param userId userId
-     * @param type type
+     * @param userId   userId
+     * @param type     type
      * @return resource list
      */
     List<Resource> queryResourceList(@Param("fullName") String fullName,
-                                     @Param("userId") int userId,
+                                     @Param("userId") String userId,
                                      @Param("type") int type);
 
     /**
      * query resource list
+     *
      * @param userId userId
-     * @param type type
+     * @param type   type
      * @return resource list
      */
-    List<Resource> queryResourceListAuthored(@Param("userId") int userId,
+    List<Resource> queryResourceListAuthored(@Param("userId") String userId,
                                              @Param("type") int type);
 
     /**
      * resource page
-     * @param page page
-     * @param userId userId
-     * @param id id
-     * @param type type
+     *
+     * @param page      page
+     * @param userId    userId
+     * @param id        id
+     * @param type      type
      * @param searchVal searchVal
-     * @param resIds resIds
+     * @param resIds    resIds
      * @return resource page
      */
     IPage<Resource> queryResourcePaging(IPage<Resource> page,
-                                        @Param("userId") int userId,
+                                        @Param("userId") String userId,
                                         @Param("id") int id,
                                         @Param("type") int type,
                                         @Param("searchVal") String searchVal,
                                         @Param("resIds") List<Integer> resIds);
 
     /**
-     *  query resource except userId
+     * query resource except userId
+     *
      * @param userId userId
      * @return resource list
      */
-    List<Resource> queryResourceExceptUserId(@Param("userId") int userId);
+    List<Resource> queryResourceExceptUserId(@Param("userId") String userId);
 
     /**
      * list authorized resource
-     * @param userId userId
+     *
+     * @param userId   userId
      * @param resNames resNames
-     * @param <T> T
+     * @param <T>      T
      * @return resource list
      */
-    <T> List<Resource> listAuthorizedResource(@Param("userId") int userId, @Param("resNames") T[] resNames);
+    <T> List<Resource> listAuthorizedResource(@Param("userId") String userId, @Param("resNames") T[] resNames);
 
     /**
      * list resources by id
+     *
      * @param resIds resIds
      * @return resource list
      */
@@ -93,22 +97,25 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     /**
      * list authorized resource
+     *
      * @param userId userId
      * @param resIds resIds
-     * @param <T> T
+     * @param <T>    T
      * @return resource list
      */
-    <T> List<Resource> listAuthorizedResourceById(@Param("userId") int userId,@Param("resIds")T[] resIds);
+    <T> List<Resource> listAuthorizedResourceById(@Param("userId") String userId, @Param("resIds") T[] resIds);
 
     /**
      * delete resource by id array
+     *
      * @param resIds resource id array
      * @return delete num
      */
-    int deleteIds(@Param("resIds")Integer[] resIds);
+    int deleteIds(@Param("resIds") Integer[] resIds);
 
     /**
      * list children
+     *
      * @param direcotyId directory id
      * @return resource id array
      */
@@ -116,34 +123,38 @@ public interface ResourceMapper extends BaseMapper<Resource> {
 
     /**
      * query resource by full name or pid
-     * @param fullName  full name
-     * @param type      resource type
+     *
+     * @param fullName full name
+     * @param type     resource type
      * @return resource
      */
-    List<Resource> queryResource(@Param("fullName") String fullName,@Param("type") int type);
+    List<Resource> queryResource(@Param("fullName") String fullName, @Param("type") int type);
 
     /**
      * list resource by id array
+     *
      * @param resIds resource id array
      * @return resource list
      */
-    List<Resource> listResourceByIds(@Param("resIds")Integer[] resIds);
+    List<Resource> listResourceByIds(@Param("resIds") Integer[] resIds);
 
     /**
      * update resource
-     * @param resourceList  resource list
+     *
+     * @param resourceList resource list
      * @return update num
      */
     int batchUpdateResource(@Param("resourceList") List<Resource> resourceList);
 
     /**
      * check resource exist
+     *
      * @param fullName full name
-     * @param userId userId
-     * @param type type
+     * @param userId   userId
+     * @param type     type
      * @return true if exist else return null
      */
     Boolean existResource(@Param("fullName") String fullName,
-                              @Param("userId") int userId,
-                              @Param("type") int type);
+                          @Param("userId") int userId,
+                          @Param("type") int type);
 }

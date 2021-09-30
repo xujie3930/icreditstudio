@@ -17,20 +17,18 @@
 
 package org.apache.dolphinscheduler.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.dao.entity.DefinitionGroupByUser;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinitionLog;
-
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * process definition mapper interface
@@ -60,22 +58,22 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @return delete result
      */
     int deleteByCode(@Param("code") Long code);
-    
+
     /**
      * verify process definition by name
      *
      * @param projectCode projectCode
-     * @param name name
+     * @param name        name
      * @return process definition
      */
     ProcessDefinition verifyByDefineName(@Param("projectCode") Long projectCode,
-                                        @Param("processDefinitionName") String name);
+                                         @Param("processDefinitionName") String name);
 
     /**
      * query process definition by name
      *
      * @param projectCode projectCode
-     * @param name name
+     * @param name        name
      * @return process definition
      */
     ProcessDefinition queryByDefineName(@Param("projectCode") Long projectCode,
@@ -92,11 +90,11 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     /**
      * process definition page
      *
-     * @param page page
-     * @param searchVal searchVal
-     * @param userId userId
+     * @param page        page
+     * @param searchVal   searchVal
+     * @param userId      userId
      * @param projectCode projectCode
-     * @param isAdmin isAdmin
+     * @param isAdmin     isAdmin
      * @return process definition IPage
      */
     IPage<ProcessDefinition> queryDefineListPaging(IPage<ProcessDefinition> page,
@@ -132,13 +130,13 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     /**
      * count process definition group by user
      *
-     * @param userId userId
+     * @param userId       userId
      * @param projectCodes projectCodes
-     * @param isAdmin isAdmin
+     * @param isAdmin      isAdmin
      * @return process definition list
      */
     List<DefinitionGroupByUser> countDefinitionGroupByUser(
-            @Param("userId") Integer userId,
+            @Param("userId") String userId,
             @Param("projectCodes") Long[] projectCodes,
             @Param("isAdmin") boolean isAdmin);
 
@@ -156,18 +154,19 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @return resource ids list
      */
     @MapKey("id")
-    List<Map<String, Object>> listResourcesByUser(@Param("userId") Integer userId);
+    List<Map<String, Object>> listResourcesByUser(@Param("userId") String userId);
 
     /**
      * update process definition version by process definitionId
      *
      * @param processDefinitionId process definition id
-     * @param version version
+     * @param version             version
      */
     void updateVersionByProcessDefinitionId(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);
 
     /**
      * list all project ids
+     *
      * @return project ids list
      */
     List<Integer> listProjectIds();
@@ -176,16 +175,18 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     /**
      * query the paging process definition version list by pagination info
      *
-     * @param page pagination info
+     * @param page                  pagination info
      * @param processDefinitionCode process definition code
      * @return the paging process definition version list
      */
     IPage<ProcessDefinitionLog> queryProcessDefinitionVersionsPaging(Page<ProcessDefinitionLog> page,
-                                                                         @Param("processDefinitionCode") Long processDefinitionCode);
+                                                                     @Param("processDefinitionCode") Long processDefinitionCode);
+
     /**
      * query has associated definition by id and version
+     *
      * @param processDefinitionId process definition id
-     * @param version version
+     * @param version             version
      * @return definition id
      */
     Integer queryHasAssociatedDefinitionByIdAndVersion(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);

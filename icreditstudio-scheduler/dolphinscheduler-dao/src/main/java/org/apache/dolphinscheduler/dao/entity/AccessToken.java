@@ -34,7 +34,7 @@ public class AccessToken {
      * user_id
      */
     @TableField(value = "user_id")
-    private int userId;
+    private String userId;
     /**
      * token
      */
@@ -66,11 +66,11 @@ public class AccessToken {
         this.id = id;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -150,14 +150,7 @@ public class AccessToken {
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + userId;
-        result = 31 * result + (userName != null ? userName.hashCode() : 0);
-        result = 31 * result + (token != null ? token.hashCode() : 0);
-        result = 31 * result + (expireTime != null ? expireTime.hashCode() : 0);
-        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
-        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
-        return result;
+        return super.hashCode();
     }
 
     @Override

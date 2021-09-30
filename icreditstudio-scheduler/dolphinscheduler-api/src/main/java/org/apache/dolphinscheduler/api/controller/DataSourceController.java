@@ -288,7 +288,7 @@ public class DataSourceController extends BaseController {
     @ApiException(UNAUTHORIZED_DATASOURCE)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result unauthDatasource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                   @RequestParam("userId") Integer userId) {
+                                   @RequestParam("userId") String userId) {
 
         Map<String, Object> result = dataSourceService.unauthDatasource(loginUser, userId);
         return returnDataList(result);
@@ -311,7 +311,7 @@ public class DataSourceController extends BaseController {
     @ApiException(AUTHORIZED_DATA_SOURCE)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result authedDatasource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                   @RequestParam("userId") Integer userId) {
+                                   @RequestParam("userId") String userId) {
 
         Map<String, Object> result = dataSourceService.authedDatasource(loginUser, userId);
         return returnDataList(result);

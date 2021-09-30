@@ -145,6 +145,23 @@ public class CheckUtils {
     }
 
     /**
+     * check task node parameter
+     *
+     * @param parameter parameter
+     * @param taskType task type
+     * @return true if taks node parameters are valid, otherwise return false
+     */
+    public static boolean checkTaskNodeParameters(String parameter, String taskType) {
+        AbstractParameters abstractParameters = TaskParametersUtils.getParameters(taskType, parameter);
+
+        if (abstractParameters != null) {
+            return abstractParameters.checkParameters();
+        }
+
+        return false;
+    }
+
+    /**
      * check params
      *
      * @param userName

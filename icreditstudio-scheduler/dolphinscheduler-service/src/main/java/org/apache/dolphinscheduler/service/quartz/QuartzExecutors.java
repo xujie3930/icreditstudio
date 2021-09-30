@@ -224,7 +224,7 @@ public class QuartzExecutors {
      * @param projectId projectId
      * @param schedule schedule
      */
-    public void addJob(Class<? extends Job> clazz, int projectId, final Schedule schedule) {
+    public void addJob(Class<? extends Job> clazz, String projectId, final Schedule schedule) {
         String jobName = QuartzExecutors.buildJobName(schedule.getId());
         String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
         Date startDate = schedule.getStartTime();
@@ -364,7 +364,7 @@ public class QuartzExecutors {
      * @param projectId project id
      * @return job group name
      */
-    public static String buildJobGroupName(int projectId) {
+    public static String buildJobGroupName(String projectId) {
         StringBuilder sb = new StringBuilder(30);
         sb.append(QUARTZ_JOB_GROUP_PRIFIX).append(UNDERLINE).append(projectId);
         return sb.toString();
@@ -377,7 +377,7 @@ public class QuartzExecutors {
      * @param schedule schedule
      * @return data map
      */
-    public static Map<String, Object> buildDataMap(int projectId, Schedule schedule) {
+    public static Map<String, Object> buildDataMap(String projectId, Schedule schedule) {
         Map<String, Object> dataMap = new HashMap<>(8);
         dataMap.put(PROJECT_ID, projectId);
         dataMap.put(SCHEDULE_ID, schedule.getId());

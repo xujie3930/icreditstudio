@@ -24,12 +24,12 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -39,18 +39,19 @@ import java.util.List;
 @Rollback(true)
 public class ErrorCommandMapperTest {
 
-    @Autowired
+    @Resource
     ErrorCommandMapper errorCommandMapper;
 
-    @Autowired
+    @Resource
     ProcessDefinitionMapper processDefinitionMapper;
 
 
     /**
      * insert
+     *
      * @return ErrorCommand
      */
-    private ErrorCommand insertOne(){
+    private ErrorCommand insertOne() {
         //insertOne
         ErrorCommand errorCommand = new ErrorCommand();
         errorCommand.setId(10101);
@@ -60,9 +61,6 @@ public class ErrorCommandMapperTest {
         errorCommandMapper.insert(errorCommand);
         return errorCommand;
     }
-
-
-
 
 
     /**
@@ -76,7 +74,7 @@ public class ErrorCommandMapperTest {
         processDefinition.setCode(1L);
         processDefinition.setName("def 1");
         processDefinition.setProjectCode(1010L);
-        processDefinition.setUserId(101);
+        processDefinition.setUserId("101");
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
         processDefinitionMapper.insert(processDefinition);

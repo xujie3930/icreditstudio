@@ -21,11 +21,9 @@ import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.BaseService;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.UserType;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.HadoopUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.User;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -39,33 +37,33 @@ import java.util.Objects;
  */
 public class BaseServiceImpl implements BaseService {
 
-    /**
-     * check admin
-     *
-     * @param user input user
-     * @return ture if administrator, otherwise return false
-     */
-    @Override
-    public boolean isAdmin(User user) {
-        return user.getUserType() == UserType.ADMIN_USER;
-    }
+//    /**
+//     * check admin
+//     *
+//     * @param user input user
+//     * @return ture if administrator, otherwise return false
+//     */
+//    @Override
+//    public boolean isAdmin(User user) {
+//        return user.getUserType() == UserType.ADMIN_USER;
+//    }
 
-    /**
-     * isNotAdmin
-     *
-     * @param loginUser login user
-     * @param result result code
-     * @return true if not administrator, otherwise false
-     */
-    @Override
-    public boolean isNotAdmin(User loginUser, Map<String, Object> result) {
-        //only admin can operate
-        if (!isAdmin(loginUser)) {
-            putMsg(result, Status.USER_NO_OPERATION_PERM);
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * isNotAdmin
+//     *
+//     * @param loginUser login user
+//     * @param result result code
+//     * @return true if not administrator, otherwise false
+//     */
+//    @Override
+//    public boolean isNotAdmin(User loginUser, Map<String, Object> result) {
+//        //only admin can operate
+//        if (!isAdmin(loginUser)) {
+//            putMsg(result, Status.USER_NO_OPERATION_PERM);
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * put message to map
@@ -135,16 +133,16 @@ public class BaseServiceImpl implements BaseService {
         HadoopUtils.getInstance().mkdir(udfsPath);
     }
 
-    /**
-     * has perm
-     *
-     * @param operateUser operate user
-     * @param createUserId create user id
-     */
-    @Override
-    public boolean hasPerm(User operateUser, int createUserId) {
-        return operateUser.getId() == createUserId || isAdmin(operateUser);
-    }
+//    /**
+//     * has perm
+//     *
+//     * @param operateUser operate user
+//     * @param createUserId create user id
+//     */
+//    @Override
+//    public boolean hasPerm(User operateUser, int createUserId) {
+//        return operateUser.getId() == createUserId || isAdmin(operateUser);
+//    }
 
     /**
      * check and parse date parameters

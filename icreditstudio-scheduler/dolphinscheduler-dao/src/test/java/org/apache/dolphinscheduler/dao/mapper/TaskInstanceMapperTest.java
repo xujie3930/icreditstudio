@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.dao.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.enums.TaskType;
@@ -24,22 +26,18 @@ import org.apache.dolphinscheduler.dao.entity.ExecuteStatusCount;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-
-import java.util.Date;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -47,16 +45,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 @Rollback
 public class TaskInstanceMapperTest {
 
-    @Autowired
+    @Resource
     TaskInstanceMapper taskInstanceMapper;
 
-    @Autowired
+    @Resource
     ProcessDefinitionMapper processDefinitionMapper;
 
-    @Autowired
+    @Resource
     ProcessInstanceMapper processInstanceMapper;
 
-    @Autowired
+    @Resource
     ProcessInstanceMapMapper processInstanceMapMapper;
 
     private int processInstanceId;
@@ -94,7 +92,7 @@ public class TaskInstanceMapperTest {
         processInstance.setEndTime(new Date());
         processInstance.setProcessDefinitionCode(1L);
         processInstanceMapper.insert(processInstance);
-        return processInstanceMapper.queryByProcessDefineCode(1L,1).get(0);
+        return processInstanceMapper.queryByProcessDefineCode(1L, 1).get(0);
     }
 
     /**
@@ -323,7 +321,7 @@ public class TaskInstanceMapperTest {
         TaskInstance task = insertTaskInstance(processInstance.getId());
         ProcessDefinition definition = new ProcessDefinition();
         definition.setCode(1111L);
-        definition.setProjectId(1111);
+        definition.setProjectId("1111");
         definition.setProjectCode(1111L);
         definition.setCreateTime(new Date());
         definition.setUpdateTime(new Date());
@@ -348,7 +346,7 @@ public class TaskInstanceMapperTest {
     public void testQueryTaskInstanceListPaging() {
         ProcessDefinition definition = new ProcessDefinition();
         definition.setCode(1L);
-        definition.setProjectId(1111);
+        definition.setProjectId("1111");
         definition.setProjectCode(1111L);
         definition.setCreateTime(new Date());
         definition.setUpdateTime(new Date());
@@ -368,7 +366,7 @@ public class TaskInstanceMapperTest {
                 "",
                 "",
                 "",
-                0,
+                "0",
                 new int[0],
                 "",
                 null, null

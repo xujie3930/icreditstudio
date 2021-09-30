@@ -17,12 +17,12 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.util.Date;
 
 @TableName("t_ds_alertgroup")
 public class AlertGroup {
@@ -60,7 +60,7 @@ public class AlertGroup {
      * create_user_id
      */
     @TableField(value = "create_user_id")
-    private int createUserId;
+    private String createUserId;
 
     public int getId() {
         return id;
@@ -102,11 +102,11 @@ public class AlertGroup {
         this.description = description;
     }
 
-    public int getCreateUserId() {
+    public String getCreateUserId() {
         return createUserId;
     }
 
-    public void setCreateUserId(int createUserId) {
+    public void setCreateUserId(String createUserId) {
         this.createUserId = createUserId;
     }
 
@@ -150,25 +150,18 @@ public class AlertGroup {
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + createUserId;
-        result = 31 * result + (groupName != null ? groupName.hashCode() : 0);
-        result = 31 * result + (alertInstanceIds != null ? alertInstanceIds.hashCode() : 0);
-        result = 31 * result + (description != null ? description.hashCode() : 0);
-        result = 31 * result + (createTime != null ? createTime.hashCode() : 0);
-        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
-        return result;
+        return super.hashCode();
     }
 
     @Override
     public String toString() {
         return "AlertGroup{"
-            + "id=" + id
-            + "createUserId=" + createUserId
-            + ", groupName='" + groupName + '\''
-            + ", description='" + description + '\''
-            + ", createTime=" + createTime
-            + ", updateTime=" + updateTime
-            + '}';
+                + "id=" + id
+                + "createUserId=" + createUserId
+                + ", groupName='" + groupName + '\''
+                + ", description='" + description + '\''
+                + ", createTime=" + createTime
+                + ", updateTime=" + updateTime
+                + '}';
     }
 }

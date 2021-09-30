@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskTimeoutStrategy;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
@@ -26,8 +27,6 @@ import org.apache.dolphinscheduler.remote.command.TaskExecuteRequestCommand;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * master/worker task transport
@@ -122,7 +121,7 @@ public class TaskExecutionContext implements Serializable {
     /**
      * execute user id
      */
-    private int executorId;
+    private String executorId;
 
 
     /**
@@ -354,11 +353,11 @@ public class TaskExecutionContext implements Serializable {
         this.globalParams = globalParams;
     }
 
-    public int getExecutorId() {
+    public String getExecutorId() {
         return executorId;
     }
 
-    public void setExecutorId(int executorId) {
+    public void setExecutorId(String executorId) {
         this.executorId = executorId;
     }
 

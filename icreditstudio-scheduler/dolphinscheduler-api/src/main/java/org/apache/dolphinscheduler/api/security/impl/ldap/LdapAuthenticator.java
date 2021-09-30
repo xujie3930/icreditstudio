@@ -29,17 +29,17 @@ public class LdapAuthenticator extends AbstractAuthenticator {
     @Autowired
     LdapService ldapService;
 
-    @Override
-    public User login(String userId, String password, String extra) {
-        User user = null;
-        String ldapEmail = ldapService.ldapLogin(userId, password);
-        if (ldapEmail != null) {
-            //check if user exist
-            user = usersService.getUserByUserName(userId);
-            if (user == null) {
-                user = usersService.createUser(ldapService.getUserType(userId), userId, ldapEmail);
-            }
-        }
-        return user;
-    }
+//    @Override
+//    public User login(String userId, String password, String extra) {
+//        User user = null;
+//        String ldapEmail = ldapService.ldapLogin(userId, password);
+//        if (ldapEmail != null) {
+//            //check if user exist
+//            user = usersService.getUserByUserName(userId);
+//            if (user == null) {
+//                user = usersService.createUser(ldapService.getUserType(userId), userId, ldapEmail);
+//            }
+//        }
+//        return user;
+//    }
 }

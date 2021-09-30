@@ -17,63 +17,59 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import org.apache.dolphinscheduler.dao.entity.User;
-
-import java.util.Map;
-
 /**
  * access token service
  */
 public interface AccessTokenService {
 
-    /**
-     * query access token list
-     *
-     * @param loginUser login user
-     * @param searchVal search value
-     * @param pageNo page number
-     * @param pageSize page size
-     * @return token list for page number and page size
-     */
-    Map<String, Object> queryAccessTokenList(User loginUser, String searchVal, Integer pageNo, Integer pageSize);
-
-    /**
-     * create token
-     *
-     * @param userId token for user
-     * @param expireTime token expire time
-     * @param token token string
-     * @return create result code
-     */
-    Map<String, Object> createToken(User loginUser, int userId, String expireTime, String token);
-
-
-    /**
-     * generate token
-     *
-     * @param userId token for user
-     * @param expireTime token expire time
-     * @return token string
-     */
-    Map<String, Object> generateToken(User loginUser, int userId, String expireTime);
-
-    /**
-     * delete access token
-     *
-     * @param loginUser login user
-     * @param id token id
-     * @return delete result code
-     */
-    Map<String, Object> delAccessTokenById(User loginUser, int id);
-
-    /**
-     * update token by id
-     *
-     * @param id token id
-     * @param userId token for user
-     * @param expireTime token expire time
-     * @param token token string
-     * @return update result code
-     */
-    Map<String, Object> updateToken(User loginUser, int id, int userId, String expireTime, String token);
+//    /**
+//     * query access token list
+//     *
+//     * @param loginUser login user
+//     * @param searchVal search value
+//     * @param pageNo page number
+//     * @param pageSize page size
+//     * @return token list for page number and page size
+//     */
+//    Map<String, Object> queryAccessTokenList(User loginUser, String searchVal, Integer pageNo, Integer pageSize);
+//
+//    /**
+//     * create token
+//     *
+//     * @param userId token for user
+//     * @param expireTime token expire time
+//     * @param token token string
+//     * @return create result code
+//     */
+//    Map<String, Object> createToken(User loginUser, int userId, String expireTime, String token);
+//
+//
+//    /**
+//     * generate token
+//     *
+//     * @param userId token for user
+//     * @param expireTime token expire time
+//     * @return token string
+//     */
+//    Map<String, Object> generateToken(User loginUser, int userId, String expireTime);
+//
+//    /**
+//     * delete access token
+//     *
+//     * @param loginUser login user
+//     * @param id token id
+//     * @return delete result code
+//     */
+//    Map<String, Object> delAccessTokenById(User loginUser, int id);
+//
+//    /**
+//     * update token by id
+//     *
+//     * @param id token id
+//     * @param userId token for user
+//     * @param expireTime token expire time
+//     * @param token token string
+//     * @return update result code
+//     */
+//    Map<String, Object> updateToken(User loginUser, int id, int userId, String expireTime, String token);
 }

@@ -17,10 +17,10 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 /**
  * process task relation log
@@ -31,7 +31,7 @@ public class ProcessTaskRelationLog extends ProcessTaskRelation {
     /**
      * operator user id
      */
-    private int operator;
+    private String operator;
 
     /**
      * operate time
@@ -60,11 +60,11 @@ public class ProcessTaskRelationLog extends ProcessTaskRelation {
         this.setUpdateTime(processTaskRelation.getUpdateTime());
     }
 
-    public int getOperator() {
+    public String getOperator() {
         return operator;
     }
 
-    public void setOperator(int operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
