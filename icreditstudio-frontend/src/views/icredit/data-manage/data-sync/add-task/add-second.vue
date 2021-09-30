@@ -89,6 +89,7 @@
               show-word-limit
               v-model="secondTaskForm.sql"
               :autosize="{ minRows: 7 }"
+              @change="handleSqlChange"
             >
             </el-input>
           </div>
@@ -398,6 +399,7 @@ export default {
     return {
       step: '',
       opType: '',
+      oldSql: '',
       isCanJumpNext: false,
       isCanSaveSetting: false,
       isShowDot: false,
@@ -485,6 +487,16 @@ export default {
 
     handleChangeTableName(name) {
       console.log(name)
+    },
+
+    handleSqlChange(sql) {
+      console.log('sql', sql)
+      if (this.secondTaskForm.createMode) {
+        this.secondTaskForm.targetSource = ''
+        this.secondTaskForm.wideTableName = ''
+        this.secondTaskForm.fieldInfos = []
+        this.handleClear('stockNameOptions')
+      }
     },
 
     // 可视化-表拖拽
