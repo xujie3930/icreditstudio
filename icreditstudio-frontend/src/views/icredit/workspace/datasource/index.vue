@@ -192,8 +192,9 @@ export default {
         row,
         opType: 'Disabled',
         title: '数据源停用',
-        beforeOperateMsg: '当前数据源有工作流（',
-        afterOperateMsg: '）在调度，请先下线工作流后再停用。'
+        beforeOperateMsg:
+          '停用后在工作流设置中不能在使用该数据源，确认停用该数据源吗？'
+        // afterOperateMsg: '）在调度，请先下线工作流后再停用。'
       }
       this.$refs.operateMessage.open(options)
     },
