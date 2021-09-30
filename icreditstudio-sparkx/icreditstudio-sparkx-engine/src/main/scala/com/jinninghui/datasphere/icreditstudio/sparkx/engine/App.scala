@@ -12,35 +12,30 @@ import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 
 object App extends Logging {
-  def run(args: Array[String])(implicit  sparkSession: SparkSession): Unit = {
+  def run(args: Array[String])(implicit sparkSession: SparkSession): Unit = {
     val appConfig = BusConfig.apply.parseOptions(args)
     logger.info(s"load config success, event date is ${appConfig.eventDate}, config file is ${appConfig.configFile}.")
     val confMap: java.util.Map[String, String] = AppConstants.variables
     val strConf = JSON.toJSONString(confMap, new Array[SerializeFilter](0))
     SparkUtil.getSparkConf(appConfig, strConf, sparkSession.sparkContext.getConf)
     if (appConfig.isStreaming) {
-      stream(appConfig,sparkSession)
+      stream(appConfig)
     } else {
-      batch(appConfig, sparkSession)
+      batch(appConfig)
     }
     cleanUp()
     logger.info(s"context exit success.")
   }
 
-  private def batch(appConfig: BusinessConfig, sparkSession: SparkSession): Unit = {
+  private def batch(appConfig: BusinessConfig)(implicit sparkSession: SparkSession): Unit = {
     logger.info("start batch process.")
-    implicit val ss: SparkSession = sparkSession
     BatchPip.startPip(appConfig)
-    sparkSession.stop()
   }
 
-  private def stream(appConfig: BusinessConfig, sparkSession: SparkSession): Unit = {
+  private def stream(appConfig: BusinessConfig)(implicit sparkSession: SparkSession): Unit = {
     logger.info("start stream process.")
-    implicit val ss: SparkSession = sparkSession
     implicit val ssc: StreamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(appConfig.streamBatchSeconds))
     StreamPip.startPip(appConfig)
-    ssc.stop()
-    sparkSession.stop()
   }
 
   private def cleanUp(): Unit = {
@@ -52,7 +47,7 @@ object App extends Logging {
     CacheConstants.tables.clear()
   }
 
-  def version() : String = {
+  def version(): String = {
     "0.0.1"
   }
 }
