@@ -41,7 +41,7 @@ export default {
             this.mixinRetrieveTableData()
           }
         })
-        .finally()
+        .finally(() => {})
     },
 
     // 停用操作
@@ -64,7 +64,6 @@ export default {
 
     // 编辑操作
     handleEditClick(methodName, params, opType, dialogName) {
-      console.log(dialogName, 'dialogName')
       this.detailLoading = true
       this[`btn${opType}Loading`] = true
       if (dialogName) {
