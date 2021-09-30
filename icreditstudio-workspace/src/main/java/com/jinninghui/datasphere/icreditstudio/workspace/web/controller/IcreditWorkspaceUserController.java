@@ -38,9 +38,11 @@ public class IcreditWorkspaceUserController {
     }
 
 
-    @GetMapping("/getWorkspaceByUserId/{id}")
+    @GetMapping(value = {"/getWorkspaceByUserId/{id}", "/getWorkspaceByUserId"})
     @Logable
-    public BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(@PathVariable("id") String id) {
+    public BusinessResult<List<Map<String, String>>> getWorkspaceListByUserId(
+            @PathVariable(value = "id",
+            required = false) String id) {
         return BusinessResult.success(workspaceUserService.getWorkspaceByUserId(id));
     }
 
