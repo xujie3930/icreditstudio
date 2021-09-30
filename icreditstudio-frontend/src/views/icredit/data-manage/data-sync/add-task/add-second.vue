@@ -25,8 +25,8 @@
               @change="handleChangeTableName"
             >
               <el-option
-                v-for="item in tableNameOptions"
-                :key="item.tableName"
+                v-for="(item, idx) in tableNameOptions"
+                :key="`${item.tableName}-${idx}`"
                 :label="item.tableName"
                 :value="item.tableName"
               >
@@ -41,10 +41,10 @@
                 @change="changeSourceType"
               >
                 <el-radio-button
-                  :class="item.className"
+                  v-for="(item, idx) in radioBtnOption"
+                  :key="`${item.label}-${idx}`"
                   :label="item.label"
-                  :key="item.label"
-                  v-for="item in radioBtnOption"
+                  :class="item.className"
                 >
                   {{ item.name }}
                 </el-radio-button>
@@ -180,7 +180,7 @@
                 >
                   <el-option
                     v-for="(item, idx) in stockNameOptions"
-                    :key="idx"
+                    :key="`${item.name}-${idx}`"
                     :label="item.name"
                     :value="item.name"
                   >
@@ -218,8 +218,8 @@
                   placeholder="请选择增量字段"
                 >
                   <el-option
-                    v-for="item in increFieldsOptions"
-                    :key="item.value"
+                    v-for="(item, idx) in increFieldsOptions"
+                    :key="`${item.value}-${idx}`"
                     :label="item.label"
                     :value="item.value"
                   >
@@ -234,8 +234,8 @@
                   placeholder="请选择增量类型"
                 >
                   <el-option
-                    v-for="item in zoningOptions"
-                    :key="item.value"
+                    v-for="(item, idx) in zoningOptions"
+                    :key="`${item.value}-${idx}`"
                     :label="item.label"
                     :value="item.value"
                   >
@@ -295,12 +295,21 @@
                 >
                   <el-option
                     v-for="(item, idx) in row.dictionaryOptions"
-                    :key="idx"
+                    :key="`${item.name}-${idx}`"
                     :label="item.name"
                     :value="item.name"
                   >
                   </el-option>
                 </el-select>
+              </template>
+
+              <!-- 备注 -->
+              <template #remarkColumn="{row}">
+                <el-input
+                  clearable
+                  placeholder="请输入备注"
+                  v-model.trim="row.remark"
+                ></el-input>
               </template>
             </JTable>
           </div>
@@ -351,7 +360,7 @@
           <el-radio
             class="box"
             v-for="(item, idx) in sameNameDataBase"
-            :key="idx"
+            :key="`${item.host}-${idx}`"
             :label="item.datasourceId"
           >
             {{ item.databaseName }}({{ item.host }})
@@ -489,8 +498,8 @@ export default {
       console.log(name)
     },
 
-    handleSqlChange(sql) {
-      console.log('sql', sql)
+    // sql语句更改重置数据
+    handleSqlChange() {
       if (this.secondTaskForm.createMode) {
         this.secondTaskForm.targetSource = ''
         this.secondTaskForm.wideTableName = ''
