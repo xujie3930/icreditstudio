@@ -19,7 +19,6 @@ package org.apache.dolphinscheduler.api.service;
 
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.utils.Result;
-import org.apache.dolphinscheduler.dao.entity.User;
 
 import java.io.IOException;
 import java.util.Map;
@@ -29,22 +28,22 @@ import java.util.Map;
  */
 public interface BaseService {
 
-    /**
-     * check admin
-     *
-     * @param user input user
-     * @return ture if administrator, otherwise return false
-     */
-    boolean isAdmin(User user);
+//    /**
+//     * check admin
+//     *
+//     * @param user input user
+//     * @return ture if administrator, otherwise return false
+//     */
+//    boolean isAdmin(User user);
 
-    /**
-     * isNotAdmin
-     *
-     * @param loginUser login user
-     * @param result result code
-     * @return true if not administrator, otherwise false
-     */
-    boolean isNotAdmin(User loginUser, Map<String, Object> result);
+//    /**
+//     * isNotAdmin
+//     *
+//     * @param loginUser login user
+//     * @param result result code
+//     * @return true if not administrator, otherwise false
+//     */
+//    boolean isNotAdmin(User loginUser, Map<String, Object> result);
 
     /**
      * put message to map
@@ -67,8 +66,8 @@ public interface BaseService {
     /**
      * check
      *
-     * @param result result
-     * @param bool bool
+     * @param result              result
+     * @param bool                bool
      * @param userNoOperationPerm status
      * @return check result
      */
@@ -82,13 +81,13 @@ public interface BaseService {
      */
     void createTenantDirIfNotExists(String tenantCode) throws IOException;
 
-    /**
-     * has perm
-     *
-     * @param operateUser operate user
-     * @param createUserId create user id
-     */
-    boolean hasPerm(User operateUser, int createUserId);
+//    /**
+//     * has perm
+//     *
+//     * @param operateUser operate user
+//     * @param createUserId create user id
+//     */
+//    boolean hasPerm(User operateUser, int createUserId);
 
     /**
      * check and parse date parameters

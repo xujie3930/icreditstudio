@@ -17,8 +17,6 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import static org.apache.dolphinscheduler.api.enums.Status.DATA_IS_NOT_VALID;
-
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.api.service.TaskDefinitionService;
@@ -29,29 +27,22 @@ import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils;
 import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils.SnowFlakeException;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.ProcessTaskRelation;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinitionLog;
-import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.ProcessTaskRelationMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionLogMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.dolphinscheduler.api.enums.Status.DATA_IS_NOT_VALID;
 
 /**
  * task definition service impl
@@ -61,22 +52,22 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
 
     private static final Logger logger = LoggerFactory.getLogger(TaskDefinitionServiceImpl.class);
 
-    @Autowired
+    @Resource
     private ProjectMapper projectMapper;
 
-    @Autowired
+    @Resource
     private ProjectService projectService;
 
-    @Autowired
+    @Resource
     private TaskDefinitionMapper taskDefinitionMapper;
 
-    @Autowired
+    @Resource
     private TaskDefinitionLogMapper taskDefinitionLogMapper;
 
-    @Autowired
+    @Resource
     private ProcessTaskRelationMapper processTaskRelationMapper;
 
-    @Autowired
+    @Resource
     private ProcessService processService;
 
     /**
@@ -95,11 +86,11 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
         // check project auth
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultStatus = (Status) checkResult.get(Constants.STATUS);
-        if (resultStatus != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultStatus = (Status) checkResult.get(Constants.STATUS);
+//        if (resultStatus != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         TaskNode taskNode = JSONUtils.parseObject(taskDefinitionJson, TaskNode.class);
         checkTaskNode(result, taskNode, taskDefinitionJson);
@@ -138,11 +129,11 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultStatus = (Status) checkResult.get(Constants.STATUS);
-        if (resultStatus != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultStatus = (Status) checkResult.get(Constants.STATUS);
+//        if (resultStatus != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         TaskDefinition taskDefinition = taskDefinitionMapper.queryByDefinitionName(project.getCode(), taskName);
         if (taskDefinition == null) {
@@ -167,11 +158,11 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
         Map<String, Object> result = new HashMap<>(5);
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         List<ProcessTaskRelation> processTaskRelationList = processTaskRelationMapper.queryByTaskCode(taskCode);
         if (!processTaskRelationList.isEmpty()) {
             Set<Long> processDefinitionCodes = processTaskRelationList
@@ -204,11 +195,11 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
         Map<String, Object> result = new HashMap<>(5);
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         if (processService.isTaskOnline(taskCode)) {
             putMsg(result, Status.PROCESS_DEFINE_STATE_ONLINE);
             return result;
@@ -255,11 +246,11 @@ public class TaskDefinitionServiceImpl extends BaseServiceImpl implements TaskDe
         Map<String, Object> result = new HashMap<>(5);
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         if (processService.isTaskOnline(taskCode)) {
             putMsg(result, Status.PROCESS_DEFINE_STATE_ONLINE);
             return result;

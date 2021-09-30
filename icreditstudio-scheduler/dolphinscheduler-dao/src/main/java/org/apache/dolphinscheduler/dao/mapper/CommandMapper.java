@@ -45,7 +45,7 @@ public interface CommandMapper extends BaseMapper<Command> {
      * @return CommandCount list
      */
     List<CommandCount> countCommandState(
-            @Param("userId") int userId,
+            @Param("userId") String userId,
             @Param("startTime") Date startTime,
             @Param("endTime") Date endTime,
             @Param("projectCodeArray") Long[] projectCodeArray);

@@ -18,28 +18,17 @@ package org.apache.dolphinscheduler.server.master;
 
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
 import org.apache.dolphinscheduler.common.enums.WarningType;
-import org.apache.dolphinscheduler.common.graph.DAG;
-import org.apache.dolphinscheduler.common.model.TaskNode;
-import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
-import org.apache.dolphinscheduler.common.process.ProcessDag;
 import org.apache.dolphinscheduler.dao.entity.Command;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.mapper.CommandMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
-import org.apache.dolphinscheduler.dao.utils.DagHelper;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Map;
-
 /**
- *  master test
+ * master test
  */
 @Ignore
 public class MasterCommandTest {
@@ -52,7 +41,7 @@ public class MasterCommandTest {
 
 
     @Test
-    public void StartFromFailedCommand(){
+    public void StartFromFailedCommand() {
         Command cmd = new Command();
         cmd.setCommandType(CommandType.START_FAILURE_TASK_PROCESS);
         cmd.setCommandParam("{\"ProcessInstanceId\":325}");
@@ -63,7 +52,7 @@ public class MasterCommandTest {
     }
 
     @Test
-    public void RecoverSuspendCommand(){
+    public void RecoverSuspendCommand() {
 
         Command cmd = new Command();
         cmd.setProcessDefinitionId(44);
@@ -74,23 +63,21 @@ public class MasterCommandTest {
     }
 
 
-
-
     @Test
-    public void startNewProcessCommand(){
+    public void startNewProcessCommand() {
         Command cmd = new Command();
         cmd.setCommandType(CommandType.START_PROCESS);
         cmd.setProcessDefinitionId(167);
         cmd.setFailureStrategy(FailureStrategy.CONTINUE);
         cmd.setWarningType(WarningType.NONE);
         cmd.setWarningGroupId(4);
-        cmd.setExecutorId(19);
+        cmd.setExecutorId("19");
 
         commandMapper.insert(cmd);
     }
 
     @Test
-    public void ToleranceCommand(){
+    public void ToleranceCommand() {
         Command cmd = new Command();
         cmd.setCommandType(CommandType.RECOVER_TOLERANCE_FAULT_PROCESS);
         cmd.setCommandParam("{\"ProcessInstanceId\":816}");
@@ -100,13 +87,13 @@ public class MasterCommandTest {
     }
 
     @Test
-    public void insertCommand(){
+    public void insertCommand() {
         Command cmd = new Command();
         cmd.setCommandType(CommandType.START_PROCESS);
         cmd.setFailureStrategy(FailureStrategy.CONTINUE);
         cmd.setWarningType(WarningType.ALL);
         cmd.setProcessDefinitionId(72);
-        cmd.setExecutorId(10);
+        cmd.setExecutorId("10");
         commandMapper.insert(cmd);
     }
 

@@ -25,9 +25,6 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
 import org.apache.dolphinscheduler.service.process.ProcessService;
-
-import java.util.Date;
-
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -36,6 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.util.Date;
 
 /**
  * process schedule job
@@ -64,7 +63,7 @@ public class ProcessScheduleJob implements Job {
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        int projectId = dataMap.getInt(Constants.PROJECT_ID);
+        String projectId = dataMap.getString(Constants.PROJECT_ID);
         int scheduleId = dataMap.getInt(Constants.SCHEDULE_ID);
 
         Date scheduledFireTime = context.getScheduledFireTime();
@@ -108,7 +107,7 @@ public class ProcessScheduleJob implements Job {
     /**
      * delete job
      */
-    private void deleteJob(int projectId, int scheduleId) {
+    private void deleteJob(String projectId, int scheduleId) {
         String jobName = QuartzExecutors.buildJobName(scheduleId);
         String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
         QuartzExecutors.getInstance().deleteJob(jobName, jobGroupName);

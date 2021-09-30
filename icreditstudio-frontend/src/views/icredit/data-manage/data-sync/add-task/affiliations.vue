@@ -249,6 +249,7 @@ export default {
 
     handleTagClick(curTag) {
       this.opType !== 'edit' && (this.form.associatedType = curTag.code)
+      this.$refs.form.clearValidate()
     },
 
     handleChangeLeftSelect(item) {

@@ -182,7 +182,7 @@ public class DataxTaskTest {
         DataSource dataSource = new DataSource();
         dataSource.setType(DbType.MYSQL);
         dataSource.setConnectionParams(CONNECTION_PARAMS);
-        dataSource.setUserId(1);
+        dataSource.setUserId("1");
         return dataSource;
     }
 

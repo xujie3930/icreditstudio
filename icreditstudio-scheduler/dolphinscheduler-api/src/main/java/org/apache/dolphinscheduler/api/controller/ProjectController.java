@@ -17,16 +17,10 @@
 
 package org.apache.dolphinscheduler.api.controller;
 
-import static org.apache.dolphinscheduler.api.enums.Status.CREATE_PROJECT_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.DELETE_PROJECT_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.IMPORT_PROCESS_DEFINE_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.LOGIN_USER_QUERY_PROJECT_LIST_PAGING_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_AUTHORIZED_AND_USER_CREATED_PROJECT_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_AUTHORIZED_PROJECT;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_PROJECT_DETAILS_BY_ID_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_UNAUTHORIZED_PROJECT_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.UPDATE_PROJECT_ERROR;
-
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.dolphinscheduler.api.aspect.AccessLogAnnotation;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ApiException;
@@ -36,25 +30,15 @@ import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.dao.entity.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import springfox.documentation.annotations.ApiIgnore;
+import static org.apache.dolphinscheduler.api.enums.Status.*;
 
 /**
  * project controller
@@ -73,7 +57,7 @@ public class ProjectController extends BaseController {
     /**
      * create project
      *
-     * @param loginUser   login user
+     * @param accessUser  用户编码如：root
      * @param projectName project name
      * @param description description
      * @return returns an error if it exists
@@ -87,12 +71,11 @@ public class ProjectController extends BaseController {
     @ResponseStatus(HttpStatus.CREATED)
     @ApiException(CREATE_PROJECT_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    //TODO:1，这里创建新的项目
-    public Result createProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+    public Result createProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User accessUser,
                                 @RequestParam("projectName") String projectName,
                                 @RequestParam(value = "description", required = false) String description) {
 
-        Map<String, Object> result = projectService.createProject(loginUser, projectName, description);
+        Map<String, Object> result = projectService.createProject(accessUser, projectName, description);
         return returnDataList(result);
     }
 
@@ -117,11 +100,11 @@ public class ProjectController extends BaseController {
     @ApiException(UPDATE_PROJECT_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result updateProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                @RequestParam("projectId") Integer projectId,
+                                @RequestParam("projectId") String projectId,
                                 @RequestParam("projectName") String projectName,
-                                @RequestParam(value = "description", required = false) String description,
-                                @RequestParam(value = "userName") String userName) {
-        Map<String, Object> result = projectService.update(loginUser, projectId, projectName, description, userName);
+                                @RequestParam(value = "description", required = false) String description/*,
+                                @RequestParam(value = "userName") String userName*/) {
+        Map<String, Object> result = projectService.update(loginUser, projectId, projectName, description/*, userName*/);
         return returnDataList(result);
     }
 
@@ -141,7 +124,7 @@ public class ProjectController extends BaseController {
     @ApiException(QUERY_PROJECT_DETAILS_BY_ID_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryProjectById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                   @RequestParam("projectId") Integer projectId) {
+                                   @RequestParam("projectId") String projectId) {
 
         Map<String, Object> result = projectService.queryById(projectId);
         return returnDataList(result);
@@ -197,71 +180,71 @@ public class ProjectController extends BaseController {
     @ApiException(DELETE_PROJECT_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result deleteProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                @RequestParam("projectId") Integer projectId
+                                @RequestParam("projectId") String projectId
     ) {
 
         Map<String, Object> result = projectService.deleteProject(loginUser, projectId);
         return returnDataList(result);
     }
 
-    /**
-     * query unauthorized project
-     *
-     * @param loginUser login user
-     * @param userId    user id
-     * @return the projects which user have not permission to see
-     */
-    @ApiOperation(value = "queryUnauthorizedProject", notes = "QUERY_UNAUTHORIZED_PROJECT_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "USER_ID", required = true, dataType = "Int", example = "100")
-    })
-    @GetMapping(value = "/unauth-project")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiException(QUERY_UNAUTHORIZED_PROJECT_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result queryUnauthorizedProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                           @RequestParam("userId") Integer userId) {
-        Map<String, Object> result = projectService.queryUnauthorizedProject(loginUser, userId);
-        return returnDataList(result);
-    }
+//    /**
+//     * query unauthorized project
+//     *
+//     * @param loginUser login user
+//     * @param userId    user id
+//     * @return the projects which user have not permission to see
+//     */
+//    @ApiOperation(value = "queryUnauthorizedProject", notes = "QUERY_UNAUTHORIZED_PROJECT_NOTES")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "USER_ID", required = true, dataType = "Int", example = "100")
+//    })
+//    @GetMapping(value = "/unauth-project")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiException(QUERY_UNAUTHORIZED_PROJECT_ERROR)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result queryUnauthorizedProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+//                                           @RequestParam("userId") Integer userId) {
+////        Map<String, Object> result = projectService.queryUnauthorizedProject(loginUser, userId);
+//        return returnDataList(result);
+//    }
 
 
-    /**
-     * query authorized project
-     *
-     * @param loginUser login user
-     * @param userId    user id
-     * @return projects which the user have permission to see, Except for items created by this user
-     */
-    @ApiOperation(value = "queryAuthorizedProject", notes = "QUERY_AUTHORIZED_PROJECT_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "userId", value = "USER_ID", required = true, dataType = "Int", example = "100")
-    })
-    @GetMapping(value = "/authed-project")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiException(QUERY_AUTHORIZED_PROJECT)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result queryAuthorizedProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                         @RequestParam("userId") Integer userId) {
-        Map<String, Object> result = projectService.queryAuthorizedProject(loginUser, userId);
-        return returnDataList(result);
-    }
+//    /**
+//     * query authorized project
+//     *
+//     * @param loginUser login user
+//     * @param userId    user id
+//     * @return projects which the user have permission to see, Except for items created by this user
+//     */
+//    @ApiOperation(value = "queryAuthorizedProject", notes = "QUERY_AUTHORIZED_PROJECT_NOTES")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "userId", value = "USER_ID", required = true, dataType = "Int", example = "100")
+//    })
+//    @GetMapping(value = "/authed-project")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiException(QUERY_AUTHORIZED_PROJECT)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result queryAuthorizedProject(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+//                                         @RequestParam("userId") Integer userId) {
+//        Map<String, Object> result = projectService.queryAuthorizedProject(loginUser, userId);
+//        return returnDataList(result);
+//    }
 
-    /**
-     * query authorized and user created project
-     *
-     * @param loginUser login user
-     * @return projects which the user create and authorized
-     */
-    @ApiOperation(value = "queryProjectCreatedAndAuthorizedByUser", notes = "QUERY_AUTHORIZED_AND_USER_CREATED_PROJECT_NOTES")
-    @GetMapping(value = "/created-and-authorized-project")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiException(QUERY_AUTHORIZED_AND_USER_CREATED_PROJECT_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result queryProjectCreatedAndAuthorizedByUser(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser) {
-        Map<String, Object> result = projectService.queryProjectCreatedAndAuthorizedByUser(loginUser);
-        return returnDataList(result);
-    }
+//    /**
+//     * query authorized and user created project
+//     *
+//     * @param loginUser login user
+//     * @return projects which the user create and authorized
+//     */
+//    @ApiOperation(value = "queryProjectCreatedAndAuthorizedByUser", notes = "QUERY_AUTHORIZED_AND_USER_CREATED_PROJECT_NOTES")
+//    @GetMapping(value = "/created-and-authorized-project")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiException(QUERY_AUTHORIZED_AND_USER_CREATED_PROJECT_ERROR)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result queryProjectCreatedAndAuthorizedByUser(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser) {
+//        Map<String, Object> result = projectService.queryProjectCreatedAndAuthorizedByUser(loginUser);
+//        return returnDataList(result);
+//    }
 
     /**
      * import process definition

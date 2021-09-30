@@ -17,64 +17,60 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import org.apache.dolphinscheduler.dao.entity.User;
-
-import java.util.Map;
-
 /**
  * data analysis service
  */
 public interface DataAnalysisService {
 
-    /**
-     * statistical task instance status data
-     *
-     * @param loginUser login user
-     * @param projectId project id
-     * @param startDate start date
-     * @param endDate end date
-     * @return task state count data
-     */
-    Map<String, Object> countTaskStateByProject(User loginUser, int projectId, String startDate, String endDate);
-
-    /**
-     * statistical process instance status data
-     *
-     * @param loginUser login user
-     * @param projectId project id
-     * @param startDate start date
-     * @param endDate end date
-     * @return process instance state count data
-     */
-    Map<String, Object> countProcessInstanceStateByProject(User loginUser, int projectId, String startDate, String endDate);
-
-    /**
-     * statistics the process definition quantities of certain person
-     *
-     * @param loginUser login user
-     * @param projectId project id
-     * @return definition count data
-     */
-    Map<String, Object> countDefinitionByUser(User loginUser, int projectId);
-
-    /**
-     * statistical command status data
-     *
-     * @param loginUser login user
-     * @param projectId project id
-     * @param startDate start date
-     * @param endDate end date
-     * @return command state count data
-     */
-    Map<String, Object> countCommandState(User loginUser, int projectId, String startDate, String endDate);
-
-    /**
-     * count queue state
-     *
-     * @param loginUser login user
-     * @param projectId project id
-     * @return queue state count data
-     */
-    Map<String, Object> countQueueState(User loginUser, int projectId);
+//    /**
+//     * statistical task instance status data
+//     *
+//     * @param loginUser login user
+//     * @param projectId project id
+//     * @param startDate start date
+//     * @param endDate end date
+//     * @return task state count data
+//     */
+//    Map<String, Object> countTaskStateByProject(User loginUser, int projectId, String startDate, String endDate);
+//
+//    /**
+//     * statistical process instance status data
+//     *
+//     * @param loginUser login user
+//     * @param projectId project id
+//     * @param startDate start date
+//     * @param endDate end date
+//     * @return process instance state count data
+//     */
+//    Map<String, Object> countProcessInstanceStateByProject(User loginUser, int projectId, String startDate, String endDate);
+//
+//    /**
+//     * statistics the process definition quantities of certain person
+//     *
+//     * @param loginUser login user
+//     * @param projectId project id
+//     * @return definition count data
+//     */
+//    Map<String, Object> countDefinitionByUser(User loginUser, int projectId);
+//
+//    /**
+//     * statistical command status data
+//     *
+//     * @param loginUser login user
+//     * @param projectId project id
+//     * @param startDate start date
+//     * @param endDate end date
+//     * @return command state count data
+//     */
+//    Map<String, Object> countCommandState(User loginUser, int projectId, String startDate, String endDate);
+//
+//    /**
+//     * count queue state
+//     *
+//     * @param loginUser login user
+//     * @param projectId project id
+//     * @return queue state count data
+//     */
+//    Map<String, Object> countQueueState(User loginUser, int projectId);
 
 }

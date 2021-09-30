@@ -19,24 +19,19 @@ package org.apache.dolphinscheduler.dao.mapper;
 import org.apache.dolphinscheduler.common.enums.FailureStrategy;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.enums.WarningType;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessLineage;
-import org.apache.dolphinscheduler.dao.entity.ProcessTaskRelation;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.WorkFlowLineage;
-
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -44,16 +39,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Rollback(true)
 public class WorkFlowLineageMapperTest {
 
-    @Autowired
+    @Resource
     private WorkFlowLineageMapper workFlowLineageMapper;
 
-    @Autowired
+    @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
 
-    @Autowired
+    @Resource
     private ScheduleMapper scheduleMapper;
 
-    @Autowired
+    @Resource
     ProcessTaskRelationMapper processTaskRelationMapper;
 
     /**
@@ -89,7 +84,7 @@ public class WorkFlowLineageMapperTest {
         processDefinition.setCode(1L);
         processDefinition.setName("def 1");
         processDefinition.setProjectCode(1L);
-        processDefinition.setUserId(101);
+        processDefinition.setUserId("101");
         processDefinition.setUpdateTime(new Date());
         processDefinition.setCreateTime(new Date());
         processDefinitionMapper.insert(processDefinition);

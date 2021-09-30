@@ -27,6 +27,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ import java.util.List;
 @Rollback(true)
 public class DataSourceUserMapperTest {
 
-    @Autowired
+    @Resource
     DataSourceUserMapper dataSourceUserMapper;
 
 
@@ -47,7 +48,7 @@ public class DataSourceUserMapperTest {
     private DatasourceUser insertOne(){
         //insertOne
         DatasourceUser dataSourceUser = new DatasourceUser();
-        dataSourceUser.setUserId(4);
+        dataSourceUser.setUserId("4");
         dataSourceUser.setDatasourceId(1010);
         dataSourceUser.setPerm(7);
         dataSourceUser.setUpdateTime(new Date());

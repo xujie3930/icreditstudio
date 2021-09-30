@@ -109,6 +109,8 @@ export default {
       this.curBreadcrumb.push(this.topModules[0])
       this.curBreadcrumb.push(this.topModules[0].children[0])
       this.$router.push('/')
+      this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
     },
 
     initBreadCrumbItems(router) {
@@ -132,6 +134,8 @@ export default {
       this.threeChildrenMenus = []
       this.curBreadcrumb = [curMenu]
       this.workspace = label
+      this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
       // 自动加载二级菜单的第一个菜单
       if (children.length) {
         this.getChildMenus(children[0])
@@ -151,6 +155,8 @@ export default {
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
       this.isExistThreeMenus = !!showMenuArr.length
       this.threeChildrenMenus = showMenuArr
+      this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
       // 自动加载三级菜单的一个菜单或四级菜单的第一个
       if (showMenuArr.length) {
         const { url, children = [] } = showMenuArr[0]

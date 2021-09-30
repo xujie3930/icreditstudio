@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.annotation.Resource;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -48,7 +49,7 @@ public class SessionServiceImpl extends BaseServiceImpl implements SessionServic
 
     private static final Logger logger = LoggerFactory.getLogger(SessionService.class);
 
-    @Autowired
+    @Resource
     private SessionMapper sessionMapper;
 
     /**

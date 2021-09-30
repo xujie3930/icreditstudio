@@ -134,7 +134,7 @@ public interface SchedulerService {
      * @param scheduleId schedule id
      * @throws RuntimeException runtime exception
      */
-    void deleteSchedule(int projectId, int scheduleId);
+    void deleteSchedule(String projectId, int scheduleId);
 
     /**
      * delete schedule by id

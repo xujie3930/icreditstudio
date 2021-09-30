@@ -33,7 +33,7 @@ public class ErrorCommand {
     /**
      * id
      */
-    @TableId(value="id", type = IdType.INPUT)
+    @TableId(value = "id", type = IdType.INPUT)
     private int id;
 
     /**
@@ -49,7 +49,7 @@ public class ErrorCommand {
     /**
      * executor id
      */
-    private int executorId;
+    private String executorId;
 
     /**
      * command parameter, format json
@@ -67,7 +67,7 @@ public class ErrorCommand {
     private FailureStrategy failureStrategy;
 
     /**
-     *  warning type
+     * warning type
      */
     private WarningType warningType;
 
@@ -79,13 +79,13 @@ public class ErrorCommand {
     /**
      * schedule time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date scheduleTime;
 
     /**
      * start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
@@ -96,7 +96,7 @@ public class ErrorCommand {
     /**
      * update time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
     /**
@@ -109,9 +109,10 @@ public class ErrorCommand {
      */
     private String workerGroup;
 
-    public ErrorCommand(){}
+    public ErrorCommand() {
+    }
 
-    public ErrorCommand(Command command, String message){
+    public ErrorCommand(Command command, String message) {
         this.id = command.getId();
         this.commandType = command.getCommandType();
         this.executorId = command.getExecutorId();
@@ -132,14 +133,14 @@ public class ErrorCommand {
             CommandType commandType,
             TaskDependType taskDependType,
             FailureStrategy failureStrategy,
-            int executorId,
+            String executorId,
             int processDefinitionId,
             String commandParam,
             WarningType warningType,
             int warningGroupId,
             Date scheduleTime,
             Priority processInstancePriority,
-            String message){
+            String message) {
         this.commandType = commandType;
         this.executorId = executorId;
         this.processDefinitionId = processDefinitionId;
@@ -237,11 +238,11 @@ public class ErrorCommand {
         this.startTime = startTime;
     }
 
-    public int getExecutorId() {
+    public String getExecutorId() {
         return executorId;
     }
 
-    public void setExecutorId(int executorId) {
+    public void setExecutorId(String executorId) {
         this.executorId = executorId;
     }
 

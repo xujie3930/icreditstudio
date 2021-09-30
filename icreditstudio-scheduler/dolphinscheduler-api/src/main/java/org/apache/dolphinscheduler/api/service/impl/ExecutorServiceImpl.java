@@ -17,58 +17,34 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_END_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_START_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_RECOVER_PROCESS_ID_STRING;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_START_NODE_NAMES;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_START_PARAMS;
-import static org.apache.dolphinscheduler.common.Constants.MAX_TASK_TIMEOUT;
-
+import org.apache.commons.collections.MapUtils;
 import org.apache.dolphinscheduler.api.enums.ExecuteType;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.service.MonitorService;
 import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.ReleaseState;
-import org.apache.dolphinscheduler.common.enums.RunMode;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.WarningType;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Server;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.Command;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
-
-import org.apache.commons.collections.MapUtils;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
+
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * executor service impl
@@ -78,20 +54,20 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
 
     private static final Logger logger = LoggerFactory.getLogger(ExecutorServiceImpl.class);
 
-    @Autowired
+    @Resource
     private ProjectMapper projectMapper;
 
     @Autowired
     private ProjectService projectService;
 
-    @Autowired
+    @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
 
     @Autowired
     private MonitorService monitorService;
 
 
-    @Autowired
+    @Resource
     private ProcessInstanceMapper processInstanceMapper;
 
 
@@ -133,10 +109,10 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
         Project project = projectMapper.queryByName(projectName);
-        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
-        if (checkResultAndAuth != null) {
-            return checkResultAndAuth;
-        }
+//        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
+//        if (checkResultAndAuth != null) {
+//            return checkResultAndAuth;
+//        }
 
         // check process define release state
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
@@ -145,12 +121,12 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
 
-        if (!checkTenantSuitable(processDefinition)) {
-            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
-                    processDefinition.getId(), processDefinition.getName());
-            putMsg(result, Status.TENANT_NOT_SUITABLE);
-            return result;
-        }
+//        if (!checkTenantSuitable(processDefinition)) {
+//            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
+//                    processDefinition.getId(), processDefinition.getName());
+//            putMsg(result, Status.TENANT_NOT_SUITABLE);
+//            return result;
+//        }
 
         // check master exists
         if (!checkMasterExists(result)) {
@@ -228,10 +204,10 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = checkResultAndAuth(loginUser, projectName, project);
-        if (checkResult != null) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = checkResultAndAuth(loginUser, projectName, project);
+//        if (checkResult != null) {
+//            return checkResult;
+//        }
 
         // check master exists
         if (!checkMasterExists(result)) {
@@ -253,16 +229,16 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             }
         }
 
-        checkResult = checkExecuteType(processInstance, executeType);
-        Status status = (Status) checkResult.get(Constants.STATUS);
-        if (status != Status.SUCCESS) {
-            return checkResult;
-        }
-        if (!checkTenantSuitable(processDefinition)) {
-            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
-                    processDefinition.getId(), processDefinition.getName());
-            putMsg(result, Status.TENANT_NOT_SUITABLE);
-        }
+//        checkResult = checkExecuteType(processInstance, executeType);
+//        Status status = (Status) checkResult.get(Constants.STATUS);
+//        if (status != Status.SUCCESS) {
+//            return checkResult;
+//        }
+//        if (!checkTenantSuitable(processDefinition)) {
+//            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
+//                    processDefinition.getId(), processDefinition.getName());
+//            putMsg(result, Status.TENANT_NOT_SUITABLE);
+//        }
 
         //get the startParams user specified at the first starting while repeat running is needed
         Map<String, Object> commandMap = JSONUtils.toMap(processInstance.getCommandParam(), String.class, Object.class);
@@ -344,11 +320,11 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         if (status != Status.SUCCESS) {
             return checkResult;
         }*/
-        if (!checkTenantSuitable(processDefinition)) {
-            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
-                    processDefinition.getId(), processDefinition.getName());
-            putMsg(result, Status.TENANT_NOT_SUITABLE);
-        }
+//        if (!checkTenantSuitable(processDefinition)) {
+//            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
+//                    processDefinition.getId(), processDefinition.getName());
+//            putMsg(result, Status.TENANT_NOT_SUITABLE);
+//        }
 
         //get the startParams user specified at the first starting while repeat running is needed
         Map<String, Object> commandMap = JSONUtils.toMap(processInstance.getCommandParam(), String.class, Object.class);
@@ -393,17 +369,17 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         return result;
     }
 
-    /**
-     * check tenant suitable
-     *
-     * @param processDefinition process definition
-     * @return true if tenant suitable, otherwise return false
-     */
-    private boolean checkTenantSuitable(ProcessDefinition processDefinition) {
-        Tenant tenant = processService.getTenantForProcess(processDefinition.getTenantId(),
-                processDefinition.getUserId());
-        return tenant != null;
-    }
+//    /**
+//     * check tenant suitable
+//     *
+//     * @param processDefinition process definition
+//     * @return true if tenant suitable, otherwise return false
+//     */
+//    private boolean checkTenantSuitable(ProcessDefinition processDefinition) {
+//        Tenant tenant = processService.getTenantForProcess(processDefinition.getTenantId(),
+//                processDefinition.getUserId());
+//        return tenant != null;
+//    }
 
     /**
      * Check the state of process instance and the type of operation match
@@ -573,7 +549,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     private int createCommand(CommandType commandType, int processDefineId,
                               TaskDependType nodeDep, FailureStrategy failureStrategy,
                               String startNodeList, String schedule, WarningType warningType,
-                              int executorId, int warningGroupId,
+                              String executorId, int warningGroupId,
                               RunMode runMode, Priority processInstancePriority, String workerGroup,
                               Map<String, String> startParams) {
 
@@ -672,17 +648,17 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         return 0;
     }
 
-    /**
-     * check result and auth
-     */
-    private Map<String, Object> checkResultAndAuth(User loginUser, String projectName, Project project) {
-        // check project auth
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status status = (Status) checkResult.get(Constants.STATUS);
-        if (status != Status.SUCCESS) {
-            return checkResult;
-        }
-        return null;
-    }
+//    /**
+//     * check result and auth
+//     */
+//    private Map<String, Object> checkResultAndAuth(User loginUser, String projectName, Project project) {
+//        // check project auth
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status status = (Status) checkResult.get(Constants.STATUS);
+//        if (status != Status.SUCCESS) {
+//            return checkResult;
+//        }
+//        return null;
+//    }
 
 }
