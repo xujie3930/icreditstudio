@@ -17,23 +17,8 @@
 
 package org.apache.dolphinscheduler.api.controller;
 
-import static org.apache.dolphinscheduler.api.enums.Status.BATCH_COPY_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.BATCH_DELETE_PROCESS_DEFINE_BY_IDS_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.BATCH_MOVE_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.CREATE_PROCESS_DEFINITION;
-import static org.apache.dolphinscheduler.api.enums.Status.DELETE_PROCESS_DEFINE_BY_ID_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.DELETE_PROCESS_DEFINITION_VERSION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.ENCAPSULATION_TREEVIEW_STRUCTURE_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.GET_TASKS_LIST_BY_PROCESS_DEFINITION_ID_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_DATAIL_OF_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_PROCESS_DEFINITION_LIST;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_PROCESS_DEFINITION_LIST_PAGING_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_PROCESS_DEFINITION_VERSIONS_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.RELEASE_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.SWITCH_PROCESS_DEFINITION_VERSION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.UPDATE_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.VERIFY_PROCESS_DEFINITION_NAME_UNIQUE_ERROR;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.swagger.annotations.*;
 import org.apache.dolphinscheduler.api.aspect.AccessLogAnnotation;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ApiException;
@@ -45,28 +30,20 @@ import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.User;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static org.apache.dolphinscheduler.api.enums.Status.*;
 
 /**
  * process definition controller
@@ -84,13 +61,13 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * create process definition
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param name process definition name
-     * @param json process definition json
+     * @param name        process definition name
+     * @param json        process definition json
      * @param description description
-     * @param locations locations for nodes
-     * @param connects connects for nodes
+     * @param locations   locations for nodes
+     * @param connects    connects for nodes
      * @return create result code
      */
     @ApiOperation(value = "createProcessDefinition", notes = "CREATE_PROCESS_DEFINITION_NOTES")
@@ -121,10 +98,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * copy  process definition
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser            login user
+     * @param projectName          project name
      * @param processDefinitionIds process definition ids
-     * @param targetProjectId target project id
+     * @param targetProjectId      target project id
      * @return copy result code
      */
     @ApiOperation(value = "copyProcessDefinition", notes = "COPY_PROCESS_DEFINITION_NOTES")
@@ -139,7 +116,7 @@ public class ProcessDefinitionController extends BaseController {
     public Result copyProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
                                         @RequestParam(value = "processDefinitionIds", required = true) String processDefinitionIds,
-                                        @RequestParam(value = "targetProjectId", required = true) int targetProjectId) {
+                                        @RequestParam(value = "targetProjectId", required = true) String targetProjectId) {
         return returnDataList(
                 processDefinitionService.batchCopyProcessDefinition(loginUser, projectName, processDefinitionIds, targetProjectId));
     }
@@ -147,10 +124,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * move process definition
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser            login user
+     * @param projectName          project name
      * @param processDefinitionIds process definition ids
-     * @param targetProjectId target project id
+     * @param targetProjectId      target project id
      * @return move result code
      */
     @ApiOperation(value = "moveProcessDefinition", notes = "MOVE_PROCESS_DEFINITION_NOTES")
@@ -165,7 +142,7 @@ public class ProcessDefinitionController extends BaseController {
     public Result moveProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
                                         @RequestParam(value = "processDefinitionIds", required = true) String processDefinitionIds,
-                                        @RequestParam(value = "targetProjectId", required = true) int targetProjectId) {
+                                        @RequestParam(value = "targetProjectId", required = true) String targetProjectId) {
         return returnDataList(
                 processDefinitionService.batchMoveProcessDefinition(loginUser, projectName, processDefinitionIds, targetProjectId));
     }
@@ -173,9 +150,9 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * verify process definition name unique
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param name name
+     * @param name        name
      * @return true if process definition name not exists, otherwise false
      */
     @ApiOperation(value = "verify-name", notes = "VERIFY_PROCESS_DEFINITION_NAME_NOTES")
@@ -196,14 +173,14 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * update process definition
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param name process definition name
-     * @param id process definition id
+     * @param loginUser             login user
+     * @param projectName           project name
+     * @param name                  process definition name
+     * @param id                    process definition id
      * @param processDefinitionJson process definition json
-     * @param description description
-     * @param locations locations for nodes
-     * @param connects connects for nodes
+     * @param description           description
+     * @param locations             locations for nodes
+     * @param connects              connects for nodes
      * @return update result code
      */
 
@@ -248,10 +225,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * query process definition version paging list info
      *
-     * @param loginUser login user info
-     * @param projectName the process definition project name
-     * @param pageNo the process definition version list current page number
-     * @param pageSize the process definition version list page size
+     * @param loginUser             login user info
+     * @param projectName           the process definition project name
+     * @param pageNo                the process definition version list current page number
+     * @param pageSize              the process definition version list page size
      * @param processDefinitionCode the process definition code
      * @return the process definition version list
      */
@@ -279,10 +256,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * switch certain process definition version
      *
-     * @param loginUser login user info
-     * @param projectName the process definition project name
+     * @param loginUser           login user info
+     * @param projectName         the process definition project name
      * @param processDefinitionId the process definition id
-     * @param version the version user want to switch
+     * @param version             the version user want to switch
      * @return switch version result code
      */
     @ApiOperation(value = "switchProcessDefinitionVersion", notes = "SWITCH_PROCESS_DEFINITION_VERSION_NOTES")
@@ -306,10 +283,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * delete the certain process definition version by version and process definition id
      *
-     * @param loginUser login user info
-     * @param projectName the process definition project name
+     * @param loginUser           login user info
+     * @param projectName         the process definition project name
      * @param processDefinitionId process definition id
-     * @param version the process definition version user want to delete
+     * @param version             the process definition version user want to delete
      * @return delete version result code
      */
     @ApiOperation(value = "deleteProcessDefinitionVersion", notes = "DELETE_PROCESS_DEFINITION_VERSION_NOTES")
@@ -332,9 +309,9 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * release process definition
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param processId process definition id
+     * @param loginUser    login user
+     * @param projectName  project name
+     * @param processId    process definition id
      * @param releaseState release state
      * @return release result code
      */
@@ -360,9 +337,9 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * query datail of process definition by id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param processId process definition id
+     * @param processId   process definition id
      * @return process definition detail
      */
     @ApiOperation(value = "queryProcessDefinitionById", notes = "QUERY_PROCESS_DEFINITION_BY_ID_NOTES")
@@ -384,8 +361,8 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * query datail of process definition by name
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser             login user
+     * @param projectName           project name
      * @param processDefinitionName process definition name
      * @return process definition detail
      */
@@ -408,7 +385,7 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * query Process definition list
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
      * @return process definition list
      */
@@ -427,12 +404,12 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * query process definition list paging
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param searchVal search value
-     * @param pageNo page number
-     * @param pageSize page size
-     * @param userId user id
+     * @param searchVal   search value
+     * @param pageNo      page number
+     * @param pageSize    page size
+     * @param userId      user id
      * @return process definition page
      */
     @ApiOperation(value = "queryProcessDefinitionListPaging", notes = "QUERY_PROCESS_DEFINITION_LIST_PAGING_NOTES")
@@ -464,10 +441,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * encapsulation treeview structure
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param id process definition id
-     * @param limit limit
+     * @param id          process definition id
+     * @param limit       limit
      * @return tree view json data
      */
     @ApiOperation(value = "viewTree", notes = "VIEW_TREE_NOTES")
@@ -490,8 +467,8 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * get tasks list by process definition code
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser             login user
+     * @param projectName           project name
      * @param processDefinitionCode process definition code
      * @return task list
      */
@@ -515,8 +492,8 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * get tasks list by process definition code list
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser                 login user
+     * @param projectName               project name
      * @param processDefinitionCodeList process definition code list
      * @return node list data
      */
@@ -538,8 +515,8 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * delete process definition by id
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser           login user
+     * @param projectName         project name
      * @param processDefinitionId process definition id
      * @return delete result code
      */
@@ -562,8 +539,8 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * batch delete process definition by ids
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser            login user
+     * @param projectName          project name
      * @param processDefinitionIds process definition id list
      * @return delete result code
      */
@@ -609,10 +586,10 @@ public class ProcessDefinitionController extends BaseController {
     /**
      * batch export process definition by ids
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser            login user
+     * @param projectName          project name
      * @param processDefinitionIds process definition ids
-     * @param response response
+     * @param response             response
      */
 
     @ApiOperation(value = "batchExportProcessDefinitionByIds", notes = "BATCH_EXPORT_PROCESS_DEFINITION_BY_IDS_NOTES")

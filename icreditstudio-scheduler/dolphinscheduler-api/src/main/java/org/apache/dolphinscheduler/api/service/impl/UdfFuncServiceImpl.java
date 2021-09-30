@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.UdfFuncService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
@@ -31,20 +33,15 @@ import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.ResourceMapper;
 import org.apache.dolphinscheduler.dao.mapper.UDFUserMapper;
 import org.apache.dolphinscheduler.dao.mapper.UdfFuncMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 /**
  * udf func service impl
@@ -54,13 +51,13 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
 
     private static final Logger logger = LoggerFactory.getLogger(UdfFuncServiceImpl.class);
 
-    @Autowired
+    @javax.annotation.Resource
     private ResourceMapper resourceMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private UdfFuncMapper udfFuncMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private UDFUserMapper udfUserMapper;
 
     /**
@@ -267,10 +264,10 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
      * @return udf function list page
      */
     private IPage<UdfFunc> getUdfFuncsPage(User loginUser, String searchVal, Integer pageSize, int pageNo) {
-        int userId = loginUser.getId();
-        if (isAdmin(loginUser)) {
-            userId = 0;
-        }
+        String userId = loginUser.getId();
+//        if (isAdmin(loginUser)) {
+//            userId = 0;
+//        }
         Page<UdfFunc> page = new Page<>(pageNo, pageSize);
         return udfFuncMapper.queryUdfFuncPaging(page, userId, searchVal);
     }
@@ -285,10 +282,10 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
     @Override
     public Map<String, Object> queryUdfFuncList(User loginUser, Integer type) {
         Map<String, Object> result = new HashMap<>();
-        int userId = loginUser.getId();
-        if (isAdmin(loginUser)) {
-            userId = 0;
-        }
+        String userId = loginUser.getId();
+//        if (isAdmin(loginUser)) {
+//            userId = 0;
+//        }
         List<UdfFunc> udfFuncList = udfFuncMapper.getUdfFuncByType(userId, type);
 
         result.put(Constants.DATA_LIST, udfFuncList);

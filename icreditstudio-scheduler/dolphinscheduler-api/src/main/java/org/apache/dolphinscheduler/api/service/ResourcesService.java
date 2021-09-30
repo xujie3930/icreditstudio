@@ -193,7 +193,7 @@ public interface ResourcesService {
      * @param userId user id
      * @return unauthorized result code
      */
-    Map<String, Object> authorizeResourceTree(User loginUser, Integer userId);
+    Map<String, Object> authorizeResourceTree(User loginUser, String userId);
 
     /**
      * unauthorized file
@@ -202,7 +202,7 @@ public interface ResourcesService {
      * @param userId user id
      * @return unauthorized result code
      */
-    Map<String, Object> unauthorizedFile(User loginUser, Integer userId);
+    Map<String, Object> unauthorizedFile(User loginUser, String userId);
 
     /**
      * unauthorized udf function
@@ -211,7 +211,7 @@ public interface ResourcesService {
      * @param userId user id
      * @return unauthorized result code
      */
-    Map<String, Object> unauthorizedUDFFunction(User loginUser, Integer userId);
+    Map<String, Object> unauthorizedUDFFunction(User loginUser, String userId);
 
     /**
      * authorized udf function
@@ -220,7 +220,7 @@ public interface ResourcesService {
      * @param userId user id
      * @return authorized result code
      */
-    Map<String, Object> authorizedUDFFunction(User loginUser, Integer userId);
+    Map<String, Object> authorizedUDFFunction(User loginUser, String userId);
 
     /**
      * authorized file
@@ -229,7 +229,7 @@ public interface ResourcesService {
      * @param userId user id
      * @return authorized result
      */
-    Map<String, Object> authorizedFile(User loginUser, Integer userId);
+    Map<String, Object> authorizedFile(User loginUser, String userId);
 
     Result myOnlineCreateResource(User loginUser, ResourceType type, String fileName, String fileSuffix, String desc, String content,int pid,String currentDirectory, String tenantCode);
 }

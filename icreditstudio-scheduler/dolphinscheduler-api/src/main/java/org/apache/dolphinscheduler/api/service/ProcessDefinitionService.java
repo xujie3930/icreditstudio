@@ -120,7 +120,7 @@ public interface ProcessDefinitionService {
     Map<String, Object> batchCopyProcessDefinition(User loginUser,
                                                    String projectName,
                                                    String processDefinitionIds,
-                                                   int targetProjectId);
+                                                   String targetProjectId);
 
     /**
      * batch move process definition
@@ -133,7 +133,7 @@ public interface ProcessDefinitionService {
     Map<String, Object> batchMoveProcessDefinition(User loginUser,
                                                    String projectName,
                                                    String processDefinitionIds,
-                                                   int targetProjectId);
+                                                   String targetProjectId);
 
     /**
      * update  process definition

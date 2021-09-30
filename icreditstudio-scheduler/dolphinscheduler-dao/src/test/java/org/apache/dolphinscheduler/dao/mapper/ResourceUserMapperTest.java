@@ -28,6 +28,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class ResourceUserMapperTest {
 
 
 
-    @Autowired
+    @Resource
     ResourceUserMapper resourceUserMapper;
 
     /**
@@ -51,7 +52,7 @@ public class ResourceUserMapperTest {
         ResourcesUser resourcesUser = new ResourcesUser();
         resourcesUser.setCreateTime(new Date());
         resourcesUser.setUpdateTime(new Date());
-        resourcesUser.setUserId(11111);
+        resourcesUser.setUserId("11111");
         resourcesUser.setResourcesId(1110);
         resourcesUser.setPerm(Constants.AUTHORIZE_WRITABLE_PERM);
         resourceUserMapper.insert(resourcesUser);

@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.AlertGroupService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
@@ -26,21 +28,17 @@ import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.AlertGroup;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.AlertGroupMapper;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * alert group service impl
@@ -50,7 +48,7 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
 
     private Logger logger = LoggerFactory.getLogger(AlertGroupServiceImpl.class);
 
-    @Autowired
+    @Resource
     private AlertGroupMapper alertGroupMapper;
 
     /**
@@ -74,17 +72,17 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
      *
      * @param loginUser login user
      * @param searchVal search value
-     * @param pageNo page number
-     * @param pageSize page size
+     * @param pageNo    page number
+     * @param pageSize  page size
      * @return alert group list page
      */
     @Override
     public Map<String, Object> listPaging(User loginUser, String searchVal, Integer pageNo, Integer pageSize) {
 
         Map<String, Object> result = new HashMap<>();
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
 
         Page<AlertGroup> page = new Page<>(pageNo, pageSize);
         IPage<AlertGroup> alertGroupIPage = alertGroupMapper.queryAlertGroupPage(
@@ -101,9 +99,9 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
     /**
      * create alert group
      *
-     * @param loginUser login user
-     * @param groupName group name
-     * @param desc description
+     * @param loginUser        login user
+     * @param groupName        group name
+     * @param desc             description
      * @param alertInstanceIds alertInstanceIds
      * @return create result code
      */
@@ -111,9 +109,9 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
     public Map<String, Object> createAlertgroup(User loginUser, String groupName, String desc, String alertInstanceIds) {
         Map<String, Object> result = new HashMap<>();
         //only admin can operate
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
 
         AlertGroup alertGroup = new AlertGroup();
         Date now = new Date();
@@ -140,10 +138,10 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
     /**
      * updateProcessInstance alert group
      *
-     * @param loginUser login user
-     * @param id alert group id
-     * @param groupName group name
-     * @param desc description
+     * @param loginUser        login user
+     * @param id               alert group id
+     * @param groupName        group name
+     * @param desc             description
      * @param alertInstanceIds alertInstanceIds
      * @return update result code
      */
@@ -151,9 +149,9 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
     public Map<String, Object> updateAlertgroup(User loginUser, int id, String groupName, String desc, String alertInstanceIds) {
         Map<String, Object> result = new HashMap<>();
 
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
 
         AlertGroup alertGroup = alertGroupMapper.selectById(id);
 
@@ -186,7 +184,7 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
      * delete alert group by id
      *
      * @param loginUser login user
-     * @param id alert group id
+     * @param id        alert group id
      * @return delete result code
      */
     @Override
@@ -196,9 +194,9 @@ public class AlertGroupServiceImpl extends BaseServiceImpl implements AlertGroup
         result.put(Constants.STATUS, false);
 
         //only admin can operate
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
         //check exist
         AlertGroup alertGroup = alertGroupMapper.selectById(id);
         if (alertGroup == null) {

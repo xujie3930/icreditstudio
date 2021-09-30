@@ -17,10 +17,10 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 /**
  * process definition log
@@ -31,7 +31,7 @@ public class ProcessDefinitionLog extends ProcessDefinition {
     /**
      * operator
      */
-    private int operator;
+    private String operator;
 
     /**
      * operateTime
@@ -70,11 +70,11 @@ public class ProcessDefinitionLog extends ProcessDefinition {
         this.setWarningGroupId(processDefinition.getWarningGroupId());
     }
 
-    public int getOperator() {
+    public String getOperator() {
         return operator;
     }
 
-    public void setOperator(int operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
