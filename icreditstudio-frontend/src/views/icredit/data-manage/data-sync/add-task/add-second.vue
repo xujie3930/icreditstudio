@@ -192,6 +192,7 @@
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
                   @blur="handleVerifyWidthTableName"
+                  @clear="isCanJumpNext = false"
                 >
                   <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
@@ -308,7 +309,9 @@
       <footer class="footer-btn-wrap">
         <el-button
           class="btn"
-          @click="$router.push('/data-manage/add-task?opType=previousStep')"
+          @click="
+            $router.push(`/data-manage/add-task?opType=${opType}&step=second`)
+          "
         >
           上一步
         </el-button>
@@ -393,6 +396,7 @@ export default {
     this.getFluzzyDictionary = debounce(this.getFluzzyDictionary, 500)
 
     return {
+      step: '',
       opType: '',
       isCanJumpNext: false,
       isCanSaveSetting: false,
@@ -464,11 +468,19 @@ export default {
   methods: {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
+      this.step = this.$route.query?.step || ''
       const taskForm = this.$ls.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
+
+      const { createMode, taskId } = this.secondTaskForm
       // taskId存在表明是编辑的情况
-      this.secondTaskForm.taskId && this.getDetailData()
+      if (taskId) {
+        this.getDetailData()
+      } else if (!createMode && this.opType === 'add' && this.step) {
+        // 没有点击保存设置， 上一步或下一步跳转到本页面的情况
+        this.selectedTable = this.$ls.get('selectedTable') || []
+      }
     },
 
     handleChangeTableName(name) {
@@ -557,6 +569,7 @@ export default {
           }
         })
       }
+      this.$ls.set('selectedTable', this.selectedTable)
     },
 
     // 点击图标设置关联字段回调
@@ -689,17 +702,25 @@ export default {
     handleStepClick() {
       if (this.handleVerifyTip()) return
       this.handleTaskFormParams()
-      this.$router.push('/data-manage/add-transfer')
+      this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
     },
 
     // 验证宽表信息以及宽表名称是否已填
     handleVerifyTip() {
-      const { targetSource, wideTableName } = this.secondTaskForm
+      const { targetSource, wideTableName, createMode } = this.secondTaskForm
       if (!targetSource) {
         this.$message.error('请先选择宽表信息！')
         return true
       } else if (!wideTableName) {
         this.$message.error('请先填写宽表名称！')
+        return true
+      } else if (
+        !this.isCanJumpNext &&
+        !['edit', 'previousStep'].includes(this.opType)
+      ) {
+        this.$message.error(
+          `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
+        )
         return true
       } else {
         return false
@@ -723,6 +744,7 @@ export default {
     // 返回提示
     handleBackClick() {
       this.$ls.remove('taskForm')
+      this.$ls.remove('selectedTable')
       this.$router.push('/data-manage/data-sync')
     },
 
@@ -837,6 +859,7 @@ export default {
         dialect
       }
 
+      this.isCanJumpNext = false
       this.widthTableLoading = false
       this.tableLoading = true
       this.$refs.baseDialog.close()
@@ -844,6 +867,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             const { sql: sq, partitions, fields, incrementalFields } = data
+            this.isCanJumpNext = true
             this.secondTaskForm.sql = sq
             this.zoningOptions = partitions || []
             this.increFieldsOptions = incrementalFields || []
@@ -856,10 +880,6 @@ export default {
               data.sameNameDataBase.length && this.$refs.baseDialog.open()
             }
           }
-        })
-        .catch(err => {
-          console.log('error', err)
-          this.sameNameDataBase = []
         })
         .finally(() => {
           this.widthTableLoading = false
@@ -1092,7 +1112,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.stockNameOptions = data
-            this.isCanJumpNext = true
           }
         })
         .finally(() => {
@@ -1120,6 +1139,12 @@ export default {
 
     // 编辑情况下获取详情
     getDetailData() {
+      if (this.opType === 'edit') {
+        this.$message.warning({
+          duration: 4000,
+          message: '编辑模式下， 可视化区域的表以及关联关系不可编辑！'
+        })
+      }
       this.detailLoading = true
       API.dataSyncBuildDetial({ taskId: this.secondTaskForm.taskId })
         .then(({ success, data }) => {
