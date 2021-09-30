@@ -210,7 +210,8 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                     String fieldName = fieldInfo.getFieldName();
                     String key = new StringJoiner(".").add(databaseName).add(sourceTable).add(fieldName).toString();
                     String comment = comments.get(key);
-                    fieldInfo.setFieldChineseName(comment);
+//                    fieldInfo.setFieldChineseName(comment);
+                    fieldInfo.setRemark(comment);
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
