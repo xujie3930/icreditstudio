@@ -25,6 +25,7 @@
             <if test="name != null and name != '' ">
                 AND name = #{name}
             </if>
+        and del_flag = 'N'
         </where>
         limit 1
     </select>
