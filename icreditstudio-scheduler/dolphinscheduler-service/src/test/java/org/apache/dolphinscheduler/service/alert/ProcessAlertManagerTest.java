@@ -80,7 +80,7 @@ public class ProcessAlertManagerTest {
         processInstance.setWarningType(WarningType.SUCCESS);
         processInstance.setState(ExecutionStatus.SUCCESS);
         processInstance.setCommandType(CommandType.COMPLEMENT_DATA);
-        processInstance.setWarningGroupId(1);
+        processInstance.setWarningGroupId("1");
 
         ProjectUser projectUser = new ProjectUser();
         TaskInstance taskInstance = new TaskInstance();

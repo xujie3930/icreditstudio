@@ -17,22 +17,9 @@
 
 package org.apache.dolphinscheduler.server.master.runner;
 
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_END_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_START_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_RECOVERY_START_NODE_STRING;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_START_NODE_NAMES;
-import static org.apache.dolphinscheduler.common.Constants.DEFAULT_WORKER_GROUP;
-import static org.apache.dolphinscheduler.common.Constants.SEC_2_MINUTES_TIME_UNIT;
-
+import com.google.common.collect.Lists;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.DependResult;
-import org.apache.dolphinscheduler.common.enums.Direct;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Flag;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.graph.DAG;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
@@ -40,12 +27,7 @@ import org.apache.dolphinscheduler.common.process.ProcessDag;
 import org.apache.dolphinscheduler.common.process.Property;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.common.thread.ThreadUtils;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.OSUtils;
-import org.apache.dolphinscheduler.common.utils.ParameterUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.ProjectUser;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
@@ -57,24 +39,15 @@ import org.apache.dolphinscheduler.service.alert.ProcessAlertManager;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 import org.apache.dolphinscheduler.service.queue.PeerTaskInstancePriorityQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Lists;
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * master exec thread,split dag
@@ -176,8 +149,8 @@ public class MasterExecThread implements Runnable {
     /**
      * constructor of MasterExecThread
      *
-     * @param processInstance processInstance
-     * @param processService processService
+     * @param processInstance     processInstance
+     * @param processService      processService
      * @param nettyRemotingClient nettyRemotingClient
      */
     public MasterExecThread(ProcessInstance processInstance
@@ -255,10 +228,11 @@ public class MasterExecThread implements Runnable {
         processService.saveProcessInstance(processInstance);
 
         // get schedules
-        int processDefinitionId = processInstance.getProcessDefinition().getId();
+        String processDefinitionId = processInstance.getProcessDefinition().getId();
+        //根据流程定义ID查找调度配置
         List<Schedule> schedules = processService.queryReleaseSchedulerListByProcessDefinitionId(processDefinitionId);
         List<Date> listDate = Lists.newLinkedList();
-        if (!CollectionUtils.isEmpty(schedules)) {
+        if (CollectionUtils.isNotEmpty(schedules)) {
             for (Schedule schedule : schedules) {
                 listDate.addAll(CronUtils.getSelfFireDateList(startDate, endDate, schedule.getCrontab()));
             }
@@ -266,7 +240,7 @@ public class MasterExecThread implements Runnable {
         // get first fire date
         Iterator<Date> iterator = null;
         Date scheduleDate;
-        if (!CollectionUtils.isEmpty(listDate)) {
+        if (CollectionUtils.isNotEmpty(listDate)) {
             iterator = listDate.iterator();
             scheduleDate = iterator.next();
             processInstance.setScheduleTime(scheduleDate);
@@ -331,7 +305,7 @@ public class MasterExecThread implements Runnable {
                     processInstance.getProcessDefinition().getGlobalParamMap(),
                     processInstance.getProcessDefinition().getGlobalParamList(),
                     CommandType.COMPLEMENT_DATA, processInstance.getScheduleTime()));
-            processInstance.setId(0);
+            processInstance.setId("0");
             processInstance.setStartTime(new Date());
             processInstance.setEndTime(null);
             processService.saveProcessInstance(processInstance);
@@ -445,7 +419,7 @@ public class MasterExecThread implements Runnable {
      * find task instance in db.
      * in case submit more than one same name task in the same time.
      *
-     * @param taskCode task code
+     * @param taskCode    task code
      * @param taskVersion task version
      * @return TaskInstance
      */
@@ -463,7 +437,7 @@ public class MasterExecThread implements Runnable {
      * encapsulation task
      *
      * @param processInstance process instance
-     * @param taskNode taskNode
+     * @param taskNode        taskNode
      * @return TaskInstance
      */
     private TaskInstance createTaskInstance(ProcessInstance processInstance, TaskNode taskNode) {
@@ -523,9 +497,9 @@ public class MasterExecThread implements Runnable {
         return taskInstance;
     }
 
-    public void getPreVarPool(TaskInstance taskInstance,  Set<String> preTask) {
-        Map<String,Property> allProperty = new HashMap<>();
-        Map<String,TaskInstance> allTaskInstance = new HashMap<>();
+    public void getPreVarPool(TaskInstance taskInstance, Set<String> preTask) {
+        Map<String, Property> allProperty = new HashMap<>();
+        Map<String, TaskInstance> allTaskInstance = new HashMap<>();
         if (CollectionUtils.isNotEmpty(preTask)) {
             for (String preTaskName : preTask) {
                 TaskInstance preTaskInstance = completeTaskList.get(preTaskName);
@@ -563,17 +537,17 @@ public class MasterExecThread implements Runnable {
                 TaskInstance otherTask = allTaskInstance.get(proName);
                 if (otherTask.getEndTime().getTime() > preTaskInstance.getEndTime().getTime()) {
                     allProperty.put(proName, thisProperty);
-                    allTaskInstance.put(proName,preTaskInstance);
+                    allTaskInstance.put(proName, preTaskInstance);
                 } else {
                     allProperty.put(proName, otherPro);
                 }
             } else {
                 allProperty.put(proName, thisProperty);
-                allTaskInstance.put(proName,preTaskInstance);
+                allTaskInstance.put(proName, preTaskInstance);
             }
         } else {
             allProperty.put(proName, thisProperty);
-            allTaskInstance.put(proName,preTaskInstance);
+            allTaskInstance.put(proName, preTaskInstance);
         }
     }
 
@@ -945,7 +919,7 @@ public class MasterExecThread implements Runnable {
             if (!sendTimeWarning && checkProcessTimeOut(processInstance)) {
                 processAlertManager.sendProcessTimeoutAlert(processInstance,
                         processService.findProcessDefinition(processInstance.getProcessDefinitionCode(),
-                        processInstance.getProcessDefinitionVersion()));
+                                processInstance.getProcessDefinitionVersion()));
                 sendTimeWarning = true;
             }
             for (Map.Entry<MasterBaseTaskExecThread, Future<Boolean>> entry : activeTaskNode.entrySet()) {
@@ -1118,7 +1092,7 @@ public class MasterExecThread implements Runnable {
         if (taskInstance.getState() != ExecutionStatus.FAILURE) {
             return true;
         }
-        if (taskInstance.getId() == 0
+        if ("0".equals(taskInstance.getId())
                 ||
                 taskInstance.getMaxRetryTimes() == 0
                 ||
@@ -1186,12 +1160,12 @@ public class MasterExecThread implements Runnable {
      * @return recovery task instance
      */
     private TaskInstance getRecoveryTaskInstance(String taskId) {
-        if (!StringUtils.isNotEmpty(taskId)) {
+        if (StringUtils.isEmpty(taskId)) {
             return null;
         }
         try {
-            Integer intId = Integer.valueOf(taskId);
-            TaskInstance task = processService.findTaskInstanceById(intId);
+//            Integer intId = Integer.valueOf(taskId);
+            TaskInstance task = processService.findTaskInstanceById(taskId);
             if (task == null) {
                 logger.error("start node id cannot be found: {}", taskId);
             } else {
@@ -1263,10 +1237,10 @@ public class MasterExecThread implements Runnable {
     /**
      * generate flow dag
      *
-     * @param totalTaskNodeList total task node list
-     * @param startNodeNameList start node name list
+     * @param totalTaskNodeList    total task node list
+     * @param startNodeNameList    start node name list
      * @param recoveryNodeNameList recovery node name list
-     * @param depNodeType depend node type
+     * @param depNodeType          depend node type
      * @return ProcessDag           process dag
      * @throws Exception exception
      */

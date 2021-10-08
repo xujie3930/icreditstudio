@@ -17,28 +17,26 @@
 
 package org.apache.dolphinscheduler.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.dao.entity.ExecuteStatusCount;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * task instance mapper interface
  */
 public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
-    List<Integer> queryTaskByProcessIdAndState(@Param("processInstanceId") Integer processInstanceId,
-                                               @Param("state") Integer state);
+    List<String> queryTaskByProcessIdAndState(@Param("processInstanceId") String processInstanceId,
+                                              @Param("state") Integer state);
 
-    List<TaskInstance> findValidTaskListByProcessId(@Param("processInstanceId") Integer processInstanceId,
+    List<TaskInstance> findValidTaskListByProcessId(@Param("processInstanceId") String processInstanceId,
                                                     @Param("flag") Flag flag);
 
     List<TaskInstance> queryByHostAndStatus(@Param("host") String host,
@@ -48,7 +46,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
                                        @Param("states") int[] stateArray,
                                        @Param("destStatus") ExecutionStatus destStatus);
 
-    TaskInstance queryByInstanceIdAndName(@Param("processInstanceId") int processInstanceId,
+    TaskInstance queryByInstanceIdAndName(@Param("processInstanceId") String processInstanceId,
                                           @Param("name") String name);
 
     Integer countTask(@Param("projectCodes") Long[] projectCodes,

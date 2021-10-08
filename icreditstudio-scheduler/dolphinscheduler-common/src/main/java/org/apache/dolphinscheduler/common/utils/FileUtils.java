@@ -17,32 +17,18 @@
 
 package org.apache.dolphinscheduler.common.utils;
 
-import static org.apache.dolphinscheduler.common.Constants.DATA_BASEDIR_PATH;
-import static org.apache.dolphinscheduler.common.Constants.RESOURCE_VIEW_SUFFIXS;
-import static org.apache.dolphinscheduler.common.Constants.RESOURCE_VIEW_SUFFIXS_DEFAULT_VALUE;
-import static org.apache.dolphinscheduler.common.Constants.YYYYMMDDHHMMSS;
-
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * file utils
@@ -98,7 +84,7 @@ public class FileUtils {
      * get upload file absolute path and name
      *
      * @param tenantCode tenant code
-     * @param filename file name
+     * @param filename   file name
      * @return local file path
      */
     public static String getUploadFilename(String tenantCode, String filename) {
@@ -114,14 +100,14 @@ public class FileUtils {
     /**
      * directory of process execution
      *
-     * @param projectCode project code
-     * @param processDefineCode process definition Code
+     * @param projectCode          project code
+     * @param processDefineCode    process definition Code
      * @param processDefineVersion process definition version
-     * @param processInstanceId process instance id
-     * @param taskInstanceId task instance id
+     * @param processInstanceId    process instance id
+     * @param taskInstanceId       task instance id
      * @return directory of process execution
      */
-    public static String getProcessExecDir(long projectCode, long processDefineCode, int processDefineVersion, int processInstanceId, int taskInstanceId) {
+    public static String getProcessExecDir(long projectCode, long processDefineCode, int processDefineVersion, String processInstanceId, String taskInstanceId) {
         String fileName = String.format("%s/exec/process/%d/%s/%d/%d", DATA_BASEDIR,
                 projectCode, processDefineCode + "_" + processDefineVersion, processInstanceId, taskInstanceId);
         File file = new File(fileName);
@@ -163,7 +149,7 @@ public class FileUtils {
     /**
      * write content to file ,if parent path not exists, it will do one's utmost to mkdir
      *
-     * @param content content
+     * @param content  content
      * @param filePath target file path
      * @return true if write success
      */
@@ -204,10 +190,10 @@ public class FileUtils {
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @throws IOException in case of an I/O error
+     * @throws IOException                          in case of an I/O error
      * @throws java.io.UnsupportedEncodingException if the encoding is not supported by the VM
      * @since 2.4
      */
@@ -221,10 +207,10 @@ public class FileUtils {
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @throws IOException in case of an I/O error
+     * @throws IOException                          in case of an I/O error
      * @throws java.io.UnsupportedEncodingException if the encoding is not supported by the VM
      */
     public static void writeStringToFile(File file, String data, String encoding) throws IOException {
@@ -234,11 +220,11 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
+     * @param append   if {@code true}, then the String will be added to the
+     *                 end of the file rather than overwriting
      * @throws IOException in case of an I/O error
      * @since 2.3
      */
@@ -256,14 +242,14 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
-     * @throws IOException in case of an I/O error
+     * @param append   if {@code true}, then the String will be added to the
+     *                 end of the file rather than overwriting
+     * @throws IOException                 in case of an I/O error
      * @throws UnsupportedCharsetException thrown instead of {@link UnsupportedEncodingException} in version 2.2 if the encoding is not
-     * supported by the VM
+     *                                     supported by the VM
      * @since 2.1
      */
     public static void writeStringToFile(File file, String data, String encoding, boolean append) throws IOException {
@@ -284,10 +270,10 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist using the default encoding for the VM.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file   the file to write
+     * @param data   the content to write to the file
      * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
+     *               end of the file rather than overwriting
      * @throws IOException in case of an I/O error
      * @since 2.1
      */
@@ -332,9 +318,9 @@ public class FileUtils {
      * An exception is thrown if the file exists but cannot be written to.
      * An exception is thrown if the parent directory cannot be created.
      *
-     * @param file the file to open for output, must not be {@code null}
+     * @param file   the file to open for output, must not be {@code null}
      * @param append if {@code true}, then bytes will be added to the
-     * end of the file rather than overwriting
+     *               end of the file rather than overwriting
      * @return a new {@link FileOutputStream} for the specified file
      * @throws IOException if the file object is a directory
      * @throws IOException if the file cannot be written to

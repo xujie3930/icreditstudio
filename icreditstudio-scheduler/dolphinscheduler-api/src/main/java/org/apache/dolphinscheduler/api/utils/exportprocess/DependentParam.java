@@ -29,6 +29,8 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+
 /**
  * task node add dependent param strategy
  */
@@ -37,10 +39,10 @@ public class DependentParam implements ProcessAddTaskParam, InitializingBean {
 
     private static final String DEPENDENCE = "dependence";
 
-    @Autowired
+    @Resource
     ProcessDefinitionMapper processDefineMapper;
 
-    @Autowired
+    @Resource
     ProjectMapper projectMapper;
 
     /**
@@ -60,7 +62,7 @@ public class DependentParam implements ProcessAddTaskParam, InitializingBean {
                 ArrayNode dependItemList = (ArrayNode) dependentTaskModel.get("dependItemList");
                 for (int k = 0; k < dependItemList.size(); k++) {
                     ObjectNode dependentItem = (ObjectNode) dependItemList.path(k);
-                    int definitionId = dependentItem.path("definitionId").asInt();
+                    String definitionId = dependentItem.path("definitionId").asText();
                     ProcessDefinition definition = processDefineMapper.queryByDefineId(definitionId);
                     if (null != definition) {
                         dependentItem.put("projectName", definition.getProjectName());

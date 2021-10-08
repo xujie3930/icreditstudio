@@ -22,21 +22,15 @@ import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.dao.AlertDao;
-import org.apache.dolphinscheduler.dao.entity.Alert;
-import org.apache.dolphinscheduler.dao.entity.ProcessAlertContent;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.ProjectUser;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * process alert manager
@@ -92,7 +86,7 @@ public class ProcessAlertManager {
      * get process instance content
      *
      * @param processInstance process instance
-     * @param taskInstances task instance list
+     * @param taskInstances   task instance list
      * @return process instance format content
      */
     public String getContentProcessInstance(ProcessInstance processInstance,
@@ -102,7 +96,7 @@ public class ProcessAlertManager {
         String res = "";
         if (processInstance.getState().typeIsSuccess()) {
             List<ProcessAlertContent> successTaskList = new ArrayList<>(1);
-            ProcessAlertContent processAlertContent = ProcessAlertContent.newBuilder()
+            ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
                     .projectId(projectUser.getProjectId())
                     .projectName(projectUser.getProjectName())
                     .owner(projectUser.getUserName())
@@ -125,7 +119,7 @@ public class ProcessAlertManager {
                 if (task.getState().typeIsSuccess()) {
                     continue;
                 }
-                ProcessAlertContent processAlertContent = ProcessAlertContent.newBuilder()
+                ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
                         .projectId(projectUser.getProjectId())
                         .projectName(projectUser.getProjectName())
                         .owner(projectUser.getUserName())
@@ -151,7 +145,7 @@ public class ProcessAlertManager {
     /**
      * getting worker fault tolerant content
      *
-     * @param processInstance process instance
+     * @param processInstance   process instance
      * @param toleranceTaskList tolerance task list
      * @return worker tolerance content
      */
@@ -160,7 +154,7 @@ public class ProcessAlertManager {
         List<ProcessAlertContent> toleranceTaskInstanceList = new ArrayList<>();
 
         for (TaskInstance taskInstance : toleranceTaskList) {
-            ProcessAlertContent processAlertContent = ProcessAlertContent.newBuilder()
+            ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
                     .processName(processInstance.getName())
                     .taskName(taskInstance.getName())
                     .taskHost(taskInstance.getHost())
@@ -174,7 +168,7 @@ public class ProcessAlertManager {
     /**
      * send worker alert fault tolerance
      *
-     * @param processInstance process instance
+     * @param processInstance   process instance
      * @param toleranceTaskList tolerance task list
      */
     public void sendAlertWorkerToleranceFault(ProcessInstance processInstance, List<TaskInstance> toleranceTaskList) {
@@ -184,7 +178,7 @@ public class ProcessAlertManager {
             String content = getWorkerToleranceContent(processInstance, toleranceTaskList);
             alert.setContent(content);
             alert.setCreateTime(new Date());
-            alert.setAlertGroupId(processInstance.getWarningGroupId() == null ? 1 : processInstance.getWarningGroupId());
+            alert.setAlertGroupId(processInstance.getWarningGroupId() == null ? "1" : processInstance.getWarningGroupId());
             alertDao.addAlert(alert);
             logger.info("add alert to db , alert : {}", alert);
 
@@ -198,7 +192,7 @@ public class ProcessAlertManager {
      * send process instance alert
      *
      * @param processInstance process instance
-     * @param taskInstances task instance list
+     * @param taskInstances   task instance list
      */
     public void sendAlertProcessInstance(ProcessInstance processInstance,
                                          List<TaskInstance> taskInstances,
@@ -235,7 +229,7 @@ public class ProcessAlertManager {
         String cmdName = getCommandCnName(processInstance.getCommandType());
         String success = processInstance.getState().typeIsSuccess() ? "success" : "failed";
         alert.setTitle(cmdName + " " + success);
-        String content = getContentProcessInstance(processInstance, taskInstances,projectUser);
+        String content = getContentProcessInstance(processInstance, taskInstances, projectUser);
         alert.setContent(content);
         alert.setAlertGroupId(processInstance.getWarningGroupId());
         alert.setCreateTime(new Date());
@@ -246,7 +240,7 @@ public class ProcessAlertManager {
     /**
      * send process timeout alert
      *
-     * @param processInstance process instance
+     * @param processInstance   process instance
      * @param processDefinition process definition
      */
     public void sendProcessTimeoutAlert(ProcessInstance processInstance, ProcessDefinition processDefinition) {

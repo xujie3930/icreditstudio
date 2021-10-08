@@ -40,7 +40,7 @@ public interface DataSourceUserMapper extends BaseMapper<DatasourceUser> {
      * @param datasourceId datasourceId
      * @return delete result
      */
-    int deleteByDatasourceId(@Param("datasourceId") int datasourceId);
+    int deleteByDatasourceId(@Param("datasourceId") String datasourceId);
 
 
 }

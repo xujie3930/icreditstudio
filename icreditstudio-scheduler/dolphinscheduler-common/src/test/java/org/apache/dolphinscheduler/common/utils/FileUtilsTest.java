@@ -17,20 +17,19 @@
 
 package org.apache.dolphinscheduler.common.utils;
 
-import static org.apache.dolphinscheduler.common.Constants.YYYYMMDDHHMMSS;
-
 import org.apache.dolphinscheduler.common.Constants;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
+import static org.apache.dolphinscheduler.common.Constants.YYYYMMDDHHMMSS;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(DateUtils.class)
@@ -60,7 +59,7 @@ public class FileUtilsTest {
 
     @Test
     public void testGetProcessExecDir() {
-        String dir = FileUtils.getProcessExecDir(1L, 2L, 1, 3, 4);
+        String dir = FileUtils.getProcessExecDir(1L, 2L, 1, "3", "4");
         Assert.assertEquals("/tmp/dolphinscheduler/exec/process/1/2_1/3/4", dir);
     }
 

@@ -32,7 +32,7 @@ public interface LoggerService {
      * @param limit limit
      * @return log string data
      */
-    Result<String> queryLog(int taskInstId, int skipLineNum, int limit);
+    Result<String> queryLog(String taskInstId, int skipLineNum, int limit);
 
 
     /**
@@ -41,6 +41,6 @@ public interface LoggerService {
      * @param taskInstId task instance id
      * @return log byte array
      */
-    byte[] getLogBytes(int taskInstId);
+    byte[] getLogBytes(String taskInstId);
 
 }

@@ -48,7 +48,7 @@ public interface ProcessInstanceService {
      * @param processId process instance id
      * @return process instance detail
      */
-    Map<String, Object> queryProcessInstanceById(User loginUser, String projectName, Integer processId);
+    Map<String, Object> queryProcessInstanceById(User loginUser, String projectName, String processId);
 
     /**
      * paging query process instance list, filtering according to project, process definition, time range, keyword, process status
@@ -65,7 +65,7 @@ public interface ProcessInstanceService {
      * @param endDate end time
      * @return process instance list
      */
-    Map<String, Object> queryProcessInstanceList(User loginUser, String projectName, Integer processDefineId,
+    Map<String, Object> queryProcessInstanceList(User loginUser, String projectName, String processDefineId,
                                                  String startDate, String endDate,
                                                  String searchVal, String executorName, ExecutionStatus stateType, String host,
                                                  Integer pageNo, Integer pageSize);
@@ -79,7 +79,7 @@ public interface ProcessInstanceService {
      * @return task list for the process instance
      * @throws IOException io exception
      */
-    Map<String, Object> queryTaskListByProcessId(User loginUser, String projectName, Integer processId) throws IOException;
+    Map<String, Object> queryTaskListByProcessId(User loginUser, String projectName, String processId) throws IOException;
 
     Map<String, DependResult> parseLogForDependentResult(String log) throws IOException;
 
@@ -91,7 +91,7 @@ public interface ProcessInstanceService {
      * @param taskId task id
      * @return sub process instance detail
      */
-    Map<String, Object> querySubProcessInstanceByTaskId(User loginUser, String projectName, Integer taskId);
+    Map<String, Object> querySubProcessInstanceByTaskId(User loginUser, String projectName, String taskId);
 
     /**
      * update process instance
@@ -108,7 +108,7 @@ public interface ProcessInstanceService {
      * @return update result code
      * @throws ParseException parse exception for json parse
      */
-    Map<String, Object> updateProcessInstance(User loginUser, String projectName, Integer processInstanceId,
+    Map<String, Object> updateProcessInstance(User loginUser, String projectName, String processInstanceId,
                                               String processInstanceJson, String scheduleTime, Boolean syncDefine,
                                               Flag flag, String locations, String connects) throws ParseException;
 
@@ -120,7 +120,7 @@ public interface ProcessInstanceService {
      * @param subId sub process id
      * @return parent instance detail
      */
-    Map<String, Object> queryParentInstanceBySubId(User loginUser, String projectName, Integer subId);
+    Map<String, Object> queryParentInstanceBySubId(User loginUser, String projectName, String subId);
 
     /**
      * delete process instance by id, at the same time，delete task instance and their mapping relation data
@@ -130,7 +130,7 @@ public interface ProcessInstanceService {
      * @param processInstanceId process instance id
      * @return delete result code
      */
-    Map<String, Object> deleteProcessInstanceById(User loginUser, String projectName, Integer processInstanceId);
+    Map<String, Object> deleteProcessInstanceById(User loginUser, String projectName, String processInstanceId);
 
     /**
      * view process instance variables
@@ -138,7 +138,7 @@ public interface ProcessInstanceService {
      * @param processInstanceId process instance id
      * @return variables data
      */
-    Map<String, Object> viewVariables(Integer processInstanceId);
+    Map<String, Object> viewVariables(String processInstanceId);
 
     /**
      * encapsulation gantt structure
@@ -147,7 +147,7 @@ public interface ProcessInstanceService {
      * @return gantt tree data
      * @throws Exception exception when json parse
      */
-    Map<String, Object> viewGantt(Integer processInstanceId) throws Exception;
+    Map<String, Object> viewGantt(String processInstanceId) throws Exception;
 
     /**
      * query process instance by processDefinitionCode and stateArray

@@ -17,12 +17,18 @@
 package org.apache.dolphinscheduler.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * task record for qianfan
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskRecord {
 
     /**
@@ -48,13 +54,13 @@ public class TaskRecord {
     /**
      * start date
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
      * end date
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
     /**
@@ -107,154 +113,154 @@ public class TaskRecord {
      * error code
      */
     private String errorCode;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getProcId() {
-        return procId;
-    }
-
-    public void setProcId(int procId) {
-        this.procId = procId;
-    }
-
-    public String getProcName() {
-        return procName;
-    }
-
-    public void setProcName(String procName) {
-        this.procName = procName;
-    }
-
-    public String getProcDate() {
-        return procDate;
-    }
-
-    public void setProcDate(String procDate) {
-        this.procDate = procDate;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getResult() {
-        return result;
-    }
-
-    public void setResult(String result) {
-        this.result = result;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getSchema() {
-        return schema;
-    }
-
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
-    public String getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(String jobId) {
-        this.jobId = jobId;
-    }
-
-    public String getSourceTab() {
-        return sourceTab;
-    }
-
-    public void setSourceTab(String sourceTab) {
-        this.sourceTab = sourceTab;
-    }
-
-    public Long getSourceRowCount() {
-        return sourceRowCount;
-    }
-
-    public void setSourceRowCount(Long sourceRowCount) {
-        this.sourceRowCount = sourceRowCount;
-    }
-
-    public String getTargetTab() {
-        return targetTab;
-    }
-
-    public void setTargetTab(String targetTab) {
-        this.targetTab = targetTab;
-    }
-
-    public Long getTargetRowCount() {
-        return targetRowCount;
-    }
-
-    public void setTargetRowCount(Long targetRowCount) {
-        this.targetRowCount = targetRowCount;
-    }
-
-    public String getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(String errorCode) {
-        this.errorCode = errorCode;
-    }
-
-    @Override
-    public String toString(){
-        return "task record, id:" + id
-                +" proc id:" + procId
-                + " proc name:" + procName
-                + " proc date: " + procDate
-                + " start date:" + startTime
-                + " end date:" + endTime
-                + " result : " + result
-                + " duration : " + duration
-                + " note : " + note
-                + " schema : " + schema
-                + " job id : " + jobId
-                + " source table : " + sourceTab
-                + " source row count: " + sourceRowCount
-                + " target table : " + targetTab
-                + " target row count: " + targetRowCount
-                + " error code: " + errorCode
-                ;
-    }
+//
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public int getProcId() {
+//        return procId;
+//    }
+//
+//    public void setProcId(int procId) {
+//        this.procId = procId;
+//    }
+//
+//    public String getProcName() {
+//        return procName;
+//    }
+//
+//    public void setProcName(String procName) {
+//        this.procName = procName;
+//    }
+//
+//    public String getProcDate() {
+//        return procDate;
+//    }
+//
+//    public void setProcDate(String procDate) {
+//        this.procDate = procDate;
+//    }
+//
+//    public Date getStartTime() {
+//        return startTime;
+//    }
+//
+//    public void setStartTime(Date startTime) {
+//        this.startTime = startTime;
+//    }
+//
+//    public Date getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(Date endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    public String getResult() {
+//        return result;
+//    }
+//
+//    public void setResult(String result) {
+//        this.result = result;
+//    }
+//
+//    public int getDuration() {
+//        return duration;
+//    }
+//
+//    public void setDuration(int duration) {
+//        this.duration = duration;
+//    }
+//
+//    public String getNote() {
+//        return note;
+//    }
+//
+//    public void setNote(String note) {
+//        this.note = note;
+//    }
+//
+//    public String getSchema() {
+//        return schema;
+//    }
+//
+//    public void setSchema(String schema) {
+//        this.schema = schema;
+//    }
+//
+//    public String getJobId() {
+//        return jobId;
+//    }
+//
+//    public void setJobId(String jobId) {
+//        this.jobId = jobId;
+//    }
+//
+//    public String getSourceTab() {
+//        return sourceTab;
+//    }
+//
+//    public void setSourceTab(String sourceTab) {
+//        this.sourceTab = sourceTab;
+//    }
+//
+//    public Long getSourceRowCount() {
+//        return sourceRowCount;
+//    }
+//
+//    public void setSourceRowCount(Long sourceRowCount) {
+//        this.sourceRowCount = sourceRowCount;
+//    }
+//
+//    public String getTargetTab() {
+//        return targetTab;
+//    }
+//
+//    public void setTargetTab(String targetTab) {
+//        this.targetTab = targetTab;
+//    }
+//
+//    public Long getTargetRowCount() {
+//        return targetRowCount;
+//    }
+//
+//    public void setTargetRowCount(Long targetRowCount) {
+//        this.targetRowCount = targetRowCount;
+//    }
+//
+//    public String getErrorCode() {
+//        return errorCode;
+//    }
+//
+//    public void setErrorCode(String errorCode) {
+//        this.errorCode = errorCode;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "task record, id:" + id
+//                + " proc id:" + procId
+//                + " proc name:" + procName
+//                + " proc date: " + procDate
+//                + " start date:" + startTime
+//                + " end date:" + endTime
+//                + " result : " + result
+//                + " duration : " + duration
+//                + " note : " + note
+//                + " schema : " + schema
+//                + " job id : " + jobId
+//                + " source table : " + sourceTab
+//                + " source row count: " + sourceRowCount
+//                + " target table : " + targetTab
+//                + " target row count: " + targetRowCount
+//                + " error code: " + errorCode
+//                ;
+//    }
 
 }

@@ -20,7 +20,7 @@ package org.apache.dolphinscheduler.server.worker.cache;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 
 /**
- *  TaskExecutionContextCacheManager
+ * TaskExecutionContextCacheManager
  */
 public interface TaskExecutionContextCacheManager {
 
@@ -30,7 +30,7 @@ public interface TaskExecutionContextCacheManager {
      * @param taskInstanceId taskInstanceId
      * @return taskInstance
      */
-    TaskExecutionContext getByTaskInstanceId(Integer taskInstanceId);
+    TaskExecutionContext getByTaskInstanceId(String taskInstanceId);
 
     /**
      * cache taskInstance
@@ -44,7 +44,7 @@ public interface TaskExecutionContextCacheManager {
      *
      * @param taskInstanceId taskInstanceId
      */
-    void removeByTaskInstanceId(Integer taskInstanceId);
+    void removeByTaskInstanceId(String taskInstanceId);
 
     /**
      * If the value for the specified key is present and non-null,then perform the update，otherwise it will return false

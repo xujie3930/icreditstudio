@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.FailureStrategy;
 import org.apache.dolphinscheduler.common.enums.Priority;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
@@ -32,15 +33,16 @@ import java.util.Date;
 /**
  * schedule
  */
+@Data
 @TableName("t_ds_schedules")
 public class Schedule {
 
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
     /**
      * process definition id
      */
-    private int processDefinitionId;
+    private String processDefinitionId;
 
     /**
      * process definition name
@@ -124,7 +126,7 @@ public class Schedule {
     /**
      * warning group id
      */
-    private int warningGroupId;
+    private String warningGroupId;
 
 
     /**
@@ -137,183 +139,183 @@ public class Schedule {
      */
     private String workerGroup;
 
-    public int getWarningGroupId() {
-        return warningGroupId;
-    }
-
-    public void setWarningGroupId(int warningGroupId) {
-        this.warningGroupId = warningGroupId;
-    }
-
-    public Schedule() {
-    }
-
-    public String getProjectName() {
-        return projectName;
-    }
-
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTimezoneId() {
-        return timezoneId;
-    }
-
-    public void setTimezoneId(String timezoneId) {
-        this.timezoneId = timezoneId;
-    }
-
-    public String getCrontab() {
-        return crontab;
-    }
-
-    public void setCrontab(String crontab) {
-        this.crontab = crontab;
-    }
-
-    public FailureStrategy getFailureStrategy() {
-        return failureStrategy;
-    }
-
-    public void setFailureStrategy(FailureStrategy failureStrategy) {
-        this.failureStrategy = failureStrategy;
-    }
-
-    public WarningType getWarningType() {
-        return warningType;
-    }
-
-    public void setWarningType(WarningType warningType) {
-        this.warningType = warningType;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public ReleaseState getReleaseState() {
-        return releaseState;
-    }
-
-    public void setReleaseState(ReleaseState releaseState) {
-        this.releaseState = releaseState;
-    }
-
-    public int getProcessDefinitionId() {
-        return processDefinitionId;
-    }
-
-    public void setProcessDefinitionId(int processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
-    }
-
-    public String getProcessDefinitionName() {
-        return processDefinitionName;
-    }
-
-    public void setProcessDefinitionName(String processDefinitionName) {
-        this.processDefinitionName = processDefinitionName;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Priority getProcessInstancePriority() {
-        return processInstancePriority;
-    }
-
-    public void setProcessInstancePriority(Priority processInstancePriority) {
-        this.processInstancePriority = processInstancePriority;
-    }
-
-    public String getWorkerGroup() {
-        return workerGroup;
-    }
-
-    public void setWorkerGroup(String workerGroup) {
-        this.workerGroup = workerGroup;
-    }
-
-    @Override
-    public String toString() {
-        return "Schedule{"
-                + "id=" + id
-                + ", processDefinitionId=" + processDefinitionId
-                + ", processDefinitionName='" + processDefinitionName + '\''
-                + ", projectName='" + projectName + '\''
-                + ", description='" + definitionDescription + '\''
-                + ", startTime=" + startTime
-                + ", endTime=" + endTime
-                + ", timezoneId='" + timezoneId + +'\''
-                + ", crontab='" + crontab + '\''
-                + ", failureStrategy=" + failureStrategy
-                + ", warningType=" + warningType
-                + ", createTime=" + createTime
-                + ", updateTime=" + updateTime
-                + ", userId=" + userId
-                + ", userName='" + userName + '\''
-                + ", releaseState=" + releaseState
-                + ", warningGroupId=" + warningGroupId
-                + ", processInstancePriority=" + processInstancePriority
-                + ", workerGroup='" + workerGroup + '\''
-                + '}';
-    }
-
-    public String getDefinitionDescription() {
-        return definitionDescription;
-    }
-
-    public void setDefinitionDescription(String definitionDescription) {
-        this.definitionDescription = definitionDescription;
-    }
+//    public int getWarningGroupId() {
+//        return warningGroupId;
+//    }
+//
+//    public void setWarningGroupId(int warningGroupId) {
+//        this.warningGroupId = warningGroupId;
+//    }
+//
+//    public Schedule() {
+//    }
+//
+//    public String getProjectName() {
+//        return projectName;
+//    }
+//
+//    public void setProjectName(String projectName) {
+//        this.projectName = projectName;
+//    }
+//
+//    public Date getStartTime() {
+//        return startTime;
+//    }
+//
+//    public void setStartTime(Date startTime) {
+//        this.startTime = startTime;
+//    }
+//
+//    public Date getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(Date endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    public String getTimezoneId() {
+//        return timezoneId;
+//    }
+//
+//    public void setTimezoneId(String timezoneId) {
+//        this.timezoneId = timezoneId;
+//    }
+//
+//    public String getCrontab() {
+//        return crontab;
+//    }
+//
+//    public void setCrontab(String crontab) {
+//        this.crontab = crontab;
+//    }
+//
+//    public FailureStrategy getFailureStrategy() {
+//        return failureStrategy;
+//    }
+//
+//    public void setFailureStrategy(FailureStrategy failureStrategy) {
+//        this.failureStrategy = failureStrategy;
+//    }
+//
+//    public WarningType getWarningType() {
+//        return warningType;
+//    }
+//
+//    public void setWarningType(WarningType warningType) {
+//        this.warningType = warningType;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//    public ReleaseState getReleaseState() {
+//        return releaseState;
+//    }
+//
+//    public void setReleaseState(ReleaseState releaseState) {
+//        this.releaseState = releaseState;
+//    }
+//
+//    public int getProcessDefinitionId() {
+//        return processDefinitionId;
+//    }
+//
+//    public void setProcessDefinitionId(int processDefinitionId) {
+//        this.processDefinitionId = processDefinitionId;
+//    }
+//
+//    public String getProcessDefinitionName() {
+//        return processDefinitionName;
+//    }
+//
+//    public void setProcessDefinitionName(String processDefinitionName) {
+//        this.processDefinitionName = processDefinitionName;
+//    }
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//    public String getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(String userId) {
+//        this.userId = userId;
+//    }
+//
+//    public String getUserName() {
+//        return userName;
+//    }
+//
+//    public void setUserName(String userName) {
+//        this.userName = userName;
+//    }
+//
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public Priority getProcessInstancePriority() {
+//        return processInstancePriority;
+//    }
+//
+//    public void setProcessInstancePriority(Priority processInstancePriority) {
+//        this.processInstancePriority = processInstancePriority;
+//    }
+//
+//    public String getWorkerGroup() {
+//        return workerGroup;
+//    }
+//
+//    public void setWorkerGroup(String workerGroup) {
+//        this.workerGroup = workerGroup;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "Schedule{"
+//                + "id=" + id
+//                + ", processDefinitionId=" + processDefinitionId
+//                + ", processDefinitionName='" + processDefinitionName + '\''
+//                + ", projectName='" + projectName + '\''
+//                + ", description='" + definitionDescription + '\''
+//                + ", startTime=" + startTime
+//                + ", endTime=" + endTime
+//                + ", timezoneId='" + timezoneId + +'\''
+//                + ", crontab='" + crontab + '\''
+//                + ", failureStrategy=" + failureStrategy
+//                + ", warningType=" + warningType
+//                + ", createTime=" + createTime
+//                + ", updateTime=" + updateTime
+//                + ", userId=" + userId
+//                + ", userName='" + userName + '\''
+//                + ", releaseState=" + releaseState
+//                + ", warningGroupId=" + warningGroupId
+//                + ", processInstancePriority=" + processInstancePriority
+//                + ", workerGroup='" + workerGroup + '\''
+//                + '}';
+//    }
+//
+//    public String getDefinitionDescription() {
+//        return definitionDescription;
+//    }
+//
+//    public void setDefinitionDescription(String definitionDescription) {
+//        this.definitionDescription = definitionDescription;
+//    }
 }

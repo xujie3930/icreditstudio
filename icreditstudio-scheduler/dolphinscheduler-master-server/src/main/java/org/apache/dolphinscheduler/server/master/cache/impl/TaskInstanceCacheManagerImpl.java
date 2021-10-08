@@ -17,8 +17,6 @@
 
 package org.apache.dolphinscheduler.server.master.cache.impl;
 
-import static org.apache.dolphinscheduler.common.Constants.CACHE_REFRESH_TIME_MILLIS;
-
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.remote.command.TaskExecuteAckCommand;
@@ -26,21 +24,21 @@ import org.apache.dolphinscheduler.remote.command.TaskExecuteResponseCommand;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.master.cache.TaskInstanceCacheManager;
 import org.apache.dolphinscheduler.service.process.ProcessService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static org.apache.dolphinscheduler.common.Constants.CACHE_REFRESH_TIME_MILLIS;
 
 /**
- *  taskInstance state manager
+ * taskInstance state manager
  */
 @Component
 public class TaskInstanceCacheManagerImpl implements TaskInstanceCacheManager {
@@ -48,7 +46,8 @@ public class TaskInstanceCacheManagerImpl implements TaskInstanceCacheManager {
     /**
      * taskInstance cache
      */
-    private Map<Integer,TaskInstance> taskInstanceCache = new ConcurrentHashMap<>();
+//    private Map<Integer,TaskInstance> taskInstanceCache = new ConcurrentHashMap<>();
+    private Map<String, TaskInstance> taskInstanceCache = new ConcurrentHashMap<>();
 
     /**
      * process service
@@ -82,7 +81,7 @@ public class TaskInstanceCacheManagerImpl implements TaskInstanceCacheManager {
      * @return taskInstance
      */
     @Override
-    public TaskInstance getByTaskInstanceId(Integer taskInstanceId) {
+    public TaskInstance getByTaskInstanceId(String taskInstanceId) {
         return taskInstanceCache.computeIfAbsent(taskInstanceId, k -> processService.findTaskInstanceById(taskInstanceId));
     }
 
@@ -134,17 +133,18 @@ public class TaskInstanceCacheManagerImpl implements TaskInstanceCacheManager {
 
     /**
      * remove taskInstance by taskInstanceId
+     *
      * @param taskInstanceId taskInstanceId
      */
     @Override
-    public void removeByTaskInstanceId(Integer taskInstanceId) {
+    public void removeByTaskInstanceId(String taskInstanceId) {
         taskInstanceCache.remove(taskInstanceId);
     }
 
     class RefreshTaskInstanceTimerTask extends TimerTask {
         @Override
         public void run() {
-            for (Entry<Integer, TaskInstance> taskInstanceEntry : taskInstanceCache.entrySet()) {
+            for (Entry<String, TaskInstance> taskInstanceEntry : taskInstanceCache.entrySet()) {
                 TaskInstance taskInstance = processService.findTaskInstanceById(taskInstanceEntry.getKey());
                 if (null != taskInstance && taskInstance.getState() == ExecutionStatus.NEED_FAULT_TOLERANCE) {
                     taskInstanceCache.computeIfPresent(taskInstanceEntry.getKey(), (k, v) -> taskInstance);

@@ -105,10 +105,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> insertSchedule(User loginUser, String projectName,
-                                              Integer processDefineId,
+                                              String processDefineId,
                                               String schedule,
                                               WarningType warningType,
-                                              int warningGroupId,
+                                              String warningGroupId,
                                               FailureStrategy failureStrategy,
                                               Priority processInstancePriority,
                                               String workerGroup) {
@@ -125,7 +125,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         // check work flow define release state
         ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
-        result = executorService.checkProcessDefinitionValid(processDefinition, processDefineId);
+        result = executorService.checkProcessDefinitionValid(processDefinition, processDefinition.getCode());
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
             return result;
         }
@@ -183,10 +183,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> myInsertSchedule(String startTime, String endTime, User loginUser, String projectName,
-                                                Integer processDefineId,
+                                                String processDefineId,
                                                 String schedule,
                                                 WarningType warningType,
-                                                int warningGroupId,
+                                                String warningGroupId,
                                                 FailureStrategy failureStrategy,
                                                 String receivers,
                                                 String receiversCc,
@@ -205,7 +205,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         // check work flow define release state
         ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
-        result = executorService.checkProcessDefinitionValid(processDefinition, processDefineId);
+        result = executorService.checkProcessDefinitionValid(processDefinition, processDefinition.getCode());
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
             return result;
         }
@@ -287,10 +287,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> updateSchedule(User loginUser,
                                               String projectName,
-                                              Integer id,
+                                              String id,
                                               String scheduleExpression,
                                               WarningType warningType,
-                                              int warningGroupId,
+                                              String warningGroupId,
                                               FailureStrategy failureStrategy,
                                               ReleaseState scheduleStatus,
                                               Priority processInstancePriority,
@@ -389,7 +389,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     @Transactional(rollbackFor = RuntimeException.class)
     public Map<String, Object> setScheduleState(User loginUser,
                                                 String projectName,
-                                                Integer id,
+                                                String id,
                                                 ReleaseState scheduleStatus) {
         Map<String, Object> result = new HashMap<>();
 
@@ -429,7 +429,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
                 return result;
             }
             // check sub process definition release state
-            List<Integer> subProcessDefineIds = new ArrayList<>();
+            List<String> subProcessDefineIds = new ArrayList<>();
             processService.recurseFindSubProcessId(scheduleObj.getProcessDefinitionId(), subProcessDefineIds);
             Integer[] idArray = subProcessDefineIds.toArray(new Integer[subProcessDefineIds.size()]);
             if (!subProcessDefineIds.isEmpty()) {
@@ -499,7 +499,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
      * @return schedule list page
      */
     @Override
-    public Map<String, Object> querySchedule(User loginUser, String projectName, Integer processDefineId, String searchVal, Integer pageNo, Integer pageSize) {
+    public Map<String, Object> querySchedule(User loginUser, String projectName, String processDefineId, String searchVal, Integer pageNo, Integer pageSize) {
 
         HashMap<String, Object> result = new HashMap<>();
 
@@ -570,7 +570,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
      * @throws RuntimeException runtime exception
      */
     @Override
-    public void deleteSchedule(String projectId, int scheduleId) {
+    public void deleteSchedule(String projectId, String scheduleId) {
         logger.info("delete schedules of project id:{}, schedule id:{}", projectId, scheduleId);
 
         String jobName = QuartzExecutors.buildJobName(scheduleId);
@@ -609,7 +609,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
      * @return delete result code
      */
     @Override
-    public Map<String, Object> deleteScheduleById(User loginUser, String projectName, Integer scheduleId) {
+    public Map<String, Object> deleteScheduleById(User loginUser, String projectName, String scheduleId) {
 
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);

@@ -16,6 +16,7 @@
  */
 package org.apache.dolphinscheduler.common.task;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.Direct;
 import org.apache.dolphinscheduler.common.process.Property;
 import org.apache.dolphinscheduler.common.process.ResourceInfo;
@@ -33,9 +34,12 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import javax.jdo.annotations.DatastoreIdentity;
+
 /**
  * job params related class
  */
+@Data
 public abstract class AbstractParameters implements IParameters {
 
     @Override
@@ -54,18 +58,18 @@ public abstract class AbstractParameters implements IParameters {
      */
     public List<Property> varPool;
 
-    /**
-     * get local parameters list
-     *
-     * @return Property list
-     */
-    public List<Property> getLocalParams() {
-        return localParams;
-    }
-
-    public void setLocalParams(List<Property> localParams) {
-        this.localParams = localParams;
-    }
+//    /**
+//     * get local parameters list
+//     *
+//     * @return Property list
+//     */
+//    public List<Property> getLocalParams() {
+//        return localParams;
+//    }
+//
+//    public void setLocalParams(List<Property> localParams) {
+//        this.localParams = localParams;
+//    }
 
     /**
      * get local parameters map
@@ -100,9 +104,9 @@ public abstract class AbstractParameters implements IParameters {
         return null;
     }
 
-    public List<Property> getVarPool() {
-        return varPool;
-    }
+//    public List<Property> getVarPool() {
+//        return varPool;
+//    }
 
     public void setVarPool(String varPool) {
         if (StringUtils.isEmpty(varPool)) {

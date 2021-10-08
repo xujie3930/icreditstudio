@@ -17,38 +17,39 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 /**
- *  execute task response command
+ * execute task response command
  */
+@Data
 public class TaskExecuteResponseCommand implements Serializable {
+//
+//    public TaskExecuteResponseCommand() {
+//    }
 
-    public TaskExecuteResponseCommand() {
-    }
-
-    public TaskExecuteResponseCommand(int taskInstanceId) {
+    public TaskExecuteResponseCommand(String taskInstanceId) {
         this.taskInstanceId = taskInstanceId;
     }
 
     /**
-     *  task instance id
+     * task instance id
      */
-    private int taskInstanceId;
+    private String taskInstanceId;
 
     /**
-     *  status
+     * status
      */
     private int status;
 
 
     /**
-     *  end time
+     * end time
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
@@ -69,56 +70,57 @@ public class TaskExecuteResponseCommand implements Serializable {
      */
     private String varPool;
 
-    public void setVarPool(String varPool) {
-        this.varPool = varPool;
-    }
+//    public void setVarPool(String varPool) {
+//        this.varPool = varPool;
+//    }
+//
+//    public String getVarPool() {
+//        return varPool;
+//    }
+//
+//    public int getTaskInstanceId() {
+//        return taskInstanceId;
+//    }
 
-    public String getVarPool() {
-        return varPool;
-    }
-    
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public int getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(int processId) {
-        this.processId = processId;
-    }
-
-    public String getAppIds() {
-        return appIds;
-    }
-
-    public void setAppIds(String appIds) {
-        this.appIds = appIds;
-    }
+//    public void setTaskInstanceId(int taskInstanceId) {
+//        this.taskInstanceId = taskInstanceId;
+//    }
+//
+//    public int getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(int status) {
+//        this.status = status;
+//    }
+//
+//    public Date getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(Date endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    public int getProcessId() {
+//        return processId;
+//    }
+//
+//    public void setProcessId(int processId) {
+//        this.processId = processId;
+//    }
+//
+//    public String getAppIds() {
+//        return appIds;
+//    }
+//
+//    public void setAppIds(String appIds) {
+//        this.appIds = appIds;
+//    }
 
     /**
      * package response command
+     *
      * @return command
      */
     public Command convert2Command() {
@@ -129,14 +131,14 @@ public class TaskExecuteResponseCommand implements Serializable {
         return command;
     }
 
-    @Override
-    public String toString() {
-        return "TaskExecuteResponseCommand{"
-                + "taskInstanceId=" + taskInstanceId
-                + ", status=" + status
-                + ", endTime=" + endTime
-                + ", processId=" + processId
-                + ", appIds='" + appIds + '\''
-                + '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "TaskExecuteResponseCommand{"
+//                + "taskInstanceId=" + taskInstanceId
+//                + ", status=" + status
+//                + ", endTime=" + endTime
+//                + ", processId=" + processId
+//                + ", appIds='" + appIds + '\''
+//                + '}';
+//    }
 }
