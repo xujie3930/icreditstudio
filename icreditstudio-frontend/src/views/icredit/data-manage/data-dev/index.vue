@@ -6,7 +6,12 @@
 <template>
   <div class="data-develop w100">
     <aside class="data-develop-aside">
-      <el-select size="mini" class="top-select" placeholder="请选择">
+      <el-select
+        v-model="value1"
+        size="mini"
+        class="top-select"
+        placeholder="请选择"
+      >
         <el-option
           v-for="item in [{ label: 'sss', value: 'ssss' }]"
           :key="item.value"
@@ -25,6 +30,7 @@
           placeholder="请输入文件夹或工作流名称"
           size="mini"
           :loading="searchLoading"
+          v-model="value"
         >
           <el-option
             v-for="item in [{ tableName: 'sss' }]"
@@ -51,42 +57,25 @@
       <el-tree class="tree" :data="data"></el-tree>
     </aside>
     <section class="data-develop-section">
-      <el-tabs closable type="card">
-        <el-tab-pane label="用户管理">用户管理</el-tab-pane>
-        <el-tab-pane label="配置管理">配置管理</el-tab-pane>
-        <el-tab-pane label="角色管理">角色管理</el-tab-pane>
-        <el-tab-pane label="定时任务补偿">定时任务补偿</el-tab-pane>
-      </el-tabs>
-
-      <el-dropdown class="tabs-options">
-        <div class="more">
-          <i class="el-icon-caret-bottom"></i>
-        </div>
-        <el-dropdown-menu slot="dropdown" class="tabs-more">
-          <el-dropdown-item>
-            关闭其他
-          </el-dropdown-item>
-          <el-dropdown-item>
-            关闭左侧
-          </el-dropdown-item>
-          <el-dropdown-item>
-            关闭右侧
-          </el-dropdown-item>
-          <el-dropdown-item>
-            关闭全部
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <Tabs>
+        <TabDetail slot="panel" />
+      </Tabs>
     </section>
   </div>
 </template>
 
 <script>
+import Tabs from '@/views/icredit/components/tabs'
+import TabDetail from './detail'
+
 export default {
+  components: { Tabs, TabDetail },
+
   data() {
     return {
       name: '',
       value: '',
+      value1: '',
       searchLoading: false,
       data: [
         {
@@ -247,22 +236,6 @@ export default {
   &-section {
     position: relative;
     flex: 1;
-
-    .tabs-options {
-      position: absolute;
-      top: 0;
-      right: 0;
-
-      .more {
-        text-align: center;
-        width: 35px;
-        height: 30px;
-        line-height: 30px;
-        background: rgba(255, 255, 255, 0.65);
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        cursor: pointer;
-      }
-    }
   }
 }
 </style>
