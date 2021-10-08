@@ -50,5 +50,5 @@ public interface AccessTokenMapper extends BaseMapper<AccessToken> {
      * @param userId userId
      * @return delete result
      */
-    int deleteAccessTokenByUserId(@Param("userId") int userId);
+    int deleteAccessTokenByUserId(@Param("userId") String userId);
 }

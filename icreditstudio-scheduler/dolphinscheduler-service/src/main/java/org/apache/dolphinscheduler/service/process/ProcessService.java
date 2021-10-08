@@ -17,33 +17,11 @@
 
 package org.apache.dolphinscheduler.service.process;
 
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_END_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_COMPLEMENT_DATA_START_DATE;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_EMPTY_SUB_PROCESS;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_FATHER_PARAMS;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_RECOVER_PROCESS_ID_STRING;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_SUB_PROCESS;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_SUB_PROCESS_DEFINE_ID;
-import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_SUB_PROCESS_PARENT_INSTANCE_ID;
-import static org.apache.dolphinscheduler.common.Constants.LOCAL_PARAMS;
-import static org.apache.dolphinscheduler.common.Constants.YYYY_MM_DD_HH_MM_SS;
-
-import static java.util.stream.Collectors.toSet;
-
+import com.cronutils.model.Cron;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.AuthorizationType;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.ConditionType;
-import org.apache.dolphinscheduler.common.enums.CycleEnum;
-import org.apache.dolphinscheduler.common.enums.Direct;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Flag;
-import org.apache.dolphinscheduler.common.enums.ReleaseState;
-import org.apache.dolphinscheduler.common.enums.ResourceType;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.TimeoutFlag;
-import org.apache.dolphinscheduler.common.enums.WarningType;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.graph.DAG;
 import org.apache.dolphinscheduler.common.model.DateInterval;
 import org.apache.dolphinscheduler.common.model.PreviousTaskNode;
@@ -55,85 +33,27 @@ import org.apache.dolphinscheduler.common.process.ResourceInfo;
 import org.apache.dolphinscheduler.common.task.AbstractParameters;
 import org.apache.dolphinscheduler.common.task.TaskTimeoutParameter;
 import org.apache.dolphinscheduler.common.task.subprocess.SubProcessParameters;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.ParameterUtils;
-import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils.SnowFlakeException;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.common.utils.TaskParametersUtils;
-import org.apache.dolphinscheduler.dao.entity.Command;
-import org.apache.dolphinscheduler.dao.entity.CycleDependency;
-import org.apache.dolphinscheduler.dao.entity.DataSource;
-import org.apache.dolphinscheduler.dao.entity.ErrorCommand;
-import org.apache.dolphinscheduler.dao.entity.ProcessData;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinitionLog;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstanceMap;
-import org.apache.dolphinscheduler.dao.entity.ProcessTaskRelation;
-import org.apache.dolphinscheduler.dao.entity.ProcessTaskRelationLog;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.ProjectUser;
-import org.apache.dolphinscheduler.dao.entity.Resource;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinitionLog;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.UdfFunc;
-import org.apache.dolphinscheduler.dao.entity.User;
-import org.apache.dolphinscheduler.dao.mapper.CommandMapper;
-import org.apache.dolphinscheduler.dao.mapper.DataSourceMapper;
-import org.apache.dolphinscheduler.dao.mapper.ErrorCommandMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionLogMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessTaskRelationLogMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessTaskRelationMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
-import org.apache.dolphinscheduler.dao.mapper.ResourceMapper;
-import org.apache.dolphinscheduler.dao.mapper.ResourceUserMapper;
-import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
-import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionLogMapper;
-import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionMapper;
-import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
-import org.apache.dolphinscheduler.dao.mapper.TenantMapper;
-import org.apache.dolphinscheduler.dao.mapper.UdfFuncMapper;
-import org.apache.dolphinscheduler.dao.mapper.UserMapper;
+import org.apache.dolphinscheduler.dao.entity.*;
+import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.dao.utils.DagHelper;
 import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.service.exceptions.ServiceException;
 import org.apache.dolphinscheduler.service.log.LogClientService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.quartz.CronExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cronutils.model.Cron;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toSet;
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * process relative dao that some mappers in this.
@@ -149,70 +69,70 @@ public class ProcessService {
             ExecutionStatus.READY_PAUSE.ordinal(),
             ExecutionStatus.READY_STOP.ordinal()};
 
-    @Autowired
-    private UserMapper userMapper;
+//    @javax.annotation.Resource
+//    private UserMapper userMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessDefinitionMapper processDefineMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessDefinitionLogMapper processDefineLogMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessInstanceMapper processInstanceMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private DataSourceMapper dataSourceMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessInstanceMapMapper processInstanceMapMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private TaskInstanceMapper taskInstanceMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private CommandMapper commandMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ScheduleMapper scheduleMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private UdfFuncMapper udfFuncMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ResourceMapper resourceMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ResourceUserMapper resourceUserMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ErrorCommandMapper errorCommandMapper;
 
-    @Autowired
-    private TenantMapper tenantMapper;
+//    @javax.annotation.Resource
+//    private TenantMapper tenantMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProjectMapper projectMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private TaskDefinitionMapper taskDefinitionMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private TaskDefinitionLogMapper taskDefinitionLogMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessTaskRelationMapper processTaskRelationMapper;
 
-    @Autowired
+    @javax.annotation.Resource
     private ProcessTaskRelationLogMapper processTaskRelationLogMapper;
 
     /**
      * handle Command (construct ProcessInstance from Command) , wrapped in transaction
      *
-     * @param logger logger
-     * @param host host
+     * @param logger         logger
+     * @param host           host
      * @param validThreadNum validThreadNum
-     * @param command found command
+     * @param command        found command
      * @return process instance
      */
     @Transactional(rollbackFor = Exception.class)
@@ -252,7 +172,7 @@ public class ProcessService {
     /**
      * set process waiting thread
      *
-     * @param command command
+     * @param command         command
      * @param processInstance processInstance
      * @return process instance
      */
@@ -270,7 +190,7 @@ public class ProcessService {
     /**
      * check thread num
      *
-     * @param command command
+     * @param command        command
      * @param validThreadNum validThreadNum
      * @return if thread is enough
      */
@@ -481,7 +401,7 @@ public class ProcessService {
      * recursive query sub process definition id by parent id.
      *
      * @param parentId parentId
-     * @param ids ids
+     * @param ids      ids
      */
     public void recurseFindSubProcessId(int parentId, List<Integer> ids) {
         List<TaskDefinition> taskNodeList = this.getTaskNodeListByDefinitionId(parentId);
@@ -508,7 +428,7 @@ public class ProcessService {
      * create recovery waiting thread  command and delete origin command at the same time.
      * if the recovery command is exists, only update the field update_time
      *
-     * @param originCommand originCommand
+     * @param originCommand   originCommand
      * @param processInstance processInstance
      */
     public void createRecoveryWaitingThreadCommand(Command originCommand, ProcessInstance processInstance) {
@@ -529,6 +449,7 @@ public class ProcessService {
                     processInstance.getTaskDependType(),
                     processInstance.getFailureStrategy(),
                     processInstance.getExecutorId(),
+                    "",
                     processInstance.getProcessDefinition().getId(),
                     JSONUtils.toJsonString(cmdParam),
                     processInstance.getWarningType(),
@@ -560,7 +481,7 @@ public class ProcessService {
     /**
      * get schedule time from command
      *
-     * @param command command
+     * @param command  command
      * @param cmdParam cmdParam map
      * @return date
      */
@@ -576,8 +497,8 @@ public class ProcessService {
      * generate a new work process instance from command.
      *
      * @param processDefinition processDefinition
-     * @param command command
-     * @param cmdParam cmdParam map
+     * @param command           command
+     * @param cmdParam          cmdParam map
      * @return process instance
      */
     private ProcessInstance generateNewProcessInstance(ProcessDefinition processDefinition,
@@ -656,37 +577,37 @@ public class ProcessService {
         }
     }
 
-    /**
-     * get process tenant
-     * there is tenant id in definition, use the tenant of the definition.
-     * if there is not tenant id in the definiton or the tenant not exist
-     * use definition creator's tenant.
-     *
-     * @param tenantId tenantId
-     * @param userId userId
-     * @return tenant
-     */
-    public Tenant getTenantForProcess(int tenantId, int userId) {
-        Tenant tenant = null;
-        if (tenantId >= 0) {
-            tenant = tenantMapper.queryById(tenantId);
-        }
-
-        if (userId == 0) {
-            return null;
-        }
-
-        if (tenant == null) {
-            User user = userMapper.selectById(userId);
-            tenant = tenantMapper.queryById(user.getTenantId());
-        }
-        return tenant;
-    }
+//    /**
+//     * get process tenant
+//     * there is tenant id in definition, use the tenant of the definition.
+//     * if there is not tenant id in the definiton or the tenant not exist
+//     * use definition creator's tenant.
+//     *
+//     * @param tenantId tenantId
+//     * @param userId userId
+//     * @return tenant
+//     */
+//    public Tenant getTenantForProcess(int tenantId, int userId) {
+//        Tenant tenant = null;
+//        if (tenantId >= 0) {
+//            tenant = tenantMapper.queryById(tenantId);
+//        }
+//
+//        if (userId == 0) {
+//            return null;
+//        }
+//
+//        if (tenant == null) {
+//            User user = userMapper.selectById(userId);
+//            tenant = tenantMapper.queryById(user.getTenantId());
+//        }
+//        return tenant;
+//    }
 
     /**
      * check command parameters is valid
      *
-     * @param command command
+     * @param command  command
      * @param cmdParam cmdParam map
      * @return whether command param is valid
      */
@@ -706,7 +627,7 @@ public class ProcessService {
      * construct process instance according to one command.
      *
      * @param command command
-     * @param host host
+     * @param host    host
      * @return process instance
      */
     private ProcessInstance constructProcessInstance(Command command, String host) {
@@ -776,7 +697,7 @@ public class ProcessService {
             }
         } else {
             // generate one new process instance
-            if(commandType == CommandType.SCHEDULER){
+            if (commandType == CommandType.SCHEDULER) {
                 processInstance = processInstanceMapper.queryByProcessDefineCode(processDefinition.getCode(), 1).get(0);
                 processInstance.setState(ExecutionStatus.RUNNING_EXECUTION);
                 processInstance.setRecovery(Flag.NO);
@@ -793,7 +714,7 @@ public class ProcessService {
 
                 // schedule time
                 Date scheduleTime = getScheduleTime(command, cmdParam);
-                if(scheduleTime != null){
+                if (scheduleTime != null) {
                     processInstance.setScheduleTime(scheduleTime);
                 }
                 processInstance.setCommandStartTime(command.getStartTime());
@@ -816,15 +737,15 @@ public class ProcessService {
                 processInstance.setTenantId(processDefinition.getTenantId());
                 processInstance.setProcessDefinitionId(command.getProcessDefinitionId());
 
-                Map<String,Object> paramMap = new HashMap<>();
-                paramMap.put("process_instance_id",processInstance.getId());
+                Map<String, Object> paramMap = new HashMap<>();
+                paramMap.put("process_instance_id", processInstance.getId());
                 List<TaskInstance> taskInstanceList = taskInstanceMapper.selectByMap(paramMap);
-                if(taskInstanceList.size() > 0) {
+                if (taskInstanceList.size() > 0) {
                     TaskInstance taskInstance = taskInstanceList.get(0);
                     taskInstance.setState(ExecutionStatus.SUBMITTED_SUCCESS);
                     taskInstanceMapper.updateById(taskInstance);
                 }
-            }else {
+            } else {
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
         }
@@ -923,7 +844,7 @@ public class ProcessService {
      * return complement data if the process start with complement data
      *
      * @param processInstance processInstance
-     * @param command command
+     * @param command         command
      * @return command type
      */
     private CommandType getCommandTypeIfComplement(ProcessInstance processInstance, Command command) {
@@ -938,8 +859,8 @@ public class ProcessService {
      * initialize complement data parameters
      *
      * @param processDefinition processDefinition
-     * @param processInstance processInstance
-     * @param cmdParam cmdParam
+     * @param processInstance   processInstance
+     * @param cmdParam          cmdParam
      */
     private void initComplementDataParam(ProcessDefinition processDefinition,
                                          ProcessInstance processInstance,
@@ -1011,7 +932,7 @@ public class ProcessService {
      * only the keys doesn't in sub process global would be joined.
      *
      * @param parentGlobalParams parentGlobalParams
-     * @param subGlobalParams subGlobalParams
+     * @param subGlobalParams    subGlobalParams
      * @return global params join
      */
     private String joinGlobalParams(String parentGlobalParams, String subGlobalParams) {
@@ -1081,7 +1002,7 @@ public class ProcessService {
      * set map {parent instance id, task instance id, 0(child instance id)}
      *
      * @param parentInstance parentInstance
-     * @param parentTask parentTask
+     * @param parentTask     parentTask
      * @return process instance map
      */
     private ProcessInstanceMap setProcessInstanceMap(ProcessInstance parentInstance, TaskInstance parentTask) {
@@ -1110,7 +1031,7 @@ public class ProcessService {
      * find previous task work process map.
      *
      * @param parentProcessInstance parentProcessInstance
-     * @param parentTask parentTask
+     * @param parentTask            parentTask
      * @return process instance map
      */
     private ProcessInstanceMap findPreviousTaskProcessMap(ProcessInstance parentProcessInstance,
@@ -1136,7 +1057,7 @@ public class ProcessService {
      * create sub work process command
      *
      * @param parentProcessInstance parentProcessInstance
-     * @param task task
+     * @param task                  task
      */
     public void createSubWorkProcess(ProcessInstance parentProcessInstance, TaskInstance task) {
         if (!task.isSubProcess()) {
@@ -1220,6 +1141,7 @@ public class ProcessService {
                 TaskDependType.TASK_POST,
                 parentProcessInstance.getFailureStrategy(),
                 parentProcessInstance.getExecutorId(),
+                "",
                 childDefineId,
                 processParam,
                 parentProcessInstance.getWarningType(),
@@ -1259,7 +1181,7 @@ public class ProcessService {
      * update sub process definition
      *
      * @param parentProcessInstance parentProcessInstance
-     * @param childDefinitionId childDefinitionId
+     * @param childDefinitionId     childDefinitionId
      */
     private void updateSubProcessDefinitionByParent(ProcessInstance parentProcessInstance, int childDefinitionId) {
         ProcessDefinition fatherDefinition = this.findProcessDefinition(parentProcessInstance.getProcessDefinitionCode(),
@@ -1274,7 +1196,7 @@ public class ProcessService {
     /**
      * submit task to mysql
      *
-     * @param taskInstance taskInstance
+     * @param taskInstance    taskInstance
      * @param processInstance processInstance
      * @return task instance
      */
@@ -1327,7 +1249,7 @@ public class ProcessService {
      * return stop if work process state is ready stop
      * if all of above are not satisfied, return submit success
      *
-     * @param taskInstance taskInstance
+     * @param taskInstance         taskInstance
      * @param processInstanceState processInstanceState
      * @return process instance state
      */
@@ -1486,7 +1408,7 @@ public class ProcessService {
      * get id list by task state
      *
      * @param instanceId instanceId
-     * @param state state
+     * @param state      state
      * @return task instance states
      */
     public List<Integer> findTaskIdByInstanceState(int instanceId, ExecutionStatus state) {
@@ -1541,7 +1463,7 @@ public class ProcessService {
      * find work process map by parent process id and parent task id.
      *
      * @param parentWorkProcessId parentWorkProcessId
-     * @param parentTaskId parentTaskId
+     * @param parentTaskId        parentTaskId
      * @return process instance map
      */
     public ProcessInstanceMap findWorkProcessMapByParent(Integer parentWorkProcessId, Integer parentTaskId) {
@@ -1563,7 +1485,7 @@ public class ProcessService {
      * find sub process instance
      *
      * @param parentProcessId parentProcessId
-     * @param parentTaskId parentTaskId
+     * @param parentTaskId    parentTaskId
      * @return process instance
      */
     public ProcessInstance findSubProcessInstance(Integer parentProcessId, Integer parentTaskId) {
@@ -1595,12 +1517,12 @@ public class ProcessService {
     /**
      * change task state
      *
-     * @param state state
-     * @param startTime startTime
-     * @param host host
+     * @param state       state
+     * @param startTime   startTime
+     * @param host        host
      * @param executePath executePath
-     * @param logPath logPath
-     * @param taskInstId taskInstId
+     * @param logPath     logPath
+     * @param taskInstId  taskInstId
      */
     public void changeTaskState(TaskInstance taskInstance, ExecutionStatus state, Date startTime, String host,
                                 String executePath,
@@ -1627,10 +1549,10 @@ public class ProcessService {
     /**
      * change task state
      *
-     * @param state state
-     * @param endTime endTime
+     * @param state      state
+     * @param endTime    endTime
      * @param taskInstId taskInstId
-     * @param varPool varPool
+     * @param varPool    varPool
      */
     public void changeTaskState(TaskInstance taskInstance, ExecutionStatus state,
                                 Date endTime,
@@ -1649,6 +1571,7 @@ public class ProcessService {
 
     /**
      * for show in page of taskInstance
+     *
      * @param taskInstance
      */
     public void changeOutParam(TaskInstance taskInstance) {
@@ -1777,7 +1700,7 @@ public class ProcessService {
      * update process instance state by id
      *
      * @param processInstanceId processInstanceId
-     * @param executionStatus executionStatus
+     * @param executionStatus   executionStatus
      * @return update process result
      */
     public int updateProcessInstanceState(Integer processInstanceId, ExecutionStatus executionStatus) {
@@ -1814,7 +1737,7 @@ public class ProcessService {
     /**
      * find tenant code by resource name
      *
-     * @param resName resource name
+     * @param resName      resource name
      * @param resourceType resource type
      * @return tenant code
      */
@@ -1826,16 +1749,19 @@ public class ProcessService {
         if (CollectionUtils.isEmpty(resourceList)) {
             return StringUtils.EMPTY;
         }
-        int userId = resourceList.get(0).getUserId();
-        User user = userMapper.selectById(userId);
-        if (Objects.isNull(user)) {
-            return StringUtils.EMPTY;
-        }
-        Tenant tenant = tenantMapper.selectById(user.getTenantId());
-        if (Objects.isNull(tenant)) {
-            return StringUtils.EMPTY;
-        }
-        return tenant.getTenantCode();
+        String userId = resourceList.get(0).getUserId();
+//        User user = userMapper.selectById(userId);
+//        if (Objects.isNull(user)) {
+//            return StringUtils.EMPTY;
+//        }
+        //TODO 换成枚举获取
+        String tenantCode = null;
+//        Tenant tenant = null;
+//        Tenant tenant = tenantMapper.selectById(user.getTenantId());
+//        if (Objects.isNull(tenant)) {
+//            return StringUtils.EMPTY;
+//        }
+        return tenantCode;
     }
 
     /**
@@ -1852,9 +1778,9 @@ public class ProcessService {
     /**
      * get dependency cycle by work process define id and scheduler fire time
      *
-     * @param masterId masterId
+     * @param masterId            masterId
      * @param processDefinitionId processDefinitionId
-     * @param scheduledFireTime the time the task schedule is expected to trigger
+     * @param scheduledFireTime   the time the task schedule is expected to trigger
      * @return CycleDependency
      * @throws Exception if error throws Exception
      */
@@ -1867,8 +1793,8 @@ public class ProcessService {
     /**
      * get dependency cycle list by work process define id list and scheduler fire time
      *
-     * @param masterId masterId
-     * @param ids ids
+     * @param masterId          masterId
+     * @param ids               ids
      * @param scheduledFireTime the time the task schedule is expected to trigger
      * @return CycleDependency list
      * @throws Exception if error throws Exception
@@ -1937,7 +1863,7 @@ public class ProcessService {
      * find last scheduler process instance in the date interval
      *
      * @param definitionCode definitionCode
-     * @param dateInterval dateInterval
+     * @param dateInterval   dateInterval
      * @return process instance
      */
     public ProcessInstance findLastSchedulerProcessInterval(Long definitionCode, DateInterval dateInterval) {
@@ -1950,7 +1876,7 @@ public class ProcessService {
      * find last manual process instance interval
      *
      * @param definitionCode process definition code
-     * @param dateInterval dateInterval
+     * @param dateInterval   dateInterval
      * @return process instance
      */
     public ProcessInstance findLastManualProcessInterval(Long definitionCode, DateInterval dateInterval) {
@@ -1963,8 +1889,8 @@ public class ProcessService {
      * find last running process instance
      *
      * @param definitionCode process definition code
-     * @param startTime start time
-     * @param endTime end time
+     * @param startTime      start time
+     * @param endTime        end time
      * @return process instance
      */
     public ProcessInstance findLastRunningProcess(Long definitionCode, Date startTime, Date endTime) {
@@ -1974,25 +1900,25 @@ public class ProcessService {
                 stateArray);
     }
 
-    /**
-     * query user queue by process instance id
-     *
-     * @param processInstanceId processInstanceId
-     * @return queue
-     */
-    public String queryUserQueueByProcessInstanceId(int processInstanceId) {
-
-        String queue = "";
-        ProcessInstance processInstance = processInstanceMapper.selectById(processInstanceId);
-        if (processInstance == null) {
-            return queue;
-        }
-        User executor = userMapper.selectById(processInstance.getExecutorId());
-        if (executor != null) {
-            queue = executor.getQueue();
-        }
-        return queue;
-    }
+//    /**
+//     * query user queue by process instance id
+//     *
+//     * @param processInstanceId processInstanceId
+//     * @return queue
+//     */
+//    public String queryUserQueueByProcessInstanceId(int processInstanceId) {
+//
+//        String queue = "";
+//        ProcessInstance processInstance = processInstanceMapper.selectById(processInstanceId);
+//        if (processInstance == null) {
+//            return queue;
+//        }
+//        User executor = userMapper.selectById(processInstance.getExecutorId());
+//        if (executor != null) {
+//            queue = executor.getQueue();
+//        }
+//        return queue;
+//    }
 
     /**
      * query project name and user name by processInstanceId.
@@ -2032,7 +1958,7 @@ public class ProcessService {
      * @param userId userId
      * @return project list
      */
-    public List<Project> getProjectListHavePerm(int userId) {
+    public List<Project> getProjectListHavePerm(String userId) {
         List<Project> createProjects = projectMapper.queryProjectCreatedByUser(userId);
         List<Project> authedProjects = projectMapper.queryAuthedProjectListByUserId(userId);
 
@@ -2052,7 +1978,7 @@ public class ProcessService {
      * @param userId userId
      * @return project codes
      */
-    public List<Long> getProjectIdListHavePerm(int userId) {
+    public List<Long> getProjectIdListHavePerm(String userId) {
 
         List<Long> projectCodeList = new ArrayList<>();
         for (Project project : getProjectListHavePerm(userId)) {
@@ -2064,11 +1990,11 @@ public class ProcessService {
     /**
      * list unauthorized udf function
      *
-     * @param userId user id
+     * @param userId     user id
      * @param needChecks data source id array
      * @return unauthorized udf function list
      */
-    public <T> List<T> listUnauthorized(int userId, T[] needChecks, AuthorizationType authorizationType) {
+    public <T> List<T> listUnauthorized(String userId, T[] needChecks, AuthorizationType authorizationType) {
         List<T> resultList = new ArrayList<>();
 
         if (Objects.nonNull(needChecks) && needChecks.length > 0) {
@@ -2106,15 +2032,15 @@ public class ProcessService {
         return resultList;
     }
 
-    /**
-     * get user by user id
-     *
-     * @param userId user id
-     * @return User
-     */
-    public User getUserById(int userId) {
-        return userMapper.selectById(userId);
-    }
+//    /**
+//     * get user by user id
+//     *
+//     * @param userId user id
+//     * @return User
+//     */
+//    public User getUserById(int userId) {
+//        return userMapper.selectById(userId);
+//    }
 
     /**
      * get resource by resource id
@@ -2587,7 +2513,7 @@ public class ProcessService {
      * @param ownResources own resources
      * @param userId       userId
      */
-    private void addAuthorizedResources(List<Resource> ownResources, int userId) {
+    private void addAuthorizedResources(List<Resource> ownResources, String userId) {
         List<Integer> relationResourceIds = resourceUserMapper.queryResourcesIdListByUserIdAndPerm(userId, 7);
         List<Resource> relationResources = CollectionUtils.isNotEmpty(relationResourceIds) ? resourceMapper.queryResourceListById(relationResourceIds) : new ArrayList<>();
         ownResources.addAll(relationResources);

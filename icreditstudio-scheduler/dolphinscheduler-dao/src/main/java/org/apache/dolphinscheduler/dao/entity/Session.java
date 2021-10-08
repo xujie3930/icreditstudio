@@ -38,7 +38,7 @@ public class Session {
     /**
      * user id
      */
-    private int userId;
+    private String userId;
 
     /**
      * last login time
@@ -59,11 +59,11 @@ public class Session {
         this.id = id;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -118,10 +118,6 @@ public class Session {
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + userId;
-        result = 31 * result + lastLoginTime.hashCode();
-        result = 31 * result + ip.hashCode();
-        return result;
+        return super.hashCode();
     }
 }

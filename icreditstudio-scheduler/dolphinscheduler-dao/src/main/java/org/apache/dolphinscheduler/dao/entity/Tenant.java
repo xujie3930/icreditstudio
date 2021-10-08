@@ -28,13 +28,13 @@ import java.util.Objects;
 /**
  * tenant
  */
-@TableName("t_ds_tenant")
+//@TableName("t_ds_tenant")
 public class Tenant {
 
     /**
      * id
      */
-    @TableId(value="id", type=IdType.AUTO)
+//    @TableId(value="id", type=IdType.AUTO)
     private int id;
 
     /**

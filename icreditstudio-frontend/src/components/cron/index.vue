@@ -130,17 +130,21 @@ export default {
 
   methods: {
     updateVal() {
-      if (!this.value) {
-        return
-      }
-      const arrays = this.value.split(' ')
-      this.sVal = arrays[0]
-      this.mVal = arrays[1]
-      this.hVal = arrays[2]
-      this.dVal = arrays[3]
-      this.monthVal = arrays[4]
-      this.weekVal = arrays[5]
-      this.yearVal = arrays[6]
+      const arr = this.value
+        ? this.value.split(' ')
+        : ['*', '*', '*', '?', '*', '*', '*']
+      const field = [
+        'sVal',
+        'mVal',
+        'hVal',
+        'dVal',
+        'monthVal',
+        'weekVal',
+        'yearVal'
+      ]
+      field.forEach((item, idx) => {
+        this[item] = arr[idx]
+      })
     },
 
     open() {
@@ -149,6 +153,7 @@ export default {
 
     close() {
       this.dialogVisible = false
+      this.$emit('on-close')
     },
 
     confirm() {

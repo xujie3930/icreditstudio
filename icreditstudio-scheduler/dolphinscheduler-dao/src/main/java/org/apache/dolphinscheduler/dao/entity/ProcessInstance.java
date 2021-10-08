@@ -17,24 +17,17 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Flag;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.WarningType;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-
-import java.util.Date;
-import java.util.Objects;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.apache.dolphinscheduler.common.enums.*;
+import org.apache.dolphinscheduler.common.utils.DateUtils;
+
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * process instance
@@ -165,7 +158,7 @@ public class ProcessInstance {
     /**
      * executor id
      */
-    private int executorId;
+    private String executorId;
 
     /**
      * executor name
@@ -462,11 +455,11 @@ public class ProcessInstance {
         this.queue = queue;
     }
 
-    public int getExecutorId() {
+    public String getExecutorId() {
         return executorId;
     }
 
-    public void setExecutorId(int executorId) {
+    public void setExecutorId(String executorId) {
         this.executorId = executorId;
     }
 

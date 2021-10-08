@@ -17,6 +17,9 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.DataSourceService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
@@ -33,26 +36,15 @@ import org.apache.dolphinscheduler.dao.entity.DataSource;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceMapper;
 import org.apache.dolphinscheduler.dao.mapper.DataSourceUserMapper;
-
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import javax.annotation.Resource;
+import java.sql.Connection;
+import java.util.*;
 
 /**
  * data source service impl
@@ -62,16 +54,16 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
 
     private static final Logger logger = LoggerFactory.getLogger(DataSourceServiceImpl.class);
 
-    @Autowired
+    @Resource
     private DataSourceMapper dataSourceMapper;
 
-    @Autowired
+    @Resource
     private DataSourceUserMapper datasourceUserMapper;
 
     /**
      * create data source
      *
-     * @param loginUser login user
+     * @param loginUser       login user
      * @param datasourceParam datasource parameters
      * @return create result code
      */
@@ -118,12 +110,9 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
     /**
      * updateProcessInstance datasource
      *
-     * @param loginUser login user
-     * @param name data source name
-     * @param desc data source description
-     * @param type data source type
-     * @param parameter datasource parameters
-     * @param id data source id
+     * @param loginUser       login user
+     * @param dataSourceParam data source name
+     * @param id              data source id
      * @return update result code
      */
     @Override
@@ -137,10 +126,10 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
             return result;
         }
 
-        if (!hasPerm(loginUser, dataSource.getUserId())) {
-            putMsg(result, Status.USER_NO_OPERATION_PERM);
-            return result;
-        }
+//        if (!hasPerm(loginUser, dataSource.getUserId())) {
+//            putMsg(result, Status.USER_NO_OPERATION_PERM);
+//            return result;
+//        }
 
         //check name can use or not
         if (!dataSource.getName().trim().equals(dataSource.getName()) && checkName(dataSource.getName())) {
@@ -216,8 +205,8 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      *
      * @param loginUser login user
      * @param searchVal search value
-     * @param pageNo page number
-     * @param pageSize page size
+     * @param pageNo    page number
+     * @param pageSize  page size
      * @return data source list page
      */
     @Override
@@ -226,11 +215,12 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
         IPage<DataSource> dataSourceList;
         Page<DataSource> dataSourcePage = new Page<>(pageNo, pageSize);
 
-        if (isAdmin(loginUser)) {
-            dataSourceList = dataSourceMapper.selectPaging(dataSourcePage, 0, searchVal);
-        } else {
-            dataSourceList = dataSourceMapper.selectPaging(dataSourcePage, loginUser.getId(), searchVal);
-        }
+//        if (isAdmin(loginUser)) {
+//            dataSourceList = dataSourceMapper.selectPaging(dataSourcePage, 0, searchVal);
+//        } else {
+//            dataSourceList = dataSourceMapper.selectPaging(dataSourcePage, loginUser.getId(), searchVal);
+//        }
+        dataSourceList = dataSourceMapper.selectPaging(dataSourcePage, loginUser.getId(), searchVal);
 
         List<DataSource> dataSources = dataSourceList != null ? dataSourceList.getRecords() : new ArrayList<>();
         handlePasswd(dataSources);
@@ -268,7 +258,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * query data resource list
      *
      * @param loginUser login user
-     * @param type data source type
+     * @param type      data source type
      * @return data source list page
      */
     @Override
@@ -277,11 +267,12 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
 
         List<DataSource> datasourceList;
 
-        if (isAdmin(loginUser)) {
-            datasourceList = dataSourceMapper.listAllDataSourceByType(type);
-        } else {
-            datasourceList = dataSourceMapper.queryDataSourceByType(loginUser.getId(), type);
-        }
+//        if (isAdmin(loginUser)) {
+//            datasourceList = dataSourceMapper.listAllDataSourceByType(type);
+//        } else {
+//            datasourceList = dataSourceMapper.queryDataSourceByType(loginUser.getId(), type);
+//        }
+        datasourceList = dataSourceMapper.queryDataSourceByType(loginUser.getId(), type);
 
         result.put(Constants.DATA_LIST, datasourceList);
         putMsg(result, Status.SUCCESS);
@@ -311,8 +302,8 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
     /**
      * check connection
      *
-     * @param type data source type
-     * @param parameter data source parameters
+     * @param type            data source type
+     * @param connectionParam data source parameters
      * @return true if connect successfully, otherwise false
      */
     @Override
@@ -351,7 +342,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
     /**
      * delete datasource
      *
-     * @param loginUser login user
+     * @param loginUser    login user
      * @param datasourceId data source id
      * @return delete result code
      */
@@ -367,10 +358,10 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
                 putMsg(result, Status.RESOURCE_NOT_EXIST);
                 return result;
             }
-            if (!hasPerm(loginUser, dataSource.getUserId())) {
-                putMsg(result, Status.USER_NO_OPERATION_PERM);
-                return result;
-            }
+//            if (!hasPerm(loginUser, dataSource.getUserId())) {
+//                putMsg(result, Status.USER_NO_OPERATION_PERM);
+//                return result;
+//            }
             dataSourceMapper.deleteById(datasourceId);
             datasourceUserMapper.deleteByDatasourceId(datasourceId);
             putMsg(result, Status.SUCCESS);
@@ -385,18 +376,18 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * unauthorized datasource
      *
      * @param loginUser login user
-     * @param userId user id
+     * @param userId    user id
      * @return unauthed data source result code
      */
     @Override
-    public Map<String, Object> unauthDatasource(User loginUser, Integer userId) {
+    public Map<String, Object> unauthDatasource(User loginUser, String userId) {
 
         Map<String, Object> result = new HashMap<>();
         //only admin operate
-        if (!isAdmin(loginUser)) {
-            putMsg(result, Status.USER_NO_OPERATION_PERM);
-            return result;
-        }
+//        if (!isAdmin(loginUser)) {
+//            putMsg(result, Status.USER_NO_OPERATION_PERM);
+//            return result;
+//        }
 
         /**
          * query all data sources except userId
@@ -426,17 +417,17 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * authorized datasource
      *
      * @param loginUser login user
-     * @param userId user id
+     * @param userId    user id
      * @return authorized result code
      */
     @Override
-    public Map<String, Object> authedDatasource(User loginUser, Integer userId) {
+    public Map<String, Object> authedDatasource(User loginUser, String userId) {
         Map<String, Object> result = new HashMap<>();
 
-        if (!isAdmin(loginUser)) {
-            putMsg(result, Status.USER_NO_OPERATION_PERM);
-            return result;
-        }
+//        if (!isAdmin(loginUser)) {
+//            putMsg(result, Status.USER_NO_OPERATION_PERM);
+//            return result;
+//        }
 
         List<DataSource> authedDatasourceList = dataSourceMapper.queryAuthedDatasource(userId);
         result.put(Constants.DATA_LIST, authedDatasourceList);

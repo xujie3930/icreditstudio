@@ -17,10 +17,10 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.facebook.presto.jdbc.internal.guava.base.Strings;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.WorkerGroupService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
-import org.apache.dolphinscheduler.service.registry.RegistryMonitor;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.NodeType;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
@@ -32,23 +32,15 @@ import org.apache.dolphinscheduler.dao.entity.WorkerGroup;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.WorkerGroupMapper;
 import org.apache.dolphinscheduler.service.registry.RegistryClient;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-
+import org.apache.dolphinscheduler.service.registry.RegistryMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.facebook.presto.jdbc.internal.guava.base.Strings;
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * worker group service impl
@@ -58,14 +50,14 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
 
     private static final Logger logger = LoggerFactory.getLogger(WorkerGroupServiceImpl.class);
 
-    @Autowired
+    @Resource
     WorkerGroupMapper workerGroupMapper;
 
 
-    @Autowired
+    @Resource
     private RegistryMonitor registryMonitor;
 
-    @Autowired
+    @Resource
     ProcessInstanceMapper processInstanceMapper;
 
     @Resource
@@ -83,9 +75,9 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
     @Override
     public Map<String, Object> saveWorkerGroup(User loginUser, int id, String name, String addrList) {
         Map<String, Object> result = new HashMap<>();
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
         if (StringUtils.isEmpty(name)) {
             putMsg(result, Status.NAME_NULL);
             return result;
@@ -186,9 +178,9 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
         int toIndex = (pageNo - 1) * pageSize + pageSize;
 
         Map<String, Object> result = new HashMap<>();
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
 
         List<WorkerGroup> workerGroups = getWorkerGroups(true);
         List<WorkerGroup> resultDataList = new ArrayList<>();
@@ -307,9 +299,9 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
     @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> deleteWorkerGroupById(User loginUser, Integer id) {
         Map<String, Object> result = new HashMap<>();
-        if (isNotAdmin(loginUser, result)) {
-            return result;
-        }
+//        if (isNotAdmin(loginUser, result)) {
+//            return result;
+//        }
         WorkerGroup workerGroup = workerGroupMapper.selectById(id);
         if (workerGroup == null) {
             putMsg(result, Status.DELETE_WORKER_GROUP_NOT_EXIST);

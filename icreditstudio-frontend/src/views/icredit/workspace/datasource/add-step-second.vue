@@ -391,6 +391,8 @@ export default {
             .finally(() => {
               this.testBtnLoading = false
             })
+        } else {
+          this.testBtnLoading = false
         }
       })
     },

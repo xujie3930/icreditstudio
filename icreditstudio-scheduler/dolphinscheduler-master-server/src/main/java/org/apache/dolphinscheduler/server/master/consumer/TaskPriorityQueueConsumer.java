@@ -18,7 +18,6 @@
 package org.apache.dolphinscheduler.server.master.consumer;
 
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.ResourceType;
 import org.apache.dolphinscheduler.common.enums.SqoopJobType;
 import org.apache.dolphinscheduler.common.enums.TaskType;
@@ -32,22 +31,10 @@ import org.apache.dolphinscheduler.common.task.sqoop.SqoopParameters;
 import org.apache.dolphinscheduler.common.task.sqoop.sources.SourceMysqlParameter;
 import org.apache.dolphinscheduler.common.task.sqoop.targets.TargetMysqlParameter;
 import org.apache.dolphinscheduler.common.thread.Stopper;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.EnumUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.common.utils.TaskParametersUtils;
-import org.apache.dolphinscheduler.dao.entity.DataSource;
-import org.apache.dolphinscheduler.dao.entity.Resource;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.UdfFunc;
+import org.apache.dolphinscheduler.common.utils.*;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.server.builder.TaskExecutionContextBuilder;
-import org.apache.dolphinscheduler.server.entity.DataxTaskExecutionContext;
-import org.apache.dolphinscheduler.server.entity.ProcedureTaskExecutionContext;
-import org.apache.dolphinscheduler.server.entity.SQLTaskExecutionContext;
-import org.apache.dolphinscheduler.server.entity.SqoopTaskExecutionContext;
-import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
+import org.apache.dolphinscheduler.server.entity.*;
 import org.apache.dolphinscheduler.server.master.config.MasterConfig;
 import org.apache.dolphinscheduler.server.master.dispatch.ExecutorDispatcher;
 import org.apache.dolphinscheduler.server.master.dispatch.context.ExecutionContext;
@@ -56,23 +43,16 @@ import org.apache.dolphinscheduler.server.master.dispatch.exceptions.ExecuteExce
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.queue.TaskPriority;
 import org.apache.dolphinscheduler.service.queue.TaskPriorityQueue;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * TaskUpdateQueue consumer
@@ -197,23 +177,24 @@ public class TaskPriorityQueueConsumer extends Thread {
     protected TaskExecutionContext getTaskExecutionContext(int taskInstanceId) {
         TaskInstance taskInstance = processService.getTaskInstanceDetailByTaskId(taskInstanceId);
 
-        int userId = taskInstance.getProcessDefine() == null ? 0 : taskInstance.getProcessDefine().getUserId();
-        Tenant tenant = processService.getTenantForProcess(taskInstance.getProcessInstance().getTenantId(), userId);
+//        int userId = taskInstance.getProcessDefine() == null ? 0 : taskInstance.getProcessDefine().getUserId();
+//        Tenant tenant = processService.getTenantForProcess(taskInstance.getProcessInstance().getTenantId(), userId);
 
         // verify tenant is null
-        if (verifyTenantIsNull(tenant, taskInstance)) {
-            processService.changeTaskState(taskInstance, ExecutionStatus.FAILURE,
-                    taskInstance.getStartTime(),
-                    taskInstance.getHost(),
-                    null,
-                    null,
-                    taskInstance.getId());
-            return null;
-        }
+//        if (verifyTenantIsNull(tenant, taskInstance)) {
+//            processService.changeTaskState(taskInstance, ExecutionStatus.FAILURE,
+//                    taskInstance.getStartTime(),
+//                    taskInstance.getHost(),
+//                    null,
+//                    null,
+//                    taskInstance.getId());
+//            return null;
+//        }
         // set queue for process instance, user-specified queue takes precedence over tenant queue
-        String userQueue = processService.queryUserQueueByProcessInstanceId(taskInstance.getProcessInstanceId());
-        taskInstance.getProcessInstance().setQueue(StringUtils.isEmpty(userQueue) ? tenant.getQueue() : userQueue);
-        taskInstance.getProcessInstance().setTenantCode(tenant.getTenantCode());
+//        String userQueue = processService.queryUserQueueByProcessInstanceId(taskInstance.getProcessInstanceId());
+        //TODO
+//        taskInstance.getProcessInstance().setQueue(StringUtils.isEmpty(userQueue) ? tenant.getQueue() : userQueue);
+        taskInstance.getProcessInstance().setTenantCode(/*tenant.getTenantCode()*/null);
         taskInstance.setResources(getResourceFullNames(taskInstance));
 
         SQLTaskExecutionContext sqlTaskExecutionContext = new SQLTaskExecutionContext();
@@ -256,7 +237,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * set procedure task relation
      *
      * @param procedureTaskExecutionContext procedureTaskExecutionContext
-     * @param taskInstance taskInstance
+     * @param taskInstance                  taskInstance
      */
     private void setProcedureTaskRelation(ProcedureTaskExecutionContext procedureTaskExecutionContext, TaskInstance taskInstance) {
         ProcedureParameters procedureParameters = JSONUtils.parseObject(taskInstance.getTaskParams(), ProcedureParameters.class);
@@ -269,7 +250,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * set datax task relation
      *
      * @param dataxTaskExecutionContext dataxTaskExecutionContext
-     * @param taskInstance taskInstance
+     * @param taskInstance              taskInstance
      */
     protected void setDataxTaskRelation(DataxTaskExecutionContext dataxTaskExecutionContext, TaskInstance taskInstance) {
         DataxParameters dataxParameters = JSONUtils.parseObject(taskInstance.getTaskParams(), DataxParameters.class);
@@ -294,7 +275,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * set sqoop task relation
      *
      * @param sqoopTaskExecutionContext sqoopTaskExecutionContext
-     * @param taskInstance taskInstance
+     * @param taskInstance              taskInstance
      */
     private void setSqoopTaskRelation(SqoopTaskExecutionContext sqoopTaskExecutionContext, TaskInstance taskInstance) {
         SqoopParameters sqoopParameters = JSONUtils.parseObject(taskInstance.getTaskParams(), SqoopParameters.class);
@@ -325,7 +306,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * set SQL task relation
      *
      * @param sqlTaskExecutionContext sqlTaskExecutionContext
-     * @param taskInstance taskInstance
+     * @param taskInstance            taskInstance
      */
     private void setSQLTaskRelation(SQLTaskExecutionContext sqlTaskExecutionContext, TaskInstance taskInstance) {
         SqlParameters sqlParameters = JSONUtils.parseObject(taskInstance.getTaskParams(), SqlParameters.class);
@@ -355,22 +336,22 @@ public class TaskPriorityQueueConsumer extends Thread {
         }
     }
 
-    /**
-     * whehter tenant is null
-     *
-     * @param tenant tenant
-     * @param taskInstance taskInstance
-     * @return result
-     */
-    protected boolean verifyTenantIsNull(Tenant tenant, TaskInstance taskInstance) {
-        if (tenant == null) {
-            logger.error("tenant not exists,process instance id : {},task instance id : {}",
-                    taskInstance.getProcessInstance().getId(),
-                    taskInstance.getId());
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * whehter tenant is null
+//     *
+//     * @param tenant       tenant
+//     * @param taskInstance taskInstance
+//     * @return result
+//     */
+//    protected boolean verifyTenantIsNull(Tenant tenant, TaskInstance taskInstance) {
+//        if (tenant == null) {
+//            logger.error("tenant not exists,process instance id : {},task instance id : {}",
+//                    taskInstance.getProcessInstance().getId(),
+//                    taskInstance.getId());
+//            return true;
+//        }
+//        return false;
+//    }
 
     /**
      * get resource map key is full name and value is tenantCode

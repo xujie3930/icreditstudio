@@ -114,10 +114,11 @@ public class ZookeeperRegistry implements Registry {
 
         client.start();
         try {
-            if (!client.blockUntilConnected(BLOCK_UNTIL_CONNECTED_WAIT_MS.getParameterValue(registerData.get(BLOCK_UNTIL_CONNECTED_WAIT_MS.getName())), MILLISECONDS)) {
+            client.blockUntilConnected();
+            /*if (!client.blockUntilConnected(BLOCK_UNTIL_CONNECTED_WAIT_MS.getParameterValue(registerData.get(BLOCK_UNTIL_CONNECTED_WAIT_MS.getName())), MILLISECONDS)) {
                 client.close();
                 throw new RegistryException("zookeeper connect timeout");
-            }
+            }*/
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RegistryException("zookeeper connect error", e);

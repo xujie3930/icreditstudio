@@ -17,22 +17,12 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import static org.apache.dolphinscheduler.common.Constants.DATA_LIST;
-import static org.apache.dolphinscheduler.common.Constants.DEPENDENT_SPLIT;
-import static org.apache.dolphinscheduler.common.Constants.GLOBAL_PARAMS;
-import static org.apache.dolphinscheduler.common.Constants.LOCAL_PARAMS;
-import static org.apache.dolphinscheduler.common.Constants.PROCESS_INSTANCE_STATE;
-import static org.apache.dolphinscheduler.common.Constants.TASK_LIST;
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.api.dto.gantt.GanttDto;
 import org.apache.dolphinscheduler.api.dto.gantt.Task;
 import org.apache.dolphinscheduler.api.enums.Status;
-import org.apache.dolphinscheduler.api.service.ExecutorService;
-import org.apache.dolphinscheduler.api.service.LoggerService;
-import org.apache.dolphinscheduler.api.service.ProcessDefinitionService;
-import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
-import org.apache.dolphinscheduler.api.service.ProjectService;
-import org.apache.dolphinscheduler.api.service.UsersService;
+import org.apache.dolphinscheduler.api.service.*;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
@@ -44,50 +34,27 @@ import org.apache.dolphinscheduler.common.graph.DAG;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
 import org.apache.dolphinscheduler.common.process.Property;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.ParameterUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.common.utils.placeholder.BusinessTimeUtils;
-import org.apache.dolphinscheduler.dao.entity.ProcessData;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.TaskDefinitionLog;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-import org.apache.dolphinscheduler.dao.entity.Tenant;
-import org.apache.dolphinscheduler.dao.entity.User;
-import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionLogMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
-import org.apache.dolphinscheduler.dao.mapper.TaskDefinitionLogMapper;
-import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
+import org.apache.dolphinscheduler.dao.entity.*;
+import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.service.process.ProcessService;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
+import javax.annotation.Resource;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * process instance service impl
@@ -100,7 +67,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     public static final String TASK_TYPE = "taskType";
     public static final String LOCAL_PARAMS_LIST = "localParamsList";
 
-    @Autowired
+    @Resource
     ProjectMapper projectMapper;
 
     @Autowired
@@ -109,28 +76,28 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     @Autowired
     ProcessService processService;
 
-    @Autowired
+    @Resource
     ProcessInstanceMapper processInstanceMapper;
 
-    @Autowired
+    @Resource
     ProcessDefinitionMapper processDefineMapper;
 
-    @Autowired
+    @Resource
     ProcessDefinitionService processDefinitionService;
 
     @Autowired
     ExecutorService execService;
 
-    @Autowired
+    @Resource
     TaskInstanceMapper taskInstanceMapper;
 
     @Autowired
     LoggerService loggerService;
 
-    @Autowired
+    @Resource
     ProcessDefinitionLogMapper processDefinitionLogMapper;
 
-    @Autowired
+    @Resource
     TaskDefinitionLogMapper taskDefinitionLogMapper;
 
     @Autowired
@@ -144,11 +111,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
 
         Project project = projectMapper.queryByName(projectName);
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         if (0 > size) {
             putMsg(result, Status.NEGTIVE_SIZE_NUMBER_ERROR, size);
@@ -182,9 +149,9 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * query process instance by id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param processId process instance id
+     * @param processId   process instance id
      * @return process instance detail
      */
     @Override
@@ -192,11 +159,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(processId);
 
         ProcessDefinition processDefinition = processService.findProcessDefinition(processInstance.getProcessDefinitionCode(),
@@ -221,16 +188,16 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * paging query process instance list, filtering according to project, process definition, time range, keyword, process status
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param pageNo page number
-     * @param pageSize page size
+     * @param loginUser       login user
+     * @param projectName     project name
+     * @param pageNo          page number
+     * @param pageSize        page size
      * @param processDefineId process definition id
-     * @param searchVal search value
-     * @param stateType state type
-     * @param host host
-     * @param startDate start time
-     * @param endDate end time
+     * @param searchVal       search value
+     * @param stateType       state type
+     * @param host            host
+     * @param startDate       start time
+     * @param endDate         end time
      * @return process instance list
      */
     @Override
@@ -242,11 +209,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         int[] statusArray = null;
         // filter by state
@@ -263,25 +230,27 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
 
         Page<ProcessInstance> page = new Page<>(pageNo, pageSize);
         PageInfo<ProcessInstance> pageInfo = new PageInfo<>(pageNo, pageSize);
-        int executorId = usersService.getUserIdByName(executorName);
+//        int executorId = usersService.getUserIdByName(executorName);
 
         ProcessDefinition processDefinition = processDefineMapper.queryByDefineId(processDefineId);
 
         IPage<ProcessInstance> processInstanceList = processInstanceMapper.queryProcessInstanceListPaging(page,
-                        project.getCode(), processDefinition == null ? 0L : processDefinition.getCode(), searchVal,
-                        executorId, statusArray, host, start, end);
+                project.getCode(), processDefinition == null ? 0L : processDefinition.getCode(), searchVal,
+                loginUser.getId(), statusArray, host, start, end);
 
         List<ProcessInstance> processInstances = processInstanceList.getRecords();
-        List<Integer> userIds = CollectionUtils.transformToList(processInstances, ProcessInstance::getExecutorId);
-        Map<Integer, User> idToUserMap = CollectionUtils.collectionToMap(usersService.queryUser(userIds), User::getId);
+        List<String> userIds = CollectionUtils.transformToList(processInstances, ProcessInstance::getExecutorId);
 
-        for (ProcessInstance processInstance : processInstances) {
-            processInstance.setDuration(DateUtils.format2Duration(processInstance.getStartTime(), processInstance.getEndTime()));
-            User executor = idToUserMap.get(processInstance.getExecutorId());
-            if (null != executor) {
-                processInstance.setExecutorName(executor.getUserName());
-            }
-        }
+        //TODO
+//        Map<Integer, User> idToUserMap = CollectionUtils.collectionToMap(usersService.queryUser(userIds), User::getId);
+
+//        for (ProcessInstance processInstance : processInstances) {
+//            processInstance.setDuration(DateUtils.format2Duration(processInstance.getStartTime(), processInstance.getEndTime()));
+//            User executor = idToUserMap.get(processInstance.getExecutorId());
+//            if (null != executor) {
+//                processInstance.setExecutorName(executor.getUserName());
+//            }
+//        }
 
         pageInfo.setTotalCount((int) processInstanceList.getTotal());
         pageInfo.setLists(processInstances);
@@ -293,9 +262,9 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * query task list by process instance id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param processId process instance id
+     * @param processId   process instance id
      * @return task list for the process instance
      * @throws IOException io exception
      */
@@ -304,11 +273,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(processId);
         List<TaskInstance> taskInstanceList = processService.findValidTaskListByProcessId(processId);
         addDependResultForTaskList(taskInstanceList);
@@ -370,9 +339,9 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * query sub process instance detail info by task id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param taskId task id
+     * @param taskId      task id
      * @return sub process instance detail
      */
     @Override
@@ -380,11 +349,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         TaskInstance taskInstance = processService.findTaskInstanceById(taskId);
         if (taskInstance == null) {
@@ -412,15 +381,15 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * update process instance
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser           login user
+     * @param projectName         project name
      * @param processInstanceJson process instance json
-     * @param processInstanceId process instance id
-     * @param scheduleTime schedule time
-     * @param syncDefine sync define
-     * @param flag flag
-     * @param locations locations
-     * @param connects connects
+     * @param processInstanceId   process instance id
+     * @param scheduleTime        schedule time
+     * @param syncDefine          sync define
+     * @param flag                flag
+     * @param locations           locations
+     * @param connects            connects
      * @return update result code
      */
     @Transactional
@@ -431,11 +400,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
         //check project permission
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         //check process instance exists
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(processInstanceId);
         if (processInstance == null) {
@@ -456,9 +425,10 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
             return result;
         }
-        Tenant tenant = processService.getTenantForProcess(processData.getTenantId(),
-                processDefinition.getUserId());
-        setProcessInstance(processInstance, tenant, scheduleTime, processData);
+        //TODO
+//        Tenant tenant = processService.getTenantForProcess(processData.getTenantId(),
+//                processDefinition.getUserId());
+//        setProcessInstance(processInstance, tenant, scheduleTime, processData);
         int updateDefine = 1;
         if (Boolean.TRUE.equals(syncDefine)) {
             processDefinition.setId(processDefineMapper.queryByCode(processInstance.getProcessDefinitionCode()).getId());
@@ -500,7 +470,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * update process instance attributes
      */
-    private void setProcessInstance(ProcessInstance processInstance, Tenant tenant, String scheduleTime, ProcessData processData) {
+    private void setProcessInstance(ProcessInstance processInstance, /*Tenant tenant*/String tenantCode, String scheduleTime, ProcessData processData) {
 
         Date schedule = processInstance.getScheduleTime();
         if (scheduleTime != null) {
@@ -515,18 +485,19 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         String globalParams = ParameterUtils.curingGlobalParams(globalParamMap, globalParamList,
                 processInstance.getCmdTypeIfComplement(), schedule);
         processInstance.setTimeout(processData.getTimeout());
-        if (tenant != null) {
-            processInstance.setTenantCode(tenant.getTenantCode());
-        }
+//        if (tenant != null) {
+//            processInstance.setTenantCode(tenant.getTenantCode());
+//        }
+        processInstance.setTenantCode(tenantCode);
         processInstance.setGlobalParams(globalParams);
     }
 
     /**
      * query parent process instance detail info by sub process instance id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param subId sub process id
+     * @param subId       sub process id
      * @return parent instance detail
      */
     @Override
@@ -534,11 +505,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
 
         ProcessInstance subInstance = processService.findProcessInstanceDetailById(subId);
         if (subInstance == null) {
@@ -565,8 +536,8 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * delete process instance by id, at the same time，delete task instance and their mapping relation data
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser         login user
+     * @param projectName       project name
      * @param processInstanceId process instance id
      * @return delete result code
      */
@@ -577,11 +548,11 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
-        if (resultEnum != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        Status resultEnum = (Status) checkResult.get(Constants.STATUS);
+//        if (resultEnum != Status.SUCCESS) {
+//            return checkResult;
+//        }
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(processInstanceId);
         if (null == processInstance) {
             putMsg(result, Status.PROCESS_INSTANCE_NOT_EXIST, processInstanceId);
@@ -734,7 +705,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * query process instance by processDefinitionCode and stateArray
      *
      * @param processDefinitionCode processDefinitionCode
-     * @param states states array
+     * @param states                states array
      * @return process instance list
      */
     @Override
@@ -746,7 +717,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * query process instance by processDefinitionCode
      *
      * @param processDefinitionCode processDefinitionCode
-     * @param size size
+     * @param size                  size
      * @return process instance list
      */
     @Override

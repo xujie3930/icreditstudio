@@ -85,7 +85,7 @@
         >
           <el-input
             style="width: 500px"
-            placeholder="请输入内容"
+            placeholder="请输入或选择cron表达式"
             v-model="taskForm.cron"
           >
             <div slot="append" class="cron-suffix" @click="handleOpenCron">
@@ -122,7 +122,12 @@
       </footer>
     </div>
 
-    <Cron ref="cron" v-model="taskForm.cron" />
+    <Cron
+      ref="cron"
+      :value="taskForm.cron"
+      @on-close="taskForm.cron = ''"
+      @on-confirm="value => (taskForm.cron = value)"
+    />
   </div>
 </template>
 

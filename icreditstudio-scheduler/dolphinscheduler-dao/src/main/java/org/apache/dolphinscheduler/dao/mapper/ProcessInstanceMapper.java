@@ -103,7 +103,7 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
                                                           @Param("projectCode") Long projectCode,
                                                           @Param("processDefinitionCode") Long processDefinitionCode,
                                                           @Param("searchVal") String searchVal,
-                                                          @Param("executorId") Integer executorId,
+                                                          @Param("executorId") String executorId,
                                                           @Param("states") int[] statusArray,
                                                           @Param("host") String host,
                                                           @Param("startTime") Date startTime,

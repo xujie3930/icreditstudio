@@ -17,6 +17,11 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.Flag;
@@ -28,12 +33,6 @@ import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * task instance
@@ -217,7 +216,7 @@ public class TaskInstance implements Serializable {
     /**
      * executor id
      */
-    private int executorId;
+    private String executorId;
 
     /**
      * varPool string
@@ -466,11 +465,11 @@ public class TaskInstance implements Serializable {
         this.retryInterval = retryInterval;
     }
 
-    public int getExecutorId() {
+    public String getExecutorId() {
         return executorId;
     }
 
-    public void setExecutorId(int executorId) {
+    public void setExecutorId(String executorId) {
         this.executorId = executorId;
     }
 
