@@ -44,7 +44,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,8 +56,6 @@ import java.sql.ResultSetMetaData;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-
-import static com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000000;
 
 /**
  * <p>
