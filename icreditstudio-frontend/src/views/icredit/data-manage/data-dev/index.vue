@@ -54,22 +54,56 @@
         </span>
       </div>
 
-      <el-tree class="tree" :data="data"></el-tree>
+      <el-tree class="tree" :data="data">
+        <div
+          :id="node.id"
+          :draggable="node.level > 1"
+          class="custom-tree-node"
+          slot-scope="{ node, data }"
+        >
+          <div class="left">
+            <span v-if="data.type === '3'" class="circle"></span>
+            <JSvg class="jsvg-icon" :name="data.icon"></JSvg>
+            <span>{{ data.label }}</span>
+          </div>
+          <div class="right">
+            <el-dropdown @command="handleCommand">
+              <span class="el-dropdown-link">
+                <i class="el-icon-more icon"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="doc">新增文件夹</el-dropdown-item>
+                <el-dropdown-item command="flow">新增工作流</el-dropdown-item>
+                <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                <el-dropdown-item command="delete">删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </div>
+        </div>
+      </el-tree>
     </aside>
+
     <section class="data-develop-section">
       <Tabs>
         <TabDetail slot="panel" />
       </Tabs>
     </section>
+
+    <AddDoc ref="addDoc" />
+    <EditFlow ref="editFlow" />
+    <DeleteFlow ref="deleteFlow" />
   </div>
 </template>
 
 <script>
 import Tabs from '@/views/icredit/components/tabs'
 import TabDetail from './detail'
+import AddDoc from './add-doc'
+import EditFlow from './edit-flow'
+import DeleteFlow from './delete-flow'
 
 export default {
-  components: { Tabs, TabDetail },
+  components: { Tabs, TabDetail, AddDoc, EditFlow, DeleteFlow },
 
   data() {
     return {
@@ -79,61 +113,48 @@ export default {
       searchLoading: false,
       data: [
         {
-          label: '一级 1',
+          label: '水务基础数据梳理',
+          icon: 'dev-business',
+          type: '0',
+          id: 1,
           children: [
             {
-              label: '二级 1-1',
+              label: '分类1',
+              icon: 'dev-doc',
+              type: '1',
+              id: 2,
               children: [
                 {
-                  label: '三级 1-1-1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          label: '一级 2',
-          children: [
-            {
-              label: '二级 2-1',
-              children: [
-                {
-                  label: '三级 2-1-1'
-                }
-              ]
-            },
-            {
-              label: '二级 2-2',
-              children: [
-                {
-                  label: '三级 2-2-1'
-                }
-              ]
-            }
-          ]
-        },
-        {
-          label: '一级 3',
-          children: [
-            {
-              label: '二级 3-1',
-              children: [
-                {
-                  label: '三级 3-1-1'
-                }
-              ]
-            },
-            {
-              label: '二级 3-2',
-              children: [
-                {
-                  label: '三级 3-2-1'
+                  label: '分类1-1',
+                  icon: 'dev-flow',
+                  type: '3',
+                  id: 3
                 }
               ]
             }
           ]
         }
       ]
+    }
+  },
+
+  methods: {
+    handleCommand(command) {
+      console.log(command)
+      switch (command) {
+        case 'doc':
+          this.$refs.addDoc.$refs.addDocDialog.open()
+          break
+        case 'edit':
+          this.$refs.editFlow.$refs.editDialog.open()
+          break
+        case 'delete':
+          this.$refs.deleteFlow.open({ title: '' })
+          break
+
+        default:
+          break
+      }
     }
   }
 }
@@ -223,6 +244,55 @@ export default {
 
     .tree {
       width: 100%;
+
+      .custom-tree-node {
+        @include flex(row, space-between);
+        flex: 1;
+        cursor: pointer;
+        padding-right: 8px;
+
+        .left {
+          @include flex;
+
+          .jsvg-icon {
+            width: 14px;
+            height: 14px;
+            margin: 0 5px;
+          }
+
+          .circle {
+            width: 6px;
+            height: 6px;
+            background: #52c41a;
+            border-radius: 50%;
+            margin-right: 5px;
+          }
+        }
+
+        .right {
+          display: none;
+
+          .icon {
+            transform: rotate(90deg);
+          }
+        }
+
+        &:hover > .right {
+          display: block;
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+
+      ::v-deep {
+        .el-tree-node.is-current > .el-tree-node__content {
+          color: #1890ff;
+          .right {
+            display: block;
+          }
+        }
+      }
     }
 
     ::v-deep {
