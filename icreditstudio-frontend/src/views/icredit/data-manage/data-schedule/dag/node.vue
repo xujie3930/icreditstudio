@@ -4,10 +4,10 @@
  * @Date: 2021-09-27
 -->
 <template>
-  <div class="x6-flow-node" :style="style">
+  <div class="x6-flow-node" :style="style" @click="handleNodeclick">
     <JSvg :name="nodeInfo.iconName" class="jsvg" />
     <div class="text">{{ nodeInfo.nodeName }}</div>
-    <Detail v-if="nodeInfo.id === 'node1'" @open="openCallBack" />
+    <Detail v-if="isOpenDetail" @open="openCallBack" />
   </div>
 </template>
 
@@ -21,12 +21,19 @@ const nodeStyleColor = {
 }
 
 export default {
+  name: 'Node',
+  inject: ['getGraph', 'getNode'],
   components: { Detail },
 
   props: {
     nodeInfo: {
       type: Object,
       default: () => ({})
+    },
+
+    isOpenDetail: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -47,6 +54,11 @@ export default {
   methods: {
     openCallBack() {
       console.log('MMM==', this)
+    },
+
+    handleNodeclick() {
+      console.log('nodeinfo=', this.nodeInfo)
+      this.$emit('open', !this.nodeInfo.isOpenDetail)
     }
   }
 }

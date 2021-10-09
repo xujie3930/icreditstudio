@@ -14,21 +14,30 @@ export const customNodeStyle = (nodeConfig, cusAttrs) => {
     }
   }
   const attrs = cusAttrs || defaultAttrs
+  const nodeInfo = {
+    bgColor: '#f4f4f4',
+    lineColor: '#d6e4ff',
+    isOpenDetail: false,
+    ...nodeConfig.data,
+    ...nodeConfig
+  }
+
   return {
     ...nodeConfig,
     attrs,
     shape: 'vue-shape',
+    data: nodeInfo,
     component: {
-      template: '<Node :node-info="nodeInfo"></Node>',
+      template:
+        '<Node ref="node" :node-info="nodeInfo" :is-open-detail="nodeInfo.isOpenDetail" @open="open"></Node>',
       components: { Node },
       data() {
-        return {
-          nodeInfo: {
-            bgColor: '#f4f4f4',
-            lineColor: '#d6e4ff',
-            ...nodeConfig.data,
-            ...nodeConfig
-          }
+        return { nodeInfo }
+      },
+
+      methods: {
+        open(isOpen) {
+          nodeInfo.isOpenDetail = isOpen
         }
       }
     }
@@ -174,10 +183,9 @@ export const x6Json = {
 export const renderGraph = (id = 'container') => {
   const graph = new Graph({
     container: document.getElementById(id),
-    width: 1000,
-    height: 600,
     selecting: true,
-    grid: { size: 10, visible: true }
+    panning: true
+    // grid: { size: 10, visible: true }
   })
 
   // 注册 vue component

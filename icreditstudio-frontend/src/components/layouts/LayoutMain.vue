@@ -8,7 +8,37 @@
         :active-module-id="activeModuleId"
       />
 
-      <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
+      <!-- 无侧边栏 -->
+      <div
+        class="container-wrap"
+        v-if="$route.path === '/data-manage/data-schedule/dag'"
+      >
+        <!-- 一级菜单 -->
+        <LayoutHeaderSidebar
+          v-if="isHeaderCollapse"
+          :menu="moduleMenus[activeModuleId]"
+          :crumbs-list="breadCrumbItems"
+          :modules="topModules"
+          :active-module-id="activeModuleId"
+          @onChange="changeMenu"
+        />
+        <!-- 二级菜单 -->
+        <!-- <LayoutMainSidebar
+          v-else
+          :menu="moduleMenus[activeModuleId]"
+          @getChildMenus="getChildMenus"
+        /> -->
+        <LayoutBreadcrumd :curBreadcrumb="curBreadcrumb" />
+        <keep-alive v-if="keepAlive">
+          <router-view />
+        </keep-alive>
+        <router-view v-else />
+      </div>
+
+      <div
+        v-else
+        :class="['layout-container', isCollapse ? 'layout-collapse' : '']"
+      >
         <!-- 一级菜单 -->
         <LayoutHeaderSidebar
           v-if="isHeaderCollapse"
@@ -24,8 +54,8 @@
           :menu="moduleMenus[activeModuleId]"
           @getChildMenus="getChildMenus"
         />
+        <!-- 组件内容 -->
         <div class="layout-content">
-          <!-- <LayoutMainTabBar /> -->
           <LayoutBreadcrumd :curBreadcrumb="curBreadcrumb" />
           <main class="iframe-layout-main-container">
             <!-- 三级以及四级菜单 -->
@@ -57,7 +87,6 @@ import LayoutBreadcrumd from './LayoutBreadcrumd'
 import LayoutHeaderSidebar from './LayoutHeaderSiderbar'
 import LayoutMainSidebar from './LayoutMainSidebar'
 import LayoutContainerSidebar from './LayoutContainerSidebar'
-// import LayoutMainTabBar from './LayoutMainTabbar'
 import LayoutMainFooter from './LayoutMainFooter'
 import { mapGetters } from 'vuex'
 
@@ -68,7 +97,6 @@ export default {
     LayoutHeaderSidebar,
     LayoutMainSidebar,
     LayoutContainerSidebar,
-    // LayoutMainTabBar,
     LayoutMainFooter
   },
 
@@ -184,16 +212,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@mixin center() {
-  display: flex;
-}
-
 .iframe-layout-container {
   .layout-container {
-    @include center();
+    display: flex;
     margin-top: 64px;
     margin-left: 100px;
     transition: all 0.5s;
+  }
+
+  .container-wrap {
+    @include flex(column, center, flex-start);
+    margin-top: 64px;
+    // transition: all 0.5s;
   }
 
   .layout-content {
