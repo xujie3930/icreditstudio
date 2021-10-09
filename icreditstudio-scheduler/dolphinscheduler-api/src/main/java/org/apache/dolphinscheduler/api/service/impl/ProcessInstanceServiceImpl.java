@@ -155,7 +155,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @return process instance detail
      */
     @Override
-    public Map<String, Object> queryProcessInstanceById(User loginUser, String projectName, Integer processId) {
+    public Map<String, Object> queryProcessInstanceById(User loginUser, String projectName, String processId) {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
@@ -201,7 +201,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @return process instance list
      */
     @Override
-    public Map<String, Object> queryProcessInstanceList(User loginUser, String projectName, Integer processDefineId,
+    public Map<String, Object> queryProcessInstanceList(User loginUser, String projectName, String processDefineId,
                                                         String startDate, String endDate,
                                                         String searchVal, String executorName, ExecutionStatus stateType, String host,
                                                         Integer pageNo, Integer pageSize) {
@@ -269,7 +269,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @throws IOException io exception
      */
     @Override
-    public Map<String, Object> queryTaskListByProcessId(User loginUser, String projectName, Integer processId) throws IOException {
+    public Map<String, Object> queryTaskListByProcessId(User loginUser, String projectName, String processId) throws IOException {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
@@ -345,7 +345,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @return sub process instance detail
      */
     @Override
-    public Map<String, Object> querySubProcessInstanceByTaskId(User loginUser, String projectName, Integer taskId) {
+    public Map<String, Object> querySubProcessInstanceByTaskId(User loginUser, String projectName, String taskId) {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
@@ -394,7 +394,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      */
     @Transactional
     @Override
-    public Map<String, Object> updateProcessInstance(User loginUser, String projectName, Integer processInstanceId,
+    public Map<String, Object> updateProcessInstance(User loginUser, String projectName, String processInstanceId,
                                                      String processInstanceJson, String scheduleTime, Boolean syncDefine,
                                                      Flag flag, String locations, String connects) {
         Map<String, Object> result = new HashMap<>();
@@ -429,7 +429,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
 //        Tenant tenant = processService.getTenantForProcess(processData.getTenantId(),
 //                processDefinition.getUserId());
 //        setProcessInstance(processInstance, tenant, scheduleTime, processData);
-        int updateDefine = 1;
+        String updateDefine = "1";
         if (Boolean.TRUE.equals(syncDefine)) {
             processDefinition.setId(processDefineMapper.queryByCode(processInstance.getProcessDefinitionCode()).getId());
             updateDefine = syncDefinition(loginUser, project, locations, connects,
@@ -440,7 +440,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
         }
 
         int update = processService.updateProcessInstance(processInstance);
-        if (update > 0 && updateDefine > 0) {
+        if (update > 0 && StringUtils.isNotBlank(updateDefine)) {
             putMsg(result, Status.SUCCESS);
         } else {
             putMsg(result, Status.UPDATE_PROCESS_INSTANCE_ERROR);
@@ -451,9 +451,9 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
     /**
      * sync definition according process instance
      */
-    private int syncDefinition(User loginUser, Project project, String locations, String connects,
-                               ProcessInstance processInstance, ProcessDefinition processDefinition,
-                               ProcessData processData) {
+    private String syncDefinition(User loginUser, Project project, String locations, String connects,
+                                  ProcessInstance processInstance, ProcessDefinition processDefinition,
+                                  ProcessData processData) {
 
         String originDefParams = JSONUtils.toJsonString(processData.getGlobalParams());
         processDefinition.setGlobalParams(originDefParams);
@@ -501,7 +501,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @return parent instance detail
      */
     @Override
-    public Map<String, Object> queryParentInstanceBySubId(User loginUser, String projectName, Integer subId) {
+    public Map<String, Object> queryParentInstanceBySubId(User loginUser, String projectName, String subId) {
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
 
@@ -543,7 +543,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Map<String, Object> deleteProcessInstanceById(User loginUser, String projectName, Integer processInstanceId) {
+    public Map<String, Object> deleteProcessInstanceById(User loginUser, String projectName, String processInstanceId) {
 
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
@@ -582,7 +582,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @return variables data
      */
     @Override
-    public Map<String, Object> viewVariables(Integer processInstanceId) {
+    public Map<String, Object> viewVariables(String processInstanceId) {
         Map<String, Object> result = new HashMap<>();
 
         ProcessInstance processInstance = processInstanceMapper.queryDetailById(processInstanceId);
@@ -655,7 +655,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
      * @throws Exception exception when json parse
      */
     @Override
-    public Map<String, Object> viewGantt(Integer processInstanceId) throws Exception {
+    public Map<String, Object> viewGantt(String processInstanceId) throws Exception {
         Map<String, Object> result = new HashMap<>();
 
         ProcessInstance processInstance = processInstanceMapper.queryDetailById(processInstanceId);

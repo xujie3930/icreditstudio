@@ -33,31 +33,31 @@ public interface SchedulerService {
     /**
      * save schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param processDefineId process definition id
-     * @param schedule scheduler
-     * @param warningType warning type
-     * @param warningGroupId warning group id
-     * @param failureStrategy failure strategy
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param processDefineId         process definition id
+     * @param schedule                scheduler
+     * @param warningType             warning type
+     * @param warningGroupId          warning group id
+     * @param failureStrategy         failure strategy
      * @param processInstancePriority process instance priority
-     * @param workerGroup worker group
+     * @param workerGroup             worker group
      * @return create result code
      */
     Map<String, Object> insertSchedule(User loginUser, String projectName,
-                                       Integer processDefineId,
+                                       String processDefineId,
                                        String schedule,
                                        WarningType warningType,
-                                       int warningGroupId,
+                                       String warningGroupId,
                                        FailureStrategy failureStrategy,
                                        Priority processInstancePriority,
                                        String workerGroup);
 
     Map<String, Object> myInsertSchedule(String startTime, String endTime, User loginUser, String projectName,
-                                         Integer processDefineId,
+                                         String processDefineId,
                                          String schedule,
                                          WarningType warningType,
-                                         int warningGroupId,
+                                         String warningGroupId,
                                          FailureStrategy failureStrategy,
                                          String receivers,
                                          String receiversCc,
@@ -68,24 +68,24 @@ public interface SchedulerService {
     /**
      * updateProcessInstance schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param id scheduler id
-     * @param scheduleExpression scheduler
-     * @param warningType warning type
-     * @param warningGroupId warning group id
-     * @param failureStrategy failure strategy
-     * @param workerGroup worker group
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param id                      scheduler id
+     * @param scheduleExpression      scheduler
+     * @param warningType             warning type
+     * @param warningGroupId          warning group id
+     * @param failureStrategy         failure strategy
+     * @param workerGroup             worker group
      * @param processInstancePriority process instance priority
-     * @param scheduleStatus schedule status
+     * @param scheduleStatus          schedule status
      * @return update result code
      */
     Map<String, Object> updateSchedule(User loginUser,
                                        String projectName,
-                                       Integer id,
+                                       String id,
                                        String scheduleExpression,
                                        WarningType warningType,
-                                       int warningGroupId,
+                                       String warningGroupId,
                                        FailureStrategy failureStrategy,
                                        ReleaseState scheduleStatus,
                                        Priority processInstancePriority,
@@ -95,34 +95,34 @@ public interface SchedulerService {
     /**
      * set schedule online or offline
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param id scheduler id
+     * @param loginUser      login user
+     * @param projectName    project name
+     * @param id             scheduler id
      * @param scheduleStatus schedule status
      * @return publish result code
      */
     Map<String, Object> setScheduleState(User loginUser,
                                          String projectName,
-                                         Integer id,
+                                         String id,
                                          ReleaseState scheduleStatus);
 
     /**
      * query schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser       login user
+     * @param projectName     project name
      * @param processDefineId process definition id
-     * @param pageNo page number
-     * @param pageSize page size
-     * @param searchVal search value
+     * @param pageNo          page number
+     * @param pageSize        page size
+     * @param searchVal       search value
      * @return schedule list page
      */
-    Map<String, Object> querySchedule(User loginUser, String projectName, Integer processDefineId, String searchVal, Integer pageNo, Integer pageSize);
+    Map<String, Object> querySchedule(User loginUser, String projectName, String processDefineId, String searchVal, Integer pageNo, Integer pageSize);
 
     /**
      * query schedule list
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
      * @return schedule list
      */
@@ -131,28 +131,28 @@ public interface SchedulerService {
     /**
      * delete schedule
      *
-     * @param projectId project id
+     * @param projectId  project id
      * @param scheduleId schedule id
      * @throws RuntimeException runtime exception
      */
-    void deleteSchedule(String projectId, int scheduleId);
+    void deleteSchedule(String projectId, String scheduleId);
 
     /**
      * delete schedule by id
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param scheduleId scheule id
+     * @param scheduleId  scheule id
      * @return delete result code
      */
-    Map<String, Object> deleteScheduleById(User loginUser, String projectName, Integer scheduleId);
+    Map<String, Object> deleteScheduleById(User loginUser, String projectName, String scheduleId);
 
     /**
      * preview schedule
      *
-     * @param loginUser login user
+     * @param loginUser   login user
      * @param projectName project name
-     * @param schedule schedule expression
+     * @param schedule    schedule expression
      * @return the next five fire time
      */
     Map<String, Object> previewSchedule(User loginUser, String projectName, String schedule);

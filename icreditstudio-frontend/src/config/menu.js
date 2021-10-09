@@ -37,6 +37,11 @@ export const secondMenuMapping = {
     icon: 'menu-datasource',
     iconActive: 'menu-datasource-active'
   },
+  '/workspace/data-model': {
+    name: '数仓建模',
+    icon: 'menu-modeling',
+    iconActive: 'menu-modeling-active'
+  },
   '/data-manage/data-sync': {
     name: '数据同步',
     icon: 'menu-sync',

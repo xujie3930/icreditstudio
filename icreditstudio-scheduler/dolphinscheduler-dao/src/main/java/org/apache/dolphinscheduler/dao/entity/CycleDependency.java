@@ -17,6 +17,9 @@
 package org.apache.dolphinscheduler.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.enums.CycleEnum;
 
 import java.util.Date;
@@ -24,20 +27,23 @@ import java.util.Date;
 /**
  * cycle dependency
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CycleDependency {
     /**
      * process define id
      */
-    private int processDefineId;
+    private String processDefineId;
     /**
      * last schedule time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date lastScheduleTime;
     /**
      * expiration time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date expirationTime;
     /**
      * cycle enum
@@ -45,52 +51,52 @@ public class CycleDependency {
     private CycleEnum cycleEnum;
 
 
-    public CycleDependency(int processDefineId, Date lastScheduleTime, Date expirationTime, CycleEnum cycleEnum) {
-        this.processDefineId = processDefineId;
-        this.lastScheduleTime = lastScheduleTime;
-        this.expirationTime = expirationTime;
-        this.cycleEnum = cycleEnum;
-    }
-
-    public int getProcessDefineId() {
-        return processDefineId;
-    }
-
-    public void setProcessDefineId(int processDefineId) {
-        this.processDefineId = processDefineId;
-    }
-
-    public Date getLastScheduleTime() {
-        return lastScheduleTime;
-    }
-
-    public void setLastScheduleTime(Date lastScheduleTime) {
-        this.lastScheduleTime = lastScheduleTime;
-    }
-
-    public Date getExpirationTime() {
-        return expirationTime;
-    }
-
-    public void setExpirationTime(Date expirationTime) {
-        this.expirationTime = expirationTime;
-    }
-
-    public CycleEnum getCycleEnum() {
-        return cycleEnum;
-    }
-
-    public void setCycleEnum(CycleEnum cycleEnum) {
-        this.cycleEnum = cycleEnum;
-    }
-
-    @Override
-    public String toString() {
-        return "CycleDependency{" +
-                "processDefineId=" + processDefineId +
-                ", lastScheduleTime=" + lastScheduleTime +
-                ", expirationTime=" + expirationTime +
-                ", cycleEnum=" + cycleEnum +
-                '}';
-    }
+//    public CycleDependency(int processDefineId, Date lastScheduleTime, Date expirationTime, CycleEnum cycleEnum) {
+//        this.processDefineId = processDefineId;
+//        this.lastScheduleTime = lastScheduleTime;
+//        this.expirationTime = expirationTime;
+//        this.cycleEnum = cycleEnum;
+//    }
+//
+//    public int getProcessDefineId() {
+//        return processDefineId;
+//    }
+//
+//    public void setProcessDefineId(int processDefineId) {
+//        this.processDefineId = processDefineId;
+//    }
+//
+//    public Date getLastScheduleTime() {
+//        return lastScheduleTime;
+//    }
+//
+//    public void setLastScheduleTime(Date lastScheduleTime) {
+//        this.lastScheduleTime = lastScheduleTime;
+//    }
+//
+//    public Date getExpirationTime() {
+//        return expirationTime;
+//    }
+//
+//    public void setExpirationTime(Date expirationTime) {
+//        this.expirationTime = expirationTime;
+//    }
+//
+//    public CycleEnum getCycleEnum() {
+//        return cycleEnum;
+//    }
+//
+//    public void setCycleEnum(CycleEnum cycleEnum) {
+//        this.cycleEnum = cycleEnum;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "CycleDependency{" +
+//                "processDefineId=" + processDefineId +
+//                ", lastScheduleTime=" + lastScheduleTime +
+//                ", expirationTime=" + expirationTime +
+//                ", cycleEnum=" + cycleEnum +
+//                '}';
+//    }
 }

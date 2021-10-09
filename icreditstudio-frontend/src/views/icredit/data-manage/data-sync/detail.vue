@@ -8,7 +8,7 @@
     hideFooter
     title="查看同步任务"
     ref="taskDialog"
-    width="65vw"
+    width="70vw"
     @on-close="close"
   >
     <el-tabs
@@ -37,6 +37,7 @@
           </div>
         </div>
       </el-tab-pane>
+
       <el-tab-pane label="数据源详情" name="BuildDetial">
         <div class="tab-wrap">
           <!-- <div class="tab-wrap__title">数据源详情</div> -->
@@ -113,6 +114,7 @@
           </div>
         </div>
       </el-tab-pane>
+
       <el-tab-pane label="任务调度详情" name="DispatchDetial">
         <div class="tab-wrap">
           <div class="tab-wrap__title">通道控制</div>
@@ -133,6 +135,12 @@
                 <el-radio :label="0">不限流</el-radio>
                 <el-radio :label="1">限流</el-radio>
               </el-radio-group>
+            </div>
+            <div v-if="buildDetailInfo.syncRate" class="content-item">
+              <div class="label">
+                <span>限流速率</span>
+              </div>
+              <div>{{ buildDetailInfo.limitRate }} 条/s</div>
             </div>
           </div>
         </div>

@@ -18,23 +18,23 @@
 package org.apache.dolphinscheduler.server.master.processor.queue;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
+import io.netty.channel.Channel;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.Event;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 
 import java.util.Date;
 
-import io.netty.channel.Channel;
-
 /**
  * task event
  */
+@Data
 public class TaskResponseEvent {
 
     /**
      * taskInstanceId
      */
-    private int taskInstanceId;
+    private String taskInstanceId;
 
     /**
      * worker address
@@ -49,13 +49,13 @@ public class TaskResponseEvent {
     /**
      * start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
      * end time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
     /**
@@ -92,13 +92,13 @@ public class TaskResponseEvent {
      * channel
      */
     private Channel channel;
-    
+
     public static TaskResponseEvent newAck(ExecutionStatus state,
                                            Date startTime,
                                            String workerAddress,
                                            String executePath,
                                            String logPath,
-                                           int taskInstanceId,
+                                           String taskInstanceId,
                                            Channel channel) {
         TaskResponseEvent event = new TaskResponseEvent();
         event.setState(state);
@@ -116,7 +116,7 @@ public class TaskResponseEvent {
                                               Date endTime,
                                               int processId,
                                               String appIds,
-                                              int taskInstanceId,
+                                              String taskInstanceId,
                                               String varPool,
                                               Channel channel) {
         TaskResponseEvent event = new TaskResponseEvent();
@@ -131,100 +131,100 @@ public class TaskResponseEvent {
         return event;
     }
 
-    public String getVarPool() {
-        return varPool;
-    }
-
-    public void setVarPool(String varPool) {
-        this.varPool = varPool;
-    }
-    
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public String getWorkerAddress() {
-        return workerAddress;
-    }
-
-    public void setWorkerAddress(String workerAddress) {
-        this.workerAddress = workerAddress;
-    }
-
-    public ExecutionStatus getState() {
-        return state;
-    }
-
-    public void setState(ExecutionStatus state) {
-        this.state = state;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getExecutePath() {
-        return executePath;
-    }
-
-    public void setExecutePath(String executePath) {
-        this.executePath = executePath;
-    }
-
-    public String getLogPath() {
-        return logPath;
-    }
-
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-
-    public int getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(int processId) {
-        this.processId = processId;
-    }
-
-    public String getAppIds() {
-        return appIds;
-    }
-
-    public void setAppIds(String appIds) {
-        this.appIds = appIds;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
+//    public String getVarPool() {
+//        return varPool;
+//    }
+//
+//    public void setVarPool(String varPool) {
+//        this.varPool = varPool;
+//    }
+//
+//    public int getTaskInstanceId() {
+//        return taskInstanceId;
+//    }
+//
+//    public void setTaskInstanceId(int taskInstanceId) {
+//        this.taskInstanceId = taskInstanceId;
+//    }
+//
+//    public String getWorkerAddress() {
+//        return workerAddress;
+//    }
+//
+//    public void setWorkerAddress(String workerAddress) {
+//        this.workerAddress = workerAddress;
+//    }
+//
+//    public ExecutionStatus getState() {
+//        return state;
+//    }
+//
+//    public void setState(ExecutionStatus state) {
+//        this.state = state;
+//    }
+//
+//    public Date getStartTime() {
+//        return startTime;
+//    }
+//
+//    public void setStartTime(Date startTime) {
+//        this.startTime = startTime;
+//    }
+//
+//    public Date getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(Date endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    public String getExecutePath() {
+//        return executePath;
+//    }
+//
+//    public void setExecutePath(String executePath) {
+//        this.executePath = executePath;
+//    }
+//
+//    public String getLogPath() {
+//        return logPath;
+//    }
+//
+//    public void setLogPath(String logPath) {
+//        this.logPath = logPath;
+//    }
+//
+//    public int getProcessId() {
+//        return processId;
+//    }
+//
+//    public void setProcessId(int processId) {
+//        this.processId = processId;
+//    }
+//
+//    public String getAppIds() {
+//        return appIds;
+//    }
+//
+//    public void setAppIds(String appIds) {
+//        this.appIds = appIds;
+//    }
+//
+//    public Event getEvent() {
+//        return event;
+//    }
+//
+//    public void setEvent(Event event) {
+//        this.event = event;
+//    }
+//
+//    public Channel getChannel() {
+//        return channel;
+//    }
+//
+//    public void setChannel(Channel channel) {
+//        this.channel = channel;
+//    }
 
 }

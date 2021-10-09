@@ -17,12 +17,10 @@
 
 package org.apache.dolphinscheduler.server.utils;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.sift.SiftingAppender;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.log.TaskLogDiscriminator;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +28,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 
-import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.sift.SiftingAppender;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LogUtilsTest {
@@ -39,8 +37,8 @@ public class LogUtilsTest {
     @Test
     public void testGetTaskLogPath() {
         TaskExecutionContext taskExecutionContext = new TaskExecutionContext();
-        taskExecutionContext.setProcessInstanceId(100);
-        taskExecutionContext.setTaskInstanceId(1000);
+        taskExecutionContext.setProcessInstanceId("100");
+        taskExecutionContext.setTaskInstanceId("1000");
         taskExecutionContext.setProcessDefineCode(1L);
         taskExecutionContext.setProcessDefineVersion(1);
 

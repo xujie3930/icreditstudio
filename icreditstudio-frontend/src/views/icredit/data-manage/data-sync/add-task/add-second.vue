@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="2" />
       <div class="add-task-content">
@@ -372,7 +371,6 @@
 </template>
 
 <script>
-import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import Affiliations from './affiliations'
 import dayjs from 'dayjs'
@@ -397,7 +395,7 @@ const viewDefaultData = {
 }
 
 export default {
-  components: { Back, HeaderStepBar, Affiliations, Dialog },
+  components: { HeaderStepBar, Affiliations, Dialog },
   mixins: [crud],
 
   data() {
@@ -760,13 +758,6 @@ export default {
         this.$message.error('宽表名称只能输入英文字母、下划线和数字！')
         this.secondTaskForm.wideTableName = ''
       }
-    },
-
-    // 返回提示
-    handleBackClick() {
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
-      this.$router.push('/data-manage/data-sync')
     },
 
     // 表单参数缓存以及过滤处理
@@ -1199,7 +1190,7 @@ export default {
 @import '~@/styles/public/data-manage';
 
 .add-task {
-  margin-top: -7px;
+  margin-top: 30px;
   height: calc(100% - 134px);
   overflow: hidden;
 }

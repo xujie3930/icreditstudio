@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.server.master.processor.queue;
 
+import io.netty.channel.Channel;
 import org.apache.dolphinscheduler.common.enums.Event;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.thread.Stopper;
@@ -24,21 +25,17 @@ import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.remote.command.DBTaskAckCommand;
 import org.apache.dolphinscheduler.remote.command.DBTaskResponseCommand;
 import org.apache.dolphinscheduler.service.process.ProcessService;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import io.netty.channel.Channel;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * task manager
@@ -152,7 +149,7 @@ public class TaskResponseService {
                     channel.writeAndFlush(taskAckCommand.convert2Command());
                 } catch (Exception e) {
                     logger.error("worker ack master error", e);
-                    DBTaskAckCommand taskAckCommand = new DBTaskAckCommand(ExecutionStatus.FAILURE.getCode(), -1);
+                    DBTaskAckCommand taskAckCommand = new DBTaskAckCommand(ExecutionStatus.FAILURE.getCode(), "-1");
                     channel.writeAndFlush(taskAckCommand.convert2Command());
                 }
                 break;
@@ -173,7 +170,7 @@ public class TaskResponseService {
                     channel.writeAndFlush(taskResponseCommand.convert2Command());
                 } catch (Exception e) {
                     logger.error("worker response master error", e);
-                    DBTaskResponseCommand taskResponseCommand = new DBTaskResponseCommand(ExecutionStatus.FAILURE.getCode(), -1);
+                    DBTaskResponseCommand taskResponseCommand = new DBTaskResponseCommand(ExecutionStatus.FAILURE.getCode(), "-1");
                     channel.writeAndFlush(taskResponseCommand.convert2Command());
                 }
                 break;

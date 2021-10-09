@@ -48,7 +48,7 @@ public interface UdfFuncService {
                                      String database,
                                      String desc,
                                      UdfType type,
-                                     int resourceId);
+                                     String resourceId);
 
     /**
      * query udf function
@@ -56,7 +56,7 @@ public interface UdfFuncService {
      * @param id  udf function id
      * @return udf function detail
      */
-    Map<String, Object> queryUdfFuncDetail(int id);
+    Map<String, Object> queryUdfFuncDetail(String id);
 
     /**
      * updateProcessInstance udf function
@@ -71,14 +71,14 @@ public interface UdfFuncService {
      * @param className class name
      * @return update result code
      */
-    Map<String, Object> updateUdfFunc(int udfFuncId,
+    Map<String, Object> updateUdfFunc(String udfFuncId,
                                       String funcName,
                                       String className,
                                       String argTypes,
                                       String database,
                                       String desc,
                                       UdfType type,
-                                      int resourceId);
+                                      String resourceId);
 
     /**
      * query udf function list paging

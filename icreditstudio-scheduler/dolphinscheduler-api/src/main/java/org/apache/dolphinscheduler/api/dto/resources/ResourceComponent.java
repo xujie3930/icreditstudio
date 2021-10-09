@@ -17,6 +17,7 @@
 package org.apache.dolphinscheduler.api.dto.resources;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.ResourceType;
 
 import java.util.ArrayList;
@@ -25,27 +26,28 @@ import java.util.List;
 /**
  * resource component
  */
-@JsonPropertyOrder({"id","pid","name","fullName","description","isDirctory","children","type"})
+@JsonPropertyOrder({"id", "pid", "name", "fullName", "description", "isDirctory", "children", "type"})
+@Data
 public abstract class ResourceComponent {
     public ResourceComponent() {
     }
 
-    public ResourceComponent(int id, int pid, String name, String fullName, String description, boolean isDirctory) {
+    public ResourceComponent(String id, int pid, String name, String fullName, String description, boolean isDirctory) {
         this.id = id;
         this.pid = pid;
         this.name = name;
         this.fullName = fullName;
         this.description = description;
         this.isDirctory = isDirctory;
-        int directoryFlag = isDirctory ? 1:0;
-        this.idValue = String.format("%s_%s",id,directoryFlag);
+        int directoryFlag = isDirctory ? 1 : 0;
+        this.idValue = String.format("%s_%s", id, directoryFlag);
     }
 
 
     /**
      * id
      */
-    protected int id;
+    protected String id;
     /**
      * parent id
      */
@@ -85,99 +87,100 @@ public abstract class ResourceComponent {
 
     /**
      * add resource component
+     *
      * @param resourceComponent resource component
      */
-    public void add(ResourceComponent resourceComponent){
+    public void add(ResourceComponent resourceComponent) {
         children.add(resourceComponent);
     }
 
-    public String getName(){
-        return this.name;
+//    public String getName(){
+//        return this.name;
+//    }
+//
+//    public String getDescription(){
+//        return this.description;
+//    }
+//
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public int getPid() {
+//        return pid;
+//    }
+//
+//    public void setPid(int pid) {
+//        this.pid = pid;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getFullName() {
+//        return fullName;
+//    }
+//
+//    public void setFullName(String fullName) {
+//        this.fullName = fullName;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public boolean isDirctory() {
+//        return isDirctory;
+//    }
+//
+//    public void setDirctory(boolean dirctory) {
+//        isDirctory = dirctory;
+//    }
+//
+//    public String getIdValue() {
+//        return idValue;
+//    }
+
+    public void setIdValue(String id, boolean isDirctory) {
+        int directoryFlag = isDirctory ? 1 : 0;
+        this.idValue = String.format("%s_%s", id, directoryFlag);
     }
 
-    public String getDescription(){
-        return this.description;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getPid() {
-        return pid;
-    }
-
-    public void setPid(int pid) {
-        this.pid = pid;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isDirctory() {
-        return isDirctory;
-    }
-
-    public void setDirctory(boolean dirctory) {
-        isDirctory = dirctory;
-    }
-
-    public String getIdValue() {
-        return idValue;
-    }
-
-    public void setIdValue(int id,boolean isDirctory) {
-        int directoryFlag = isDirctory ? 1:0;
-        this.idValue = String.format("%s_%s",id,directoryFlag);
-    }
-
-    public ResourceType getType() {
-        return type;
-    }
-
-    public void setType(ResourceType type) {
-        this.type = type;
-    }
-
-    public List<ResourceComponent> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<ResourceComponent> children) {
-        this.children = children;
-    }
-
-    @Override
-    public String toString() {
-        return "ResourceComponent{" +
-                "id=" + id +
-                ", pid=" + pid +
-                ", name='" + name + '\'' +
-                ", currentDir='" + currentDir + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", description='" + description + '\'' +
-                ", isDirctory=" + isDirctory +
-                ", idValue='" + idValue + '\'' +
-                ", type=" + type +
-                ", children=" + children +
-                '}';
-    }
+//    public ResourceType getType() {
+//        return type;
+//    }
+//
+//    public void setType(ResourceType type) {
+//        this.type = type;
+//    }
+//
+//    public List<ResourceComponent> getChildren() {
+//        return children;
+//    }
+//
+//    public void setChildren(List<ResourceComponent> children) {
+//        this.children = children;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "ResourceComponent{" +
+//                "id=" + id +
+//                ", pid=" + pid +
+//                ", name='" + name + '\'' +
+//                ", currentDir='" + currentDir + '\'' +
+//                ", fullName='" + fullName + '\'' +
+//                ", description='" + description + '\'' +
+//                ", isDirctory=" + isDirctory +
+//                ", idValue='" + idValue + '\'' +
+//                ", type=" + type +
+//                ", children=" + children +
+//                '}';
+//    }
 
 }

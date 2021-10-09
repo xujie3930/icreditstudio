@@ -19,12 +19,18 @@ package org.apache.dolphinscheduler.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * task definition log
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_task_definition_log")
 public class TaskDefinitionLog extends TaskDefinition {
 
@@ -38,10 +44,6 @@ public class TaskDefinitionLog extends TaskDefinition {
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
-
-    public TaskDefinitionLog() {
-        super();
-    }
 
     public TaskDefinitionLog(TaskDefinition taskDefinition) {
         super();
@@ -71,26 +73,5 @@ public class TaskDefinitionLog extends TaskDefinition {
         this.setFailRetryInterval(taskDefinition.getFailRetryInterval());
         this.setFailRetryTimes(taskDefinition.getFailRetryTimes());
         this.setFlag(taskDefinition.getFlag());
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task" v-loading="detailLoading">
       <HeaderStepBar />
 
@@ -49,7 +48,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="工作空间描述" prop="taskDescribe">
+        <el-form-item label="任务描述" prop="taskDescribe">
           <el-input
             clearable
             show-word-limit
@@ -79,14 +78,13 @@
 </template>
 
 <script>
-import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { verifySpecialStr } from '@/utils/validate'
 
 export default {
-  components: { Back, HeaderStepBar },
+  components: { HeaderStepBar },
 
   data() {
     return {

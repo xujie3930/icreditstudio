@@ -18,6 +18,8 @@
 package org.apache.dolphinscheduler.common.utils;
 
 import org.apache.dolphinscheduler.common.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -28,9 +30,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * logger utils
@@ -66,16 +65,16 @@ public class LoggerUtils {
     /**
      * build job id
      *
-     * @param affix Task Logger's prefix
+     * @param affix         Task Logger's prefix
      * @param processInstId process instance id
-     * @param taskId task id
+     * @param taskId        task id
      * @return task id format
      */
     public static String buildTaskId(String affix,
                                      Long processDefineCode,
                                      int processDefineVersion,
-                                     int processInstId,
-                                     int taskId) {
+                                     String processInstId,
+                                     String taskId) {
         // - [taskAppId=TASK-798_1-4084-15210]
         return String.format(" - %s%s-%s_%s-%s-%s]", TASK_APPID_LOG_FORMAT, affix, processDefineCode, processDefineVersion, processInstId, taskId);
     }
@@ -84,7 +83,7 @@ public class LoggerUtils {
      * processing log
      * get yarn application id list
      *
-     * @param log log content
+     * @param log    log content
      * @param logger logger
      * @return app id list
      */

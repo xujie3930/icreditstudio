@@ -23,6 +23,7 @@ import org.apache.dolphinscheduler.common.enums.TaskTimeoutStrategy;
 import org.apache.dolphinscheduler.common.enums.TimeoutFlag;
 import org.apache.dolphinscheduler.common.task.TaskTimeoutParameter;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
+import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.AlertDao;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
@@ -33,15 +34,13 @@ import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.queue.TaskPriority;
 import org.apache.dolphinscheduler.service.queue.TaskPriorityQueue;
 import org.apache.dolphinscheduler.service.queue.TaskPriorityQueueImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * master task exec base class
@@ -129,8 +128,8 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
         TaskDefinition taskDefinition = processService.findTaskDefinition(taskInstance.getTaskCode(), taskInstance.getTaskDefinitionVersion());
         boolean timeoutEnable = taskDefinition.getTimeoutFlag() == TimeoutFlag.OPEN;
         taskTimeoutParameter = new TaskTimeoutParameter(timeoutEnable,
-                                                        taskDefinition.getTimeoutNotifyStrategy(),
-                                                        taskDefinition.getTimeout());
+                taskDefinition.getTimeoutNotifyStrategy(),
+                taskDefinition.getTimeout());
         if (taskTimeoutParameter.getEnable()) {
             checkTimeoutFlag = true;
         }
@@ -170,7 +169,7 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
                 if (!submitDB) {
                     // submit task to db
                     task = processService.submitTask(taskInstance);
-                    if (task != null && task.getId() != 0) {
+                    if (task != null && /*task.getId() != 0*/StringUtils.isNotBlank(task.getId())) {
                         submitDB = true;
                     }
                 }
@@ -247,16 +246,16 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
      * buildTaskPriority
      *
      * @param processInstancePriority processInstancePriority
-     * @param processInstanceId processInstanceId
-     * @param taskInstancePriority taskInstancePriority
-     * @param taskInstanceId taskInstanceId
-     * @param workerGroup workerGroup
+     * @param processInstanceId       processInstanceId
+     * @param taskInstancePriority    taskInstancePriority
+     * @param taskInstanceId          taskInstanceId
+     * @param workerGroup             workerGroup
      * @return TaskPriority
      */
     private TaskPriority buildTaskPriority(int processInstancePriority,
-                                           int processInstanceId,
+                                           String processInstanceId,
                                            int taskInstancePriority,
-                                           int taskInstanceId,
+                                           String taskInstanceId,
                                            String workerGroup) {
         return new TaskPriority(processInstancePriority, processInstanceId,
                 taskInstancePriority, taskInstanceId, workerGroup);

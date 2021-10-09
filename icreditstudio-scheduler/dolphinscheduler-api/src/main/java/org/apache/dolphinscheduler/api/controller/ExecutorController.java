@@ -106,14 +106,14 @@ public class ExecutorController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result startProcessInstance(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                        @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                       @RequestParam(value = "processDefinitionId") int processDefinitionId,
+                                       @RequestParam(value = "processDefinitionId") String processDefinitionId,
                                        @RequestParam(value = "scheduleTime", required = false) String scheduleTime,
                                        @RequestParam(value = "failureStrategy", required = true) FailureStrategy failureStrategy,
                                        @RequestParam(value = "startNodeList", required = false) String startNodeList,
                                        @RequestParam(value = "taskDependType", required = false) TaskDependType taskDependType,
                                        @RequestParam(value = "execType", required = false) CommandType execType,
                                        @RequestParam(value = "warningType", required = true) WarningType warningType,
-                                       @RequestParam(value = "warningGroupId", required = false) int warningGroupId,
+                                       @RequestParam(value = "warningGroupId", required = false) String warningGroupId,
                                        @RequestParam(value = "runMode", required = false) RunMode runMode,
                                        @RequestParam(value = "processInstancePriority", required = false) Priority processInstancePriority,
                                        @RequestParam(value = "workerGroup", required = false, defaultValue = "default") String workerGroup,
@@ -155,7 +155,7 @@ public class ExecutorController extends BaseController {
     //TODO:工作流执行,这里插入Command
     public Result execute(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                           @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                          @RequestParam("processInstanceId") Integer processInstanceId,
+                          @RequestParam("processInstanceId") String processInstanceId,
                           @RequestParam("executeType") ExecuteType executeType
     ) {
         Map<String, Object> result = execService.execute(loginUser, projectName, processInstanceId, executeType);
@@ -178,7 +178,7 @@ public class ExecutorController extends BaseController {
     @ApiException(CHECK_PROCESS_DEFINITION_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result startCheckProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                              @RequestParam(value = "processDefinitionId") int processDefinitionId) {
+                                              @RequestParam(value = "processDefinitionId") String processDefinitionId) {
         Map<String, Object> result = execService.startCheckByProcessDefinedId(processDefinitionId);
         return returnDataList(result);
     }

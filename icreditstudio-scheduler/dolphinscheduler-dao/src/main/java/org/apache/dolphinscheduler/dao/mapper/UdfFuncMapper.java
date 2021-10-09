@@ -34,7 +34,7 @@ public interface UdfFuncMapper extends BaseMapper<UdfFunc> {
      * @param id udf id
      * @return UdfFunc
      */
-    UdfFunc selectUdfById(@Param("id") int id);
+    UdfFunc selectUdfById(@Param("id") String id);
 
     /**
      * query udf function by ids and function name
@@ -43,7 +43,7 @@ public interface UdfFuncMapper extends BaseMapper<UdfFunc> {
      * @param funcNames funcNames
      * @return udf function list
      */
-    List<UdfFunc> queryUdfByIdStr(@Param("ids") int[] ids,
+    List<UdfFunc> queryUdfByIdStr(@Param("ids") String[] ids,
                                   @Param("funcNames") String funcNames);
 
     /**
@@ -99,7 +99,7 @@ public interface UdfFuncMapper extends BaseMapper<UdfFunc> {
      * @param resourceIds resource id array
      * @return UDF function list
      */
-    List<UdfFunc> listUdfByResourceId(@Param("resourceIds") Integer[] resourceIds);
+    List<UdfFunc> listUdfByResourceId(@Param("resourceIds") String[] resourceIds);
 
     /**
      * list authorized UDF by resource id

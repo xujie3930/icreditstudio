@@ -56,6 +56,6 @@ public interface ResourceUserMapper extends BaseMapper<ResourcesUser> {
      * @return delete result
      */
     int deleteResourceUserArray(@Param("userId") String userId,
-                                @Param("resIds") Integer[] resIds);
+                                @Param("resIds") String[] resIds);
 
 }

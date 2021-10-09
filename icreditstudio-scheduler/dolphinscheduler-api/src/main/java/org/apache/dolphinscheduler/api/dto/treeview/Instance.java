@@ -25,7 +25,7 @@ import java.util.Date;
  */
 public class Instance {
 
-    private int id;
+    private String id;
     /**
      * node name
      */
@@ -44,15 +44,14 @@ public class Instance {
     /**
      * node start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
      * node end time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
-
 
 
     /**
@@ -68,15 +67,16 @@ public class Instance {
     private int subflowId;
 
 
-    public Instance(){}
+    public Instance() {
+    }
 
-    public Instance(int id,String name, String type){
+    public Instance(String id, String name, String type) {
         this.id = id;
         this.name = name;
         this.type = type;
     }
 
-    public Instance(int id,String name, String type,String state,Date startTime, Date endTime, String host, String duration,int subflowId) {
+    public Instance(String id, String name, String type, String state, Date startTime, Date endTime, String host, String duration, int subflowId) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -88,81 +88,80 @@ public class Instance {
         this.subflowId = subflowId;
     }
 
-    public Instance(int id,String name, String type,String state,Date startTime, Date endTime, String host, String duration) {
-        this(id, name, type, state, startTime, endTime,host,duration,0);
+    public Instance(String id, String name, String type, String state, Date startTime, Date endTime, String host, String duration) {
+        this(id, name, type, state, startTime, endTime, host, duration, 0);
     }
 
 
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public int getSubflowId() {
-        return subflowId;
-    }
-
-    public void setSubflowId(int subflowId) {
-        this.subflowId = subflowId;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getType() {
+//        return type;
+//    }
+//
+//    public void setType(String type) {
+//        this.type = type;
+//    }
+//
+//    public String getState() {
+//        return state;
+//    }
+//
+//    public void setState(String state) {
+//        this.state = state;
+//    }
+//
+//    public Date getStartTime() {
+//        return startTime;
+//    }
+//
+//    public void setStartTime(Date startTime) {
+//        this.startTime = startTime;
+//    }
+//
+//    public Date getEndTime() {
+//        return endTime;
+//    }
+//
+//    public void setEndTime(Date endTime) {
+//        this.endTime = endTime;
+//    }
+//
+//    public String getHost() {
+//        return host;
+//    }
+//
+//    public void setHost(String host) {
+//        this.host = host;
+//    }
+//
+//    public String getDuration() {
+//        return duration;
+//    }
+//
+//    public void setDuration(String duration) {
+//        this.duration = duration;
+//    }
+//
+//    public int getSubflowId() {
+//        return subflowId;
+//    }
+//
+//    public void setSubflowId(int subflowId) {
+//        this.subflowId = subflowId;
+//    }
 }
