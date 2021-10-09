@@ -29,13 +29,12 @@ import org.apache.dolphinscheduler.server.worker.cache.impl.TaskExecutionContext
 import org.apache.dolphinscheduler.server.worker.config.WorkerConfig;
 import org.apache.dolphinscheduler.server.worker.processor.TaskCallbackService;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
-
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.ExecutorService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Manage tasks
@@ -90,9 +89,9 @@ public class WorkerManagerThread implements Runnable {
      * Kill tasks that have not been executed, like delay task
      * then send Response to Master, update the execution status of task instance
      */
-    public void killTaskBeforeExecuteByInstanceId(Integer taskInstanceId) {
+    public void killTaskBeforeExecuteByInstanceId(String taskInstanceId) {
         workerExecuteQueue.stream()
-                .filter(taskExecuteThread -> taskExecuteThread.getTaskExecutionContext().getTaskInstanceId() == taskInstanceId)
+                .filter(taskExecuteThread -> taskExecuteThread.getTaskExecutionContext().getTaskInstanceId().equals(taskInstanceId))
                 .forEach(workerExecuteQueue::remove);
         sendTaskKillResponse(taskInstanceId);
     }
@@ -100,7 +99,7 @@ public class WorkerManagerThread implements Runnable {
     /**
      * kill task before execute , like delay task
      */
-    private void sendTaskKillResponse(Integer taskInstanceId) {
+    private void sendTaskKillResponse(String taskInstanceId) {
         TaskExecutionContext taskExecutionContext = taskExecutionContextCacheManager.getByTaskInstanceId(taskInstanceId);
         if (taskExecutionContext == null) {
             return;

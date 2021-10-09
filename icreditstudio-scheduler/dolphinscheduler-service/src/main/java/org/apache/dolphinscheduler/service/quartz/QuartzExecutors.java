@@ -352,7 +352,7 @@ public class QuartzExecutors {
      * @param processId process id
      * @return job name
      */
-    public static String buildJobName(int processId) {
+    public static String buildJobName(String processId) {
         StringBuilder sb = new StringBuilder(30);
         sb.append(QUARTZ_JOB_PRIFIX).append(UNDERLINE).append(processId);
         return sb.toString();

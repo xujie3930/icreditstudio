@@ -21,16 +21,22 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_alertgroup")
 public class AlertGroup {
     /**
      * primary key
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
     /**
      * group_name
      */
@@ -62,106 +68,106 @@ public class AlertGroup {
     @TableField(value = "create_user_id")
     private String createUserId;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCreateUserId() {
-        return createUserId;
-    }
-
-    public void setCreateUserId(String createUserId) {
-        this.createUserId = createUserId;
-    }
-
-    public String getAlertInstanceIds() {
-        return alertInstanceIds;
-    }
-
-    public void setAlertInstanceIds(String alertInstanceIds) {
-        this.alertInstanceIds = alertInstanceIds;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        AlertGroup that = (AlertGroup) o;
-
-        if (id != that.id) {
-            return false;
-        }
-        if (createUserId != that.createUserId) {
-            return false;
-        }
-        if (groupName != null ? !groupName.equals(that.groupName) : that.groupName != null) {
-            return false;
-        }
-        if (alertInstanceIds != null ? !alertInstanceIds.equals(that.alertInstanceIds) : that.alertInstanceIds != null) {
-            return false;
-        }
-        if (description != null ? !description.equals(that.description) : that.description != null) {
-            return false;
-        }
-        return !(createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) && !(updateTime != null ? !updateTime.equals(that.updateTime) : that.updateTime != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "AlertGroup{"
-                + "id=" + id
-                + "createUserId=" + createUserId
-                + ", groupName='" + groupName + '\''
-                + ", description='" + description + '\''
-                + ", createTime=" + createTime
-                + ", updateTime=" + updateTime
-                + '}';
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getGroupName() {
+//        return groupName;
+//    }
+//
+//    public void setGroupName(String groupName) {
+//        this.groupName = groupName;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public String getCreateUserId() {
+//        return createUserId;
+//    }
+//
+//    public void setCreateUserId(String createUserId) {
+//        this.createUserId = createUserId;
+//    }
+//
+//    public String getAlertInstanceIds() {
+//        return alertInstanceIds;
+//    }
+//
+//    public void setAlertInstanceIds(String alertInstanceIds) {
+//        this.alertInstanceIds = alertInstanceIds;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//
+//        AlertGroup that = (AlertGroup) o;
+//
+//        if (id != that.id) {
+//            return false;
+//        }
+//        if (createUserId != that.createUserId) {
+//            return false;
+//        }
+//        if (groupName != null ? !groupName.equals(that.groupName) : that.groupName != null) {
+//            return false;
+//        }
+//        if (alertInstanceIds != null ? !alertInstanceIds.equals(that.alertInstanceIds) : that.alertInstanceIds != null) {
+//            return false;
+//        }
+//        if (description != null ? !description.equals(that.description) : that.description != null) {
+//            return false;
+//        }
+//        return !(createTime != null ? !createTime.equals(that.createTime) : that.createTime != null) && !(updateTime != null ? !updateTime.equals(that.updateTime) : that.updateTime != null);
+//
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return super.hashCode();
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "AlertGroup{"
+//                + "id=" + id
+//                + "createUserId=" + createUserId
+//                + ", groupName='" + groupName + '\''
+//                + ", description='" + description + '\''
+//                + ", createTime=" + createTime
+//                + ", updateTime=" + updateTime
+//                + '}';
+//    }
 }

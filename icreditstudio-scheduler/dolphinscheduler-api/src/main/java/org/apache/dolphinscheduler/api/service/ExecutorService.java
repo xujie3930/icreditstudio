@@ -18,12 +18,7 @@
 package org.apache.dolphinscheduler.api.service;
 
 import org.apache.dolphinscheduler.api.enums.ExecuteType;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.RunMode;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.WarningType;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.User;
 
@@ -37,27 +32,27 @@ public interface ExecutorService {
     /**
      * execute process instance
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param processDefinitionId process Definition Id
-     * @param cronTime cron time
-     * @param commandType command type
-     * @param failureStrategy failuer strategy
-     * @param startNodeList start nodelist
-     * @param taskDependType node dependency type
-     * @param warningType warning type
-     * @param warningGroupId notify group id
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param processDefinitionId     process Definition Id
+     * @param cronTime                cron time
+     * @param commandType             command type
+     * @param failureStrategy         failuer strategy
+     * @param startNodeList           start nodelist
+     * @param taskDependType          node dependency type
+     * @param warningType             warning type
+     * @param warningGroupId          notify group id
      * @param processInstancePriority process instance priority
-     * @param workerGroup worker group name
-     * @param runMode run mode
-     * @param timeout timeout
-     * @param startParams the global param values which pass to new process instance
+     * @param workerGroup             worker group name
+     * @param runMode                 run mode
+     * @param timeout                 timeout
+     * @param startParams             the global param values which pass to new process instance
      * @return execute process instance code
      */
     Map<String, Object> execProcessInstance(User loginUser, String projectName,
-                                            int processDefinitionId, String cronTime, CommandType commandType,
+                                            String processDefinitionId, String cronTime, CommandType commandType,
                                             FailureStrategy failureStrategy, String startNodeList,
-                                            TaskDependType taskDependType, WarningType warningType, int warningGroupId,
+                                            TaskDependType taskDependType, WarningType warningType, String warningGroupId,
                                             RunMode runMode,
                                             Priority processInstancePriority, String workerGroup, Integer timeout,
                                             Map<String, String> startParams);
@@ -74,16 +69,16 @@ public interface ExecutorService {
     /**
      * do action to process instance：pause, stop, repeat, recover from pause, recover from stop
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser         login user
+     * @param projectName       project name
      * @param processInstanceId process instance id
-     * @param executeType execute type
+     * @param executeType       execute type
      * @return execute result code
      */
-    Map<String, Object> execute(User loginUser, String projectName, Integer processInstanceId, ExecuteType executeType);
+    Map<String, Object> execute(User loginUser, String projectName, String processInstanceId, ExecuteType executeType);
 
 
-    Map<String, Object> newExecute(User loginUser, String projectName, Integer processDefinitionId, ExecuteType executeType);
+    Map<String, Object> newExecute(User loginUser, String projectName, String processDefinitionId, ExecuteType executeType);
 
     /**
      * check if sub processes are offline before starting process definition
@@ -91,5 +86,5 @@ public interface ExecutorService {
      * @param processDefineId process definition id
      * @return check result code
      */
-    Map<String, Object> startCheckByProcessDefinedId(int processDefineId);
+    Map<String, Object> startCheckByProcessDefinedId(String processDefineId);
 }

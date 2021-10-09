@@ -81,7 +81,7 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
                                             String database,
                                             String desc,
                                             UdfType type,
-                                            int resourceId) {
+                                            String resourceId) {
         Result<Object> result = new Result<>();
 
         // if resource upload startup
@@ -146,7 +146,7 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
      * @return udf function detail
      */
     @Override
-    public Map<String, Object> queryUdfFuncDetail(int id) {
+    public Map<String, Object> queryUdfFuncDetail(String id) {
         Map<String, Object> result = new HashMap<>();
         UdfFunc udfFunc = udfFuncMapper.selectById(id);
         if (udfFunc == null) {
@@ -172,14 +172,14 @@ public class UdfFuncServiceImpl extends BaseServiceImpl implements UdfFuncServic
      * @return update result code
      */
     @Override
-    public Map<String, Object> updateUdfFunc(int udfFuncId,
+    public Map<String, Object> updateUdfFunc(String udfFuncId,
                                              String funcName,
                                              String className,
                                              String argTypes,
                                              String database,
                                              String desc,
                                              UdfType type,
-                                             int resourceId) {
+                                             String resourceId) {
         Map<String, Object> result = new HashMap<>();
         // verify udfFunc is exist
         UdfFunc udf = udfFuncMapper.selectUdfById(udfFuncId);

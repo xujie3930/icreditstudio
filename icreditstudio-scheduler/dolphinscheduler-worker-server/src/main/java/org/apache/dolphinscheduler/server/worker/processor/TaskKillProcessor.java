@@ -17,13 +17,10 @@
 
 package org.apache.dolphinscheduler.server.worker.processor;
 
+import io.netty.channel.Channel;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.LoggerUtils;
-import org.apache.dolphinscheduler.common.utils.OSUtils;
-import org.apache.dolphinscheduler.common.utils.Preconditions;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.CommandType;
 import org.apache.dolphinscheduler.remote.command.TaskKillRequestCommand;
@@ -39,14 +36,11 @@ import org.apache.dolphinscheduler.server.worker.config.WorkerConfig;
 import org.apache.dolphinscheduler.server.worker.runner.WorkerManagerThread;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
 import org.apache.dolphinscheduler.service.log.LogClientService;
-
-import java.util.Collections;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.channel.Channel;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * task kill processor
@@ -112,7 +106,7 @@ public class TaskKillProcessor implements NettyRequestProcessor {
     private Pair<Boolean, List<String>> doKill(TaskKillRequestCommand killCommand) {
         boolean processFlag = true;
         List<String> appIds = Collections.emptyList();
-        int taskInstanceId = killCommand.getTaskInstanceId();
+        String taskInstanceId = killCommand.getTaskInstanceId();
         TaskExecutionContext taskExecutionContext = taskExecutionContextCacheManager.getByTaskInstanceId(taskInstanceId);
         try {
             Integer processId = taskExecutionContext.getProcessId();
@@ -147,7 +141,7 @@ public class TaskKillProcessor implements NettyRequestProcessor {
      * build TaskKillResponseCommand
      *
      * @param killCommand kill command
-     * @param result exe result
+     * @param result      exe result
      * @return build TaskKillResponseCommand
      */
     private TaskKillResponseCommand buildKillTaskResponseCommand(TaskKillRequestCommand killCommand,
@@ -167,10 +161,10 @@ public class TaskKillProcessor implements NettyRequestProcessor {
     /**
      * kill yarn job
      *
-     * @param host host
-     * @param logPath logPath
+     * @param host        host
+     * @param logPath     logPath
      * @param executePath executePath
-     * @param tenantCode tenantCode
+     * @param tenantCode  tenantCode
      * @return Pair<Boolean, List < String>> yarn kill result
      */
     private Pair<Boolean, List<String>> killYarnJob(String host, String logPath, String executePath, String tenantCode) {

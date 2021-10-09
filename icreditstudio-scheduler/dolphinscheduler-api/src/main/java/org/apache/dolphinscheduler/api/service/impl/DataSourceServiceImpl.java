@@ -116,7 +116,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * @return update result code
      */
     @Override
-    public Result<Object> updateDataSource(int id, User loginUser, BaseDataSourceParamDTO dataSourceParam) {
+    public Result<Object> updateDataSource(String id, User loginUser, BaseDataSourceParamDTO dataSourceParam) {
         DatasourceUtil.checkDatasourceParam(dataSourceParam);
         Result<Object> result = new Result<>();
         // determine whether the data source exists
@@ -180,7 +180,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * @return data source detail
      */
     @Override
-    public Map<String, Object> queryDataSource(int id) {
+    public Map<String, Object> queryDataSource(String id) {
 
         Map<String, Object> result = new HashMap<>();
         DataSource dataSource = dataSourceMapper.selectById(id);
@@ -329,7 +329,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      * @return connect result code
      */
     @Override
-    public Result<Object> connectionTest(int id) {
+    public Result<Object> connectionTest(String id) {
         DataSource dataSource = dataSourceMapper.selectById(id);
         if (dataSource == null) {
             Result<Object> result = new Result<>();
@@ -348,7 +348,7 @@ public class DataSourceServiceImpl extends BaseServiceImpl implements DataSource
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Result<Object> delete(User loginUser, int datasourceId) {
+    public Result<Object> delete(User loginUser, String datasourceId) {
         Result<Object> result = new Result<>();
         try {
             //query datasource by id

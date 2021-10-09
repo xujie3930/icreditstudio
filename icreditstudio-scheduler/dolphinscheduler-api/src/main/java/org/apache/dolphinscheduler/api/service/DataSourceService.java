@@ -47,7 +47,7 @@ public interface DataSourceService {
      * @param dataSourceParam data source params
      * @return update result code
      */
-    Result<Object> updateDataSource(int id, User loginUser, BaseDataSourceParamDTO dataSourceParam);
+    Result<Object> updateDataSource(String id, User loginUser, BaseDataSourceParamDTO dataSourceParam);
 
     /**
      * updateProcessInstance datasource
@@ -55,7 +55,7 @@ public interface DataSourceService {
      * @param id datasource id
      * @return data source detail
      */
-    Map<String, Object> queryDataSource(int id);
+    Map<String, Object> queryDataSource(String id);
 
     /**
      * query datasource list by keyword
@@ -100,7 +100,7 @@ public interface DataSourceService {
      * @param id datasource id
      * @return connect result code
      */
-    Result<Object> connectionTest(int id);
+    Result<Object> connectionTest(String id);
 
     /**
      * delete datasource
@@ -109,7 +109,7 @@ public interface DataSourceService {
      * @param datasourceId data source id
      * @return delete result code
      */
-    Result<Object> delete(User loginUser, int datasourceId);
+    Result<Object> delete(User loginUser, String datasourceId);
 
     /**
      * unauthorized datasource

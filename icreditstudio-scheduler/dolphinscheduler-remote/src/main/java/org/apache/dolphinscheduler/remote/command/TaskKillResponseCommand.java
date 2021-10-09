@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
@@ -25,12 +26,13 @@ import java.util.List;
 /**
  * kill task response command
  */
+@Data
 public class TaskKillResponseCommand implements Serializable {
 
     /**
      * taskInstanceId
      */
-    private int taskInstanceId;
+    private String taskInstanceId;
 
     /**
      * host
@@ -53,45 +55,45 @@ public class TaskKillResponseCommand implements Serializable {
      */
     private List<String> appIds;
 
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(int processId) {
-        this.processId = processId;
-    }
-
-    public List<String> getAppIds() {
-        return appIds;
-    }
-
-    public void setAppIds(List<String> appIds) {
-        this.appIds = appIds;
-    }
+//    public int getTaskInstanceId() {
+//        return taskInstanceId;
+//    }
+//
+//    public void setTaskInstanceId(int taskInstanceId) {
+//        this.taskInstanceId = taskInstanceId;
+//    }
+//
+//    public String getHost() {
+//        return host;
+//    }
+//
+//    public void setHost(String host) {
+//        this.host = host;
+//    }
+//
+//    public int getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(int status) {
+//        this.status = status;
+//    }
+//
+//    public int getProcessId() {
+//        return processId;
+//    }
+//
+//    public void setProcessId(int processId) {
+//        this.processId = processId;
+//    }
+//
+//    public List<String> getAppIds() {
+//        return appIds;
+//    }
+//
+//    public void setAppIds(List<String> appIds) {
+//        this.appIds = appIds;
+//    }
 
     /**
      * package request command
@@ -106,14 +108,14 @@ public class TaskKillResponseCommand implements Serializable {
         return command;
     }
 
-    @Override
-    public String toString() {
-        return "TaskKillResponseCommand{"
-                + "taskInstanceId=" + taskInstanceId
-                + ", host='" + host + '\''
-                + ", status=" + status
-                + ", processId=" + processId
-                + ", appIds=" + appIds
-                + '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "TaskKillResponseCommand{"
+//                + "taskInstanceId=" + taskInstanceId
+//                + ", host='" + host + '\''
+//                + ", status=" + status
+//                + ", processId=" + processId
+//                + ", appIds=" + appIds
+//                + '}';
+//    }
 }

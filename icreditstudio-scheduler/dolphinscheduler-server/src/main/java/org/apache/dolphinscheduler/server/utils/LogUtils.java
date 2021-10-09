@@ -17,18 +17,16 @@
 
 package org.apache.dolphinscheduler.server.utils;
 
+import ch.qos.logback.classic.sift.SiftingAppender;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.spi.AppenderAttachable;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.log.TaskLogDiscriminator;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
-
-import org.slf4j.LoggerFactory;
-
-import ch.qos.logback.classic.sift.SiftingAppender;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.spi.AppenderAttachable;
 
 public class LogUtils {
 
@@ -39,7 +37,7 @@ public class LogUtils {
     /**
      * get task log path
      */
-    public static String getTaskLogPath(Long processDefineCode, int processDefineVersion, int processInstanceId, int taskInstanceId) {
+    public static String getTaskLogPath(Long processDefineCode, int processDefineVersion, String processInstanceId, String taskInstanceId) {
         // Optional.map will be skipped if null
         return Optional.of(LoggerFactory.getILoggerFactory())
                 .map(e -> (AppenderAttachable<ILoggingEvent>) (e.getLogger("ROOT")))

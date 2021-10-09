@@ -19,14 +19,12 @@ package org.apache.dolphinscheduler.server.entity;
 
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.dao.entity.UdfFunc;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class SQLTaskExecutionContextTest {
 
@@ -127,13 +125,13 @@ public class SQLTaskExecutionContextTest {
 
     UdfFunc udfFunc = new UdfFunc();
     udfFunc.setArgTypes("1");
-    udfFunc.setId(1);
+    udfFunc.setId("1");
     udfFunc.setResourceName("name1");
     udfmap.put(udfFunc, "map1");
 
     UdfFunc udfFunc2 = new UdfFunc();
     udfFunc2.setArgTypes("2");
-    udfFunc2.setId(2);
+    udfFunc2.setId("2");
     udfFunc2.setResourceName("name2");
     udfmap.put(udfFunc2, "map2");
 

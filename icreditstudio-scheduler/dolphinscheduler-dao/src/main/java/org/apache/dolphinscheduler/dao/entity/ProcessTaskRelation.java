@@ -17,26 +17,31 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import org.apache.dolphinscheduler.common.enums.ConditionType;
-
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.apache.dolphinscheduler.common.enums.ConditionType;
+
+import java.util.Date;
 
 /**
  * process task relation
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_process_task_relation")
 public class ProcessTaskRelation {
 
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
 
     /**
      * name
@@ -100,9 +105,6 @@ public class ProcessTaskRelation {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-    public ProcessTaskRelation() {
-    }
-
     public ProcessTaskRelation(String name,
                                int processDefinitionVersion,
                                long projectCode,
@@ -129,126 +131,126 @@ public class ProcessTaskRelation {
         this.updateTime = updateTime;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getConditionParams() {
-        return conditionParams;
-    }
-
-    public void setConditionParams(String conditionParams) {
-        this.conditionParams = conditionParams;
-    }
-
-    public int getProcessDefinitionVersion() {
-        return processDefinitionVersion;
-    }
-
-    public void setProcessDefinitionVersion(int processDefinitionVersion) {
-        this.processDefinitionVersion = processDefinitionVersion;
-    }
-
-    public long getProjectCode() {
-        return projectCode;
-    }
-
-    public void setProjectCode(long projectCode) {
-        this.projectCode = projectCode;
-    }
-
-    public long getProcessDefinitionCode() {
-        return processDefinitionCode;
-    }
-
-    public void setProcessDefinitionCode(long processDefinitionCode) {
-        this.processDefinitionCode = processDefinitionCode;
-    }
-
-    public long getPreTaskCode() {
-        return preTaskCode;
-    }
-
-    public void setPreTaskCode(long preTaskCode) {
-        this.preTaskCode = preTaskCode;
-    }
-
-    public long getPostTaskCode() {
-        return postTaskCode;
-    }
-
-    public void setPostTaskCode(long postTaskCode) {
-        this.postTaskCode = postTaskCode;
-    }
-
-    public ConditionType getConditionType() {
-        return conditionType;
-    }
-
-    public void setConditionType(ConditionType conditionType) {
-        this.conditionType = conditionType;
-    }
-
-    public int getPreTaskVersion() {
-        return preTaskVersion;
-    }
-
-    public void setPreTaskVersion(int preTaskVersion) {
-        this.preTaskVersion = preTaskVersion;
-    }
-
-    public int getPostTaskVersion() {
-        return postTaskVersion;
-    }
-
-    public void setPostTaskVersion(int postTaskVersion) {
-        this.postTaskVersion = postTaskVersion;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessTaskRelation{"
-                + "id=" + id
-                + ", name='" + name + '\''
-                + ", processDefinitionVersion=" + processDefinitionVersion
-                + ", projectCode=" + projectCode
-                + ", processDefinitionCode=" + processDefinitionCode
-                + ", preTaskCode=" + preTaskCode
-                + ", preTaskVersion=" + preTaskVersion
-                + ", postTaskCode=" + postTaskCode
-                + ", postTaskVersion=" + postTaskVersion
-                + ", conditionType=" + conditionType
-                + ", conditionParams='" + conditionParams + '\''
-                + ", createTime=" + createTime
-                + ", updateTime=" + updateTime
-                + '}';
-    }
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//    public String getConditionParams() {
+//        return conditionParams;
+//    }
+//
+//    public void setConditionParams(String conditionParams) {
+//        this.conditionParams = conditionParams;
+//    }
+//
+//    public int getProcessDefinitionVersion() {
+//        return processDefinitionVersion;
+//    }
+//
+//    public void setProcessDefinitionVersion(int processDefinitionVersion) {
+//        this.processDefinitionVersion = processDefinitionVersion;
+//    }
+//
+//    public long getProjectCode() {
+//        return projectCode;
+//    }
+//
+//    public void setProjectCode(long projectCode) {
+//        this.projectCode = projectCode;
+//    }
+//
+//    public long getProcessDefinitionCode() {
+//        return processDefinitionCode;
+//    }
+//
+//    public void setProcessDefinitionCode(long processDefinitionCode) {
+//        this.processDefinitionCode = processDefinitionCode;
+//    }
+//
+//    public long getPreTaskCode() {
+//        return preTaskCode;
+//    }
+//
+//    public void setPreTaskCode(long preTaskCode) {
+//        this.preTaskCode = preTaskCode;
+//    }
+//
+//    public long getPostTaskCode() {
+//        return postTaskCode;
+//    }
+//
+//    public void setPostTaskCode(long postTaskCode) {
+//        this.postTaskCode = postTaskCode;
+//    }
+//
+//    public ConditionType getConditionType() {
+//        return conditionType;
+//    }
+//
+//    public void setConditionType(ConditionType conditionType) {
+//        this.conditionType = conditionType;
+//    }
+//
+//    public int getPreTaskVersion() {
+//        return preTaskVersion;
+//    }
+//
+//    public void setPreTaskVersion(int preTaskVersion) {
+//        this.preTaskVersion = preTaskVersion;
+//    }
+//
+//    public int getPostTaskVersion() {
+//        return postTaskVersion;
+//    }
+//
+//    public void setPostTaskVersion(int postTaskVersion) {
+//        this.postTaskVersion = postTaskVersion;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "ProcessTaskRelation{"
+//                + "id=" + id
+//                + ", name='" + name + '\''
+//                + ", processDefinitionVersion=" + processDefinitionVersion
+//                + ", projectCode=" + projectCode
+//                + ", processDefinitionCode=" + processDefinitionCode
+//                + ", preTaskCode=" + preTaskCode
+//                + ", preTaskVersion=" + preTaskVersion
+//                + ", postTaskCode=" + postTaskCode
+//                + ", postTaskVersion=" + postTaskVersion
+//                + ", conditionType=" + conditionType
+//                + ", conditionParams='" + conditionParams + '\''
+//                + ", createTime=" + createTime
+//                + ", updateTime=" + updateTime
+//                + '}';
+//    }
 }

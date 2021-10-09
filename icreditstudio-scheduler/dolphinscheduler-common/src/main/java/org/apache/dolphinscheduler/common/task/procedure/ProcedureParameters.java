@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.common.task.procedure;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.process.ResourceInfo;
 import org.apache.dolphinscheduler.common.task.AbstractParameters;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
@@ -27,64 +28,65 @@ import java.util.List;
 /**
  * procedure parameter
  */
+@Data
 public class ProcedureParameters extends AbstractParameters {
 
-  /**
-   * data source type，eg  MYSQL, POSTGRES, HIVE ...
-   */
-  private String type;
+    /**
+     * data source type，eg  MYSQL, POSTGRES, HIVE ...
+     */
+    private String type;
 
-  /**
-   * data source id
-   */
-  private int datasource;
+    /**
+     * data source id
+     */
+    private int datasource;
 
-  /**
-   * procedure name
-   */
-  private String method;
+    /**
+     * procedure name
+     */
+    private String method;
 
 
-  public String getType() {
-    return type;
-  }
+//  public String getType() {
+//    return type;
+//  }
+//
+//  public void setType(String type) {
+//    this.type = type;
+//  }
+//
+//  public int getDatasource() {
+//    return datasource;
+//  }
+//
+//  public void setDatasource(int datasource) {
+//    this.datasource = datasource;
+//  }
+//
+//  public String getMethod() {
+//    return method;
+//  }
+//
+//  public void setMethod(String method) {
+//    this.method = method;
+//  }
 
-  public void setType(String type) {
-    this.type = type;
-  }
+    @Override
+    public boolean checkParameters() {
+        return datasource != 0 && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(method);
+    }
 
-  public int getDatasource() {
-    return datasource;
-  }
+    @Override
+    public List<ResourceInfo> getResourceFilesList() {
+        return new ArrayList<>();
+    }
 
-  public void setDatasource(int datasource) {
-    this.datasource = datasource;
-  }
-
-  public String getMethod() {
-    return method;
-  }
-
-  public void setMethod(String method) {
-    this.method = method;
-  }
-
-  @Override
-  public boolean checkParameters() {
-    return datasource != 0 && StringUtils.isNotEmpty(type) && StringUtils.isNotEmpty(method);
-  }
-
-  @Override
-  public List<ResourceInfo> getResourceFilesList() {
-    return new ArrayList<>();
-  }
-
-  @Override
-  public String toString() {
-    return "ProcessdureParam{" +
-            "type='" + type + '\'' +
-            ", datasource=" + datasource +
-            ", method='" + method + '\'' +
-            '}';
-  }
+//  @Override
+//  public String toString() {
+//    return "ProcessdureParam{" +
+//            "type='" + type + '\'' +
+//            ", datasource=" + datasource +
+//            ", method='" + method + '\'' +
+//            '}';
+//  }
 }
