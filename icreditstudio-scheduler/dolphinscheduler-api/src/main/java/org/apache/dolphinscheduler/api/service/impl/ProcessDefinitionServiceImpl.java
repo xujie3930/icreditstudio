@@ -169,10 +169,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             return result;
         }
 
-        int saveResult = processService.saveProcessDefinition(loginUser, project, processDefinitionName, desc,
-                locations, connects, processData, processDefinition, true, request.getWorkspaceId());
         String saveResult = processService.saveProcessDefinition(loginUser, project, processDefinitionName, desc,
-                locations, connects, processData, processDefinition, true);
+                locations, connects, processData, processDefinition, true, request.getWorkspaceId());
 
         if (StringUtils.isNotBlank(saveResult)) {
             putMsg(result, Status.SUCCESS);
@@ -381,8 +379,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
             }
         }
         ProcessData newProcessData = JSONUtils.parseObject(processDefinitionJson, ProcessData.class);
-        int saveResult = processService.saveProcessDefinition(loginUser, project, name, desc,
-                locations, connects, newProcessData, processDefinition, true, "");
+        String saveResult = processService.saveProcessDefinition(loginUser, project, name, desc,
+                locations, connects, newProcessData, processDefinition, true, null);
 
         if (StringUtils.isNotBlank(saveResult)) {
             putMsg(result, Status.SUCCESS);

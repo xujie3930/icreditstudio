@@ -85,7 +85,7 @@ public class DolphinSchedulerDemoService {
         TaskDependType taskDependType = TaskDependType.TASK_POST;
         CommandType execType = null;
         WarningType warningType = WarningType.NONE;
-        int warningGroupId = 0;
+        String warningGroupId = "0";
         String receivers = "";
         String receiversCc = "";
         RunMode runMode = RunMode.RUN_MODE_SERIAL;
@@ -108,7 +108,7 @@ public class DolphinSchedulerDemoService {
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects, null);
 
         //启动工作流定义
-        int processDefinitionId = (int) processDefinitionResult.get("processDefinitionId");
+        String processDefinitionId = (String) processDefinitionResult.get("processDefinitionId");
         Map<String, Object> execProcessInstanceResult = execService.execProcessInstance(loginUser, projectName, processDefinitionId, scheduleTime, execType, failureStrategy, startNodeList,
                 taskDependType, warningType, warningGroupId, runMode, processInstancePriority, workerGroup, timeout, null);
 
@@ -222,7 +222,7 @@ public class DolphinSchedulerDemoService {
         TaskDependType taskDependType = TaskDependType.TASK_POST;
         CommandType execType = null;
         WarningType warningType = WarningType.NONE;
-        int warningGroupId = 0;
+        String warningGroupId = "0";
         String receivers = "";
         String receiversCc = "";
         RunMode runMode = RunMode.RUN_MODE_SERIAL;
@@ -239,14 +239,14 @@ public class DolphinSchedulerDemoService {
         Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects, request);
 
         //启动工作流定义
-        int processDefinitionId = (int) processDefinitionResult.get("processDefinitionId");
+        String processDefinitionId = (String) processDefinitionResult.get("processDefinitionId");
         Map<String, Object> execProcessInstanceResult = execService.execProcessInstance(loginUser, projectName, processDefinitionId, scheduleTime, execType, failureStrategy, startNodeList,
                 taskDependType, warningType, warningGroupId, runMode, processInstancePriority, workerGroup, timeout, null);
 
         if (StringUtils.isNotBlank(schedule) && StringUtils.isNotBlank(startTime) && StringUtils.isNotBlank(endTime)) {
             Map<String, Object> scheduleResult = schedulerService.myInsertSchedule(startTime, endTime, loginUser, projectName, processDefinitionId, schedule,
                     warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup, request.getWorkspaceId());
-            schedulerService.setScheduleState(loginUser, projectName, (int) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
+            schedulerService.setScheduleState(loginUser, projectName, (String) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
         }
 
         Map<String, String> resultMap = new HashMap<>();

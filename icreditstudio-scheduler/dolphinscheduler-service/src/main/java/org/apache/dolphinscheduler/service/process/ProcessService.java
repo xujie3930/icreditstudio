@@ -2205,7 +2205,7 @@ public class ProcessService {
      */
     public ProcessDefinitionLog insertProcessDefinitionLog(User operator, Long processDefinitionCode, String processDefinitionName,
                                                            ProcessData processData, Project project,
-                                                           String desc, String locations, String connects) {
+                                                           String desc, String locations, String connects, String workspaceId) {
         ProcessDefinitionLog processDefinitionLog = new ProcessDefinitionLog();
         Integer version = processDefineLogMapper.queryMaxVersionForDefinition(processDefinitionCode);
         processDefinitionLog.setUserId(operator.getId());
