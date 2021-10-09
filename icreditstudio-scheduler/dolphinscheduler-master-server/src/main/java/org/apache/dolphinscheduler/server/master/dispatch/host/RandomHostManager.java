@@ -17,8 +17,9 @@
 
 package org.apache.dolphinscheduler.server.master.dispatch.host;
 
-import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
+import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.server.master.dispatch.host.assign.RandomSelector;
+import org.apache.dolphinscheduler.server.master.dispatch.host.assign.Selector;
 
 import java.util.Collection;
 
@@ -30,18 +31,17 @@ public class RandomHostManager extends CommonHostManager {
     /**
      * selector
      */
-    private final RandomSelector selector;
+    private final Selector<Host> selector;
 
     /**
      * set round robin
      */
-    public RandomHostManager() {
-        this.selector = new RandomSelector();
+    public RandomHostManager(){
+        this.selector = new RandomSelector<>();
     }
 
     @Override
-    public HostWorker select(Collection<HostWorker> nodes) {
+    public Host select(Collection<Host> nodes) {
         return selector.select(nodes);
     }
-
 }

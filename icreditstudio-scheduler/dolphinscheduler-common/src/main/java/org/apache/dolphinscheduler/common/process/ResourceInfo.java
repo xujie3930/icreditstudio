@@ -16,30 +16,33 @@
  */
 package org.apache.dolphinscheduler.common.process;
 
+import lombok.Data;
+
 /**
  * resource info
  */
+@Data
 public class ResourceInfo {
-  /**
-   * res the name of the resource that was uploaded
-   */
-  private int id;
+    /**
+     * res the name of the resource that was uploaded
+     */
+    private String id;
 
-  public int getId() {
-    return id;
-  }
+//  public int getId() {
+//    return id;
+//  }
+//
+//  public void setId(int id) {
+//    this.id = id;
+//  }
 
-  public void setId(int id) {
-    this.id = id;
-  }
+    private String res;
 
-  private String res;
-
-  public String getRes() {
-    return res;
-  }
-
-  public void setRes(String res) {
-    this.res = res;
-  }
+//  public String getRes() {
+//    return res;
+//  }
+//
+//  public void setRes(String res) {
+//    this.res = res;
+//  }
 }

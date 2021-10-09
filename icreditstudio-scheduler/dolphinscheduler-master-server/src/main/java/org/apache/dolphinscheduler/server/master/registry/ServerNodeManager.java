@@ -18,20 +18,23 @@
 package org.apache.dolphinscheduler.server.master.registry;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.NodeType;
+import org.apache.dolphinscheduler.common.enums.ZKNodeType;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.AlertDao;
 import org.apache.dolphinscheduler.dao.entity.WorkerGroup;
 import org.apache.dolphinscheduler.dao.mapper.WorkerGroupMapper;
-import org.apache.dolphinscheduler.registry.DataChangeEvent;
-import org.apache.dolphinscheduler.registry.SubscribeListener;
 import org.apache.dolphinscheduler.remote.utils.NamedThreadFactory;
-import org.apache.dolphinscheduler.service.registry.RegistryClient;
+import org.apache.dolphinscheduler.server.registry.ZookeeperRegistryCenter;
+import org.apache.dolphinscheduler.service.registry.AbstractListener;
+import org.apache.dolphinscheduler.service.registry.AbstractZKClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PreDestroy;
@@ -42,9 +45,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS;
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS;
 
 /**
  * server node manager
@@ -93,7 +93,13 @@ public class ServerNodeManager implements InitializingBean {
      * zk client
      */
     @Autowired
-    private RegistryClient registryClient;
+    private ZKClient zkClient;
+
+    /**
+     * zookeeper registry center
+     */
+    @Autowired
+    private ZookeeperRegistryCenter registryCenter;
 
     /**
      * worker group mapper
@@ -126,11 +132,11 @@ public class ServerNodeManager implements InitializingBean {
         /**
          * init MasterNodeListener listener
          */
-        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_MASTERS, new MasterDataListener());
+        registryCenter.getRegisterOperator().addListener(new MasterNodeListener());
         /**
          * init WorkerNodeListener listener
          */
-        registryClient.subscribe(REGISTRY_DOLPHINSCHEDULER_WORKERS, new WorkerGroupNodeListener());//WorkerGroupNodeListener
+        registryCenter.getRegisterOperator().addListener(new WorkerGroupNodeListener());
     }
 
     /**
@@ -140,16 +146,23 @@ public class ServerNodeManager implements InitializingBean {
         /**
          * master nodes from zookeeper
          */
-        Set<String> initMasterNodes = registryClient.getMasterNodesDirectly();
+        Set<String> initMasterNodes = registryCenter.getMasterNodesDirectly();
         syncMasterNodes(initMasterNodes);
 
         /**
          * worker group nodes from zookeeper
          */
-        Set<String> workerGroups = registryClient.getWorkerGroupDirectly();
+        Set<String> workerGroups = registryCenter.getWorkerGroupDirectly();
         for (String workerGroup : workerGroups) {
-            syncWorkerGroupNodes(workerGroup, registryClient.getWorkerGroupNodesDirectly(workerGroup));
+            syncWorkerGroupNodes(workerGroup, registryCenter.getWorkerGroupNodesDirectly(workerGroup));
         }
+    }
+
+    /**
+     * zookeeper client
+     */
+    @Component
+    static class ZKClient extends AbstractZKClient {
     }
 
     /**
@@ -160,7 +173,7 @@ public class ServerNodeManager implements InitializingBean {
         @Override
         public void run() {
             // sync worker node info
-            Map<String, String> newWorkerNodeInfo = registryClient.getServerMaps(NodeType.WORKER, true);
+            Map<String, String> newWorkerNodeInfo = zkClient.getServerMaps(ZKNodeType.WORKER, true);
             syncWorkerNodeInfo(newWorkerNodeInfo);
 
             // sync worker group nodes from database
@@ -186,22 +199,22 @@ public class ServerNodeManager implements InitializingBean {
     /**
      * worker group node listener
      */
-    class WorkerGroupNodeListener implements SubscribeListener {
+    class WorkerGroupNodeListener extends AbstractListener {
 
         @Override
-        public void notify(String path, DataChangeEvent dataChangeEvent) {
-            if (registryClient.isWorkerPath(path)) {
+        protected void dataChanged(CuratorFramework client, TreeCacheEvent event, String path) {
+            if (registryCenter.isWorkerPath(path)) {
                 try {
-                    if (dataChangeEvent == DataChangeEvent.ADD) {
+                    if (event.getType() == TreeCacheEvent.Type.NODE_ADDED) {
                         logger.info("worker group node : {} added.", path);
                         String group = parseGroup(path);
-                        Set<String> currentNodes = registryClient.getWorkerGroupNodesDirectly(group);
+                        Set<String> currentNodes = registryCenter.getWorkerGroupNodesDirectly(group);
                         logger.info("currentNodes : {}", currentNodes);
                         syncWorkerGroupNodes(group, currentNodes);
-                    } else if (dataChangeEvent == DataChangeEvent.REMOVE) {
+                    } else if (event.getType() == TreeCacheEvent.Type.NODE_REMOVED) {
                         logger.info("worker group node : {} down.", path);
                         String group = parseGroup(path);
-                        Set<String> currentNodes = registryClient.getWorkerGroupNodesDirectly(group);
+                        Set<String> currentNodes = registryCenter.getWorkerGroupNodesDirectly(group);
                         syncWorkerGroupNodes(group, currentNodes);
                         alertDao.sendServerStopedAlert("1", path, "WORKER");
                     }
@@ -210,36 +223,34 @@ public class ServerNodeManager implements InitializingBean {
                 } catch (Exception ex) {
                     logger.error("WorkerGroupListener capture data change and get data failed", ex);
                 }
-
             }
         }
 
         private String parseGroup(String path) {
             String[] parts = path.split("/");
-//            if (parts.length < 6) {
-//                throw new IllegalArgumentException(String.format("worker group path : %s is not valid, ignore", path));
-//            }
+            if (parts.length < 6) {
+                throw new IllegalArgumentException(String.format("worker group path : %s is not valid, ignore", path));
+            }
             return parts[parts.length - 2];
         }
-
     }
 
     /**
      * master node listener
      */
-    class MasterDataListener implements SubscribeListener {
+    class MasterNodeListener extends AbstractListener {
+
         @Override
-        public void notify(String path, DataChangeEvent dataChangeEvent) {
-            if (registryClient.isMasterPath(path)) {
+        protected void dataChanged(CuratorFramework client, TreeCacheEvent event, String path) {
+            if (registryCenter.isMasterPath(path)) {
                 try {
-                    if (dataChangeEvent.equals(DataChangeEvent.ADD)) {
+                    if (event.getType() == TreeCacheEvent.Type.NODE_ADDED) {
                         logger.info("master node : {} added.", path);
-                        Set<String> currentNodes = registryClient.getMasterNodesDirectly();
+                        Set<String> currentNodes = registryCenter.getMasterNodesDirectly();
                         syncMasterNodes(currentNodes);
-                    }
-                    if (dataChangeEvent.equals(DataChangeEvent.REMOVE)) {
+                    } else if (event.getType() == TreeCacheEvent.Type.NODE_REMOVED) {
                         logger.info("master node : {} down.", path);
-                        Set<String> currentNodes = registryClient.getMasterNodesDirectly();
+                        Set<String> currentNodes = registryCenter.getMasterNodesDirectly();
                         syncMasterNodes(currentNodes);
                         alertDao.sendServerStopedAlert("1", path, "MASTER");
                     }
@@ -283,7 +294,7 @@ public class ServerNodeManager implements InitializingBean {
      * sync worker group nodes
      *
      * @param workerGroup worker group
-     * @param nodes worker nodes
+     * @param nodes       worker nodes
      */
     private void syncWorkerGroupNodes(String workerGroup, Set<String> nodes) {
         workerGroupLock.lock();
@@ -370,7 +381,7 @@ public class ServerNodeManager implements InitializingBean {
     @PreDestroy
     public void destroy() {
         executorService.shutdownNow();
-        registryClient.close();
+        registryCenter.close();
     }
 
 }

@@ -17,14 +17,10 @@
 
 package org.apache.dolphinscheduler.server.master.dispatch.host;
 
-import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.ResInfo;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.server.master.dispatch.context.ExecutionContext;
 import org.apache.dolphinscheduler.server.master.dispatch.enums.ExecutorType;
-import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
 import org.apache.dolphinscheduler.server.master.registry.ServerNodeManager;
 
 import java.util.ArrayList;
@@ -52,7 +48,7 @@ public abstract class CommonHostManager implements HostManager {
      */
     @Override
     public Host select(ExecutionContext context) {
-        List<HostWorker> candidates = null;
+        List<Host> candidates = null;
         String workerGroup = context.getWorkerGroup();
         ExecutorType executorType = context.getExecutorType();
         switch (executorType) {
@@ -71,30 +67,17 @@ public abstract class CommonHostManager implements HostManager {
         return select(candidates);
     }
 
-    protected abstract HostWorker select(Collection<HostWorker> nodes);
+    protected abstract Host select(Collection<Host> nodes);
 
-    protected List<HostWorker> getWorkerCandidates(String workerGroup) {
-        List<HostWorker> hostWorkers = new ArrayList<>();
+    protected List<Host> getWorkerCandidates(String workerGroup) {
+        List<Host> hosts = new ArrayList<>();
         Set<String> nodes = serverNodeManager.getWorkerGroupNodes(workerGroup);
         if (CollectionUtils.isNotEmpty(nodes)) {
             for (String node : nodes) {
-                String heartbeat = serverNodeManager.getWorkerNodeInfo(node);
-                int hostWeight = getWorkerHostWeightFromHeartbeat(heartbeat);
-                hostWorkers.add(HostWorker.of(node, hostWeight, workerGroup));
+                hosts.add(Host.of(node));
             }
         }
-        return hostWorkers;
-    }
-
-    protected int getWorkerHostWeightFromHeartbeat(String heartbeat) {
-        int hostWeight = Constants.DEFAULT_WORKER_HOST_WEIGHT;
-        if (StringUtils.isNotEmpty(heartbeat)) {
-            String[] parts = heartbeat.split(Constants.COMMA);
-            if (ResInfo.isNewHeartbeatWithWeight(parts)) {
-                hostWeight = Integer.parseInt(parts[10]);
-            }
-        }
-        return hostWeight;
+        return hosts;
     }
 
 }

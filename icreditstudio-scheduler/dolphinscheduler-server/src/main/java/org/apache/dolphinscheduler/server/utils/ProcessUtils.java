@@ -14,54 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.server.utils;
 
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.CommonUtils;
-import org.apache.dolphinscheduler.common.utils.FileUtils;
-import org.apache.dolphinscheduler.common.utils.HadoopUtils;
-import org.apache.dolphinscheduler.common.utils.LoggerUtils;
-import org.apache.dolphinscheduler.common.utils.OSUtils;
-import org.apache.dolphinscheduler.common.utils.PropertyUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.service.log.LogClientService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * mainly used to get the start command line of a process.
  */
 public class ProcessUtils {
-
     /**
      * logger
      */
-    private static final  Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProcessUtils.class);
 
     /**
      * Initialization regularization, solve the problem of pre-compilation performance,
-     * avoid the thread safety problem of multi-thread operation
+     * avoid the thread safety problem of multi-thread operation.
      */
     private static final Pattern MACPATTERN = Pattern.compile("-[+|-]-\\s(\\d+)");
 
-    /**
-     * Expression of PID recognition in Windows scene
-     */
-    private static final Pattern WINDOWSATTERN = Pattern.compile("\\w+\\((\\d+)\\)");
+    private static final Pattern LINUXPATTERN = Pattern.compile("(\\d+)");
 
     private static final String LOCAL_PROCESS_EXEC = "jdk.lang.Process.allowAmbiguousCommands";
 
@@ -70,8 +57,9 @@ public class ProcessUtils {
      *
      * @param commandList command list
      * @return command
+     * @throws IOException io exception
      */
-    public static String buildCommandStr(List<String> commandList) {
+    public static String buildCommandStr(List<String> commandList) throws IOException {
         String cmdstr;
         String[] cmd = commandList.toArray(new String[0]);
         SecurityManager security = System.getSecurityManager();
@@ -136,8 +124,9 @@ public class ProcessUtils {
      *
      * @param path path
      * @return executable path
+     * @throws IOException io exception
      */
-    private static String getExecutablePath(String path) {
+    private static String getExecutablePath(String path) throws IOException {
         boolean pathIsQuoted = isQuoted(true, path, "Executable name has embedded quote, split the arguments");
 
         File fileToRun = new File(pathIsQuoted ? path.substring(1, path.length() - 1) : path);
@@ -156,13 +145,14 @@ public class ProcessUtils {
     }
 
     /**
-     * quote string.
+     * quote string
      *
      * @param arg argument
      * @return format arg
      */
     private static String quoteString(String arg) {
-        return '"' + arg + '"';
+        StringBuilder argbuf = new StringBuilder(arg.length() + 2);
+        return argbuf.append('"').append(arg).append('"').toString();
     }
 
     /**
@@ -181,7 +171,7 @@ public class ProcessUtils {
     }
 
     /**
-     * Lazy Pattern.
+     * Lazy Pattern
      */
     private static class LazyPattern {
         /**
@@ -192,33 +182,33 @@ public class ProcessUtils {
     }
 
     /**
-     * verification cmd bat.
+     * verification cmd bat
      */
     private static final int VERIFICATION_CMD_BAT = 0;
 
     /**
-     * verification win32.
+     * verification win32
      */
     private static final int VERIFICATION_WIN32 = 1;
 
     /**
-     * verification legacy.
+     * verification legacy
      */
     private static final int VERIFICATION_LEGACY = 2;
 
     /**
-     * escape verification.
+     * escape verification
      */
     private static final char[][] ESCAPE_VERIFICATION = {{' ', '\t', '<', '>', '&', '|', '^'},
 
-        {' ', '\t', '<', '>'}, {' ', '\t'}};
+            {' ', '\t', '<', '>'}, {' ', '\t'}};
 
     /**
-     * create command line.
+     * create command line
      *
      * @param verificationType verification type
-     * @param executablePath executable path
-     * @param cmd cmd
+     * @param executablePath   executable path
+     * @param cmd              cmd
      * @return command line
      */
     private static String createCommandLine(int verificationType, final String executablePath, final String[] cmd) {
@@ -244,11 +234,11 @@ public class ProcessUtils {
     }
 
     /**
-     * whether is quoted.
+     * whether is quoted
      *
      * @param noQuotesInside no quotes inside
-     * @param arg arg
-     * @param errorMessage error message
+     * @param arg            arg
+     * @param errorMessage   error message
      * @return boolean
      */
     private static boolean isQuoted(boolean noQuotesInside, String arg, String errorMessage) {
@@ -269,10 +259,10 @@ public class ProcessUtils {
     }
 
     /**
-     * whether needs escaping.
+     * whether needs escaping
      *
      * @param verificationType verification type
-     * @param arg arg
+     * @param arg              arg
      * @return boolean
      */
     private static boolean needsEscaping(int verificationType, String arg) {
@@ -291,11 +281,11 @@ public class ProcessUtils {
     }
 
     /**
-     * kill yarn application.
+     * kill yarn application
      *
-     * @param appIds app id list
-     * @param logger logger
-     * @param tenantCode tenant code
+     * @param appIds      app id list
+     * @param logger      logger
+     * @param tenantCode  tenant code
      * @param executePath execute path
      */
     public static void cancelApplication(List<String> appIds, Logger logger, String tenantCode, String executePath) {
@@ -308,7 +298,7 @@ public class ProcessUtils {
                     if (!applicationStatus.typeIsFinished()) {
                         String commandFile = String
                                 .format("%s/%s.kill", executePath, appId);
-                        String cmd = getKerberosInitCommand() + "yarn application -kill " + appId;
+                        String cmd = "yarn application -kill " + appId;
                         execYarnKillCommand(logger, tenantCode, appId, commandFile, cmd);
                     }
                 } catch (Exception e) {
@@ -319,31 +309,13 @@ public class ProcessUtils {
     }
 
     /**
-     * get kerberos init command
-     */
-    public static String getKerberosInitCommand() {
-        logger.info("get kerberos init command");
-        StringBuilder kerberosCommandBuilder = new StringBuilder();
-        boolean hadoopKerberosState = PropertyUtils.getBoolean(Constants.HADOOP_SECURITY_AUTHENTICATION_STARTUP_STATE,false);
-        if (hadoopKerberosState) {
-            kerberosCommandBuilder.append("export KRB5_CONFIG=")
-                    .append(PropertyUtils.getString(Constants.JAVA_SECURITY_KRB5_CONF_PATH))
-                    .append("\n\n")
-                    .append(String.format("kinit -k -t %s %s || true",PropertyUtils.getString(Constants.LOGIN_USER_KEY_TAB_PATH),PropertyUtils.getString(Constants.LOGIN_USER_KEY_TAB_USERNAME)))
-                    .append("\n\n");
-            logger.info("kerberos init command: {}", kerberosCommandBuilder);
-        }
-        return kerberosCommandBuilder.toString();
-    }
-
-    /**
      * build kill command for yarn application
      *
-     * @param logger logger
-     * @param tenantCode tenant code
-     * @param appId app id
+     * @param logger      logger
+     * @param tenantCode  tenant code
+     * @param appId       app id
      * @param commandFile command file
-     * @param cmd cmd
+     * @param cmd         cmd
      */
     private static void execYarnKillCommand(Logger logger, String tenantCode, String appId, String commandFile, String cmd) {
         try {
@@ -364,7 +336,10 @@ public class ProcessUtils {
             }
 
             String runCmd = String.format("%s %s", Constants.SH, commandFile);
-            runCmd = OSUtils.getSudoCmd(tenantCode, runCmd);
+            if (StringUtils.isNotEmpty(tenantCode)) {
+                runCmd = "sudo -u " + tenantCode + " " + runCmd;
+            }
+
             logger.info("kill cmd:{}", runCmd);
             OSUtils.exeCmd(runCmd);
         } catch (Exception e) {
@@ -373,7 +348,7 @@ public class ProcessUtils {
     }
 
     /**
-     * kill tasks according to different task types.
+     * kill tasks according to different task types
      *
      * @param taskExecutionContext taskExecutionContext
      */
@@ -386,13 +361,11 @@ public class ProcessUtils {
                 return;
             }
 
-            String pidsStr = getPidsStr(processId);
-            if (StringUtils.isNotEmpty(pidsStr)) {
-                String cmd = String.format("kill -9 %s", pidsStr);
-                cmd = OSUtils.getSudoCmd(taskExecutionContext.getTenantCode(), cmd);
-                logger.info("process id:{}, cmd:{}", processId, cmd);
-                OSUtils.exeCmd(cmd);
-            }
+            String cmd = String.format("sudo kill -9 %s", getPidsStr(processId));
+
+            logger.info("process id:{}, cmd:{}", processId, cmd);
+
+            OSUtils.exeCmd(cmd);
 
         } catch (Exception e) {
             logger.error("kill task failed", e);
@@ -402,7 +375,7 @@ public class ProcessUtils {
     }
 
     /**
-     * get pids str.
+     * get pids str
      *
      * @param processId process id
      * @return pids pid String
@@ -419,7 +392,7 @@ public class ProcessUtils {
             }
         } else {
             String pids = OSUtils.exeCmd(String.format("%s -p %d", Constants.PSTREE, processId));
-            mat = WINDOWSATTERN.matcher(pids);
+            mat = LINUXPATTERN.matcher(pids);
         }
 
         if (null != mat) {
@@ -427,46 +400,46 @@ public class ProcessUtils {
                 pidList.add(mat.group(1));
             }
         }
-
-        if (CommonUtils.isSudoEnable() && !pidList.isEmpty()) {
+        if (!pidList.isEmpty()) {
             pidList = pidList.subList(1, pidList.size());
         }
         return String.join(" ", pidList).trim();
     }
 
     /**
-     * find logs and kill yarn tasks.
+     * find logs and kill yarn tasks
+     *
      * @param taskExecutionContext taskExecutionContext
-     * @return yarn application ids
      */
-    public static List<String> killYarnJob(TaskExecutionContext taskExecutionContext) {
+    public static void killYarnJob(TaskExecutionContext taskExecutionContext) {
         try {
             Thread.sleep(Constants.SLEEP_TIME_MILLIS);
+            LogClientService logClient = null;
             String log;
-            try (LogClientService logClient = new LogClientService()) {
+            try {
+                logClient = new LogClientService();
                 log = logClient.viewLog(Host.of(taskExecutionContext.getHost()).getIp(),
                         Constants.RPC_PORT,
                         taskExecutionContext.getLogPath());
+            } finally {
+                if (logClient != null) {
+                    logClient.close();
+                }
             }
             if (StringUtils.isNotEmpty(log)) {
-                if (StringUtils.isEmpty(taskExecutionContext.getExecutePath())) {
-                    taskExecutionContext.setExecutePath(FileUtils.getProcessExecDir(taskExecutionContext.getProjectCode(),
-                            taskExecutionContext.getProcessDefineCode(),
-                            taskExecutionContext.getProcessDefineVersion(),
-                            taskExecutionContext.getProcessInstanceId(),
-                            taskExecutionContext.getTaskInstanceId()));
-                }
-                FileUtils.createWorkDirIfAbsent(taskExecutionContext.getExecutePath());
                 List<String> appIds = LoggerUtils.getAppIds(log, logger);
+                String workerDir = taskExecutionContext.getExecutePath();
+                if (StringUtils.isEmpty(workerDir)) {
+                    logger.error("task instance work dir is empty");
+                    throw new RuntimeException("task instance work dir is empty");
+                }
                 if (CollectionUtils.isNotEmpty(appIds)) {
                     cancelApplication(appIds, logger, taskExecutionContext.getTenantCode(), taskExecutionContext.getExecutePath());
-                    return appIds;
                 }
             }
 
         } catch (Exception e) {
             logger.error("kill yarn job failure", e);
         }
-        return Collections.emptyList();
     }
 }

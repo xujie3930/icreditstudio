@@ -17,19 +17,17 @@
 
 package org.apache.dolphinscheduler.server.registry;
 
-import static org.apache.dolphinscheduler.remote.utils.Constants.COMMA;
-
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.IStoppable;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.OSUtils;
-import org.apache.dolphinscheduler.service.registry.RegistryClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.dolphinscheduler.remote.utils.Constants.COMMA;
 
 /**
  * Heart beat task
@@ -39,12 +37,11 @@ public class HeartBeatTask implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(HeartBeatTask.class);
 
     private String startTime;
-    private double maxCpuloadAvg;
     private double reservedMemory;
-    private int hostWeight; // worker host weight
+    private double maxCpuloadAvg;
     private Set<String> heartBeatPaths;
     private String serverType;
-    private RegistryClient registryClient;
+    private ZookeeperRegistryCenter zookeeperRegistryCenter;
 
     // server stop or not
     protected IStoppable stoppable = null;
@@ -54,45 +51,30 @@ public class HeartBeatTask implements Runnable {
                          double reservedMemory,
                          Set<String> heartBeatPaths,
                          String serverType,
-                         RegistryClient registryClient) {
+                         ZookeeperRegistryCenter zookeeperRegistryCenter) {
         this.startTime = startTime;
         this.maxCpuloadAvg = maxCpuloadAvg;
         this.reservedMemory = reservedMemory;
         this.heartBeatPaths = heartBeatPaths;
         this.serverType = serverType;
-        this.registryClient = registryClient;
-    }
-
-    public HeartBeatTask(String startTime,
-                         double maxCpuloadAvg,
-                         double reservedMemory,
-                         int hostWeight,
-                         Set<String> heartBeatPaths,
-                         String serverType,
-                         RegistryClient registryClient) {
-        this.startTime = startTime;
-        this.maxCpuloadAvg = maxCpuloadAvg;
-        this.reservedMemory = reservedMemory;
-        this.hostWeight = hostWeight;
-        this.heartBeatPaths = heartBeatPaths;
-        this.serverType = serverType;
-        this.registryClient = registryClient;
+        this.zookeeperRegistryCenter = zookeeperRegistryCenter;
     }
 
     @Override
     public void run() {
         try {
+
             // check dead or not in zookeeper
             for (String heartBeatPath : heartBeatPaths) {
-                if (registryClient.checkIsDeadServer(heartBeatPath, serverType)) {
-                    registryClient.getStoppable().stop("i was judged to death, release resources and stop myself");
+                if (zookeeperRegistryCenter.checkIsDeadServer(heartBeatPath, serverType)) {
+                    zookeeperRegistryCenter.getStoppable().stop("i was judged to death, release resources and stop myself");
                     return;
                 }
             }
 
             double loadAverage = OSUtils.loadAverage();
             double availablePhysicalMemorySize = OSUtils.availablePhysicalMemorySize();
-            int status = Constants.NORMAL_NODE_STATUS;
+            int status = Constants.NORAML_NODE_STATUS;
             if (loadAverage > maxCpuloadAvg || availablePhysicalMemorySize < reservedMemory) {
                 logger.warn("current cpu load average {} is too high or available memory {}G is too low, under max.cpuload.avg={} and reserved.memory={}G",
                         loadAverage, availablePhysicalMemorySize, maxCpuloadAvg, reservedMemory);
@@ -109,15 +91,11 @@ public class HeartBeatTask implements Runnable {
             builder.append(startTime).append(Constants.COMMA);
             builder.append(DateUtils.dateToString(new Date())).append(Constants.COMMA);
             builder.append(status).append(COMMA);
-            // save process id
+            //save process id
             builder.append(OSUtils.getProcessID());
-            // worker host weight
-            if (Constants.WORKER_TYPE.equals(serverType)) {
-                builder.append(Constants.COMMA).append(hostWeight);
-            }
 
             for (String heartBeatPath : heartBeatPaths) {
-                registryClient.update(heartBeatPath, builder.toString());
+                zookeeperRegistryCenter.getRegisterOperator().update(heartBeatPath, builder.toString());
             }
         } catch (Throwable ex) {
             logger.error("error write heartbeat info", ex);

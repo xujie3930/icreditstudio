@@ -14,30 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.dao;
 
-import com.google.common.collect.Lists;
-import org.apache.dolphinscheduler.common.enums.AlertEvent;
+
 import org.apache.dolphinscheduler.common.enums.AlertStatus;
-import org.apache.dolphinscheduler.common.enums.AlertWarnLevel;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
+import org.apache.dolphinscheduler.common.enums.AlertType;
+import org.apache.dolphinscheduler.common.enums.ShowType;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.datasource.ConnectionFactory;
-import org.apache.dolphinscheduler.dao.entity.*;
-import org.apache.dolphinscheduler.dao.mapper.AlertGroupMapper;
+import org.apache.dolphinscheduler.dao.entity.Alert;
+import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
+import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
+import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.AlertMapper;
-import org.apache.dolphinscheduler.dao.mapper.AlertPluginInstanceMapper;
+import org.apache.dolphinscheduler.dao.mapper.UserAlertGroupMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class AlertDao extends AbstractBaseDao {
@@ -48,16 +45,12 @@ public class AlertDao extends AbstractBaseDao {
     private AlertMapper alertMapper;
 
     @Resource
-    private AlertPluginInstanceMapper alertPluginInstanceMapper;
-
-    @Resource
-    private AlertGroupMapper alertGroupMapper;
+    private UserAlertGroupMapper userAlertGroupMapper;
 
     @Override
     protected void init() {
         alertMapper = ConnectionFactory.getInstance().getMapper(AlertMapper.class);
-        alertPluginInstanceMapper = ConnectionFactory.getInstance().getMapper(AlertPluginInstanceMapper.class);
-        alertGroupMapper = ConnectionFactory.getInstance().getMapper(AlertGroupMapper.class);
+        userAlertGroupMapper = ConnectionFactory.getInstance().getMapper(UserAlertGroupMapper.class);
     }
 
     /**
@@ -87,30 +80,29 @@ public class AlertDao extends AbstractBaseDao {
     }
 
     /**
+     * query user list by alert group id
+     *
+     * @param alerGroupId alerGroupId
+     * @return user list
+     */
+    public List<User> queryUserByAlertGroupId(int alerGroupId) {
+
+        return userAlertGroupMapper.listUserByAlertgroupId(alerGroupId);
+    }
+
+    /**
      * MasterServer or WorkerServer stoped
      *
-     * @param alertGroupId alertGroupId
+     * @param alertgroupId alertgroupId
      * @param host         host
      * @param serverType   serverType
      */
-    public void sendServerStopedAlert(String alertGroupId, String host, String serverType) {
-        ServerAlertContent serverStopAlertContent = ServerAlertContent.newBuilder().
-                type(serverType)
-                .host(host)
-                .event(AlertEvent.SERVER_DOWN)
-                .warningLevel(AlertWarnLevel.SERIOUS).
-                        build();
-        String content = JSONUtils.toJsonString(Lists.newArrayList(serverStopAlertContent));
-
+    public void sendServerStopedAlert(String alertgroupId, String host, String serverType) {
         Alert alert = new Alert();
+        String content = String.format("[{'type':'%s','host':'%s','event':'server down','warning level':'serious'}]",
+                serverType, host);
         alert.setTitle("Fault tolerance warning");
-        alert.setAlertStatus(AlertStatus.WAIT_EXECUTION);
-        alert.setContent(content);
-        alert.setAlertGroupId(alertGroupId);
-        alert.setCreateTime(new Date());
-        alert.setUpdateTime(new Date());
-        // we use this method to avoid insert duplicate alert(issue #5525)
-        alertMapper.insertAlertWhenServerCrash(alert);
+        saveTaskTimeoutAlert(alert, content, alertgroupId, null, null);
     }
 
     /**
@@ -120,54 +112,52 @@ public class AlertDao extends AbstractBaseDao {
      * @param processDefinition processDefinition
      */
     public void sendProcessTimeoutAlert(ProcessInstance processInstance, ProcessDefinition processDefinition) {
-        String alertGroupId = processInstance.getWarningGroupId();
+        String alertgroupId = processInstance.getWarningGroupId();
+        String receivers = processDefinition.getReceivers();
+        String receiversCc = processDefinition.getReceiversCc();
         Alert alert = new Alert();
-        List<ProcessAlertContent> processAlertContentList = new ArrayList<>(1);
-        ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
-                .processId(processInstance.getId())
-                .processName(processInstance.getName())
-                .event(AlertEvent.TIME_OUT)
-                .warnLevel(AlertWarnLevel.MIDDLE)
-                .build();
-        processAlertContentList.add(processAlertContent);
-        String content = JSONUtils.toJsonString(processAlertContentList);
+        String content = String.format("[{'id':'%d','name':'%s','event':'timeout','warnLevel':'middle'}]",
+                processInstance.getId(), processInstance.getName());
         alert.setTitle("Process Timeout Warn");
-        saveTaskTimeoutAlert(alert, content, alertGroupId);
+        saveTaskTimeoutAlert(alert, content, alertgroupId, receivers, receiversCc);
     }
 
-    private void saveTaskTimeoutAlert(Alert alert, String content, String alertGroupId) {
-        alert.setAlertGroupId(alertGroupId);
+    private void saveTaskTimeoutAlert(Alert alert, String content, String alertgroupId,
+                                      String receivers, String receiversCc) {
+        alert.setShowType(ShowType.TABLE);
         alert.setContent(content);
+        alert.setAlertType(AlertType.EMAIL);
+        alert.setAlertGroupId(alertgroupId);
+        if (StringUtils.isNotEmpty(receivers)) {
+            alert.setReceivers(receivers);
+        }
+        if (StringUtils.isNotEmpty(receiversCc)) {
+            alert.setReceiversCc(receiversCc);
+        }
         alert.setCreateTime(new Date());
         alert.setUpdateTime(new Date());
         alertMapper.insert(alert);
     }
 
+
     /**
      * task timeout warn
      *
-     * @param alertGroupId        alertGroupId
+     * @param alertgroupId        alertgroupId
+     * @param receivers           receivers
+     * @param receiversCc         receiversCc
      * @param processInstanceId   processInstanceId
      * @param processInstanceName processInstanceName
      * @param taskId              taskId
      * @param taskName            taskName
      */
-    public void sendTaskTimeoutAlert(String alertGroupId, String processInstanceId,
+    public void sendTaskTimeoutAlert(String alertgroupId, String receivers, String receiversCc, String processInstanceId,
                                      String processInstanceName, String taskId, String taskName) {
         Alert alert = new Alert();
-        List<ProcessAlertContent> processAlertContentList = new ArrayList<>(1);
-        ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
-                .processId(processInstanceId)
-                .processName(processInstanceName)
-                .taskId(taskId)
-                .taskName(taskName)
-                .event(AlertEvent.TIME_OUT)
-                .warnLevel(AlertWarnLevel.MIDDLE)
-                .build();
-        processAlertContentList.add(processAlertContent);
-        String content = JSONUtils.toJsonString(processAlertContentList);
+        String content = String.format("[{'process instance id':'%d','task name':'%s','task id':'%d','task name':'%s'," +
+                "'event':'timeout','warnLevel':'middle'}]", processInstanceId, processInstanceName, taskId, taskName);
         alert.setTitle("Task Timeout Warn");
-        saveTaskTimeoutAlert(alert, content, alertGroupId);
+        saveTaskTimeoutAlert(alert, content, alertgroupId, receivers, receiversCc);
     }
 
     /**
@@ -180,45 +170,21 @@ public class AlertDao extends AbstractBaseDao {
     }
 
     /**
+     * list user information by alert group id
+     *
+     * @param alertgroupId alertgroupId
+     * @return user list
+     */
+    public List<User> listUserByAlertgroupId(int alertgroupId) {
+        return userAlertGroupMapper.listUserByAlertgroupId(alertgroupId);
+    }
+
+    /**
      * for test
      *
      * @return AlertMapper
      */
     public AlertMapper getAlertMapper() {
         return alertMapper;
-    }
-
-    /**
-     * list all alert plugin instance by alert group id
-     *
-     * @param alertGroupId alert group id
-     * @return AlertPluginInstance list
-     */
-    public List<AlertPluginInstance> listInstanceByAlertGroupId(int alertGroupId) {
-        String alertInstanceIdsParam = alertGroupMapper.queryAlertGroupInstanceIdsById(alertGroupId);
-        if (StringUtils.isNotBlank(alertInstanceIdsParam)) {
-            String[] idsArray = alertInstanceIdsParam.split(",");
-            List<Integer> ids = Arrays.stream(idsArray)
-                    .map(s -> Integer.parseInt(s.trim()))
-                    .collect(Collectors.toList());
-            return alertPluginInstanceMapper.queryByIds(ids);
-        }
-        return null;
-    }
-
-    public AlertPluginInstanceMapper getAlertPluginInstanceMapper() {
-        return alertPluginInstanceMapper;
-    }
-
-    public void setAlertPluginInstanceMapper(AlertPluginInstanceMapper alertPluginInstanceMapper) {
-        this.alertPluginInstanceMapper = alertPluginInstanceMapper;
-    }
-
-    public AlertGroupMapper getAlertGroupMapper() {
-        return alertGroupMapper;
-    }
-
-    public void setAlertGroupMapper(AlertGroupMapper alertGroupMapper) {
-        this.alertGroupMapper = alertGroupMapper;
     }
 }
