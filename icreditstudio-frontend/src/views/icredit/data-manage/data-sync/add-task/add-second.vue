@@ -1190,7 +1190,7 @@ export default {
 @import '~@/styles/public/data-manage';
 
 .add-task {
-  margin-top: -7px;
+  margin-top: 30px;
   height: calc(100% - 134px);
   overflow: hidden;
 }
