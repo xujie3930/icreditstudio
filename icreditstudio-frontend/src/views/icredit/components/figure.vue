@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="figure">
-    <div class="figure-wrap">
+    <div :class="['figure-wrap', onlyOneTable ? '' : 'one-table']">
       <!-- 第一张表 -->
       <div class="figure-box">
         <el-tooltip :content="dataSource[0].leftSource" placement="bottom">
@@ -14,16 +14,20 @@
         <span class="type">{{ dataSource[0].leftSourceDatabase }}</span>
       </div>
 
-      <!-- 第一个关联图标 -->
-      <FigureLine :icon-name="iconNameMapping(dataSource[0].associatedType)" />
+      <template v-if="onlyOneTable">
+        <FigureLine
+          :icon-name="iconNameMapping(dataSource[0].associatedType)"
+        />
 
-      <!-- 第二张表 -->
-      <div class="figure-box">
-        <el-tooltip :content="dataSource[0].rightSource" placement="bottom">
-          <span class="name">{{ dataSource[0].rightSource }}</span>
-        </el-tooltip>
-        <span class="type">{{ dataSource[0].rightSourceDatabase }}</span>
-      </div>
+        <!-- 第二张表 -->
+        <div class="figure-box">
+          <el-tooltip :content="dataSource[0].rightSource" placement="bottom">
+            <span class="name">{{ dataSource[0].rightSource }}</span>
+          </el-tooltip>
+          <span class="type">{{ dataSource[0].rightSourceDatabase }}</span>
+        </div>
+      </template>
+      <!-- 第一个关联图标 -->
     </div>
 
     <!-- 第二个关联图标 -->
@@ -80,6 +84,17 @@ export default {
     }
   },
 
+  computed: {
+    onlyOneTable() {
+      const {
+        associatedType,
+        conditions,
+        rightSourceDatabase
+      } = this.dataSource[0]
+      return associatedType && conditions && rightSourceDatabase
+    }
+  },
+
   methods: {
     iconNameMapping(key) {
       return this.iconMapping[key] ? this.iconMapping[key].icon : undefined
@@ -127,6 +142,10 @@ export default {
     position: relative;
     width: calc(100% - 300px);
   }
+}
+
+.one-table {
+  @include flex;
 }
 
 .center-line {
