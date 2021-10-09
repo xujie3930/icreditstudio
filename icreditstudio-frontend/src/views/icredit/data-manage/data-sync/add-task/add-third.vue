@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="3" />
 
@@ -135,14 +134,13 @@
 
 <script>
 import HeaderStepBar from './header-step-bar'
-import Back from '@/views/icredit/components/back'
 import Cron from '@/components/cron'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
 
 export default {
-  components: { HeaderStepBar, Back, Cron },
+  components: { HeaderStepBar, Cron },
 
   data() {
     const verifyLimitRate = (rule, value, cb) => {
@@ -244,13 +242,6 @@ export default {
       })
     },
 
-    // 返回提示
-    handleBackClick() {
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
-      this.$router.push('/data-manage/data-sync')
-    },
-
     // 编辑情况下获取详情
     getDetailData() {
       this.detailLoading = true
@@ -275,7 +266,7 @@ export default {
 @import '~@/styles/public/data-manage';
 
 .add-task {
-  margin-top: -7px;
+  margin-top: 30px;
 }
 
 .add-task-content {
