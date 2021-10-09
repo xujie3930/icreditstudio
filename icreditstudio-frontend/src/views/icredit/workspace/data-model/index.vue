@@ -53,10 +53,8 @@
                 <i class="el-icon-more icon"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="doc">新增文件夹</el-dropdown-item>
-                <el-dropdown-item command="flow">新增工作流</el-dropdown-item>
-                <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                <el-dropdown-item command="delete">删除</el-dropdown-item>
+                <el-dropdown-item command="add">新增表</el-dropdown-item>
+                <el-dropdown-item command="disabled">停用</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -87,24 +85,16 @@ export default {
       searchLoading: false,
       data: [
         {
-          label: '水务基础数据梳理',
-          icon: 'dev-business',
+          label: 'datax_web',
+          icon: 'database',
           type: '0',
           id: 1,
           children: [
             {
-              label: '分类1',
-              icon: 'dev-doc',
+              label: 'h_app_sysytem',
+              icon: 'table',
               type: '1',
-              id: 2,
-              children: [
-                {
-                  label: '分类1-1',
-                  icon: 'dev-flow',
-                  type: '3',
-                  id: 3
-                }
-              ]
+              id: 2
             }
           ]
         }
