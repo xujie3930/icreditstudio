@@ -201,7 +201,7 @@ public class ProcessDefinitionController extends BaseController {
     public Result updateProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                           @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
                                           @RequestParam(value = "name", required = true) String name,
-                                          @RequestParam(value = "id", required = true) int id,
+                                          @RequestParam(value = "id", required = true) String id,
                                           @RequestParam(value = "processDefinitionJson", required = true) String processDefinitionJson,
                                           @RequestParam(value = "locations", required = false) String locations,
                                           @RequestParam(value = "connects", required = false) String connects,
@@ -273,7 +273,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result switchProcessDefinitionVersion(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                                  @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                                 @RequestParam(value = "processDefinitionId") int processDefinitionId,
+                                                 @RequestParam(value = "processDefinitionId") String processDefinitionId,
                                                  @RequestParam(value = "version") long version) {
         Map<String, Object> result = processDefinitionService.switchProcessDefinitionVersion(loginUser, projectName
                 , processDefinitionId, version);
@@ -300,7 +300,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result deleteProcessDefinitionVersion(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                                  @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                                 @RequestParam(value = "processDefinitionId") int processDefinitionId,
+                                                 @RequestParam(value = "processDefinitionId") String processDefinitionId,
                                                  @RequestParam(value = "version") long version) {
         Map<String, Object> result = processDefinitionService.deleteByProcessDefinitionIdAndVersion(loginUser, projectName, processDefinitionId, version);
         return returnDataList(result);
@@ -327,7 +327,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result releaseProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                           @RequestParam(value = "processId", required = true) int processId,
+                                           @RequestParam(value = "processId", required = true) String processId,
                                            @RequestParam(value = "releaseState", required = true) ReleaseState releaseState) {
 
         Map<String, Object> result = processDefinitionService.releaseProcessDefinition(loginUser, projectName, processId, releaseState);
@@ -352,7 +352,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryProcessDefinitionById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                              @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                             @RequestParam("processId") Integer processId
+                                             @RequestParam("processId") String processId
     ) {
         Map<String, Object> result = processDefinitionService.queryProcessDefinitionById(loginUser, projectName, processId);
         return returnDataList(result);
@@ -427,7 +427,7 @@ public class ProcessDefinitionController extends BaseController {
                                                    @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
                                                    @RequestParam("pageNo") Integer pageNo,
                                                    @RequestParam(value = "searchVal", required = false) String searchVal,
-                                                   @RequestParam(value = "userId", required = false, defaultValue = "0") Integer userId,
+                                                   @RequestParam(value = "userId", required = false, defaultValue = "0") String userId,
                                                    @RequestParam("pageSize") Integer pageSize) {
         Map<String, Object> result = checkPageParams(pageNo, pageSize);
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
@@ -458,7 +458,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result viewTree(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                           @RequestParam("processId") Integer id,
+                           @RequestParam("processId") String id,
                            @RequestParam("limit") Integer limit) throws Exception {
         Map<String, Object> result = processDefinitionService.viewTree(id, limit);
         return returnDataList(result);
@@ -530,7 +530,7 @@ public class ProcessDefinitionController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result deleteProcessDefinitionById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                               @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                              @RequestParam("processDefinitionId") Integer processDefinitionId
+                                              @RequestParam("processDefinitionId") String processDefinitionId
     ) {
         Map<String, Object> result = processDefinitionService.deleteProcessDefinitionById(loginUser, projectName, processDefinitionId);
         return returnDataList(result);
@@ -561,9 +561,9 @@ public class ProcessDefinitionController extends BaseController {
         if (StringUtils.isNotEmpty(processDefinitionIds)) {
             String[] processDefinitionIdArray = processDefinitionIds.split(",");
             for (String strProcessDefinitionId : processDefinitionIdArray) {
-                int processDefinitionId = Integer.parseInt(strProcessDefinitionId);
+//                int processDefinitionId = Integer.parseInt(strProcessDefinitionId);
                 try {
-                    Map<String, Object> deleteResult = processDefinitionService.deleteProcessDefinitionById(loginUser, projectName, processDefinitionId);
+                    Map<String, Object> deleteResult = processDefinitionService.deleteProcessDefinitionById(loginUser, projectName, strProcessDefinitionId);
                     if (!Status.SUCCESS.equals(deleteResult.get(Constants.STATUS))) {
                         deleteFailedIdList.add(strProcessDefinitionId);
                         logger.error((String) deleteResult.get(Constants.MSG));
@@ -626,7 +626,7 @@ public class ProcessDefinitionController extends BaseController {
     @ApiException(QUERY_PROCESS_DEFINITION_LIST)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryProcessDefinitionAllByProjectId(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                                       @RequestParam("projectId") Integer projectId) {
+                                                       @RequestParam("projectId") String projectId) {
         Map<String, Object> result = processDefinitionService.queryProcessDefinitionAllByProjectId(projectId);
         return returnDataList(result);
     }

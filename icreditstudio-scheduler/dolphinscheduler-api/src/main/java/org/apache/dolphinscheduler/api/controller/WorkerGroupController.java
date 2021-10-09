@@ -80,7 +80,7 @@ public class WorkerGroupController extends BaseController {
     @ApiException(SAVE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result saveWorkerGroup(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                  @RequestParam(value = "id", required = false, defaultValue = "0") int id,
+                                  @RequestParam(value = "id", required = false, defaultValue = "0") String id,
                                   @RequestParam(value = "name") String name,
                                   @RequestParam(value = "addrList") String addrList
     ) {
@@ -153,7 +153,7 @@ public class WorkerGroupController extends BaseController {
     @ApiException(DELETE_WORKER_GROUP_FAIL)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result deleteById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                             @RequestParam("id") Integer id
+                             @RequestParam("id") String id
     ) {
         Map<String, Object> result = workerGroupService.deleteWorkerGroupById(loginUser, id);
         return returnDataList(result);

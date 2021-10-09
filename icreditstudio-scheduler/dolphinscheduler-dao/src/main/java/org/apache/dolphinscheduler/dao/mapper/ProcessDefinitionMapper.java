@@ -85,7 +85,7 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @param processDefineId processDefineId
      * @return process definition
      */
-    ProcessDefinition queryByDefineId(@Param("processDefineId") int processDefineId);
+    ProcessDefinition queryByDefineId(@Param("processDefineId") String processDefineId);
 
     /**
      * process definition page
@@ -99,7 +99,7 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      */
     IPage<ProcessDefinition> queryDefineListPaging(IPage<ProcessDefinition> page,
                                                    @Param("searchVal") String searchVal,
-                                                   @Param("userId") int userId,
+                                                   @Param("userId") String userId,
                                                    @Param("projectCode") Long projectCode,
                                                    @Param("isAdmin") boolean isAdmin);
 
@@ -172,15 +172,15 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     List<Integer> listProjectIds();
 
 
-    /**
-     * query the paging process definition version list by pagination info
-     *
-     * @param page                  pagination info
-     * @param processDefinitionCode process definition code
-     * @return the paging process definition version list
-     */
-    IPage<ProcessDefinitionLog> queryProcessDefinitionVersionsPaging(Page<ProcessDefinitionLog> page,
-                                                                     @Param("processDefinitionCode") Long processDefinitionCode);
+//    /**
+//     * query the paging process definition version list by pagination info
+//     *
+//     * @param page                  pagination info
+//     * @param processDefinitionCode process definition code
+//     * @return the paging process definition version list
+//     */
+//    IPage<ProcessDefinitionLog> queryProcessDefinitionVersionsPaging(Page<ProcessDefinitionLog> page,
+//                                                                     @Param("processDefinitionCode") Long processDefinitionCode);
 
     /**
      * query has associated definition by id and version
@@ -189,5 +189,5 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      * @param version             version
      * @return definition id
      */
-    Integer queryHasAssociatedDefinitionByIdAndVersion(@Param("processDefinitionId") int processDefinitionId, @Param("version") long version);
+    String queryHasAssociatedDefinitionByIdAndVersion(@Param("processDefinitionId") String processDefinitionId, @Param("version") long version);
 }

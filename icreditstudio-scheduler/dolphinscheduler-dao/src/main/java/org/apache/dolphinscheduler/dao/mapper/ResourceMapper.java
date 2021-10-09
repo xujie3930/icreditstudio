@@ -111,7 +111,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      * @param resIds resource id array
      * @return delete num
      */
-    int deleteIds(@Param("resIds") Integer[] resIds);
+    int deleteIds(@Param("resIds") String[] resIds);
 
     /**
      * list children
@@ -119,7 +119,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      * @param direcotyId directory id
      * @return resource id array
      */
-    List<Integer> listChildren(@Param("direcotyId") int direcotyId);
+    List<String> listChildren(@Param("direcotyId") String direcotyId);
 
     /**
      * query resource by full name or pid
@@ -136,7 +136,7 @@ public interface ResourceMapper extends BaseMapper<Resource> {
      * @param resIds resource id array
      * @return resource list
      */
-    List<Resource> listResourceByIds(@Param("resIds") Integer[] resIds);
+    List<Resource> listResourceByIds(@Param("resIds") String[] resIds);
 
     /**
      * update resource

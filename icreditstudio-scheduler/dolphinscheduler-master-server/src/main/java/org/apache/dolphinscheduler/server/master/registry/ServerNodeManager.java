@@ -17,9 +17,7 @@
 
 package org.apache.dolphinscheduler.server.master.registry;
 
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS;
-import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS;
-
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.NodeType;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
@@ -30,15 +28,14 @@ import org.apache.dolphinscheduler.registry.DataChangeEvent;
 import org.apache.dolphinscheduler.registry.SubscribeListener;
 import org.apache.dolphinscheduler.remote.utils.NamedThreadFactory;
 import org.apache.dolphinscheduler.service.registry.RegistryClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import org.apache.commons.collections.CollectionUtils;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import javax.annotation.PreDestroy;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,13 +43,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import javax.annotation.PreDestroy;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_MASTERS;
+import static org.apache.dolphinscheduler.common.Constants.REGISTRY_DOLPHINSCHEDULER_WORKERS;
 
 /**
  * server node manager
@@ -211,7 +203,7 @@ public class ServerNodeManager implements InitializingBean {
                         String group = parseGroup(path);
                         Set<String> currentNodes = registryClient.getWorkerGroupNodesDirectly(group);
                         syncWorkerGroupNodes(group, currentNodes);
-                        alertDao.sendServerStopedAlert(1, path, "WORKER");
+                        alertDao.sendServerStopedAlert("1", path, "WORKER");
                     }
                 } catch (IllegalArgumentException ex) {
                     logger.warn(ex.getMessage());
@@ -249,7 +241,7 @@ public class ServerNodeManager implements InitializingBean {
                         logger.info("master node : {} down.", path);
                         Set<String> currentNodes = registryClient.getMasterNodesDirectly();
                         syncMasterNodes(currentNodes);
-                        alertDao.sendServerStopedAlert(1, path, "MASTER");
+                        alertDao.sendServerStopedAlert("1", path, "MASTER");
                     }
                 } catch (Exception ex) {
                     logger.error("MasterNodeListener capture data change and get data failed.", ex);

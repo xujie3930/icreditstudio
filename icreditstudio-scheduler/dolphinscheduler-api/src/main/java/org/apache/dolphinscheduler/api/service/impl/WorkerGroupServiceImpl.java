@@ -67,13 +67,13 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
      * create or update a worker group
      *
      * @param loginUser login user
-     * @param id worker group id
-     * @param name worker group name
-     * @param addrList addr list
+     * @param id        worker group id
+     * @param name      worker group name
+     * @param addrList  addr list
      * @return create or update result code
      */
     @Override
-    public Map<String, Object> saveWorkerGroup(User loginUser, int id, String name, String addrList) {
+    public Map<String, Object> saveWorkerGroup(User loginUser, String id, String name, String addrList) {
         Map<String, Object> result = new HashMap<>();
 //        if (isNotAdmin(loginUser, result)) {
 //            return result;
@@ -84,7 +84,7 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
         }
         Date now = new Date();
         WorkerGroup workerGroup;
-        if (id != 0) {
+        if (/*id != 0*/StringUtils.isNotBlank(id)) {
             workerGroup = workerGroupMapper.selectById(id);
             // check exist
             if (workerGroup == null) {
@@ -108,7 +108,7 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
             putMsg(result, Status.WORKER_ADDRESS_INVALID, invalidAddr);
             return result;
         }
-        if (workerGroup.getId() != 0) {
+        if (/*workerGroup.getId() != 0*/StringUtils.isNotBlank(workerGroup.getId())) {
             workerGroupMapper.updateById(workerGroup);
         } else {
             workerGroupMapper.insert(workerGroup);
@@ -127,7 +127,7 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
         List<WorkerGroup> workerGroupList = workerGroupMapper.queryWorkerGroupByName(workerGroup.getName());
         if (CollectionUtils.isNotEmpty(workerGroupList)) {
             // new group has same name
-            if (workerGroup.getId() == 0) {
+            if (/*workerGroup.getId() == 0*/StringUtils.isBlank(workerGroup.getId())) {
                 return true;
             }
             // check group id
@@ -165,9 +165,9 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
      * query worker group paging
      *
      * @param loginUser login user
-     * @param pageNo page number
+     * @param pageNo    page number
      * @param searchVal search value
-     * @param pageSize page size
+     * @param pageSize  page size
      * @return worker group list page
      */
     @Override
@@ -297,7 +297,7 @@ public class WorkerGroupServiceImpl extends BaseServiceImpl implements WorkerGro
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Map<String, Object> deleteWorkerGroupById(User loginUser, Integer id) {
+    public Map<String, Object> deleteWorkerGroupById(User loginUser, String id) {
         Map<String, Object> result = new HashMap<>();
 //        if (isNotAdmin(loginUser, result)) {
 //            return result;

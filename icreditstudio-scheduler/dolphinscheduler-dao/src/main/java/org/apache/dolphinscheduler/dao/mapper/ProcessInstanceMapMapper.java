@@ -33,8 +33,8 @@ public interface ProcessInstanceMapMapper extends BaseMapper<ProcessInstanceMap>
      * @param parentTaskId parentTaskId
      * @return process instance map
      */
-    ProcessInstanceMap queryByParentId(@Param("parentProcessId") int parentProcessId,
-                                       @Param("parentTaskId") int parentTaskId);
+    ProcessInstanceMap queryByParentId(@Param("parentProcessId") String parentProcessId,
+                                       @Param("parentTaskId") String parentTaskId);
 
 
     /**
@@ -42,20 +42,20 @@ public interface ProcessInstanceMapMapper extends BaseMapper<ProcessInstanceMap>
      * @param subProcessId subProcessId
      * @return process instance map
      */
-    ProcessInstanceMap queryBySubProcessId(@Param("subProcessId") Integer subProcessId);
+    ProcessInstanceMap queryBySubProcessId(@Param("subProcessId") String subProcessId);
 
     /**
      * delete by parent process id
      * @param parentProcessId parentProcessId
      * @return delete result
      */
-    int deleteByParentProcessId(@Param("parentProcessId") int parentProcessId);
+    int deleteByParentProcessId(@Param("parentProcessId") String parentProcessId);
 
     /**
      *  query sub process instance  ids by parent instance id
      * @param parentInstanceId parentInstanceId
      * @return sub process instance ids
      */
-    List<Integer> querySubIdListByParentId(@Param("parentInstanceId") int parentInstanceId);
+    List<String> querySubIdListByParentId(@Param("parentInstanceId") String parentInstanceId);
 
 }

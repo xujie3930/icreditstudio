@@ -247,7 +247,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Result<Object> updateResource(User loginUser,
-                                         int resourceId,
+                                         String resourceId,
                                          String name,
                                          String desc,
                                          ResourceType type,
@@ -355,11 +355,11 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
         try {
             resourcesMapper.updateById(resource);
             if (resource.isDirectory()) {
-                List<Integer> childrenResource = listAllChildren(resource, false);
+                List<String> childrenResource = listAllChildren(resource, false);
                 if (CollectionUtils.isNotEmpty(childrenResource)) {
                     String matcherFullName = Matcher.quoteReplacement(fullName);
                     List<Resource> childResourceList;
-                    Integer[] childResIdArray = childrenResource.toArray(new Integer[childrenResource.size()]);
+                    String[] childResIdArray = childrenResource.toArray(new String[childrenResource.size()]);
                     List<Resource> resourceList = resourcesMapper.listResourceByIds(childResIdArray);
                     childResourceList = resourceList.stream().map(t -> {
                         t.setFullName(t.getFullName().replaceFirst(originFullName, matcherFullName));
@@ -381,7 +381,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
                     }
                 }
             } else if (ResourceType.UDF.equals(resource.getType())) {
-                List<UdfFunc> udfFuncs = udfFunctionMapper.listUdfByResourceId(new Integer[]{resourceId});
+                List<UdfFunc> udfFuncs = udfFunctionMapper.listUdfByResourceId(new String[]{resourceId});
                 if (CollectionUtils.isNotEmpty(udfFuncs)) {
                     udfFuncs = udfFuncs.stream().map(t -> {
                         t.setResourceName(fullName);
@@ -659,7 +659,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<Object> delete(User loginUser, int resourceId) throws IOException {
+    public Result<Object> delete(User loginUser, String resourceId) throws IOException {
         Result<Object> result = checkResourceUploadStartupState();
         if (result.isFailed()) {
             return result;
@@ -687,8 +687,8 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
         Map<Integer, Set<Long>> resourceProcessMap = ResourceProcessDefinitionUtils.getResourceProcessDefinitionMap(list);
         Set<Integer> resourceIdSet = resourceProcessMap.keySet();
         // get all children of the resource
-        List<Integer> allChildren = listAllChildren(resource, true);
-        Integer[] needDeleteResourceIdArray = allChildren.toArray(new Integer[allChildren.size()]);
+        List<String> allChildren = listAllChildren(resource, true);
+        String[] needDeleteResourceIdArray = allChildren.toArray(new String[allChildren.size()]);
 
         //if resource type is UDF,need check whether it is bound by UDF function
         if (resource.getType() == (ResourceType.UDF)) {
@@ -818,7 +818,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      * @return resource content
      */
     @Override
-    public Result<Object> readResource(int resourceId, int skipLineNum, int limit) {
+    public Result<Object> readResource(String resourceId, int skipLineNum, int limit) {
         Result<Object> result = checkResourceUploadStartupState();
         if (result.isFailed()) {
             return result;
@@ -987,7 +987,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Result<Object> updateResourceContent(int resourceId, String content) {
+    public Result<Object> updateResourceContent(String resourceId, String content) {
         Result<Object> result = checkResourceUploadStartupState();
         if (result.isFailed()) {
             return result;
@@ -1081,7 +1081,7 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      * @throws IOException exception
      */
     @Override
-    public org.springframework.core.io.Resource downloadResource(int resourceId) throws IOException {
+    public org.springframework.core.io.Resource downloadResource(String resourceId) throws IOException {
         // if resource upload startup
         if (!PropertyUtils.getResUploadStartupState()) {
             logger.error("resource upload startup state: {}", PropertyUtils.getResUploadStartupState());
@@ -1300,9 +1300,9 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      * @param containSelf whether add self to children list
      * @return all children id
      */
-    List<Integer> listAllChildren(Resource resource, boolean containSelf) {
-        List<Integer> childList = new ArrayList<>();
-        if (resource.getId() != -1 && containSelf) {
+    List<String> listAllChildren(Resource resource, boolean containSelf) {
+        List<String> childList = new ArrayList<>();
+        if (!resource.getId().equals("-1") && containSelf) {
             childList.add(resource.getId());
         }
 
@@ -1318,9 +1318,9 @@ public class ResourcesServiceImpl extends BaseServiceImpl implements ResourcesSe
      * @param resourceId resource id
      * @param childList  child list
      */
-    void listAllChildren(int resourceId, List<Integer> childList) {
-        List<Integer> children = resourcesMapper.listChildren(resourceId);
-        for (int childId : children) {
+    void listAllChildren(String resourceId, List<String> childList) {
+        List<String> children = resourcesMapper.listChildren(resourceId);
+        for (String childId : children) {
             childList.add(childId);
             listAllChildren(childId, childList);
         }

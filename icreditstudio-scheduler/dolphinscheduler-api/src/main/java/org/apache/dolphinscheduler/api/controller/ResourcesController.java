@@ -150,7 +150,7 @@ public class ResourcesController extends BaseController {
     @ApiException(UPDATE_RESOURCE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result updateResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                 @RequestParam(value = "id") int resourceId,
+                                 @RequestParam(value = "id") String resourceId,
                                  @RequestParam(value = "type") ResourceType type,
                                  @RequestParam(value = "name") String alias,
                                  @RequestParam(value = "description", required = false) String description,
@@ -236,7 +236,7 @@ public class ResourcesController extends BaseController {
     @ApiException(DELETE_RESOURCE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result deleteResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                 @RequestParam(value = "id") int resourceId
+                                 @RequestParam(value = "id") String resourceId
     ) throws Exception {
         return resourceService.delete(loginUser, resourceId);
     }
@@ -336,7 +336,7 @@ public class ResourcesController extends BaseController {
     @ApiException(VIEW_RESOURCE_FILE_ON_LINE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result viewResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                               @RequestParam(value = "id") int resourceId,
+                               @RequestParam(value = "id") String resourceId,
                                @RequestParam(value = "skipLineNum") int skipLineNum,
                                @RequestParam(value = "limit") int limit
     ) {
@@ -402,7 +402,7 @@ public class ResourcesController extends BaseController {
     @ApiException(EDIT_RESOURCE_FILE_ON_LINE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result updateResourceContent(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                        @RequestParam(value = "id") int resourceId,
+                                        @RequestParam(value = "id") String resourceId,
                                         @RequestParam(value = "content") String content
     ) {
         if (StringUtils.isEmpty(content)) {
@@ -428,7 +428,7 @@ public class ResourcesController extends BaseController {
     @ApiException(DOWNLOAD_RESOURCE_FILE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public ResponseEntity downloadResource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                           @RequestParam(value = "id") int resourceId) throws Exception {
+                                           @RequestParam(value = "id") String resourceId) throws Exception {
         Resource file = resourceService.downloadResource(resourceId);
         if (file == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Status.RESOURCE_NOT_EXIST.getMsg());
@@ -475,7 +475,7 @@ public class ResourcesController extends BaseController {
                                 @RequestParam(value = "argTypes", required = false) String argTypes,
                                 @RequestParam(value = "database", required = false) String database,
                                 @RequestParam(value = "description", required = false) String description,
-                                @RequestParam(value = "resourceId") int resourceId) {
+                                @RequestParam(value = "resourceId") String resourceId) {
         return udfFuncService.createUdfFunction(loginUser, funcName, className, argTypes, database, description, type, resourceId);
     }
 
@@ -496,7 +496,7 @@ public class ResourcesController extends BaseController {
     @ApiException(VIEW_UDF_FUNCTION_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result viewUIUdfFunction(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                    @RequestParam("id") int id) {
+                                    @RequestParam("id") String id) {
         Map<String, Object> map = udfFuncService.queryUdfFuncDetail(id);
         return returnDataList(map);
     }
@@ -531,14 +531,14 @@ public class ResourcesController extends BaseController {
     @ApiException(UPDATE_UDF_FUNCTION_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result updateUdfFunc(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                @RequestParam(value = "id") int udfFuncId,
+                                @RequestParam(value = "id") String udfFuncId,
                                 @RequestParam(value = "type") UdfType type,
                                 @RequestParam(value = "funcName") String funcName,
                                 @RequestParam(value = "className") String className,
                                 @RequestParam(value = "argTypes", required = false) String argTypes,
                                 @RequestParam(value = "database", required = false) String database,
                                 @RequestParam(value = "description", required = false) String description,
-                                @RequestParam(value = "resourceId") int resourceId) {
+                                @RequestParam(value = "resourceId") String resourceId) {
         Map<String, Object> result = udfFuncService.updateUdfFunc(udfFuncId, funcName, className, argTypes, database, description, type, resourceId);
         return returnDataList(result);
     }

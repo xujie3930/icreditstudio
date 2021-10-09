@@ -64,7 +64,7 @@ public class ProcessScheduleJob implements Job {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
         String projectId = dataMap.getString(Constants.PROJECT_ID);
-        int scheduleId = dataMap.getInt(Constants.SCHEDULE_ID);
+        String scheduleId = dataMap.getString(Constants.SCHEDULE_ID);
 
         Date scheduledFireTime = context.getScheduledFireTime();
 
@@ -107,7 +107,7 @@ public class ProcessScheduleJob implements Job {
     /**
      * delete job
      */
-    private void deleteJob(String projectId, int scheduleId) {
+    private void deleteJob(String projectId, String scheduleId) {
         String jobName = QuartzExecutors.buildJobName(scheduleId);
         String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
         QuartzExecutors.getInstance().deleteJob(jobName, jobGroupName);

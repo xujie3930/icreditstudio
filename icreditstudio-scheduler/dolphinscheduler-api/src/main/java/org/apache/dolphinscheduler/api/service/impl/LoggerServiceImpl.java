@@ -80,7 +80,7 @@ public class LoggerServiceImpl implements LoggerService {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public Result<String> queryLog(int taskInstId, int skipLineNum, int limit) {
+    public Result<String> queryLog(String taskInstId, int skipLineNum, int limit) {
 
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstId);
 
@@ -119,7 +119,7 @@ public class LoggerServiceImpl implements LoggerService {
      * @return log byte array
      */
     @Override
-    public byte[] getLogBytes(int taskInstId) {
+    public byte[] getLogBytes(String taskInstId) {
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstId);
         if (taskInstance == null || StringUtils.isBlank(taskInstance.getHost())) {
             throw new ServiceException("task instance is null or host is null");

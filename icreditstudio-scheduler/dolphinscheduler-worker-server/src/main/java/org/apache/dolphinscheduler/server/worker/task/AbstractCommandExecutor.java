@@ -17,32 +17,21 @@
 
 package org.apache.dolphinscheduler.server.worker.task;
 
-import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_FAILURE;
-import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_KILL;
-import static org.apache.dolphinscheduler.common.Constants.EXIT_CODE_SUCCESS;
-
 import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.common.thread.ThreadUtils;
-import org.apache.dolphinscheduler.common.utils.CommonUtils;
-import org.apache.dolphinscheduler.common.utils.HadoopUtils;
-import org.apache.dolphinscheduler.common.utils.LoggerUtils;
-import org.apache.dolphinscheduler.common.utils.OSUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
+import org.apache.dolphinscheduler.common.utils.*;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.utils.ProcessUtils;
 import org.apache.dolphinscheduler.server.worker.cache.TaskExecutionContextCacheManager;
 import org.apache.dolphinscheduler.server.worker.cache.impl.TaskExecutionContextCacheManagerImpl;
 import org.apache.dolphinscheduler.server.worker.entity.InstanceCreateEntity;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
+import org.slf4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -55,7 +44,7 @@ import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 
 /**
@@ -135,7 +124,7 @@ public abstract class AbstractCommandExecutor {
         if (!OSUtils.isWindows() && CommonUtils.isSudoEnable()) {
             command.add("sudo");
             command.add("-u");
-            JSONObject taskParams =JSONObject.parseObject(taskExecutionContext.getTaskParams());
+            JSONObject taskParams = JSONObject.parseObject(taskExecutionContext.getTaskParams());
             InstanceCreateEntity params = JSONObject.toJavaObject(taskParams, InstanceCreateEntity.class);
             command.add(params.getTenantCode());
         }
@@ -162,7 +151,7 @@ public abstract class AbstractCommandExecutor {
 
         CommandExecuteResult result = new CommandExecuteResult();
 
-        int taskInstanceId = taskExecutionContext.getTaskInstanceId();
+        String taskInstanceId = taskExecutionContext.getTaskInstanceId();
         // If the task has been killed, then the task in the cache is null
        /* if (null == taskExecutionContextCacheManager.getByTaskInstanceId(taskInstanceId)) {
             result.setExitStatusCode(EXIT_CODE_KILL);
@@ -221,13 +210,13 @@ public abstract class AbstractCommandExecutor {
             }
         } else {
             logger.error("process has failure , exitStatusCode:{}, processExitValue:{}, ready to kill ...",
-                 result.getExitStatusCode(), process.exitValue());
+                    result.getExitStatusCode(), process.exitValue());
             ProcessUtils.kill(taskExecutionContext);
             result.setExitStatusCode(EXIT_CODE_FAILURE);
         }
-        
+
         logger.info("process has exited, execute path:{}, processId:{} ,exitStatusCode:{} ,processWaitForStatus:{} ,processExitValue:{}",
-            taskExecutionContext.getExecutePath(), processId, result.getExitStatusCode(), status, process.exitValue());
+                taskExecutionContext.getExecutePath(), processId, result.getExitStatusCode(), status, process.exitValue());
 
         return result;
     }
@@ -412,7 +401,7 @@ public abstract class AbstractCommandExecutor {
                         logger.debug("check yarn application status, appId:{}, final state:{}", appId, applicationStatus.name());
                     }
                     if (applicationStatus.equals(ExecutionStatus.FAILURE)
-                        || applicationStatus.equals(ExecutionStatus.KILL)) {
+                            || applicationStatus.equals(ExecutionStatus.KILL)) {
                         return false;
                     }
 

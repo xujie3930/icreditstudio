@@ -81,7 +81,7 @@ public interface ResourcesService {
      * @return  update result code
      */
     Result<Object> updateResource(User loginUser,
-                                  int resourceId,
+                                  String resourceId,
                                   String name,
                                   String desc,
                                   ResourceType type,
@@ -125,7 +125,7 @@ public interface ResourcesService {
      * @return delete result code
      * @throws IOException exception
      */
-    Result<Object> delete(User loginUser, int resourceId) throws IOException;
+    Result<Object> delete(User loginUser, String resourceId) throws IOException;
 
     /**
      * verify resource by name and type
@@ -153,7 +153,7 @@ public interface ResourcesService {
      * @param limit limit
      * @return resource content
      */
-    Result<Object> readResource(int resourceId, int skipLineNum, int limit);
+    Result<Object> readResource(String resourceId, int skipLineNum, int limit);
 
     /**
      * create resource file online
@@ -175,7 +175,7 @@ public interface ResourcesService {
      * @param content content
      * @return update result cod
      */
-    Result<Object> updateResourceContent(int resourceId, String content);
+    Result<Object> updateResourceContent(String resourceId, String content);
 
     /**
      * download file
@@ -184,7 +184,7 @@ public interface ResourcesService {
      * @return resource content
      * @throws IOException exception
      */
-    org.springframework.core.io.Resource downloadResource(int resourceId) throws IOException;
+    org.springframework.core.io.Resource downloadResource(String resourceId) throws IOException;
 
     /**
      * list all file

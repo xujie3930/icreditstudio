@@ -19,20 +19,26 @@ package org.apache.dolphinscheduler.dao.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * data source user relation
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_relation_datasource_user")
 public class DatasourceUser {
 
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
 
     /**
      * user id
@@ -42,7 +48,7 @@ public class DatasourceUser {
     /**
      * data source id
      */
-    private int datasourceId;
+    private String datasourceId;
 
     /**
      * permission
@@ -59,63 +65,63 @@ public class DatasourceUser {
     private Date updateTime;
 
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public int getDatasourceId() {
-        return datasourceId;
-    }
-
-    public void setDatasourceId(int datasourceId) {
-        this.datasourceId = datasourceId;
-    }
-
-    public int getPerm() {
-        return perm;
-    }
-
-    public void setPerm(int perm) {
-        this.perm = perm;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public String toString() {
-        return "DatasourceUser{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", datasourceId=" + datasourceId +
-                ", perm=" + perm +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(String userId) {
+//        this.userId = userId;
+//    }
+//
+//    public int getDatasourceId() {
+//        return datasourceId;
+//    }
+//
+//    public void setDatasourceId(int datasourceId) {
+//        this.datasourceId = datasourceId;
+//    }
+//
+//    public int getPerm() {
+//        return perm;
+//    }
+//
+//    public void setPerm(int perm) {
+//        this.perm = perm;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "DatasourceUser{" +
+//                "id=" + id +
+//                ", userId=" + userId +
+//                ", datasourceId=" + datasourceId +
+//                ", perm=" + perm +
+//                ", createTime=" + createTime +
+//                ", updateTime=" + updateTime +
+//                '}';
+//    }
 }

@@ -17,26 +17,25 @@
 
 package org.apache.dolphinscheduler.dao;
 
-import static java.util.Objects.requireNonNull;
-
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.dao.datasource.ConnectionFactory;
 import org.apache.dolphinscheduler.dao.entity.PluginDefine;
 import org.apache.dolphinscheduler.dao.mapper.PluginDefineMapper;
-
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 @Component
 public class PluginDao extends AbstractBaseDao {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
+    @Resource
     private PluginDefineMapper pluginDefineMapper;
 
     @Override
@@ -68,14 +67,15 @@ public class PluginDao extends AbstractBaseDao {
      *
      * @param pluginDefine new pluginDefine
      */
-    public int addOrUpdatePluginDefine(PluginDefine pluginDefine) {
+    public String addOrUpdatePluginDefine(PluginDefine pluginDefine) {
         requireNonNull(pluginDefine, "pluginDefine is null");
         requireNonNull(pluginDefine.getPluginName(), "pluginName is null");
         requireNonNull(pluginDefine.getPluginType(), "pluginType is null");
 
         List<PluginDefine> pluginDefineList = pluginDefineMapper.queryByNameAndType(pluginDefine.getPluginName(), pluginDefine.getPluginType());
         if (CollectionUtils.isEmpty(pluginDefineList)) {
-            return pluginDefineMapper.insert(pluginDefine);
+            pluginDefineMapper.insert(pluginDefine);
+//            return pluginDefineMapper.insert(pluginDefine);
         }
         PluginDefine currPluginDefine = pluginDefineList.get(0);
         if (!currPluginDefine.getPluginParams().equals(pluginDefine.getPluginParams())) {

@@ -49,7 +49,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="工作空间描述" prop="taskDescribe">
+        <el-form-item label="任务描述" prop="taskDescribe">
           <el-input
             clearable
             show-word-limit

@@ -115,7 +115,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryProcessInstanceList(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                           @RequestParam(value = "processDefinitionId", required = false, defaultValue = "0") Integer processDefinitionId,
+                                           @RequestParam(value = "processDefinitionId", required = false, defaultValue = "0") String processDefinitionId,
                                            @RequestParam(value = "searchVal", required = false) String searchVal,
                                            @RequestParam(value = "executorName", required = false) String executorName,
                                            @RequestParam(value = "stateType", required = false) ExecutionStatus stateType,
@@ -153,7 +153,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryTaskListByProcessId(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                           @RequestParam("processInstanceId") Integer processInstanceId
+                                           @RequestParam("processInstanceId") String processInstanceId
     ) throws IOException {
         Map<String, Object> result = processInstanceService.queryTaskListByProcessId(loginUser, projectName, processInstanceId);
         return returnDataList(result);
@@ -190,7 +190,7 @@ public class ProcessInstanceController extends BaseController {
     public Result updateProcessInstance(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
                                         @RequestParam(value = "processInstanceJson", required = false) String processInstanceJson,
-                                        @RequestParam(value = "processInstanceId") Integer processInstanceId,
+                                        @RequestParam(value = "processInstanceId") String processInstanceId,
                                         @RequestParam(value = "scheduleTime", required = false) String scheduleTime,
                                         @RequestParam(value = "syncDefine", required = true) Boolean syncDefine,
                                         @RequestParam(value = "locations", required = false) String locations,
@@ -220,7 +220,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryProcessInstanceById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                           @RequestParam("processInstanceId") Integer processInstanceId
+                                           @RequestParam("processInstanceId") String processInstanceId
     ) {
         Map<String, Object> result = processInstanceService.queryProcessInstanceById(loginUser, projectName, processInstanceId);
         return returnDataList(result);
@@ -277,7 +277,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result<ProcessInstance> deleteProcessInstanceById(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                                              @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                                             @RequestParam("processInstanceId") Integer processInstanceId
+                                                             @RequestParam("processInstanceId") String processInstanceId
     ) {
         // task queue
         Map<String, Object> result = processInstanceService.deleteProcessInstanceById(loginUser, projectName, processInstanceId);
@@ -302,7 +302,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result querySubProcessInstanceByTaskId(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                                   @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                                  @RequestParam("taskId") Integer taskId) {
+                                                  @RequestParam("taskId") String taskId) {
         Map<String, Object> result = processInstanceService.querySubProcessInstanceByTaskId(loginUser, projectName, taskId);
         return returnDataList(result);
     }
@@ -325,7 +325,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation
     public Result queryParentInstanceBySubId(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                              @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                             @RequestParam("subId") Integer subId) {
+                                             @RequestParam("subId") String subId) {
         Map<String, Object> result = processInstanceService.queryParentInstanceBySubId(loginUser, projectName, subId);
         return returnDataList(result);
     }
@@ -346,7 +346,7 @@ public class ProcessInstanceController extends BaseController {
     @ApiException(QUERY_PROCESS_INSTANCE_ALL_VARIABLES_ERROR)
     @AccessLogAnnotation
     public Result viewVariables(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                @RequestParam("processInstanceId") Integer processInstanceId) throws Exception {
+                                @RequestParam("processInstanceId") String processInstanceId) throws Exception {
         Map<String, Object> result = processInstanceService.viewVariables(processInstanceId);
         return returnDataList(result);
     }
@@ -369,7 +369,7 @@ public class ProcessInstanceController extends BaseController {
     @AccessLogAnnotation
     public Result viewTree(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                           @RequestParam("processInstanceId") Integer processInstanceId) throws Exception {
+                           @RequestParam("processInstanceId") String processInstanceId) throws Exception {
         Map<String, Object> result = processInstanceService.viewGantt(processInstanceId);
         return returnDataList(result);
     }
@@ -403,9 +403,9 @@ public class ProcessInstanceController extends BaseController {
             String[] processInstanceIdArray = processInstanceIds.split(",");
 
             for (String strProcessInstanceId : processInstanceIdArray) {
-                int processInstanceId = Integer.parseInt(strProcessInstanceId);
+//                int processInstanceId = Integer.parseInt(strProcessInstanceId);
                 try {
-                    Map<String, Object> deleteResult = processInstanceService.deleteProcessInstanceById(loginUser, projectName, processInstanceId);
+                    Map<String, Object> deleteResult = processInstanceService.deleteProcessInstanceById(loginUser, projectName, strProcessInstanceId);
                     if (!Status.SUCCESS.equals(deleteResult.get(Constants.STATUS))) {
                         deleteFailedIdList.add(strProcessInstanceId);
                         logger.error((String) deleteResult.get(Constants.MSG));

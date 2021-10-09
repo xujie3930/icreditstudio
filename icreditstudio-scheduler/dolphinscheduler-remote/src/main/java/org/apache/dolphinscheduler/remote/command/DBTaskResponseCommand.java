@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
@@ -24,35 +26,38 @@ import java.io.Serializable;
 /**
  * db task final result response command
  */
+@Data
+@AllArgsConstructor
 public class DBTaskResponseCommand implements Serializable {
 
-    private int taskInstanceId;
     private int status;
+    private String taskInstanceId;
 
-    public DBTaskResponseCommand() {
-        super();
-    }
 
-    public DBTaskResponseCommand(int status, int taskInstanceId) {
-        this.status = status;
-        this.taskInstanceId = taskInstanceId;
-    }
+//    public DBTaskResponseCommand() {
+//        super();
+//    }
+//
+//    public DBTaskResponseCommand(int status, String taskInstanceId) {
+//        this.status = status;
+//        this.taskInstanceId = taskInstanceId;
+//    }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
+//    public int getStatus() {
+//        return status;
+//    }
+//
+//    public void setStatus(int status) {
+//        this.status = status;
+//    }
+//
+//    public int getTaskInstanceId() {
+//        return taskInstanceId;
+//    }
+//
+//    public void setTaskInstanceId(int taskInstanceId) {
+//        this.taskInstanceId = taskInstanceId;
+//    }
 
     /**
      * package response command
@@ -67,11 +72,11 @@ public class DBTaskResponseCommand implements Serializable {
         return command;
     }
 
-    @Override
-    public String toString() {
-        return "DBTaskResponseCommand{"
-            + "taskInstanceId=" + taskInstanceId
-            + ", status=" + status
-            + '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "DBTaskResponseCommand{"
+//                + "taskInstanceId=" + taskInstanceId
+//                + ", status=" + status
+//                + '}';
+//    }
 }

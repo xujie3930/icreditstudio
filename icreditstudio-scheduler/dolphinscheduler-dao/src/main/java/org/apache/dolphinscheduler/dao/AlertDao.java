@@ -17,47 +17,40 @@
 
 package org.apache.dolphinscheduler.dao;
 
+import com.google.common.collect.Lists;
 import org.apache.dolphinscheduler.common.enums.AlertEvent;
 import org.apache.dolphinscheduler.common.enums.AlertStatus;
 import org.apache.dolphinscheduler.common.enums.AlertWarnLevel;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.datasource.ConnectionFactory;
-import org.apache.dolphinscheduler.dao.entity.Alert;
-import org.apache.dolphinscheduler.dao.entity.AlertPluginInstance;
-import org.apache.dolphinscheduler.dao.entity.ProcessAlertContent;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.ServerAlertContent;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.AlertGroupMapper;
 import org.apache.dolphinscheduler.dao.mapper.AlertMapper;
 import org.apache.dolphinscheduler.dao.mapper.AlertPluginInstanceMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Lists;
-
 @Component
 public class AlertDao extends AbstractBaseDao {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
+    @Resource
     private AlertMapper alertMapper;
 
-    @Autowired
+    @Resource
     private AlertPluginInstanceMapper alertPluginInstanceMapper;
 
-    @Autowired
+    @Resource
     private AlertGroupMapper alertGroupMapper;
 
     @Override
@@ -81,8 +74,8 @@ public class AlertDao extends AbstractBaseDao {
      * update alert
      *
      * @param alertStatus alertStatus
-     * @param log log
-     * @param id id
+     * @param log         log
+     * @param id          id
      * @return update alert result
      */
     public int updateAlert(AlertStatus alertStatus, String log, int id) {
@@ -97,16 +90,16 @@ public class AlertDao extends AbstractBaseDao {
      * MasterServer or WorkerServer stoped
      *
      * @param alertGroupId alertGroupId
-     * @param host host
-     * @param serverType serverType
+     * @param host         host
+     * @param serverType   serverType
      */
-    public void sendServerStopedAlert(int alertGroupId, String host, String serverType) {
+    public void sendServerStopedAlert(String alertGroupId, String host, String serverType) {
         ServerAlertContent serverStopAlertContent = ServerAlertContent.newBuilder().
                 type(serverType)
                 .host(host)
                 .event(AlertEvent.SERVER_DOWN)
                 .warningLevel(AlertWarnLevel.SERIOUS).
-                build();
+                        build();
         String content = JSONUtils.toJsonString(Lists.newArrayList(serverStopAlertContent));
 
         Alert alert = new Alert();
@@ -123,18 +116,18 @@ public class AlertDao extends AbstractBaseDao {
     /**
      * process time out alert
      *
-     * @param processInstance processInstance
+     * @param processInstance   processInstance
      * @param processDefinition processDefinition
      */
     public void sendProcessTimeoutAlert(ProcessInstance processInstance, ProcessDefinition processDefinition) {
-        int alertGroupId = processInstance.getWarningGroupId();
+        String alertGroupId = processInstance.getWarningGroupId();
         Alert alert = new Alert();
         List<ProcessAlertContent> processAlertContentList = new ArrayList<>(1);
-        ProcessAlertContent processAlertContent = ProcessAlertContent.newBuilder()
+        ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
                 .processId(processInstance.getId())
                 .processName(processInstance.getName())
                 .event(AlertEvent.TIME_OUT)
-                .warningLevel(AlertWarnLevel.MIDDLE)
+                .warnLevel(AlertWarnLevel.MIDDLE)
                 .build();
         processAlertContentList.add(processAlertContent);
         String content = JSONUtils.toJsonString(processAlertContentList);
@@ -142,7 +135,7 @@ public class AlertDao extends AbstractBaseDao {
         saveTaskTimeoutAlert(alert, content, alertGroupId);
     }
 
-    private void saveTaskTimeoutAlert(Alert alert, String content, int alertGroupId) {
+    private void saveTaskTimeoutAlert(Alert alert, String content, String alertGroupId) {
         alert.setAlertGroupId(alertGroupId);
         alert.setContent(content);
         alert.setCreateTime(new Date());
@@ -153,23 +146,23 @@ public class AlertDao extends AbstractBaseDao {
     /**
      * task timeout warn
      *
-     * @param alertGroupId alertGroupId
-     * @param processInstanceId processInstanceId
+     * @param alertGroupId        alertGroupId
+     * @param processInstanceId   processInstanceId
      * @param processInstanceName processInstanceName
-     * @param taskId taskId
-     * @param taskName taskName
+     * @param taskId              taskId
+     * @param taskName            taskName
      */
-    public void sendTaskTimeoutAlert(int alertGroupId, int processInstanceId,
-                                     String processInstanceName, int taskId, String taskName) {
+    public void sendTaskTimeoutAlert(String alertGroupId, String processInstanceId,
+                                     String processInstanceName, String taskId, String taskName) {
         Alert alert = new Alert();
         List<ProcessAlertContent> processAlertContentList = new ArrayList<>(1);
-        ProcessAlertContent processAlertContent = ProcessAlertContent.newBuilder()
+        ProcessAlertContent processAlertContent = ProcessAlertContent.builder()
                 .processId(processInstanceId)
                 .processName(processInstanceName)
                 .taskId(taskId)
                 .taskName(taskName)
                 .event(AlertEvent.TIME_OUT)
-                .warningLevel(AlertWarnLevel.MIDDLE)
+                .warnLevel(AlertWarnLevel.MIDDLE)
                 .build();
         processAlertContentList.add(processAlertContent);
         String content = JSONUtils.toJsonString(processAlertContentList);

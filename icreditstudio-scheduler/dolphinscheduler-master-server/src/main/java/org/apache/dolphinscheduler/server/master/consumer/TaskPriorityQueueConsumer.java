@@ -32,7 +32,10 @@ import org.apache.dolphinscheduler.common.task.sqoop.sources.SourceMysqlParamete
 import org.apache.dolphinscheduler.common.task.sqoop.targets.TargetMysqlParameter;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.common.utils.*;
-import org.apache.dolphinscheduler.dao.entity.*;
+import org.apache.dolphinscheduler.dao.entity.DataSource;
+import org.apache.dolphinscheduler.dao.entity.Resource;
+import org.apache.dolphinscheduler.dao.entity.TaskInstance;
+import org.apache.dolphinscheduler.dao.entity.UdfFunc;
 import org.apache.dolphinscheduler.server.builder.TaskExecutionContextBuilder;
 import org.apache.dolphinscheduler.server.entity.*;
 import org.apache.dolphinscheduler.server.master.config.MasterConfig;
@@ -115,7 +118,7 @@ public class TaskPriorityQueueConsumer extends Thread {
                         failedDispatchTasks.add(taskPriority);
                     }
                 }
-                if (!failedDispatchTasks.isEmpty()) {
+                if (CollectionUtils.isNotEmpty(failedDispatchTasks)) {
                     for (TaskPriority dispatchFailedTask : failedDispatchTasks) {
                         taskPriorityQueue.put(dispatchFailedTask);
                     }
@@ -140,7 +143,7 @@ public class TaskPriorityQueueConsumer extends Thread {
     protected boolean dispatch(TaskPriority taskPriority) {
         boolean result = false;
         try {
-            int taskInstanceId = taskPriority.getTaskId();
+            String taskInstanceId = taskPriority.getTaskId();
             TaskExecutionContext context = getTaskExecutionContext(taskInstanceId);
             ExecutionContext executionContext = new ExecutionContext(context.toCommand(), ExecutorType.WORKER, context.getWorkerGroup());
 
@@ -163,7 +166,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * @param taskInstanceId taskInstanceId
      * @return taskInstance is final state
      */
-    public Boolean taskInstanceIsFinalState(int taskInstanceId) {
+    public Boolean taskInstanceIsFinalState(String taskInstanceId) {
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstanceId);
         return taskInstance.getState().typeIsFinished();
     }
@@ -174,7 +177,7 @@ public class TaskPriorityQueueConsumer extends Thread {
      * @param taskInstanceId taskInstanceId
      * @return TaskExecutionContext
      */
-    protected TaskExecutionContext getTaskExecutionContext(int taskInstanceId) {
+    protected TaskExecutionContext getTaskExecutionContext(String taskInstanceId) {
         TaskInstance taskInstance = processService.getTaskInstanceDetailByTaskId(taskInstanceId);
 
 //        int userId = taskInstance.getProcessDefine() == null ? 0 : taskInstance.getProcessDefine().getUserId();
@@ -194,6 +197,7 @@ public class TaskPriorityQueueConsumer extends Thread {
 //        String userQueue = processService.queryUserQueueByProcessInstanceId(taskInstance.getProcessInstanceId());
         //TODO
 //        taskInstance.getProcessInstance().setQueue(StringUtils.isEmpty(userQueue) ? tenant.getQueue() : userQueue);
+        //TODO租户编码用于任务执行
         taskInstance.getProcessInstance().setTenantCode(/*tenant.getTenantCode()*/null);
         taskInstance.setResources(getResourceFullNames(taskInstance));
 

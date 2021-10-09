@@ -129,7 +129,7 @@ public class DataSourceController extends BaseController {
     @ApiException(QUERY_DATASOURCE_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result queryDataSource(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                  @RequestParam("id") int id) {
+                                  @RequestParam("id") String id) {
 
         Map<String, Object> result = dataSourceService.queryDataSource(id);
         return returnDataList(result);
@@ -226,7 +226,7 @@ public class DataSourceController extends BaseController {
     @ApiException(CONNECTION_TEST_FAILURE)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result connectionTest(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                 @RequestParam("id") int id) {
+                                 @RequestParam("id") String id) {
         return dataSourceService.connectionTest(id);
     }
 
@@ -246,7 +246,7 @@ public class DataSourceController extends BaseController {
     @ApiException(DELETE_DATA_SOURCE_FAILURE)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result delete(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                         @RequestParam("id") int id) {
+                         @RequestParam("id") String id) {
         return dataSourceService.delete(loginUser, id);
     }
 

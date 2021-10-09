@@ -23,6 +23,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.KeyDeserializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.enums.UdfType;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
@@ -33,13 +36,16 @@ import java.util.Date;
 /**
  * udf function
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_udfs")
 public class UdfFunc {
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
     /**
      * user id
      */
@@ -73,7 +79,7 @@ public class UdfFunc {
     /**
      * resource id
      */
-    private int resourceId;
+    private String resourceId;
 
     /**
      * resource name
@@ -97,132 +103,132 @@ public class UdfFunc {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getFuncName() {
-        return funcName;
-    }
-
-    public void setFuncName(String funcName) {
-        this.funcName = funcName;
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public void setClassName(String className) {
-        this.className = className;
-    }
-
-    public String getArgTypes() {
-        return argTypes;
-    }
-
-    public void setArgTypes(String argTypes) {
-        this.argTypes = argTypes;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(int resourceId) {
-        this.resourceId = resourceId;
-    }
-
-    public String getResourceName() {
-        return resourceName;
-    }
-
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
-    public UdfType getType() {
-        return type;
-    }
-
-    public void setType(UdfType type) {
-        this.type = type;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        UdfFunc udfFunc = (UdfFunc) o;
-
-        if (id != udfFunc.id) {
-            return false;
-        }
-        return !(funcName != null ? !funcName.equals(udfFunc.funcName) : udfFunc.funcName != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (funcName != null ? funcName.hashCode() : 0);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        return JSONUtils.toJsonString(this);
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(String userId) {
+//        this.userId = userId;
+//    }
+//
+//    public String getFuncName() {
+//        return funcName;
+//    }
+//
+//    public void setFuncName(String funcName) {
+//        this.funcName = funcName;
+//    }
+//
+//    public String getClassName() {
+//        return className;
+//    }
+//
+//    public void setClassName(String className) {
+//        this.className = className;
+//    }
+//
+//    public String getArgTypes() {
+//        return argTypes;
+//    }
+//
+//    public void setArgTypes(String argTypes) {
+//        this.argTypes = argTypes;
+//    }
+//
+//    public String getDatabase() {
+//        return database;
+//    }
+//
+//    public void setDatabase(String database) {
+//        this.database = database;
+//    }
+//
+//    public String getDescription() {
+//        return description;
+//    }
+//
+//    public void setDescription(String description) {
+//        this.description = description;
+//    }
+//
+//    public int getResourceId() {
+//        return resourceId;
+//    }
+//
+//    public void setResourceId(int resourceId) {
+//        this.resourceId = resourceId;
+//    }
+//
+//    public String getResourceName() {
+//        return resourceName;
+//    }
+//
+//    public void setResourceName(String resourceName) {
+//        this.resourceName = resourceName;
+//    }
+//
+//    public UdfType getType() {
+//        return type;
+//    }
+//
+//    public void setType(UdfType type) {
+//        this.type = type;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//
+//        UdfFunc udfFunc = (UdfFunc) o;
+//
+//        if (id != udfFunc.id) {
+//            return false;
+//        }
+//        return !(funcName != null ? !funcName.equals(udfFunc.funcName) : udfFunc.funcName != null);
+//
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = id;
+//        result = 31 * result + (funcName != null ? funcName.hashCode() : 0);
+//        return result;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return JSONUtils.toJsonString(this);
+//    }
 
     public static class UdfFuncDeserializer extends KeyDeserializer {
 

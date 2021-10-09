@@ -41,7 +41,7 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
      * @param processId processId
      * @return process instance
      */
-    ProcessInstance queryDetailById(@Param("processId") int processId);
+    ProcessInstance queryDetailById(@Param("processId") String processId);
 
     /**
      * query process instance by host and stateArray
@@ -236,5 +236,5 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     int updateGlobalParamsById(@Param("globalParams") String globalParams,
                                @Param("id") int id);
 
-    ProcessInstance selectByDefinitionId(int processDefinitionId);
+    ProcessInstance selectByDefinitionId(String processDefinitionId);
 }

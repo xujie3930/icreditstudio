@@ -19,12 +19,18 @@ package org.apache.dolphinscheduler.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 /**
  * process definition log
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_process_definition_log")
 public class ProcessDefinitionLog extends ProcessDefinition {
 
@@ -39,9 +45,9 @@ public class ProcessDefinitionLog extends ProcessDefinition {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
 
-    public ProcessDefinitionLog() {
-        super();
-    }
+//    public ProcessDefinitionLog() {
+//        super();
+//    }
 
     public ProcessDefinitionLog(ProcessDefinition processDefinition) {
         this.setId(processDefinition.getId());
@@ -70,20 +76,20 @@ public class ProcessDefinitionLog extends ProcessDefinition {
         this.setWarningGroupId(processDefinition.getWarningGroupId());
     }
 
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
+//    public String getOperator() {
+//        return operator;
+//    }
+//
+//    public void setOperator(String operator) {
+//        this.operator = operator;
+//    }
+//
+//    public Date getOperateTime() {
+//        return operateTime;
+//    }
+//
+//    public void setOperateTime(Date operateTime) {
+//        this.operateTime = operateTime;
+//    }
 
 }

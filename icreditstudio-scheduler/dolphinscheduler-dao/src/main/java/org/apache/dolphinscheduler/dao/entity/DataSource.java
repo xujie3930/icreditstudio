@@ -21,17 +21,23 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.enums.DbType;
 
 import java.util.Date;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_datasource")
 public class DataSource {
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
 
     /**
      * user id
@@ -76,120 +82,120 @@ public class DataSource {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
 
-    public DataSource() {
-    }
+//    public DataSource() {
+//    }
 
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public DbType getType() {
-        return type;
-    }
-
-    public void setType(DbType type) {
-        this.type = type;
-    }
-
-    public String getConnectionParams() {
-        return connectionParams;
-    }
-
-    public void setConnectionParams(String connectionParams) {
-        this.connectionParams = connectionParams;
-    }
-
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-
-    @Override
-    public String toString() {
-        return "DataSource{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", name='" + name + '\'' +
-                ", note='" + note + '\'' +
-                ", type=" + type +
-                ", connectionParams='" + connectionParams + '\'' +
-                ", createTime=" + createTime +
-                ", updateTime=" + updateTime +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        DataSource that = (DataSource) o;
-
-        if (id != that.id) {
-            return false;
-        }
-        return name.equals(that.name);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + name.hashCode();
-        return result;
-    }
+//    public int getId() {
+//        return id;
+//    }
+//
+//    public void setId(int id) {
+//        this.id = id;
+//    }
+//
+//    public String getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(String userId) {
+//        this.userId = userId;
+//    }
+//
+//    public String getUserName() {
+//        return userName;
+//    }
+//
+//    public void setUserName(String userName) {
+//        this.userName = userName;
+//    }
+//
+//    public String getName() {
+//        return name;
+//    }
+//
+//    public void setName(String name) {
+//        this.name = name;
+//    }
+//
+//    public String getNote() {
+//        return note;
+//    }
+//
+//    public void setNote(String note) {
+//        this.note = note;
+//    }
+//
+//    public DbType getType() {
+//        return type;
+//    }
+//
+//    public void setType(DbType type) {
+//        this.type = type;
+//    }
+//
+//    public String getConnectionParams() {
+//        return connectionParams;
+//    }
+//
+//    public void setConnectionParams(String connectionParams) {
+//        this.connectionParams = connectionParams;
+//    }
+//
+//    public Date getCreateTime() {
+//        return createTime;
+//    }
+//
+//    public void setCreateTime(Date createTime) {
+//        this.createTime = createTime;
+//    }
+//
+//    public Date getUpdateTime() {
+//        return updateTime;
+//    }
+//
+//    public void setUpdateTime(Date updateTime) {
+//        this.updateTime = updateTime;
+//    }
+//
+//
+//    @Override
+//    public String toString() {
+//        return "DataSource{" +
+//                "id=" + id +
+//                ", userId=" + userId +
+//                ", userName='" + userName + '\'' +
+//                ", name='" + name + '\'' +
+//                ", note='" + note + '\'' +
+//                ", type=" + type +
+//                ", connectionParams='" + connectionParams + '\'' +
+//                ", createTime=" + createTime +
+//                ", updateTime=" + updateTime +
+//                '}';
+//    }
+//
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) {
+//            return true;
+//        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
+//
+//        DataSource that = (DataSource) o;
+//
+//        if (id != that.id) {
+//            return false;
+//        }
+//        return name.equals(that.name);
+//
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = id;
+//        result = 31 * result + name.hashCode();
+//        return result;
+//    }
 }

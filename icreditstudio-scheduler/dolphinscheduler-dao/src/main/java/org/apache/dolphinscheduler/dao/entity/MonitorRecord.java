@@ -17,6 +17,9 @@
 package org.apache.dolphinscheduler.dao.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.enums.DbType;
 import org.apache.dolphinscheduler.common.enums.Flag;
 
@@ -25,6 +28,9 @@ import java.util.Date;
 /**
  * monitor record for database
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MonitorRecord {
 
     private DbType dbType;
@@ -57,75 +63,75 @@ public class MonitorRecord {
     /**
      * start date
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date date;
 
-    public Flag getState() {
-        return state;
-    }
-
-    public void setState(Flag state) {
-        this.state = state;
-    }
-
-    public long getMaxConnections() {
-        return maxConnections;
-    }
-
-    public void setMaxConnections(long maxConnections) {
-        this.maxConnections = maxConnections;
-    }
-
-    public long getMaxUsedConnections() {
-        return maxUsedConnections;
-    }
-
-    public void setMaxUsedConnections(long maxUsedConnections) {
-        this.maxUsedConnections = maxUsedConnections;
-    }
-
-    public long getThreadsConnections() {
-        return threadsConnections;
-    }
-
-    public void setThreadsConnections(long threadsConnections) {
-        this.threadsConnections = threadsConnections;
-    }
-
-    public long getThreadsRunningConnections() {
-        return threadsRunningConnections;
-    }
-
-    public void setThreadsRunningConnections(long threadsRunningConnections) {
-        this.threadsRunningConnections = threadsRunningConnections;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
-    @Override
-    public String toString() {
-        return "MonitorRecord{" +
-                "state=" + state +
-                ", dbType=" + dbType +
-                ", maxConnections=" + maxConnections +
-                ", maxUsedConnections=" + maxUsedConnections +
-                ", threadsConnections=" + threadsConnections +
-                ", threadsRunningConnections=" + threadsRunningConnections +
-                ", date=" + date +
-                '}';
-    }
-
-    public DbType getDbType() {
-        return dbType;
-    }
-
-    public void setDbType(DbType dbType) {
-        this.dbType = dbType;
-    }
+//    public Flag getState() {
+//        return state;
+//    }
+//
+//    public void setState(Flag state) {
+//        this.state = state;
+//    }
+//
+//    public long getMaxConnections() {
+//        return maxConnections;
+//    }
+//
+//    public void setMaxConnections(long maxConnections) {
+//        this.maxConnections = maxConnections;
+//    }
+//
+//    public long getMaxUsedConnections() {
+//        return maxUsedConnections;
+//    }
+//
+//    public void setMaxUsedConnections(long maxUsedConnections) {
+//        this.maxUsedConnections = maxUsedConnections;
+//    }
+//
+//    public long getThreadsConnections() {
+//        return threadsConnections;
+//    }
+//
+//    public void setThreadsConnections(long threadsConnections) {
+//        this.threadsConnections = threadsConnections;
+//    }
+//
+//    public long getThreadsRunningConnections() {
+//        return threadsRunningConnections;
+//    }
+//
+//    public void setThreadsRunningConnections(long threadsRunningConnections) {
+//        this.threadsRunningConnections = threadsRunningConnections;
+//    }
+//
+//    public Date getDate() {
+//        return date;
+//    }
+//
+//    public void setDate(Date date) {
+//        this.date = date;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "MonitorRecord{" +
+//                "state=" + state +
+//                ", dbType=" + dbType +
+//                ", maxConnections=" + maxConnections +
+//                ", maxUsedConnections=" + maxUsedConnections +
+//                ", threadsConnections=" + threadsConnections +
+//                ", threadsRunningConnections=" + threadsRunningConnections +
+//                ", date=" + date +
+//                '}';
+//    }
+//
+//    public DbType getDbType() {
+//        return dbType;
+//    }
+//
+//    public void setDbType(DbType dbType) {
+//        this.dbType = dbType;
+//    }
 }
