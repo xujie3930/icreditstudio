@@ -33,7 +33,8 @@ export default {
         // '/workspace/detail',
         '/data-manage/add-task',
         '/data-manage/add-build',
-        '/data-manage/add-transfer'
+        '/data-manage/add-transfer',
+        '/data-manage/data-schedule/dag'
       ]
     }
   },
@@ -48,9 +49,14 @@ export default {
   methods: {
     // 返回
     handleBackClick() {
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
-      this.$router.push('/data-manage/data-sync')
+      const { path } = this.$route
+      if (path === '/data-manage/data-schedule/dag') {
+        this.$router.replace('/data-shcedule/cycle-task')
+      } else {
+        this.$ls.remove('taskForm')
+        this.$ls.remove('selectedTable')
+        this.$router.push('/data-manage/data-sync')
+      }
     }
   }
 }
