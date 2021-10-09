@@ -101,11 +101,11 @@ public class DolphinSchedulerDemoService {
         int sourceId = (int) map.get("resourceId");
 
         //创建项目  -- 这边可以改成 workspace
-        Map<String, Object> projectResult = projectService.createProject(loginUser, projectName, projectDescription);
+        Map<String, Object> projectResult = projectService.createProject(loginUser, projectName, projectDescription, null);
 
         //创建工作流定义，默认上线
         String processDefJson = appendProcessDefJson(taskId, taskName, sourceId, 0, fileName, fileSuffix);//拼接工作流定义JSON
-        Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
+        Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects, null);
 
         //启动工作流定义
         int processDefinitionId = (int) processDefinitionResult.get("processDefinitionId");
@@ -230,13 +230,13 @@ public class DolphinSchedulerDemoService {
         String workerGroup = "default";
         Integer timeout = 86400;
 
-        Map<String, Object> projectResult = projectService.createProject(loginUser, projectName, projectDescription);
+        Map<String, Object> projectResult = projectService.createProject(loginUser, projectName, projectDescription, request);
 
 //        Tenant tenant = tenantService.findByTenantCode(tenantCode);
 
         //创建工作流定义，默认上线
         String processDefJson = appendDataxProcessDefJson(0, taskId, taskName, request);//拼接工作流定义JSON
-        Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects);
+        Map<String, Object> processDefinitionResult = processDefinitionService.createProcessDefinition(loginUser, projectName, processDefName, processDefJson, processDefDesc, processDefLocations, processDefConnects, request);
 
         //启动工作流定义
         int processDefinitionId = (int) processDefinitionResult.get("processDefinitionId");
@@ -245,7 +245,7 @@ public class DolphinSchedulerDemoService {
 
         if (StringUtils.isNotBlank(schedule) && StringUtils.isNotBlank(startTime) && StringUtils.isNotBlank(endTime)) {
             Map<String, Object> scheduleResult = schedulerService.myInsertSchedule(startTime, endTime, loginUser, projectName, processDefinitionId, schedule,
-                    warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup);
+                    warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup, request.getWorkspaceId());
             schedulerService.setScheduleState(loginUser, projectName, (int) scheduleResult.get("scheduleId"), ReleaseState.ONLINE);
         }
 

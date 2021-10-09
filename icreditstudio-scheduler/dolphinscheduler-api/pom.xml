@@ -258,5 +258,16 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.jinninghui.datasphere</groupId>
+            <artifactId>icreditstudio-common</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
     </dependencies>
 </project>

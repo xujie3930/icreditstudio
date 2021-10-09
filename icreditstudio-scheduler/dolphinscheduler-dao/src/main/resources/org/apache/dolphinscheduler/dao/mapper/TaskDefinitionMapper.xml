@@ -21,7 +21,7 @@
     <sql id="baseSql">
         id, code, name, version, description, project_code, user_id, task_type, task_params, flag, task_priority,
         worker_group, fail_retry_times, fail_retry_interval, timeout_flag, timeout_notify_strategy, timeout, delay_time,
-        resource_ids, create_time, update_time
+        resource_ids, create_time, update_time, workspace_id, schedule_type
     </sql>
     <select id="queryByDefinitionName" resultType="org.apache.dolphinscheduler.dao.entity.TaskDefinition">
         select
@@ -91,4 +91,9 @@
         delete from t_ds_task_definition
         where code = #{code}
     </delete>
+    <update id="updateSchedulerTypeByCode">
+        update t_ds_task_definition
+        set schedule_type = #{type}
+        where code = #{code}
+    </update>
 </mapper>

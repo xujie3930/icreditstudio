@@ -20,6 +20,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
+import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ServiceException;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
@@ -36,13 +37,8 @@ import org.apache.dolphinscheduler.common.model.Server;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.dao.entity.User;
-import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
-import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
+import org.apache.dolphinscheduler.dao.entity.*;
+import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.ProcessScheduleJob;
 import org.apache.dolphinscheduler.service.quartz.QuartzExecutors;
@@ -87,6 +83,12 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
     @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
+
+    @Resource
+    private ProcessTaskRelationMapper processTaskRelationMapper;
+
+    @Resource
+    private TaskDefinitionMapper taskDefinitionMapper;
 
     /**
      * save schedule
@@ -191,7 +193,8 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
                                                 String receivers,
                                                 String receiversCc,
                                                 Priority processInstancePriority,
-                                                String workerGroup) {
+                                                String workerGroup,
+                                                String workspaceId) {
 
         Map<String, Object> result = new HashMap<>();
 
@@ -251,13 +254,18 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         scheduleObj.setReleaseState(ReleaseState.OFFLINE);
         scheduleObj.setProcessInstancePriority(processInstancePriority);
         scheduleObj.setWorkerGroup(workerGroup);
+        scheduleObj.setWorkspaceId(workspaceId);
         scheduleMapper.insert(scheduleObj);
 
         /**
          * updateProcessInstance receivers and cc by process definition id
          */
         processDefinition.setWarningGroupId(warningGroupId);
+        //这里修改scheduleType值为0:0-周期实例，1-手动实例
+        processDefinition.setScheduleType(ScheduleType.PERIOD.getCode());
         processDefinitionMapper.updateById(processDefinition);
+        ProcessTaskRelation processTaskRelation = processTaskRelationMapper.selectByProcessDefinitionCode(processDefinition.getCode());
+        taskDefinitionMapper.updateSchedulerTypeByCode(ScheduleType.PERIOD.getCode(), processTaskRelation.getPostTaskCode());
 
         // return scheduler object with ID
         result.put(Constants.DATA_LIST, scheduleMapper.selectById(scheduleObj.getId()));

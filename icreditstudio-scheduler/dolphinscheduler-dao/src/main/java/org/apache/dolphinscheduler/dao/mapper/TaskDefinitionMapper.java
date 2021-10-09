@@ -104,4 +104,6 @@ public interface TaskDefinitionMapper extends BaseMapper<TaskDefinition> {
      * @return int
      */
     int deleteByCode(@Param("code") Long code);
+
+    void updateSchedulerTypeByCode(@Param("type")int type, @Param("code")long postTaskCode);
 }

@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.api.service;
 
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.dao.entity.ProcessData;
 import org.apache.dolphinscheduler.dao.entity.User;
@@ -53,7 +54,8 @@ public interface ProcessDefinitionService {
                                                 String processDefinitionJson,
                                                 String desc,
                                                 String locations,
-                                                String connects) throws JsonProcessingException;
+                                                String connects,
+                                                InstanceCreateRequest request) throws JsonProcessingException;
 
     /**
      * query process definition list

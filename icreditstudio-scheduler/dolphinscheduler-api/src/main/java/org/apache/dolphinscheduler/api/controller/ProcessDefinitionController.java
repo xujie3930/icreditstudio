@@ -91,7 +91,7 @@ public class ProcessDefinitionController extends BaseController {
                                           @RequestParam(value = "description", required = false) String description) throws JsonProcessingException {
 
         Map<String, Object> result = processDefinitionService.createProcessDefinition(loginUser, projectName, name, json,
-                description, locations, connects);
+                description, locations, connects, null);
         return returnDataList(result);
     }
 

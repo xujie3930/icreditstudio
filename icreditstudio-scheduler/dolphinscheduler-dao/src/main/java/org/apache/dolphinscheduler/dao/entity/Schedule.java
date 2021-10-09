@@ -37,6 +37,8 @@ public class Schedule {
 
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
+
+    private String workspaceId;
     /**
      * process definition id
      */
@@ -266,6 +268,14 @@ public class Schedule {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
     }
 
     public Priority getProcessInstancePriority() {

@@ -47,6 +47,10 @@ public class ProcessDefinition {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
 
+    private String workspaceId;//新增工作空间id
+
+    private Integer scheduleType;//0-周期实例，1-手动实例
+
     /**
      * code
      */
@@ -235,6 +239,22 @@ public class ProcessDefinition {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
+    }
+
+    public Integer getScheduleType() {
+        return scheduleType;
+    }
+
+    public void setScheduleType(Integer scheduleType) {
+        this.scheduleType = scheduleType;
     }
 
     public ReleaseState getReleaseState() {
@@ -452,6 +472,8 @@ public class ProcessDefinition {
     public String toString() {
         return "ProcessDefinition{"
                 + "id=" + id
+                + "workspaceId=" + workspaceId
+                + "scheduleType=" + scheduleType
                 + ", name='" + name + '\''
                 + ", code=" + code
                 + ", version=" + version

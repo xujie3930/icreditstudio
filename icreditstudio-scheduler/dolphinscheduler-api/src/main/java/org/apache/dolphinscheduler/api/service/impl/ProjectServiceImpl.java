@@ -20,6 +20,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
 import org.apache.dolphinscheduler.common.Constants;
@@ -71,7 +72,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
      * @return returns an error if it exists
      */
     @Override
-    public Map<String, Object> createProject(User accessUser, String name, String desc) {
+    public Map<String, Object> createProject(User accessUser, String name, String desc, InstanceCreateRequest request) {
 
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> descCheck = checkDesc(desc);
@@ -97,6 +98,7 @@ public class ProjectServiceImpl extends BaseServiceImpl implements ProjectServic
                     .userName(accessUser.getUserName())
                     .createTime(now)
                     .updateTime(now)
+                    .workspaceId(request.getWorkspaceId())
                     .build();
         } catch (SnowFlakeException e) {
             putMsg(result, Status.CREATE_PROJECT_ERROR);

@@ -2186,10 +2186,10 @@ public class ProcessService {
      */
     public int saveProcessDefinition(User operator, Project project, String name, String desc, String locations,
                                      String connects, ProcessData processData, ProcessDefinition processDefinition,
-                                     Boolean isFromProcessDefine) {
+                                     Boolean isFromProcessDefine, String workspaceId) {
         ProcessDefinitionLog processDefinitionLog = insertProcessDefinitionLog(operator, processDefinition.getCode(),
-                name, processData, project, desc, locations, connects);
-        Map<String, TaskDefinition> taskDefinitionMap = handleTaskDefinition(operator, project.getCode(), processData.getTasks(), isFromProcessDefine);
+                name, processData, project, desc, locations, connects, workspaceId);
+        Map<String, TaskDefinition> taskDefinitionMap = handleTaskDefinition(operator, project.getCode(), processData.getTasks(), isFromProcessDefine, workspaceId);
         if (Constants.DEFINITION_FAILURE == handleTaskRelation(operator, project.getCode(), processDefinitionLog, processData.getTasks(), taskDefinitionMap)) {
             return Constants.DEFINITION_FAILURE;
         }
@@ -2201,10 +2201,11 @@ public class ProcessService {
      */
     public ProcessDefinitionLog insertProcessDefinitionLog(User operator, Long processDefinitionCode, String processDefinitionName,
                                                            ProcessData processData, Project project,
-                                                           String desc, String locations, String connects) {
+                                                           String desc, String locations, String connects, String workspaceId) {
         ProcessDefinitionLog processDefinitionLog = new ProcessDefinitionLog();
         Integer version = processDefineLogMapper.queryMaxVersionForDefinition(processDefinitionCode);
         processDefinitionLog.setUserId(operator.getId());
+        processDefinitionLog.setWorkspaceId(workspaceId);
         processDefinitionLog.setCode(processDefinitionCode);
         processDefinitionLog.setVersion(version == null || version == 0 ? 1 : version + 1);
         processDefinitionLog.setName(processDefinitionName);
@@ -2239,7 +2240,7 @@ public class ProcessService {
     /**
      * handle task definition
      */
-    public Map<String, TaskDefinition> handleTaskDefinition(User operator, Long projectCode, List<TaskNode> taskNodes, Boolean isFromProcessDefine) {
+    public Map<String, TaskDefinition> handleTaskDefinition(User operator, Long projectCode, List<TaskNode> taskNodes, Boolean isFromProcessDefine, String workspaceId) {
         if (taskNodes == null) {
             return null;
         }
@@ -2254,7 +2255,7 @@ public class ProcessService {
                 } catch (SnowFlakeException e) {
                     throw new ServiceException("Task code get error", e);
                 }
-                saveTaskDefinition(operator, projectCode, taskNode, taskDefinition);
+                saveTaskDefinition(operator, projectCode, taskNode, taskDefinition, workspaceId);
             } else {
                 if (isFromProcessDefine && isTaskOnline(taskDefinition.getCode())) {
                     throw new ServiceException(String.format("The task %s is on line in process", taskNode.getName()));
@@ -2332,11 +2333,12 @@ public class ProcessService {
         processTaskRelationLogMapper.insert(processTaskRelationLog);
     }
 
-    public int saveTaskDefinition(User operator, Long projectCode, TaskNode taskNode, TaskDefinition taskDefinition) {
+    public int saveTaskDefinition(User operator, Long projectCode, TaskNode taskNode, TaskDefinition taskDefinition, String workspaceId) {
         Date now = new Date();
         taskDefinition.setProjectCode(projectCode);
         taskDefinition.setUserId(operator.getId());
         taskDefinition.setVersion(1);
+        taskDefinition.setWorkspaceId(workspaceId);
         taskDefinition.setUpdateTime(now);
         taskDefinition.setCreateTime(now);
         setTaskFromTaskNode(taskNode, taskDefinition);

@@ -48,6 +48,8 @@ public class TaskDefinition {
     @TableId(value = "id", type = IdType.AUTO)
     private int id;
 
+    private String workspaceId;//工作空间id
+
     /**
      * code
      */
@@ -196,6 +198,14 @@ public class TaskDefinition {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getWorkspaceId() {
+        return workspaceId;
+    }
+
+    public void setWorkspaceId(String workspaceId) {
+        this.workspaceId = workspaceId;
     }
 
     public Date getCreateTime() {
@@ -398,6 +408,7 @@ public class TaskDefinition {
     public String toString() {
         return "TaskDefinition{"
                 + "id=" + id
+                + "workspaceId=" + workspaceId
                 + ", code=" + code
                 + ", name='" + name + '\''
                 + ", version=" + version

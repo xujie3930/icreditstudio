@@ -108,7 +108,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             putMsg(result, Status.TASK_TIMEOUT_PARAMS_ERROR);
             return result;
         }
-        Project project = projectMapper.queryByName(projectName);
+//        Project project = projectMapper.queryByName(projectName);
 //        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
 //        if (checkResultAndAuth != null) {
 //            return checkResultAndAuth;
@@ -308,12 +308,12 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
 
         ProcessDefinition processDefinition = processService.findProcessDefinition(processInstance.getProcessDefinitionCode(),
                 processInstance.getProcessDefinitionVersion());
-        if (executeType != ExecuteType.STOP && executeType != ExecuteType.PAUSE) {
+        /*if (executeType != ExecuteType.STOP && executeType != ExecuteType.PAUSE) {
             result = checkProcessDefinitionValid(processDefinition, processInstance.getProcessDefinitionCode());
             if (result.get(Constants.STATUS) != Status.SUCCESS) {
                 return result;
             }
-        }
+        }*/
 
         /*Map<String, Object> checkResult = checkExecuteType(processInstance, executeType);
         Status status = (Status) checkResult.get(Constants.STATUS);

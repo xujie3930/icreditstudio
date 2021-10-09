@@ -29,6 +29,7 @@ import org.apache.dolphinscheduler.api.dto.ProcessMeta;
 import org.apache.dolphinscheduler.api.dto.treeview.Instance;
 import org.apache.dolphinscheduler.api.dto.treeview.TreeViewDto;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.api.service.ProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
 import org.apache.dolphinscheduler.api.service.ProjectService;
@@ -139,7 +140,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                                                        String processDefinitionJson,
                                                        String desc,
                                                        String locations,
-                                                       String connects) {
+                                                       String connects,
+                                                       InstanceCreateRequest request) {
 
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
@@ -168,7 +170,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         }
 
         int saveResult = processService.saveProcessDefinition(loginUser, project, processDefinitionName, desc,
-                locations, connects, processData, processDefinition, true);
+                locations, connects, processData, processDefinition, true, request.getWorkspaceId());
 
         if (saveResult > 0) {
             putMsg(result, Status.SUCCESS);
@@ -378,7 +380,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         }
         ProcessData newProcessData = JSONUtils.parseObject(processDefinitionJson, ProcessData.class);
         int saveResult = processService.saveProcessDefinition(loginUser, project, name, desc,
-                locations, connects, newProcessData, processDefinition, true);
+                locations, connects, newProcessData, processDefinition, true, "");
 
         if (saveResult > 0) {
             putMsg(result, Status.SUCCESS);
@@ -815,7 +817,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                     importProcessParam,
                     processMeta.getProcessDefinitionDescription(),
                     processMeta.getProcessDefinitionLocations(),
-                    processMeta.getProcessDefinitionConnects());
+                    processMeta.getProcessDefinitionConnects(),
+                    null);
             putMsg(result, Status.SUCCESS);
         } catch (Exception e) {
             logger.error("import process meta json data: {}", e.getMessage(), e);
@@ -1017,7 +1020,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                             subProcessJson,
                             subProcess.getDescription(),
                             subProcess.getLocations(),
-                            subProcess.getConnects());
+                            subProcess.getConnects(),
+                             null);
                     logger.info("create sub process, project: {}, process name: {}", targetProject.getName(), subProcess.getName());
 
                 } catch (Exception e) {
@@ -1394,7 +1398,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
                     processDefinitionJson,
                     processDefinition.getDescription(),
                     locationsJN.toString(),
-                    processDefinition.getConnects());
+                    processDefinition.getConnects(),
+                    null);
 
         }
     }

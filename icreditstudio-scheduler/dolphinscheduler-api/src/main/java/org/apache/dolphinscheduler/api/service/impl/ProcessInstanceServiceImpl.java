@@ -464,7 +464,7 @@ public class ProcessInstanceServiceImpl extends BaseServiceImpl implements Proce
 
         return processService.saveProcessDefinition(loginUser, project, processDefinition.getName(),
                 processDefinition.getDescription(), locations, connects,
-                processData, processDefinition, false);
+                processData, processDefinition, false, "");
     }
 
     /**
