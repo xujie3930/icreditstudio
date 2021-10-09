@@ -88,9 +88,11 @@
             placeholder="请输入或选择cron表达式"
             v-model="taskForm.cron"
           >
-            <div slot="append" class="cron-suffix" @click="handleOpenCron">
-              <i class="el-icon-open "></i>
-            </div>
+            <el-button
+              slot="append"
+              icon="el-icon-open"
+              @click="handleOpenCron"
+            ></el-button>
           </el-input>
         </el-form-item>
       </el-form>
@@ -309,11 +311,6 @@ export default {
 
   .suffix-label {
     margin-top: 2px;
-  }
-
-  .cron-suffix {
-    cursor: pointer;
-    padding: 0;
   }
 
   .fade-enter-active,
