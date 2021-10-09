@@ -68,4 +68,6 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
                                                     @Param("startTime") Date startTime,
                                                     @Param("endTime") Date endTime
     );
+
+    Long countByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime")Date startTime, @Param("endTime")Date endTime, @Param("states") int[] statusArray);
 }

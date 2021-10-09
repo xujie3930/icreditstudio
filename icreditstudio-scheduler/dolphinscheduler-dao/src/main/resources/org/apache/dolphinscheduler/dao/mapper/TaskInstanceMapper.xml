@@ -153,4 +153,17 @@
         </if>
         order by instance.start_time desc
     </select>
+    <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
+        select count(0)
+        from t_ds_task_instance t
+        left join  t_ds_task_definition d
+        on d.code=t.task_code
+        where t.workspace_id = #{workspaceId} and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
+        <if test="states != null and states.length != 0">
+            and t.state in
+            <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                #{i}
+            </foreach>
+        </if>
+    </select>
 </mapper>

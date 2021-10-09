@@ -20,6 +20,7 @@ package org.apache.dolphinscheduler.api.service;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.User;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -58,4 +59,5 @@ public interface TaskInstanceService {
      */
     Map<String, Object> forceTaskSuccess(User loginUser, String projectName, Integer taskInstanceId);
 
+    Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray);
 }

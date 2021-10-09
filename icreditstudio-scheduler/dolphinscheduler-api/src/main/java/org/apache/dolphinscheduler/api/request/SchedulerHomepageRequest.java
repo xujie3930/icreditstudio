@@ -10,7 +10,7 @@ import lombok.Data;
 @Data
 public class SchedulerHomepageRequest {
 
-    private String spaceId;//工作空间id
+    private String workspaceId;//工作空间id
 
     private String shcedulerStartTime;//调度开始时间
 

@@ -178,4 +178,9 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
 
         return result;
     }
+
+    @Override
+    public Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray) {
+        return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, statusArray);
+    }
 }
