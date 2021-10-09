@@ -30,13 +30,14 @@
         <i class="search el-icon-search"></i>
       </div>
 
-      <div class="btn-wrap">
+      <div class="btn-wrap" @click="handleAddTable">
         <i class="icon el-icon-circle-plus-outline"></i>
         <span class="text">新建表</span>
       </div>
 
-      <el-tree class="tree" :data="data">
+      <el-tree class="tree" :expand-on-click-node="false" :data="data">
         <div
+          :disabled="data.disabled"
           :id="node.id"
           :draggable="node.level > 1"
           class="custom-tree-node"
@@ -53,8 +54,17 @@
                 <i class="el-icon-more icon"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="add">新增表</el-dropdown-item>
-                <el-dropdown-item command="disabled">停用</el-dropdown-item>
+                <el-dropdown-item v-if="data.type === 0" command="add"
+                  >新增表</el-dropdown-item
+                >
+                <el-dropdown-item v-if="data.type !== 2" command="disabled"
+                  >停用</el-dropdown-item
+                >
+                <template v-if="data.type === 2">
+                  <el-dropdown-item command="enabled">启用</el-dropdown-item>
+                  <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                  <el-dropdown-item command="delte">删除</el-dropdown-item>
+                </template>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -67,15 +77,18 @@
         <TabDetail slot="panel" />
       </Tabs>
     </section>
+
+    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
   </div>
 </template>
 
 <script>
 import Tabs from '@/views/icredit/components/tabs'
 import TabDetail from './detail'
+import Message from '@/views/icredit/components/message'
 
 export default {
-  components: { Tabs, TabDetail },
+  components: { Tabs, TabDetail, Message },
 
   data() {
     return {
@@ -87,14 +100,44 @@ export default {
         {
           label: 'datax_web',
           icon: 'database',
-          type: '0',
+          type: 0,
           id: 1,
+          disabled: false,
           children: [
             {
               label: 'h_app_sysytem',
               icon: 'table',
-              type: '1',
+              type: 1,
+              id: 2,
+              disabled: false
+            },
+            {
+              label: 'h_data_metadata_code',
+              icon: 'table',
+              type: 2,
+              id: 3,
+              disabled: true
+            }
+          ]
+        },
+        {
+          label: 'datax_web',
+          icon: 'database',
+          type: 0,
+          id: 1,
+          disabled: true,
+          children: [
+            {
+              label: 'h_app_sysytem',
+              icon: 'table',
+              type: 1,
               id: 2
+            },
+            {
+              label: 'h_data_metadata_code',
+              icon: 'table',
+              type: 2,
+              id: 3
             }
           ]
         }
@@ -115,10 +158,33 @@ export default {
         case 'delete':
           this.$refs.deleteFlow.open({ title: '' })
           break
+        case 'disabled':
+          this.handleDisabledBtnClick()
+          break
 
         default:
           break
       }
+    },
+
+    // 新增表
+    handleAddTable() {
+      this.$router.push('/workspace/data-model/add')
+    },
+
+    // 停用
+    handleDisabledBtnClick() {
+      const options = {
+        opType: 'Disabled',
+        title: '停用表xxxx',
+        beforeOperateMsg:
+          '停用后，该表将不能再写入内容且不能提供数据服务（后期可点击启用进行恢复），确认要停用吗？'
+      }
+      this.$refs.operateMessage.open(options)
+    },
+
+    messageOperateCallback() {
+      this.$refs.operateMessage.close()
     }
   }
 }

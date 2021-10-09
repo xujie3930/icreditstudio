@@ -30,7 +30,7 @@ export default {
     return {
       // 需要返回的页面
       canBackPages: [
-        // '/workspace/detail',
+        '/workspace/data-model/add',
         '/data-manage/add-task',
         '/data-manage/add-build',
         '/data-manage/add-transfer',
@@ -52,6 +52,8 @@ export default {
       const { path } = this.$route
       if (path === '/data-manage/data-schedule/dag') {
         this.$router.replace('/data-shcedule/cycle-task')
+      } else if (path === '/workspace/data-model/add') {
+        this.$router.replace('/workspace/data-model')
       } else {
         this.$ls.remove('taskForm')
         this.$ls.remove('selectedTable')
