@@ -13,12 +13,12 @@
           :key="idx"
           :class="[
             'icredit-tabs-header__nav',
-            idx === curTabIdx ? 'icredit-tabs-header__nav-active' : ''
+            item.name === curTabName ? 'icredit-tabs-header__nav-active' : ''
           ]"
-          @click="handleTabsClick(idx)"
+          @click="handleTabsClick(item)"
         >
           <span>{{ item.name }}</span>
-          <i class="el-icon-close"></i>
+          <i style="margin-left:5px" class="el-icon-close"></i>
         </div>
       </div>
       <el-dropdown trigger="click" class="icredit-tabs-header__options">
@@ -51,19 +51,25 @@
 export default {
   data() {
     return {
-      curTabIdx: 1,
-      tabsConfig: [
-        { name: '平台门户' },
-        { name: '工作流11' },
-        { name: '文件夹名' },
-        { name: 'BI数据报表' }
-      ]
+      curTabIdx: 0
+    }
+  },
+
+  props: {
+    tabsConfig: {
+      type: Array,
+      default: () => []
+    },
+
+    curTabName: {
+      type: String,
+      default: ''
     }
   },
 
   methods: {
-    handleTabsClick(idx) {
-      this.curTabIdx = idx
+    handleTabsClick(tab) {
+      this.$emit('on-change', tab)
     }
   }
 }
@@ -90,7 +96,7 @@ export default {
     &__nav {
       @include flex(row, space-between);
       padding: 0 10px;
-      width: 150px;
+      min-width: 150px;
       height: 100%;
       cursor: pointer;
       border-right: 1px solid rgba(0, 0, 0, 0.15);
