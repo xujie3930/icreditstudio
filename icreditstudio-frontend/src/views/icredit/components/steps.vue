@@ -18,7 +18,8 @@
           index + 1 === curStep ? 'step-title__active' : ''
         ]"
       >
-        {{ item.title }}
+        <span> {{ item.title }} </span>
+        <span v-if="description" class="des">{{ item.description }}</span>
       </div>
     </div>
   </div>
@@ -34,6 +35,11 @@ export default {
     curStep: {
       type: Number,
       default: 1
+    },
+
+    description: {
+      type: Boolean,
+      default: false
     },
 
     renderStepsConfig: {
@@ -85,15 +91,24 @@ export default {
     }
 
     &-title {
+      @include flex(column, center, flex-start);
       font-size: 16px;
       font-family: PingFangSC, PingFangSC-Regular;
       font-weight: 400;
       text-align: left;
       color: rgba(0, 0, 0, 0.45);
       margin: 0 8px;
+
+      .des {
+        height: 20px;
+        line-height: 20px;
+        font-size: 14px;
+        color: #999;
+      }
     }
 
     &-title__active {
+      font-family: PingFangSC, PingFangSC-Medium;
       font-weight: 500;
       color: rgba(0, 0, 0, 0.85);
     }

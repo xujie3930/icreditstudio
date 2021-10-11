@@ -7,6 +7,7 @@
   <div class="add-task-page add-page">
     <div class="add-task" v-loading="detailLoading">
       <HeaderStepBar
+        description
         :cur-step="currentStep"
         :render-steps-config="renderStepsConfig"
       />
@@ -233,13 +234,13 @@ export default {
       renderStepsConfig: [
         {
           title: '数据库属性',
-          description: '这是一段很长很长很长的描述性文字'
+          description: '数据源库性信息'
         },
         {
           title: '新增表属性',
-          description: '这是一段很长很长很长的描述性文字'
+          description: '新增表属性信息'
         },
-        { title: '表字段信息', description: '这是一段很长很长很长的描述性文字' }
+        { title: '表字段信息', description: '设置表结构' }
       ],
       step: '',
       opType: '',
