@@ -138,87 +138,15 @@ public class TaskNode {
     @JsonSerialize(using = JSONUtils.JsonDataSerializer.class)
     private String timeout;
 
-//    public String getId() {
-//        return id;
-//    }
-//
-//    public void setId(String id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public String getDesc() {
-//        return desc;
-//    }
-//
-//    public void setDesc(String desc) {
-//        this.desc = desc;
-//    }
-//
-//    public String getType() {
-//        return type;
-//    }
-//
-//    public void setType(String type) {
-//        this.type = type;
-//    }
-//
-//    public String getParams() {
-//        return params;
-//    }
-//
-//    public void setParams(String params) {
-//        this.params = params;
-//    }
-//
-//    public String getPreTasks() {
-//        return preTasks;
-//    }
-
     public void setPreTasks(String preTasks) throws IOException {
         this.preTasks = preTasks;
         this.depList = JSONUtils.toList(preTasks, String.class);
     }
 
-//    public String getExtras() {
-//        return extras;
-//    }
-//
-//    public void setExtras(String extras) {
-//        this.extras = extras;
-//    }
-//
-//    public List<String> getDepList() {
-//        return depList;
-//    }
-
     public void setDepList(List<String> depList) throws JsonProcessingException {
         this.depList = depList;
         this.preTasks = JSONUtils.toJson(depList);
     }
-
-//    public String getLoc() {
-//        return loc;
-//    }
-//
-//    public void setLoc(String loc) {
-//        this.loc = loc;
-//    }
-//
-//    public String getRunFlag(){
-//        return runFlag;
-//    }
-//
-//    public void setRunFlag(String runFlag) {
-//        this.runFlag = runFlag;
-//    }
 
     public Boolean isForbidden() {
         return (StringUtils.isNotEmpty(this.runFlag) &&
@@ -253,46 +181,6 @@ public class TaskNode {
         return Objects.hash(name, desc, type, params, preTasks, extras, depList, runFlag);
     }
 
-//    public String getDependence() {
-//        return dependence;
-//    }
-//
-//    public void setDependence(String dependence) {
-//        this.dependence = dependence;
-//    }
-//
-//    public int getMaxRetryTimes() {
-//        return maxRetryTimes;
-//    }
-//
-//    public void setMaxRetryTimes(int maxRetryTimes) {
-//        this.maxRetryTimes = maxRetryTimes;
-//    }
-//
-//    public int getRetryInterval() {
-//        return retryInterval;
-//    }
-//
-//    public void setRetryInterval(int retryInterval) {
-//        this.retryInterval = retryInterval;
-//    }
-//
-//    public Priority getTaskInstancePriority() {
-//        return taskInstancePriority;
-//    }
-//
-//    public void setTaskInstancePriority(Priority taskInstancePriority) {
-//        this.taskInstancePriority = taskInstancePriority;
-//    }
-//
-//    public String getTimeout() {
-//        return timeout;
-//    }
-//
-//    public void setTimeout(String timeout) {
-//        this.timeout = timeout;
-//    }
-
     /**
      * get task time out parameter
      *
@@ -310,50 +198,4 @@ public class TaskNode {
     public boolean isConditionsTask() {
         return TaskType.CONDITIONS.toString().equalsIgnoreCase(this.getType());
     }
-
-//    @Override
-//    public String toString() {
-//        return "TaskNode{" +
-//                "id='" + id + '\'' +
-//                ", name='" + name + '\'' +
-//                ", desc='" + desc + '\'' +
-//                ", type='" + type + '\'' +
-//                ", runFlag='" + runFlag + '\'' +
-//                ", loc='" + loc + '\'' +
-//                ", maxRetryTimes=" + maxRetryTimes +
-//                ", retryInterval=" + retryInterval +
-//                ", params='" + params + '\'' +
-//                ", preTasks='" + preTasks + '\'' +
-//                ", extras='" + extras + '\'' +
-//                ", depList=" + depList +
-//                ", dependence='" + dependence + '\'' +
-//                ", taskInstancePriority=" + taskInstancePriority +
-//                ", timeout='" + timeout + '\'' +
-//                ", workerGroup='" + workerGroup + '\'' +
-//                '}';
-//    }
-
-//    public String getWorkerGroup() {
-//        return workerGroup;
-//    }
-//
-//    public void setWorkerGroup(String workerGroup) {
-//        this.workerGroup = workerGroup;
-//    }
-//
-//    public String getConditionResult() {
-//        return conditionResult;
-//    }
-//
-//    public void setConditionResult(String conditionResult) {
-//        this.conditionResult = conditionResult;
-//    }
-//
-//    public Integer getWorkerGroupId() {
-//        return workerGroupId;
-//    }
-//
-//    public void setWorkerGroupId(Integer workerGroupId) {
-//        this.workerGroupId = workerGroupId;
-//    }
 }
