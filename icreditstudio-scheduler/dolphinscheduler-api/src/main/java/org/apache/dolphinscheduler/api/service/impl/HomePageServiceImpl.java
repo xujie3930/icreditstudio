@@ -53,8 +53,8 @@ public class HomePageServiceImpl implements HomePageService {
         Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
         Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode()});
         Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.RUNNING_EXECUTION.getCode()});
-        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.WAITING_THREAD.getCode(),
-                ExecutionStatus.WAITING_DEPEND.getCode()});
+//        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.WAITING_THREAD.getCode(),
+//                ExecutionStatus.WAITING_DEPEND.getCode()});
         /*List<TaskSituation> taskSituationList = getTaskSituationList(success, fail, running, waiting);*/
         List<TaskSituation> taskSituationList = new ArrayList<>();
         return BusinessResult.success(taskSituationList);

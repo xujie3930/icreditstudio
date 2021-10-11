@@ -17,37 +17,28 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
 
 /**
- *  execute task request command
+ * execute task request command
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskExecuteRequestCommand implements Serializable {
 
     /**
-     *  task execution context
+     * task execution context
      */
     private String taskExecutionContext;
 
-    public String getTaskExecutionContext() {
-        return taskExecutionContext;
-    }
-
-    public void setTaskExecutionContext(String taskExecutionContext) {
-        this.taskExecutionContext = taskExecutionContext;
-    }
-
-    public TaskExecuteRequestCommand() {
-    }
-
-    public TaskExecuteRequestCommand(String taskExecutionContext) {
-        this.taskExecutionContext = taskExecutionContext;
-    }
-
     /**
-     *  package request command
+     * package request command
      *
      * @return command
      */
@@ -57,12 +48,5 @@ public class TaskExecuteRequestCommand implements Serializable {
         byte[] body = JSONUtils.toJsonByteArray(this);
         command.setBody(body);
         return command;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskExecuteRequestCommand{"
-                + "taskExecutionContext='" + taskExecutionContext + '\''
-                + '}';
     }
 }

@@ -33,32 +33,6 @@ public class DBTaskResponseCommand implements Serializable {
     private int status;
     private String taskInstanceId;
 
-
-//    public DBTaskResponseCommand() {
-//        super();
-//    }
-//
-//    public DBTaskResponseCommand(int status, String taskInstanceId) {
-//        this.status = status;
-//        this.taskInstanceId = taskInstanceId;
-//    }
-
-//    public int getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(int status) {
-//        this.status = status;
-//    }
-//
-//    public int getTaskInstanceId() {
-//        return taskInstanceId;
-//    }
-//
-//    public void setTaskInstanceId(int taskInstanceId) {
-//        this.taskInstanceId = taskInstanceId;
-//    }
-
     /**
      * package response command
      *
@@ -72,11 +46,4 @@ public class DBTaskResponseCommand implements Serializable {
         return command;
     }
 
-//    @Override
-//    public String toString() {
-//        return "DBTaskResponseCommand{"
-//                + "taskInstanceId=" + taskInstanceId
-//                + ", status=" + status
-//                + '}';
-//    }
 }
