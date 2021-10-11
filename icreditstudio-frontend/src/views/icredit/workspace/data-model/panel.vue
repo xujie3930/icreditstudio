@@ -5,75 +5,84 @@
 -->
 
 <template>
-  <el-tabs class="model-tab" v-model="activeName" @tab-click="handleClick">
-    <el-tab-pane :label="isTable ? '表属性' : '库属性'" name="first">
-      <div class="tabs-detail">
-        <div
-          class="tabs-detail-item"
-          v-for="item in detailConfig"
-          :key="item.label"
-        >
-          <div class="label">{{ item.label }}</div>
-          <div class="text">{{ item.value }}</div>
+  <div>
+    <el-tabs class="model-tab" v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane :label="isTable ? '表属性' : '库属性'" name="first">
+        <div class="tabs-detail">
+          <div
+            class="tabs-detail-item"
+            v-for="item in detailConfig"
+            :key="item.label"
+          >
+            <div class="label">{{ item.label }}</div>
+            <div class="text">{{ item.value }}</div>
+          </div>
         </div>
-      </div>
-    </el-tab-pane>
+      </el-tab-pane>
 
-    <el-tab-pane label="表信息" name="second">
-      <div class="table-wrap">
-        <JTable
-          ref="table"
-          v-loading="tableLoading"
-          :table-configuration="tableConfiguration"
-          :table-data="tableData"
-        >
-        </JTable>
-      </div>
-    </el-tab-pane>
-
-    <template v-if="isTable">
-      <el-tab-pane label="采样数据(100)" name="third">
+      <el-tab-pane label="表信息" name="second">
         <div class="table-wrap">
           <JTable
             ref="table"
             v-loading="tableLoading"
-            :table-configuration="tbSamplesConfig"
-            :table-data="tbSampleData"
+            :table-configuration="tableConfiguration"
+            :table-data="tableData"
           >
           </JTable>
         </div>
       </el-tab-pane>
 
-      <el-tab-pane label="关系表" name="fourth">
-        <div>
-          <div class="btn-wrap">
-            <el-button type="primary">新增关联关系</el-button>
-          </div>
+      <template v-if="isTable">
+        <el-tab-pane label="采样数据(100)" name="third">
           <div class="table-wrap">
             <JTable
               ref="table"
-              :table-data="tbData"
-              :table-configuration="tbConfig"
               v-loading="tableLoading"
+              :table-configuration="tbSamplesConfig"
+              :table-data="tbSampleData"
             >
             </JTable>
           </div>
-        </div>
-      </el-tab-pane>
-    </template>
+        </el-tab-pane>
 
-    <el-tab-pane v-else label="ER图" name="firth">
-      <div class="er-wrap">ER图</div>
-    </el-tab-pane>
-  </el-tabs>
+        <el-tab-pane label="关系表" name="fourth">
+          <div>
+            <div class="btn-wrap">
+              <el-button type="primary" @click="handleAddRelation"
+                >新增关联关系</el-button
+              >
+            </div>
+            <div class="table-wrap">
+              <JTable
+                ref="table"
+                :table-data="tbData"
+                :table-configuration="tbConfig"
+                v-loading="tableLoading"
+              >
+              </JTable>
+            </div>
+          </div>
+        </el-tab-pane>
+      </template>
+
+      <el-tab-pane v-else label="ER图" name="firth">
+        <div class="er-wrap">ER图</div>
+      </el-tab-pane>
+    </el-tabs>
+
+    <Relations ref="relation" />
+  </div>
 </template>
 
 <script>
+import Relations from './relations'
 import tbConfig from '@/views/icredit/configuration/table/workspace-model-relation'
 import tbSamplesConfig from '@/views/icredit/configuration/table/workspace-model-samples'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-data-model'
 
 export default {
+  components: { Relations },
+
   data() {
     return {
       tbSamplesConfig,
@@ -146,7 +155,11 @@ export default {
   },
 
   methods: {
-    handleClick() {}
+    handleClick() {},
+
+    handleAddRelation() {
+      this.$refs.relation.open()
+    }
   }
 }
 </script>
