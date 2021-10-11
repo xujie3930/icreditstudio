@@ -220,7 +220,7 @@ public class MasterExecThread implements Runnable {
         String processDefinitionId = processInstance.getProcessDefinitionId();
         List<Schedule> schedules = processService.queryReleaseSchedulerListByProcessDefinitionId(processDefinitionId);
         List<Date> listDate = Lists.newLinkedList();
-        if (!CollectionUtils.isEmpty(schedules)) {
+        if (CollectionUtils.isNotEmpty(schedules)) {
             for (Schedule schedule : schedules) {
                 listDate.addAll(CronUtils.getSelfFireDateList(startDate, endDate, schedule.getCrontab()));
             }
@@ -228,7 +228,7 @@ public class MasterExecThread implements Runnable {
         // get first fire date
         Iterator<Date> iterator = null;
         Date scheduleDate = null;
-        if (!CollectionUtils.isEmpty(listDate)) {
+        if (CollectionUtils.isNotEmpty(listDate)) {
             iterator = listDate.iterator();
             scheduleDate = iterator.next();
             processInstance.setScheduleTime(scheduleDate);
@@ -389,11 +389,14 @@ public class MasterExecThread implements Runnable {
     private TaskInstance submitTaskExec(TaskInstance taskInstance) {
         MasterBaseTaskExecThread abstractExecThread = null;
         if (taskInstance.isSubProcess()) {
-            abstractExecThread = new SubProcessTaskExecThread(taskInstance);
+//            abstractExecThread = new SubProcessTaskExecThread(taskInstance);
+            logger.error("暂不支持子流程");
         } else if (taskInstance.isDependTask()) {
 //            abstractExecThread = new DependentTaskExecThread(taskInstance);
+            logger.error("暂不支持DependTask");
         } else if (taskInstance.isConditionsTask()) {
 //            abstractExecThread = new ConditionsTaskExecThread(taskInstance);
+            logger.error("暂不支持ConditionsTask");
         } else {
             abstractExecThread = new MasterTaskExecThread(taskInstance);
         }

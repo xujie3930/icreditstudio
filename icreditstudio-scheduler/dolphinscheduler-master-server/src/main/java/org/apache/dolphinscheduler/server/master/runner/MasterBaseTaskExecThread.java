@@ -130,7 +130,7 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
         TaskNode taskNode = JSON.parseObject(taskJson, TaskNode.class);
         taskTimeoutParameter = taskNode.getTaskTimeoutParameter();
 
-        if (taskTimeoutParameter.getEnable()) {
+        if (taskTimeoutParameter.isEnable()) {
             checkTimeoutFlag = true;
         }
     }
