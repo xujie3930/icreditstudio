@@ -1,123 +1,124 @@
-///*
-// * Licensed to the Apache Software Foundation (ASF) under one or more
-// * contributor license agreements.  See the NOTICE file distributed with
-// * this work for additional information regarding copyright ownership.
-// * The ASF licenses this file to You under the Apache License, Version 2.0
-// * (the "License"); you may not use this file except in compliance with
-// * the License.  You may obtain a copy of the License at
-// *
-// *    http://www.apache.org/licenses/LICENSE-2.0
-// *
-// * Unless required by applicable law or agreed to in writing, software
-// * distributed under the License is distributed on an "AS IS" BASIS,
-// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// * See the License for the specific language governing permissions and
-// * limitations under the License.
-// */
-//
-//package org.apache.dolphinscheduler.api.service.impl;
-//
-//import com.baomidou.mybatisplus.core.metadata.IPage;
-//import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-//import com.fasterxml.jackson.core.JsonProcessingException;
-//import com.fasterxml.jackson.databind.JsonNode;
-//import com.fasterxml.jackson.databind.node.ArrayNode;
-//import com.fasterxml.jackson.databind.node.ObjectNode;
-//import com.google.common.collect.ImmutableMap;
-//import org.apache.commons.collections.map.HashedMap;
-//import org.apache.dolphinscheduler.api.dto.ProcessMeta;
-//import org.apache.dolphinscheduler.api.dto.treeview.Instance;
-//import org.apache.dolphinscheduler.api.dto.treeview.TreeViewDto;
-//import org.apache.dolphinscheduler.api.enums.Status;
-//import org.apache.dolphinscheduler.api.service.ProcessDefinitionService;
-//import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
-//import org.apache.dolphinscheduler.api.service.ProjectService;
-//import org.apache.dolphinscheduler.api.service.SchedulerService;
-//import org.apache.dolphinscheduler.api.utils.CheckUtils;
-//import org.apache.dolphinscheduler.api.utils.FileUtils;
-//import org.apache.dolphinscheduler.api.utils.PageInfo;
-//import org.apache.dolphinscheduler.api.utils.exportprocess.ProcessAddTaskParam;
-//import org.apache.dolphinscheduler.api.utils.exportprocess.TaskNodeParamFactory;
-//import org.apache.dolphinscheduler.common.Constants;
-//import org.apache.dolphinscheduler.common.enums.*;
-//import org.apache.dolphinscheduler.common.graph.DAG;
-//import org.apache.dolphinscheduler.common.model.TaskNode;
-//import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
-//import org.apache.dolphinscheduler.common.thread.Stopper;
-//import org.apache.dolphinscheduler.common.utils.*;
-//import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils.SnowFlakeException;
-//import org.apache.dolphinscheduler.dao.entity.*;
-//import org.apache.dolphinscheduler.dao.mapper.*;
-//import org.apache.dolphinscheduler.service.process.ProcessService;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
-//import org.springframework.http.MediaType;
-//import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-//import org.springframework.web.multipart.MultipartFile;
-//
-//import javax.servlet.ServletOutputStream;
-//import javax.servlet.http.HttpServletResponse;
-//import java.io.BufferedOutputStream;
-//import java.io.IOException;
-//import java.nio.charset.StandardCharsets;
-//import java.util.*;
-//import java.util.concurrent.ConcurrentHashMap;
-//import java.util.stream.Collectors;
-//
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.dolphinscheduler.api.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.ImmutableMap;
+import org.apache.commons.collections.map.HashedMap;
+import org.apache.dolphinscheduler.api.dto.ProcessMeta;
+import org.apache.dolphinscheduler.api.dto.treeview.Instance;
+import org.apache.dolphinscheduler.api.dto.treeview.TreeViewDto;
+import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
+import org.apache.dolphinscheduler.api.service.ProcessDefinitionService;
+import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
+import org.apache.dolphinscheduler.api.service.ProjectService;
+import org.apache.dolphinscheduler.api.service.SchedulerService;
+import org.apache.dolphinscheduler.api.utils.CheckUtils;
+import org.apache.dolphinscheduler.api.utils.FileUtils;
+import org.apache.dolphinscheduler.api.utils.PageInfo;
+import org.apache.dolphinscheduler.api.utils.exportprocess.ProcessAddTaskParam;
+import org.apache.dolphinscheduler.api.utils.exportprocess.TaskNodeParamFactory;
+import org.apache.dolphinscheduler.common.Constants;
+import org.apache.dolphinscheduler.common.enums.*;
+import org.apache.dolphinscheduler.common.graph.DAG;
+import org.apache.dolphinscheduler.common.model.TaskNode;
+import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
+import org.apache.dolphinscheduler.common.thread.Stopper;
+import org.apache.dolphinscheduler.common.utils.*;
+import org.apache.dolphinscheduler.common.utils.SnowFlakeUtils.SnowFlakeException;
+import org.apache.dolphinscheduler.dao.entity.*;
+import org.apache.dolphinscheduler.dao.mapper.*;
+import org.apache.dolphinscheduler.service.process.ProcessService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 //import static org.apache.dolphinscheduler.common.Constants.CMD_PARAM_SUB_PROCESS_DEFINE_ID;
-//
-///**
-// * process definition service impl
-// */
-//@Service
-//public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements ProcessDefinitionService {
-//
-//    private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
-//
-//    private static final String PROCESSDEFINITIONCODE = "processDefinitionCode";
-//
-//    private static final String PROCESSDEFINITIONID = "processDefinitionId";
-//
-//    private static final String RELEASESTATE = "releaseState";
-//
-//    private static final String TASKS = "tasks";
-//
-//    @javax.annotation.Resource
-//    private ProjectMapper projectMapper;
-//
-//    @javax.annotation.Resource
-//    private ProjectService projectService;
-//
-////    @Autowired
-////    private UserMapper userMapper;
-//
-//    @javax.annotation.Resource
-//    private ProcessDefinitionLogMapper processDefinitionLogMapper;
-//
-//    @javax.annotation.Resource
-//    private ProcessDefinitionMapper processDefinitionMapper;
-//
-//    @javax.annotation.Resource
-//    private ProcessInstanceService processInstanceService;
-//
-//    @javax.annotation.Resource
-//    private TaskInstanceMapper taskInstanceMapper;
-//
-//    @javax.annotation.Resource
-//    private ScheduleMapper scheduleMapper;
-//
-//    @javax.annotation.Resource
-//    private ProcessService processService;
-//
-//    @javax.annotation.Resource
-//    private ProcessTaskRelationMapper processTaskRelationMapper;
-//
-//    @javax.annotation.Resource
-//    TaskDefinitionLogMapper taskDefinitionLogMapper;
-//
-//    @javax.annotation.Resource
-//    private SchedulerService schedulerService;
+
+/**
+ * process definition service impl
+ */
+@Service
+public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements ProcessDefinitionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
+
+    private static final String PROCESSDEFINITIONCODE = "processDefinitionCode";
+
+    private static final String PROCESSDEFINITIONID = "processDefinitionId";
+
+    private static final String RELEASESTATE = "releaseState";
+
+    private static final String TASKS = "tasks";
+
+    @javax.annotation.Resource
+    private ProjectMapper projectMapper;
+
+    @javax.annotation.Resource
+    private ProjectService projectService;
+
+//    @Autowired
+//    private UserMapper userMapper;
+
+    @javax.annotation.Resource
+    private ProcessDefinitionLogMapper processDefinitionLogMapper;
+
+    @javax.annotation.Resource
+    private ProcessDefinitionMapper processDefinitionMapper;
+
+    @javax.annotation.Resource
+    private ProcessInstanceService processInstanceService;
+
+    @javax.annotation.Resource
+    private TaskInstanceMapper taskInstanceMapper;
+
+    @javax.annotation.Resource
+    private ScheduleMapper scheduleMapper;
+
+    @javax.annotation.Resource
+    private ProcessService processService;
+
+    @javax.annotation.Resource
+    private ProcessTaskRelationMapper processTaskRelationMapper;
+
+    @javax.annotation.Resource
+    TaskDefinitionLogMapper taskDefinitionLogMapper;
+
+    @javax.annotation.Resource
+    private SchedulerService schedulerService;
 //
 //    /**
 //     * create process definition
@@ -1766,5 +1767,119 @@
 //        }
 //        return result;
 //
-//    }
-//}
+
+    @Override
+    public Map<String, Object> createProcessDefinition(User loginUser, String projectName, String name, String processDefinitionJson, String desc, String locations, String connects, InstanceCreateRequest request) throws JsonProcessingException {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionList(User loginUser, String projectName) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionListPaging(User loginUser, String projectName, String searchVal, Integer pageNo, Integer pageSize, String userId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionById(User loginUser, String projectName, String processId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionByName(User loginUser, String projectName, String processDefinitionName) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> batchCopyProcessDefinition(User loginUser, String projectName, String processDefinitionIds, String targetProjectId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> batchMoveProcessDefinition(User loginUser, String projectName, String processDefinitionIds, String targetProjectId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> updateProcessDefinition(User loginUser, String projectName, String id, String name, String processDefinitionJson, String desc, String locations, String connects) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> verifyProcessDefinitionName(User loginUser, String projectName, String name) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> deleteProcessDefinitionById(User loginUser, String projectName, String processDefinitionId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> releaseProcessDefinition(User loginUser, String projectName, String id, ReleaseState releaseState) {
+        return null;
+    }
+
+    @Override
+    public void batchExportProcessDefinitionByIds(User loginUser, String projectName, String processDefinitionIds, HttpServletResponse response) {
+
+    }
+
+    @Override
+    public Map<String, Object> importProcessDefinition(User loginUser, MultipartFile file, String currentProjectName) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> checkProcessNodeList(ProcessData processData, String processDefinitionJson) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getTaskNodeListByDefinitionCode(Long defineCode) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> getTaskNodeListByDefinitionCodeList(String defineCodeList) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionAllByProjectId(String projectId) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> viewTree(String processId, Integer limit) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> switchProcessDefinitionVersion(User loginUser, String projectName, String processDefinitionId, long version) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> queryProcessDefinitionVersions(User loginUser, String projectName, int pageNo, int pageSize, long processDefinitionCode) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> deleteByProcessDefinitionIdAndVersion(User loginUser, String projectName, String processDefinitionId, long version) {
+        return null;
+    }
+
+    @Override
+    public boolean checkHasAssociatedProcessDefinition(String processDefinitionId, long version) {
+        return false;
+    }
+
+    @Override
+    public List<Map<String, Object>> selectByWorkspaceIdAndTime(String workspaceId, Date startOfDay, Date endOfDay) {
+        return processDefinitionMapper.selectByWorkspaceIdAndTime(workspaceId, startOfDay, endOfDay);
+    }
+}

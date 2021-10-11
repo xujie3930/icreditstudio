@@ -108,4 +108,16 @@
         FROM t_ds_process_definition
         WHERE user_id = #{userId} and release_state = 1 and resource_ids is not null and resource_ids != ''
     </select>
+
+    <select id="selectByWorkspaceIdAndTime" resultType="map">
+        select d.id as id,
+               d.code as code,
+               d.name as name,
+               d.schedule_type as scheduleType
+        from t_ds_process_definition d
+                 left join
+             t_ds_relation_process_instance i
+        where d.workspace_id = #{workspaceId}
+          and i.start_time > #{startTime} and i.end_time <![CDATA[<]]> #{endTime}
+    </select>
 </mapper>

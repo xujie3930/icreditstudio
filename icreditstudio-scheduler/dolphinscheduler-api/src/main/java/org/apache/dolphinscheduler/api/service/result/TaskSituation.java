@@ -21,4 +21,13 @@ public class TaskSituation {
      * 占比
      */
     private double rate;
+
+    public TaskSituation() {
+    }
+
+    public TaskSituation(String taskDesc, Long count, double rate) {
+        this.taskDesc = taskDesc;
+        this.count = count;
+        this.rate = rate;
+    }
 }
