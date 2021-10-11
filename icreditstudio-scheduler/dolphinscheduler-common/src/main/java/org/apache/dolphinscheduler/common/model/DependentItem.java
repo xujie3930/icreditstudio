@@ -16,15 +16,17 @@
  */
 package org.apache.dolphinscheduler.common.model;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.DependResult;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 
 /**
  * dependent item
  */
+@Data
 public class DependentItem {
 
-    private Long definitionCode;
+    private String definitionId;
     private String depTasks;
     private String cycle;
     private String dateValue;
@@ -34,57 +36,9 @@ public class DependentItem {
 
     public String getKey(){
         return String.format("%d-%s-%s-%s",
-                getDefinitionCode(),
+                getDefinitionId(),
                 getDepTasks(),
                 getCycle(),
                 getDateValue());
-    }
-
-    public Long getDefinitionCode() {
-        return definitionCode;
-    }
-
-    public void setDefinitionCode(Long definitionCode) {
-        this.definitionCode = definitionCode;
-    }
-
-    public String getDepTasks() {
-        return depTasks;
-    }
-
-    public void setDepTasks(String depTasks) {
-        this.depTasks = depTasks;
-    }
-
-    public String getCycle() {
-        return cycle;
-    }
-
-    public void setCycle(String cycle) {
-        this.cycle = cycle;
-    }
-
-    public String getDateValue() {
-        return dateValue;
-    }
-
-    public void setDateValue(String dateValue) {
-        this.dateValue = dateValue;
-    }
-
-    public DependResult getDependResult() {
-        return dependResult;
-    }
-
-    public void setDependResult(DependResult dependResult) {
-        this.dependResult = dependResult;
-    }
-
-    public ExecutionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ExecutionStatus status) {
-        this.status = status;
     }
 }

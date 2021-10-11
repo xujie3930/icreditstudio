@@ -17,13 +17,10 @@
 
 package org.apache.dolphinscheduler.server.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.TaskTimeoutStrategy;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.TaskExecuteRequestCommand;
+import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -40,21 +37,15 @@ public class TaskExecutionContext implements Serializable {
      */
     private String taskInstanceId;
 
+
     /**
-     * task name
+     * taks name
      */
     private String taskName;
 
     /**
-     * task first submit time.
-     */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date firstSubmitTime;
-
-    /**
      * task start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
@@ -88,16 +79,6 @@ public class TaskExecutionContext implements Serializable {
     private int processId;
 
     /**
-     * processCode
-     */
-    private Long processDefineCode;
-
-    /**
-     * processVersion
-     */
-    private int processDefineVersion;
-
-    /**
      * appIds
      */
     private String appIds;
@@ -111,7 +92,6 @@ public class TaskExecutionContext implements Serializable {
     /**
      * process instance schedule time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date scheduleTime;
 
     /**
@@ -142,10 +122,16 @@ public class TaskExecutionContext implements Serializable {
      */
     private String queue;
 
+
     /**
-     * project code
+     * process define id
      */
-    private long projectCode;
+    private String processDefineId;
+
+    /**
+     * project id
+     */
+    private String projectId;
 
     /**
      * taskParams
@@ -170,7 +156,7 @@ public class TaskExecutionContext implements Serializable {
     /**
      * task timeout strategy
      */
-    private TaskTimeoutStrategy taskTimeoutStrategy;
+    private int taskTimeoutStrategy;
 
     /**
      * task timeout
@@ -181,16 +167,6 @@ public class TaskExecutionContext implements Serializable {
      * worker group
      */
     private String workerGroup;
-
-    /**
-     * delay execution time.
-     */
-    private int delayTime;
-
-    /**
-     * current execution status
-     */
-    private ExecutionStatus currentExecutionStatus;
 
     /**
      * resources full name and tenant code
@@ -218,356 +194,13 @@ public class TaskExecutionContext implements Serializable {
     private SqoopTaskExecutionContext sqoopTaskExecutionContext;
 
     /**
-     * taskInstance varPool
-     */
-    private String varPool;
-
-    /**
      * procedure TaskExecutionContext
      */
     private ProcedureTaskExecutionContext procedureTaskExecutionContext;
 
-//    public String getTaskInstanceId() {
-//        return taskInstanceId;
-//    }
-//
-//    public void setTaskInstanceId(String taskInstanceId) {
-//        this.taskInstanceId = taskInstanceId;
-//    }
-//
-//    public String getTaskName() {
-//        return taskName;
-//    }
-//
-//    public void setTaskName(String taskName) {
-//        this.taskName = taskName;
-//    }
-//
-//    public Date getFirstSubmitTime() {
-//        return firstSubmitTime;
-//    }
-//
-//    public void setFirstSubmitTime(Date firstSubmitTime) {
-//        this.firstSubmitTime = firstSubmitTime;
-//    }
-//
-//    public Date getStartTime() {
-//        return startTime;
-//    }
-//
-//    public void setStartTime(Date startTime) {
-//        this.startTime = startTime;
-//    }
-//
-//    public String getTaskType() {
-//        return taskType;
-//    }
-//
-//    public void setTaskType(String taskType) {
-//        this.taskType = taskType;
-//    }
-//
-//    public String getHost() {
-//        return host;
-//    }
-//
-//    public void setHost(String host) {
-//        this.host = host;
-//    }
-//
-//    public String getExecutePath() {
-//        return executePath;
-//    }
-//
-//    public void setExecutePath(String executePath) {
-//        this.executePath = executePath;
-//    }
-//
-//    public String getLogPath() {
-//        return logPath;
-//    }
-//
-//    public void setLogPath(String logPath) {
-//        this.logPath = logPath;
-//    }
-//
-//    public String getTaskJson() {
-//        return taskJson;
-//    }
-//
-//    public void setTaskJson(String taskJson) {
-//        this.taskJson = taskJson;
-//    }
-//
-//    public String getProcessId() {
-//        return processId;
-//    }
-//
-//    public void setProcessId(String processId) {
-//        this.processId = processId;
-//    }
-//
-//    public Long getProcessDefineCode() {
-//        return processDefineCode;
-//    }
-//
-//    public void setProcessDefineCode(Long processDefineCode) {
-//        this.processDefineCode = processDefineCode;
-//    }
-//
-//    public int getProcessDefineVersion() {
-//        return processDefineVersion;
-//    }
-//
-//    public void setProcessDefineVersion(int processDefineVersion) {
-//        this.processDefineVersion = processDefineVersion;
-//    }
-//
-//    public String getAppIds() {
-//        return appIds;
-//    }
-//
-//    public void setAppIds(String appIds) {
-//        this.appIds = appIds;
-//    }
-//
-//    public int getProcessInstanceId() {
-//        return processInstanceId;
-//    }
-//
-//    public void setProcessInstanceId(int processInstanceId) {
-//        this.processInstanceId = processInstanceId;
-//    }
-//
-//    public Date getScheduleTime() {
-//        return scheduleTime;
-//    }
-//
-//    public void setScheduleTime(Date scheduleTime) {
-//        this.scheduleTime = scheduleTime;
-//    }
-//
-//    public String getGlobalParams() {
-//        return globalParams;
-//    }
-//
-//    public void setGlobalParams(String globalParams) {
-//        this.globalParams = globalParams;
-//    }
-//
-//    public String getExecutorId() {
-//        return executorId;
-//    }
-//
-//    public void setExecutorId(String executorId) {
-//        this.executorId = executorId;
-//    }
-//
-//    public int getCmdTypeIfComplement() {
-//        return cmdTypeIfComplement;
-//    }
-//
-//    public void setCmdTypeIfComplement(int cmdTypeIfComplement) {
-//        this.cmdTypeIfComplement = cmdTypeIfComplement;
-//    }
-//
-//    public String getTenantCode() {
-//        return tenantCode;
-//    }
-//
-//    public void setTenantCode(String tenantCode) {
-//        this.tenantCode = tenantCode;
-//    }
-//
-//    public String getQueue() {
-//        return queue;
-//    }
-//
-//    public void setQueue(String queue) {
-//        this.queue = queue;
-//    }
-//
-//    public long getProjectCode() {
-//        return projectCode;
-//    }
-//
-//    public void setProjectCode(long projectCode) {
-//        this.projectCode = projectCode;
-//    }
-//
-//    public String getTaskParams() {
-//        return taskParams;
-//    }
-//
-//    public void setTaskParams(String taskParams) {
-//        this.taskParams = taskParams;
-//    }
-//
-//    public String getEnvFile() {
-//        return envFile;
-//    }
-//
-//    public void setEnvFile(String envFile) {
-//        this.envFile = envFile;
-//    }
-//
-//    public Map<String, String> getDefinedParams() {
-//        return definedParams;
-//    }
-//
-//    public void setDefinedParams(Map<String, String> definedParams) {
-//        this.definedParams = definedParams;
-//    }
-//
-//    public String getTaskAppId() {
-//        return taskAppId;
-//    }
-//
-//    public void setTaskAppId(String taskAppId) {
-//        this.taskAppId = taskAppId;
-//    }
-//
-//    public TaskTimeoutStrategy getTaskTimeoutStrategy() {
-//        return taskTimeoutStrategy;
-//    }
-//
-//    public void setTaskTimeoutStrategy(TaskTimeoutStrategy taskTimeoutStrategy) {
-//        this.taskTimeoutStrategy = taskTimeoutStrategy;
-//    }
-//
-//    public int getTaskTimeout() {
-//        return taskTimeout;
-//    }
-//
-//    public void setTaskTimeout(int taskTimeout) {
-//        this.taskTimeout = taskTimeout;
-//    }
-//
-//    public String getWorkerGroup() {
-//        return workerGroup;
-//    }
-//
-//    public void setWorkerGroup(String workerGroup) {
-//        this.workerGroup = workerGroup;
-//    }
-//
-//    public int getDelayTime() {
-//        return delayTime;
-//    }
-//
-//    public void setDelayTime(int delayTime) {
-//        this.delayTime = delayTime;
-//    }
-//
-//    public ExecutionStatus getCurrentExecutionStatus() {
-//        return currentExecutionStatus;
-//    }
-
-//    public void setCurrentExecutionStatus(ExecutionStatus currentExecutionStatus) {
-//        this.currentExecutionStatus = currentExecutionStatus;
-//    }
-//
-//    public SQLTaskExecutionContext getSqlTaskExecutionContext() {
-//        return sqlTaskExecutionContext;
-//    }
-//
-//    public void setSqlTaskExecutionContext(SQLTaskExecutionContext sqlTaskExecutionContext) {
-//        this.sqlTaskExecutionContext = sqlTaskExecutionContext;
-//    }
-//
-//    public DataxTaskExecutionContext getDataxTaskExecutionContext() {
-//        return dataxTaskExecutionContext;
-//    }
-//
-//    public void setDataxTaskExecutionContext(DataxTaskExecutionContext dataxTaskExecutionContext) {
-//        this.dataxTaskExecutionContext = dataxTaskExecutionContext;
-//    }
-//
-//    public ProcedureTaskExecutionContext getProcedureTaskExecutionContext() {
-//        return procedureTaskExecutionContext;
-//    }
-//
-//    public void setProcedureTaskExecutionContext(ProcedureTaskExecutionContext procedureTaskExecutionContext) {
-//        this.procedureTaskExecutionContext = procedureTaskExecutionContext;
-//    }
-
     public Command toCommand() {
         TaskExecuteRequestCommand requestCommand = new TaskExecuteRequestCommand();
-        requestCommand.setTaskExecutionContext(JSONUtils.toJsonString(this));
+        requestCommand.setTaskExecutionContext(FastJsonSerializer.serializeToString(this));
         return requestCommand.convert2Command();
     }
-
-//    public DependenceTaskExecutionContext getDependenceTaskExecutionContext() {
-//        return dependenceTaskExecutionContext;
-//    }
-//
-//    public void setDependenceTaskExecutionContext(DependenceTaskExecutionContext dependenceTaskExecutionContext) {
-//        this.dependenceTaskExecutionContext = dependenceTaskExecutionContext;
-//    }
-//
-//    public Map<String, String> getResources() {
-//        return resources;
-//    }
-//
-//    public void setResources(Map<String, String> resources) {
-//        this.resources = resources;
-//    }
-//
-//    public SqoopTaskExecutionContext getSqoopTaskExecutionContext() {
-//        return sqoopTaskExecutionContext;
-//    }
-//
-//    public void setSqoopTaskExecutionContext(SqoopTaskExecutionContext sqoopTaskExecutionContext) {
-//        this.sqoopTaskExecutionContext = sqoopTaskExecutionContext;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "TaskExecutionContext{"
-//                + "taskInstanceId=" + taskInstanceId
-//                + ", taskName='" + taskName + '\''
-//                + ", currentExecutionStatus=" + currentExecutionStatus
-//                + ", firstSubmitTime=" + firstSubmitTime
-//                + ", startTime=" + startTime
-//                + ", taskType='" + taskType + '\''
-//                + ", host='" + host + '\''
-//                + ", executePath='" + executePath + '\''
-//                + ", logPath='" + logPath + '\''
-//                + ", taskJson='" + taskJson + '\''
-//                + ", processId=" + processId
-//                + ", processDefineCode=" + processDefineCode
-//                + ", processDefineVersion=" + processDefineVersion
-//                + ", appIds='" + appIds + '\''
-//                + ", processInstanceId=" + processInstanceId
-//                + ", scheduleTime=" + scheduleTime
-//                + ", globalParams='" + globalParams + '\''
-//                + ", executorId=" + executorId
-//                + ", cmdTypeIfComplement=" + cmdTypeIfComplement
-//                + ", tenantCode='" + tenantCode + '\''
-//                + ", queue='" + queue + '\''
-//                + ", projectCode=" + projectCode
-//                + ", taskParams='" + taskParams + '\''
-//                + ", envFile='" + envFile + '\''
-//                + ", definedParams=" + definedParams
-//                + ", taskAppId='" + taskAppId + '\''
-//                + ", taskTimeoutStrategy=" + taskTimeoutStrategy
-//                + ", taskTimeout=" + taskTimeout
-//                + ", workerGroup='" + workerGroup + '\''
-//                + ", delayTime=" + delayTime
-//                + ", resources=" + resources
-//                + ", sqlTaskExecutionContext=" + sqlTaskExecutionContext
-//                + ", dataxTaskExecutionContext=" + dataxTaskExecutionContext
-//                + ", dependenceTaskExecutionContext=" + dependenceTaskExecutionContext
-//                + ", sqoopTaskExecutionContext=" + sqoopTaskExecutionContext
-//                + ", procedureTaskExecutionContext=" + procedureTaskExecutionContext
-//                + '}';
-//    }
-//
-//    public String getVarPool() {
-//        return varPool;
-//    }
-//
-//    public void setVarPool(String varPool) {
-//        this.varPool = varPool;
-//    }
 }

@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -33,8 +32,9 @@ import java.util.List;
  */
 public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
+
     List<String> queryTaskByProcessIdAndState(@Param("processInstanceId") String processInstanceId,
-                                              @Param("state") Integer state);
+                                               @Param("state") Integer state);
 
     List<TaskInstance> findValidTaskListByProcessId(@Param("processInstanceId") String processInstanceId,
                                                     @Param("flag") Flag flag);
@@ -49,17 +49,18 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     TaskInstance queryByInstanceIdAndName(@Param("processInstanceId") String processInstanceId,
                                           @Param("name") String name);
 
-    Integer countTask(@Param("projectCodes") Long[] projectCodes,
-                      @Param("taskIds") int[] taskIds);
+    Integer countTask(
+            @Param("projectIds") String[] projectIds,
+            @Param("taskIds") String[] taskIds);
 
-    List<ExecuteStatusCount> countTaskInstanceStateByUser(@Param("startTime") Date startTime,
-                                                          @Param("endTime") Date endTime,
-                                                          @Param("projectCodes") Long[] projectCodes);
+    List<ExecuteStatusCount> countTaskInstanceStateByUser(
+            @Param("startTime") Date startTime,
+            @Param("endTime") Date endTime,
+            @Param("projectIds") String[] projectIds);
 
     IPage<TaskInstance> queryTaskInstanceListPaging(IPage<TaskInstance> page,
-                                                    @Param("projectCode") Long projectCode,
-                                                    @Param("processInstanceId") Integer processInstanceId,
-                                                    @Param("processInstanceName") String processInstanceName,
+                                                    @Param("projectId") String projectId,
+                                                    @Param("processInstanceId") String processInstanceId,
                                                     @Param("searchVal") String searchVal,
                                                     @Param("taskName") String taskName,
                                                     @Param("executorId") String executorId,
@@ -68,4 +69,6 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
                                                     @Param("startTime") Date startTime,
                                                     @Param("endTime") Date endTime
     );
+
+    Long countByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime")Date startTime, @Param("endTime")Date endTime, @Param("states") int[] statusArray);
 }

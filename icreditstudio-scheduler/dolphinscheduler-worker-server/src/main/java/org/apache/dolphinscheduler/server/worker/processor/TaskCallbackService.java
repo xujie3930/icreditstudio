@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.server.worker.processor;
 
+
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -28,7 +29,7 @@ import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.CommandType;
 import org.apache.dolphinscheduler.remote.config.NettyClientConfig;
 import org.apache.dolphinscheduler.remote.utils.Host;
-import org.apache.dolphinscheduler.service.registry.RegistryClient;
+import org.apache.dolphinscheduler.server.registry.ZookeeperRegistryCenter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.dolphinscheduler.common.Constants.SLEEP_TIME_MILLIS;
 
-
 /**
- * task callback service
+ * taks callback service
  */
 @Service
 public class TaskCallbackService {
@@ -55,16 +55,17 @@ public class TaskCallbackService {
     private static final ConcurrentHashMap<String, NettyRemoteChannel> REMOTE_CHANNELS = new ConcurrentHashMap<>();
 
     /**
-     * zookeeper registry center
+     * zookeeper register center
      */
     @Autowired
-    private RegistryClient registryClient;
+    private ZookeeperRegistryCenter zookeeperRegistryCenter;
 
 
     /**
      * netty remoting client
      */
     private final NettyRemotingClient nettyRemotingClient;
+
 
     public TaskCallbackService() {
         final NettyClientConfig clientConfig = new NettyClientConfig();
@@ -100,15 +101,13 @@ public class TaskCallbackService {
             if (newChannel != null) {
                 return getRemoteChannel(newChannel, nettyRemoteChannel.getOpaque(), taskInstanceId);
             }
-            logger.warn("original master : {} for task : {} is not reachable, random select master",
-                    nettyRemoteChannel.getHost(),
-                    taskInstanceId);
+
         }
 
         Set<String> masterNodes = null;
         int ntries = 0;
         while (Stopper.isRunning()) {
-            masterNodes = registryClient.getMasterNodesDirectly();
+            masterNodes = zookeeperRegistryCenter.getMasterNodesDirectly();
             if (CollectionUtils.isEmpty(masterNodes)) {
                 logger.info("try {} times but not find any master for task : {}.",
                         ntries + 1,
@@ -134,9 +133,11 @@ public class TaskCallbackService {
         throw new IllegalStateException(String.format("all available master nodes : %s are not reachable for task: {}", masterNodes, taskInstanceId));
     }
 
+
     public int pause(int ntries) {
         return SLEEP_TIME_MILLIS * RETRY_BACKOFF[ntries % RETRY_BACKOFF.length];
     }
+
 
     private NettyRemoteChannel getRemoteChannel(Channel newChannel, long opaque, String taskInstanceId) {
         NettyRemoteChannel remoteChannel = new NettyRemoteChannel(newChannel, opaque);

@@ -17,12 +17,13 @@
 
 package org.apache.dolphinscheduler.server.master.config;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.Constants;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
+@Data
 @Component
 @PropertySource(value = "master.properties")
 public class MasterConfig {
@@ -57,61 +58,61 @@ public class MasterConfig {
     @Value("${master.reserved.memory:0.3}")
     private double masterReservedMemory;
 
-    public int getListenPort() {
-        return listenPort;
-    }
-
-    public void setListenPort(int listenPort) {
-        this.listenPort = listenPort;
-    }
-
-    public String getHostSelector() {
-        return hostSelector;
-    }
-
-    public void setHostSelector(String hostSelector) {
-        this.hostSelector = hostSelector;
-    }
-
-    public int getMasterExecThreads() {
-        return masterExecThreads;
-    }
-
-    public void setMasterExecThreads(int masterExecThreads) {
-        this.masterExecThreads = masterExecThreads;
-    }
-
-    public int getMasterExecTaskNum() {
-        return masterExecTaskNum;
-    }
-
-    public void setMasterExecTaskNum(int masterExecTaskNum) {
-        this.masterExecTaskNum = masterExecTaskNum;
-    }
-
-    public int getMasterHeartbeatInterval() {
-        return masterHeartbeatInterval;
-    }
-
-    public void setMasterHeartbeatInterval(int masterHeartbeatInterval) {
-        this.masterHeartbeatInterval = masterHeartbeatInterval;
-    }
-
-    public int getMasterTaskCommitRetryTimes() {
-        return masterTaskCommitRetryTimes;
-    }
-
-    public void setMasterTaskCommitRetryTimes(int masterTaskCommitRetryTimes) {
-        this.masterTaskCommitRetryTimes = masterTaskCommitRetryTimes;
-    }
-
-    public int getMasterTaskCommitInterval() {
-        return masterTaskCommitInterval;
-    }
-
-    public void setMasterTaskCommitInterval(int masterTaskCommitInterval) {
-        this.masterTaskCommitInterval = masterTaskCommitInterval;
-    }
+//    public int getListenPort() {
+//        return listenPort;
+//    }
+//
+//    public void setListenPort(int listenPort) {
+//        this.listenPort = listenPort;
+//    }
+//
+//    public String getHostSelector() {
+//        return hostSelector;
+//    }
+//
+//    public void setHostSelector(String hostSelector) {
+//        this.hostSelector = hostSelector;
+//    }
+//
+//    public int getMasterExecThreads() {
+//        return masterExecThreads;
+//    }
+//
+//    public void setMasterExecThreads(int masterExecThreads) {
+//        this.masterExecThreads = masterExecThreads;
+//    }
+//
+//    public int getMasterExecTaskNum() {
+//        return masterExecTaskNum;
+//    }
+//
+//    public void setMasterExecTaskNum(int masterExecTaskNum) {
+//        this.masterExecTaskNum = masterExecTaskNum;
+//    }
+//
+//    public int getMasterHeartbeatInterval() {
+//        return masterHeartbeatInterval;
+//    }
+//
+//    public void setMasterHeartbeatInterval(int masterHeartbeatInterval) {
+//        this.masterHeartbeatInterval = masterHeartbeatInterval;
+//    }
+//
+//    public int getMasterTaskCommitRetryTimes() {
+//        return masterTaskCommitRetryTimes;
+//    }
+//
+//    public void setMasterTaskCommitRetryTimes(int masterTaskCommitRetryTimes) {
+//        this.masterTaskCommitRetryTimes = masterTaskCommitRetryTimes;
+//    }
+//
+//    public int getMasterTaskCommitInterval() {
+//        return masterTaskCommitInterval;
+//    }
+//
+//    public void setMasterTaskCommitInterval(int masterTaskCommitInterval) {
+//        this.masterTaskCommitInterval = masterTaskCommitInterval;
+//    }
 
     public double getMasterMaxCpuloadAvg() {
         if (masterMaxCpuloadAvg == -1) {
@@ -120,23 +121,23 @@ public class MasterConfig {
         return masterMaxCpuloadAvg;
     }
 
-    public void setMasterMaxCpuloadAvg(double masterMaxCpuloadAvg) {
-        this.masterMaxCpuloadAvg = masterMaxCpuloadAvg;
-    }
-
-    public double getMasterReservedMemory() {
-        return masterReservedMemory;
-    }
-
-    public void setMasterReservedMemory(double masterReservedMemory) {
-        this.masterReservedMemory = masterReservedMemory;
-    }
-
-    public int getMasterDispatchTaskNumber() {
-        return masterDispatchTaskNumber;
-    }
-
-    public void setMasterDispatchTaskNumber(int masterDispatchTaskNumber) {
-        this.masterDispatchTaskNumber = masterDispatchTaskNumber;
-    }
+//    public void setMasterMaxCpuloadAvg(double masterMaxCpuloadAvg) {
+//        this.masterMaxCpuloadAvg = masterMaxCpuloadAvg;
+//    }
+//
+//    public double getMasterReservedMemory() {
+//        return masterReservedMemory;
+//    }
+//
+//    public void setMasterReservedMemory(double masterReservedMemory) {
+//        this.masterReservedMemory = masterReservedMemory;
+//    }
+//
+//    public int getMasterDispatchTaskNumber() {
+//        return masterDispatchTaskNumber;
+//    }
+//
+//    public void setMasterDispatchTaskNumber(int masterDispatchTaskNumber) {
+//        this.masterDispatchTaskNumber = masterDispatchTaskNumber;
+//    }
 }

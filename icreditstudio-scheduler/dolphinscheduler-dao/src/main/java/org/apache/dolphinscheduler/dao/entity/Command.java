@@ -20,7 +20,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.*;
 
@@ -30,14 +29,13 @@ import java.util.Date;
  * command
  */
 @Data
-@AllArgsConstructor
 @TableName("t_ds_command")
 public class Command {
 
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    @TableId(value = "id", type = IdType.AUTO)
     private String id;
 
     /**
@@ -57,12 +55,6 @@ public class Command {
      */
     @TableField("executor_id")
     private String executorId;
-
-    /**
-     * 执行人 //TODO ADD
-     */
-    @TableField("executor")
-    private String executor;
 
     /**
      * command parameter, format json
@@ -136,7 +128,6 @@ public class Command {
             TaskDependType taskDependType,
             FailureStrategy failureStrategy,
             String executorId,
-            String executor,
             String processDefinitionId,
             String commandParam,
             WarningType warningType,
@@ -146,7 +137,6 @@ public class Command {
             Priority processInstancePriority) {
         this.commandType = commandType;
         this.executorId = executorId;
-        this.executor = executor;
         this.processDefinitionId = processDefinitionId;
         this.commandParam = commandParam;
         this.warningType = warningType;
@@ -242,20 +232,12 @@ public class Command {
 //        this.startTime = startTime;
 //    }
 //
-//    public String getExecutorId() {
+//    public int getExecutorId() {
 //        return executorId;
 //    }
 //
-//    public void setExecutorId(String executorId) {
+//    public void setExecutorId(int executorId) {
 //        this.executorId = executorId;
-//    }
-//
-//    public void setExecutor(String executor) {
-//        this.executor = executor;
-//    }
-//
-//    public String getExecutor() {
-//        return executor;
 //    }
 //
 //    public Priority getProcessInstancePriority() {
@@ -281,7 +263,7 @@ public class Command {
 //    public void setWorkerGroup(String workerGroup) {
 //        this.workerGroup = workerGroup;
 //    }
-//
+
 //    @Override
 //    public boolean equals(Object o) {
 //        if (this == o) {
@@ -338,9 +320,22 @@ public class Command {
 //
 //    @Override
 //    public int hashCode() {
-//        return super.hashCode();
+//        int result = id;
+//        result = 31 * result + (commandType != null ? commandType.hashCode() : 0);
+//        result = 31 * result + processDefinitionId;
+//        result = 31 * result + executorId;
+//        result = 31 * result + (commandParam != null ? commandParam.hashCode() : 0);
+//        result = 31 * result + (taskDependType != null ? taskDependType.hashCode() : 0);
+//        result = 31 * result + (failureStrategy != null ? failureStrategy.hashCode() : 0);
+//        result = 31 * result + (warningType != null ? warningType.hashCode() : 0);
+//        result = 31 * result + (warningGroupId != null ? warningGroupId.hashCode() : 0);
+//        result = 31 * result + (scheduleTime != null ? scheduleTime.hashCode() : 0);
+//        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
+//        result = 31 * result + (processInstancePriority != null ? processInstancePriority.hashCode() : 0);
+//        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
+//        result = 31 * result + (workerGroup != null ? workerGroup.hashCode() : 0);
+//        return result;
 //    }
-//
 //    @Override
 //    public String toString() {
 //        return "Command{" +

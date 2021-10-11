@@ -56,9 +56,6 @@ public class ShellCommandExecutor extends AbstractCommandExecutor {
         super(logHandler,taskExecutionContext,logger);
     }
 
-    public ShellCommandExecutor(List<String> logBuffer) {
-        super(logBuffer);
-    }
 
     @Override
     protected String buildCommandFilePath() {
