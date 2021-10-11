@@ -10,44 +10,47 @@ export default {
   hasPage: false,
   group: [
     {
-      type: 'index',
+      type: 'selection',
       label: '序号',
       width: 80
     },
     {
-      type: 'text',
+      type: 'editInput',
       label: '字段名',
-      prop: 'taskName'
+      prop: 'fieldName'
     },
     {
-      type: 'slot',
+      type: 'select',
       label: '字段类型',
-      prop: 'runtime'
+      prop: 'fieldType',
+      options: [
+        { label: 'date', value: 'DATE' },
+        { label: 'string', value: 'STRING' }
+      ]
     },
     {
-      type: 'text',
+      type: 'editInput',
+      label: '长度',
+      prop: 'length'
+    },
+    {
+      type: 'select',
       label: '是否主键',
-      prop: 'sourceTable'
+      prop: 'isKey',
+      options: [
+        { label: '是', value: '是' },
+        { label: '否', value: '否' }
+      ]
     },
     {
-      type: 'text',
-      label: '长度/设置',
-      prop: 'fieldChineseName'
-    },
-    {
-      type: 'text',
+      type: 'editInput',
       label: '字段别名',
-      prop: 'associateDict'
+      prop: 'alias'
     },
     {
-      type: 'text',
-      label: '字段规则',
-      prop: 'associateDict'
-    },
-    {
-      type: 'text',
+      type: 'editInput',
       label: '描述',
-      prop: 'associateDict'
+      prop: 'des'
     }
   ]
 }
