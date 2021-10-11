@@ -173,30 +173,30 @@ public class TaskExecutionContext implements Serializable {
      */
     private Map<String, String> resources;
 
-    /**
-     * sql TaskExecutionContext
-     */
-    private SQLTaskExecutionContext sqlTaskExecutionContext;
+//    /**
+//     * sql TaskExecutionContext
+//     */
+//    private SQLTaskExecutionContext sqlTaskExecutionContext;
 
     /**
      * datax TaskExecutionContext
      */
     private DataxTaskExecutionContext dataxTaskExecutionContext;
 
-    /**
-     * dependence TaskExecutionContext
-     */
-    private DependenceTaskExecutionContext dependenceTaskExecutionContext;
+//    /**
+//     * dependence TaskExecutionContext
+//     */
+//    private DependenceTaskExecutionContext dependenceTaskExecutionContext;
 
-    /**
-     * sqoop TaskExecutionContext
-     */
-    private SqoopTaskExecutionContext sqoopTaskExecutionContext;
+//    /**
+//     * sqoop TaskExecutionContext
+//     */
+//    private SqoopTaskExecutionContext sqoopTaskExecutionContext;
 
-    /**
-     * procedure TaskExecutionContext
-     */
-    private ProcedureTaskExecutionContext procedureTaskExecutionContext;
+//    /**
+//     * procedure TaskExecutionContext
+//     */
+//    private ProcedureTaskExecutionContext procedureTaskExecutionContext;
 
     public Command toCommand() {
         TaskExecuteRequestCommand requestCommand = new TaskExecuteRequestCommand();

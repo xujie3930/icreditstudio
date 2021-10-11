@@ -58,86 +58,10 @@ public class MasterConfig {
     @Value("${master.reserved.memory:0.3}")
     private double masterReservedMemory;
 
-//    public int getListenPort() {
-//        return listenPort;
-//    }
-//
-//    public void setListenPort(int listenPort) {
-//        this.listenPort = listenPort;
-//    }
-//
-//    public String getHostSelector() {
-//        return hostSelector;
-//    }
-//
-//    public void setHostSelector(String hostSelector) {
-//        this.hostSelector = hostSelector;
-//    }
-//
-//    public int getMasterExecThreads() {
-//        return masterExecThreads;
-//    }
-//
-//    public void setMasterExecThreads(int masterExecThreads) {
-//        this.masterExecThreads = masterExecThreads;
-//    }
-//
-//    public int getMasterExecTaskNum() {
-//        return masterExecTaskNum;
-//    }
-//
-//    public void setMasterExecTaskNum(int masterExecTaskNum) {
-//        this.masterExecTaskNum = masterExecTaskNum;
-//    }
-//
-//    public int getMasterHeartbeatInterval() {
-//        return masterHeartbeatInterval;
-//    }
-//
-//    public void setMasterHeartbeatInterval(int masterHeartbeatInterval) {
-//        this.masterHeartbeatInterval = masterHeartbeatInterval;
-//    }
-//
-//    public int getMasterTaskCommitRetryTimes() {
-//        return masterTaskCommitRetryTimes;
-//    }
-//
-//    public void setMasterTaskCommitRetryTimes(int masterTaskCommitRetryTimes) {
-//        this.masterTaskCommitRetryTimes = masterTaskCommitRetryTimes;
-//    }
-//
-//    public int getMasterTaskCommitInterval() {
-//        return masterTaskCommitInterval;
-//    }
-//
-//    public void setMasterTaskCommitInterval(int masterTaskCommitInterval) {
-//        this.masterTaskCommitInterval = masterTaskCommitInterval;
-//    }
-
     public double getMasterMaxCpuloadAvg() {
         if (masterMaxCpuloadAvg == -1) {
             return Constants.DEFAULT_MASTER_CPU_LOAD;
         }
         return masterMaxCpuloadAvg;
     }
-
-//    public void setMasterMaxCpuloadAvg(double masterMaxCpuloadAvg) {
-//        this.masterMaxCpuloadAvg = masterMaxCpuloadAvg;
-//    }
-//
-//    public double getMasterReservedMemory() {
-//        return masterReservedMemory;
-//    }
-//
-//    public void setMasterReservedMemory(double masterReservedMemory) {
-//        this.masterReservedMemory = masterReservedMemory;
-//    }
-//
-//    public int getMasterDispatchTaskNumber() {
-//        return masterDispatchTaskNumber;
-//    }
-//
-//    public void setMasterDispatchTaskNumber(int masterDispatchTaskNumber) {
-//        this.masterDispatchTaskNumber = masterDispatchTaskNumber;
-//    }
 }
