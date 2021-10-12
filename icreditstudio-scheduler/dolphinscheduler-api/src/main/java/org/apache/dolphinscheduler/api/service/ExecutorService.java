@@ -80,11 +80,11 @@ public interface ExecutorService {
 
     Map<String, Object> newExecute(User loginUser, String projectName, String processDefinitionId, ExecuteType executeType);
 
-    /**
-     * check if sub processes are offline before starting process definition
-     *
-     * @param processDefineId process definition id
-     * @return check result code
-     */
-    Map<String, Object> startCheckByProcessDefinedId(String processDefineId);
+//    /**
+//     * check if sub processes are offline before starting process definition
+//     *
+//     * @param processDefineId process definition id
+//     * @return check result code
+//     */
+//    Map<String, Object> startCheckByProcessDefinedId(String processDefineId);
 }

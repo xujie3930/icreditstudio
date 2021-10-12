@@ -57,78 +57,10 @@ public class WorkerConfig {
     @Value("${alert.listen.host:localhost}")
     private String alertListenHost;
 
-//    public int getListenPort() {
-//        return listenPort;
-//    }
-//
-//    public void setListenPort(int listenPort) {
-//        this.listenPort = listenPort;
-//    }
-//
-//    public Set<String> getWorkerGroups() {
-//        return workerGroups;
-//    }
-//
-//    public void setWorkerGroups(Set<String> workerGroups) {
-//        this.workerGroups = workerGroups;
-//    }
-//
-//    public int getWorkerExecThreads() {
-//        return workerExecThreads;
-//    }
-//
-//    public void setWorkerExecThreads(int workerExecThreads) {
-//        this.workerExecThreads = workerExecThreads;
-//    }
-//
-//    public int getWorkerHeartbeatInterval() {
-//        return workerHeartbeatInterval;
-//    }
-//
-//    public void setWorkerHeartbeatInterval(int workerHeartbeatInterval) {
-//        this.workerHeartbeatInterval = workerHeartbeatInterval;
-//    }
-//
-//    public boolean getWorkerTenantAutoCreate() {
-//        return workerTenantAutoCreate;
-//    }
-//
-//    public void setWorkerTenantAutoCreate(boolean workerTenantAutoCreate) {
-//        this.workerTenantAutoCreate = workerTenantAutoCreate;
-//    }
-//
-//    public double getWorkerReservedMemory() {
-//        return workerReservedMemory;
-//    }
-//
-//    public void setWorkerReservedMemory(double workerReservedMemory) {
-//        this.workerReservedMemory = workerReservedMemory;
-//    }
-
     public int getWorkerMaxCpuloadAvg() {
         if (workerMaxCpuloadAvg == -1) {
             return Constants.DEFAULT_WORKER_CPU_LOAD;
         }
         return workerMaxCpuloadAvg;
     }
-
-//    public void setWorkerMaxCpuloadAvg(int workerMaxCpuloadAvg) {
-//        this.workerMaxCpuloadAvg = workerMaxCpuloadAvg;
-//    }
-//
-//    public int getHostWeight() {
-//        return hostWeight;
-//    }
-//
-//    public void setHostWeight(int hostWeight) {
-//        this.hostWeight = hostWeight;
-//    }
-//
-//    public String getAlertListenHost() {
-//        return alertListenHost;
-//    }
-//
-//    public void setAlertListenHost(String alertListenHost) {
-//        this.alertListenHost = alertListenHost;
-//    }
 }

@@ -60,5 +60,5 @@ public interface MonitorService {
      */
     Map<String,Object> queryWorker(User loginUser);
     
-    List<Server> getServerListFromRegistry(boolean isMaster);
+    List<Server> getServerListFromZK(boolean isMaster);
 }

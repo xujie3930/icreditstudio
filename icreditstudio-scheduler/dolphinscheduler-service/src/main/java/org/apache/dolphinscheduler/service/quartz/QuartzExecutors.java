@@ -14,79 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.service.quartz;
-
-import static org.apache.dolphinscheduler.common.Constants.DATASOURCE_PROPERTIES;
-import static org.apache.dolphinscheduler.common.Constants.ORG_POSTGRESQL_DRIVER;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_DATASOURCE_MYDS_CONNECTIONPROVIDER_CLASS;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_ACQUIRETRIGGERSWITHINLOCK;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_CLASS;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_CLUSTERCHECKININTERVAL;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_DATASOURCE;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_DRIVERDELEGATECLASS;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_ISCLUSTERED;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_MISFIRETHRESHOLD;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_TABLEPREFIX;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_JOBSTORE_USEPROPERTIES;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_SCHEDULER_INSTANCEID;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_SCHEDULER_INSTANCENAME;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_SCHEDULER_MAKESCHEDULERTHREADDAEMON;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_THREADPOOL_CLASS;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_THREADPOOL_MAKETHREADSDAEMONS;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_THREADPOOL_THREADCOUNT;
-import static org.apache.dolphinscheduler.common.Constants.ORG_QUARTZ_THREADPOOL_THREADPRIORITY;
-import static org.apache.dolphinscheduler.common.Constants.PROJECT_ID;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_ACQUIRETRIGGERSWITHINLOCK;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_CLUSTERCHECKININTERVAL;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_DATASOURCE;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_INSTANCEID;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_INSTANCENAME;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_JOB_GROUP_PRIFIX;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_JOB_PRIFIX;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_MISFIRETHRESHOLD;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_PROPERTIES_PATH;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_TABLE_PREFIX;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_THREADCOUNT;
-import static org.apache.dolphinscheduler.common.Constants.QUARTZ_THREADPRIORITY;
-import static org.apache.dolphinscheduler.common.Constants.SCHEDULE;
-import static org.apache.dolphinscheduler.common.Constants.SCHEDULE_ID;
-import static org.apache.dolphinscheduler.common.Constants.SPRING_DATASOURCE_DRIVER_CLASS_NAME;
-import static org.apache.dolphinscheduler.common.Constants.STRING_FALSE;
-import static org.apache.dolphinscheduler.common.Constants.STRING_TRUE;
-import static org.apache.dolphinscheduler.common.Constants.UNDERLINE;
-
-import static org.quartz.CronScheduleBuilder.cronSchedule;
-import static org.quartz.JobBuilder.newJob;
-import static org.quartz.TriggerBuilder.newTrigger;
-
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.PropertyUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
-import org.apache.dolphinscheduler.service.exceptions.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
+import org.apache.commons.lang.StringUtils;
+import org.apache.dolphinscheduler.common.utils.JSONUtils;
+import org.apache.dolphinscheduler.dao.entity.Schedule;
+import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.jdbcjobstore.JobStoreTX;
 import org.quartz.impl.jdbcjobstore.PostgreSQLDelegate;
@@ -95,6 +31,15 @@ import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.simpl.SimpleThreadPool;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.apache.dolphinscheduler.common.Constants.*;
+import static org.quartz.CronScheduleBuilder.cronSchedule;
+import static org.quartz.JobBuilder.newJob;
+import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
  * single Quartz executors instance
@@ -117,18 +62,19 @@ public class QuartzExecutors {
     private static Scheduler scheduler;
 
     /**
+     * instance of QuartzExecutors
+     */
+    private static volatile QuartzExecutors INSTANCE = null;
+
+    /**
      * load conf
      */
     private static Configuration conf;
 
-    private static final class Holder {
-        private static final QuartzExecutors instance = new QuartzExecutors();
-    }
 
     private QuartzExecutors() {
         try {
             conf = new PropertiesConfiguration(QUARTZ_PROPERTIES_PATH);
-            init();
         } catch (ConfigurationException e) {
             logger.warn("not loaded quartz configuration file, will used default value", e);
         }
@@ -140,8 +86,20 @@ public class QuartzExecutors {
      * @return instance of Quartz Executors
      */
     public static QuartzExecutors getInstance() {
-        return Holder.instance;
+        if (INSTANCE == null) {
+            synchronized (QuartzExecutors.class) {
+                // when more than two threads run into the first null check same time, to avoid instanced more than one time, it needs to be checked again.
+                if (INSTANCE == null) {
+                    QuartzExecutors quartzExecutors = new QuartzExecutors();
+                    //finish QuartzExecutors init
+                    quartzExecutors.init();
+                    INSTANCE = quartzExecutors;
+                }
+            }
+        }
+        return INSTANCE;
     }
+
 
     /**
      * init
@@ -150,11 +108,10 @@ public class QuartzExecutors {
      */
     private void init() {
         try {
-            PropertyUtils.loadPropertyFile(DATASOURCE_PROPERTIES);
             StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
             Properties properties = new Properties();
 
-            String dataSourceDriverClass = PropertyUtils.getString(SPRING_DATASOURCE_DRIVER_CLASS_NAME);
+            String dataSourceDriverClass = org.apache.dolphinscheduler.dao.utils.PropertyUtils.getString(SPRING_DATASOURCE_DRIVER_CLASS_NAME);
             if (dataSourceDriverClass.equals(ORG_POSTGRESQL_DRIVER)) {
                 properties.setProperty(ORG_QUARTZ_JOBSTORE_DRIVERDELEGATECLASS, conf.getString(ORG_QUARTZ_JOBSTORE_DRIVERDELEGATECLASS, PostgreSQLDelegate.class.getName()));
             } else {
@@ -217,22 +174,21 @@ public class QuartzExecutors {
         }
     }
 
+
     /**
      * add task trigger , if this task already exists, return this task with updated trigger
      *
-     * @param clazz job class name
-     * @param projectId projectId
-     * @param schedule schedule
+     * @param clazz          job class name
+     * @param jobName        job name
+     * @param jobGroupName   job group name
+     * @param startDate      job start date
+     * @param endDate        job end date
+     * @param cronExpression cron expression
+     * @param jobDataMap     job parameters data map
      */
-    public void addJob(Class<? extends Job> clazz, String projectId, final Schedule schedule) {
-        String jobName = QuartzExecutors.buildJobName(schedule.getId());
-        String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
-        Date startDate = schedule.getStartTime();
-        Date endDate = schedule.getEndTime();
-        Map<String, Object> jobDataMap = QuartzExecutors.buildDataMap(projectId, schedule);
-        String cronExpression = schedule.getCrontab();
-        String timezoneId = schedule.getTimezoneId();
-
+    public void addJob(Class<? extends Job> clazz, String jobName, String jobGroupName, Date startDate, Date endDate,
+                       String cronExpression,
+                       Map<String, Object> jobDataMap) {
         lock.writeLock().lock();
         try {
 
@@ -242,11 +198,15 @@ public class QuartzExecutors {
             if (scheduler.checkExists(jobKey)) {
 
                 jobDetail = scheduler.getJobDetail(jobKey);
-                jobDetail.getJobDataMap().putAll(jobDataMap);
+                if (jobDataMap != null) {
+                    jobDetail.getJobDataMap().putAll(jobDataMap);
+                }
             } else {
                 jobDetail = newJob(clazz).withIdentity(jobKey).build();
 
-                jobDetail.getJobDataMap().putAll(jobDataMap);
+                if (jobDataMap != null) {
+                    jobDetail.getJobDataMap().putAll(jobDataMap);
+                }
 
                 scheduler.addJob(jobDetail, false, true);
 
@@ -262,15 +222,8 @@ public class QuartzExecutors {
              * current time (taking into account any associated Calendar),
              * but it does not want to be fired now.
              */
-            CronTrigger cronTrigger = newTrigger()
-                    .withIdentity(triggerKey)
-                    .startAt(DateUtils.getTimezoneDate(startDate, timezoneId))
-                    .endAt(DateUtils.getTimezoneDate(endDate, timezoneId))
-                    .withSchedule(
-                            cronSchedule(cronExpression)
-                                    .withMisfireHandlingInstructionDoNothing()
-                                    .inTimeZone(DateUtils.getTimezone(timezoneId))
-                    )
+            CronTrigger cronTrigger = newTrigger().withIdentity(triggerKey).startAt(startDate).endAt(endDate)
+                    .withSchedule(cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing())
                     .forJob(jobDetail).build();
 
             if (scheduler.checkExists(triggerKey)) {
@@ -291,16 +244,18 @@ public class QuartzExecutors {
             }
 
         } catch (Exception e) {
-            throw new ServiceException("add job failed", e);
+            logger.error("add job failed", e);
+            throw new RuntimeException("add job failed", e);
         } finally {
             lock.writeLock().unlock();
         }
     }
 
+
     /**
      * delete job
      *
-     * @param jobName job name
+     * @param jobName      job name
      * @param jobGroupName job group name
      * @return true if the Job was found and deleted.
      */
@@ -373,15 +328,16 @@ public class QuartzExecutors {
     /**
      * add params to map
      *
-     * @param projectId project id
-     * @param schedule schedule
+     * @param projectId  project id
+     * @param scheduleId schedule id
+     * @param schedule   schedule
      * @return data map
      */
-    public static Map<String, Object> buildDataMap(String projectId, Schedule schedule) {
+    public static Map<String, Object> buildDataMap(String projectId, String scheduleId, Schedule schedule) {
         Map<String, Object> dataMap = new HashMap<>(8);
         dataMap.put(PROJECT_ID, projectId);
-        dataMap.put(SCHEDULE_ID, schedule.getId());
-        dataMap.put(SCHEDULE, JSONUtils.toJsonString(schedule));
+        dataMap.put(SCHEDULE_ID, scheduleId);
+        dataMap.put(SCHEDULE, JSONUtils.toJson(schedule));
 
         return dataMap;
     }

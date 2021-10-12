@@ -18,7 +18,6 @@
 package org.apache.dolphinscheduler.api.security.impl;
 
 import org.apache.dolphinscheduler.api.security.Authenticator;
-import org.apache.dolphinscheduler.api.service.SessionService;
 import org.apache.dolphinscheduler.api.service.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
