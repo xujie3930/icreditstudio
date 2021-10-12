@@ -7,6 +7,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
+import com.jinninghui.datasphere.icreditstudio.datasync.vo.DataSyncDispatchTaskPageVO;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -181,4 +182,13 @@ public class DataSyncController {
         System.out.println(timeInterval);
         return BusinessResult.success(timeInterval);
     }
+
+    @PostMapping("/dispatchPage")
+    public BusinessPageResult<DataSyncDispatchTaskPageVO> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
+        DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
+        BeanCopyUtils.copyProperties(dispatchPageRequest, param);
+        BusinessPageResult<DataSyncDispatchTaskPageVO> resultPage = syncTaskService.dispatchPage(param);
+        return resultPage;
+    }
+
 }

@@ -35,4 +35,44 @@
         create_by,update_time,update_by,
         del_flag
     </sql>
+
+    <select id="countDispatch" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM icredit_sync_task
+        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        <if test="taskName != null and taskName != ''">
+            AND task_name LIKE concat('%',#{taskName},'%')
+        </if>
+        <if test="taskStatus != null and taskStatus != ''">
+            AND task_status = #{taskStatus}
+        </if>
+        <if test="taskStartTime != null and taskStartTime != ''">
+            AND last_update_time &gt;= #{taskStartTime}
+        </if>
+        <if test="taskEndTime != null and taskEndTime != ''">
+            AND last_update_time &lt;= #{taskEndTime}
+        </if>
+        --         AND version is not null
+        limit ${(pageNum-1)*pageSize},${pageSize}
+    </select>
+    <select id="dispatchList" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="com.jinninghui.datasphere.icreditstudio.datasync.vo.DataSyncDispatchTaskPageVO">
+        SELECT id AS taskId,task_name AS taskName,task_status AS taskStatus,last_update_time AS createTime,last_scheduling_time AS lastDispatchTime,version AS taskVersion,
+        '数据同步' AS taskType,'' AS dispatchPeriod,0 AS totalDispatchNum
+        FROM icredit_sync_task
+        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        <if test="taskName != null and taskName != ''">
+            AND task_name LIKE concat('%',#{taskName},'%')
+        </if>
+        <if test="taskStatus != null and taskStatus != ''">
+            AND task_status = #{taskStatus}
+        </if>
+        <if test="taskStartTime != null and taskStartTime != ''">
+            AND last_update_time &gt;= #{taskStartTime}
+        </if>
+        <if test="taskEndTime != null and taskEndTime != ''">
+            AND last_update_time &lt;= #{taskEndTime}
+        </if>
+        --         AND version is not null
+        limit ${(pageNum-1)*pageSize},${pageSize}
+    </select>
 </mapper>
