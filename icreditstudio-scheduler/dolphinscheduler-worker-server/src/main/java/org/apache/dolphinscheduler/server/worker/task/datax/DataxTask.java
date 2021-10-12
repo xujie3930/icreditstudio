@@ -17,6 +17,13 @@
 package org.apache.dolphinscheduler.server.worker.task.datax;
 
 
+import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
+import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
+import com.alibaba.druid.sql.ast.statement.*;
+import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.DbType;
@@ -37,8 +44,7 @@ import org.apache.dolphinscheduler.server.utils.ParamUtils;
 import org.apache.dolphinscheduler.server.worker.task.AbstractTask;
 import org.apache.dolphinscheduler.server.worker.task.CommandExecuteResult;
 import org.apache.dolphinscheduler.server.worker.task.ShellCommandExecutor;
-
-import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -48,29 +54,11 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.slf4j.Logger;
-
-import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
-import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
-import com.alibaba.druid.sql.ast.statement.SQLSelect;
-import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
-import com.alibaba.druid.sql.ast.statement.SQLSelectQueryBlock;
-import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
-import com.alibaba.druid.sql.ast.statement.SQLUnionQuery;
-import com.alibaba.druid.sql.parser.SQLStatementParser;
-import com.alibaba.fastjson.JSONObject;
 
 
 /**
@@ -110,8 +98,9 @@ public class DataxTask extends AbstractTask {
 
     /**
      * constructor
+     *
      * @param taskExecutionContext taskExecutionContext
-     * @param logger logger
+     * @param logger               logger
      */
     public DataxTask(TaskExecutionContext taskExecutionContext, Logger logger) {
         super(taskExecutionContext, logger);
@@ -119,7 +108,7 @@ public class DataxTask extends AbstractTask {
 
 
         this.shellCommandExecutor = new ShellCommandExecutor(this::logHandle,
-                taskExecutionContext,logger);
+                taskExecutionContext, logger);
     }
 
     /**
@@ -162,8 +151,7 @@ public class DataxTask extends AbstractTask {
             setExitStatusCode(commandExecuteResult.getExitStatusCode());
             setAppIds(commandExecuteResult.getAppIds());
             setProcessId(commandExecuteResult.getProcessId());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("datax task failure", e);
             setExitStatusCode(Constants.EXIT_CODE_FAILURE);
             throw e;
@@ -202,9 +190,9 @@ public class DataxTask extends AbstractTask {
             return fileName;
         }
 
-        if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()){
+        if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()) {
             json = dataXParameters.getJson().replaceAll("\\r\\n", "\n");
-        }else {
+        } else {
             JSONObject job = new JSONObject();
             job.put("content", buildDataxJobContentJson());
             job.put("setting", buildDataxJobSettingJson());
@@ -243,8 +231,8 @@ public class DataxTask extends AbstractTask {
 
         List<JSONObject> readerConnArr = new ArrayList<>();
         JSONObject readerConn = new JSONObject();
-        readerConn.put("querySql", new String[] {dataXParameters.getSql()});
-        readerConn.put("jdbcUrl", new String[] {dataSourceCfg.getJdbcUrl()});
+        readerConn.put("querySql", new String[]{dataXParameters.getSql()});
+        readerConn.put("jdbcUrl", new String[]{dataSourceCfg.getJdbcUrl()});
         readerConnArr.add(readerConn);
 
         JSONObject readerParam = new JSONObject();
@@ -258,7 +246,7 @@ public class DataxTask extends AbstractTask {
 
         List<JSONObject> writerConnArr = new ArrayList<>();
         JSONObject writerConn = new JSONObject();
-        writerConn.put("table", new String[] {dataXParameters.getTargetTable()});
+        writerConn.put("table", new String[]{dataXParameters.getTargetTable()});
         writerConn.put("jdbcUrl", dataTargetCfg.getJdbcUrl());
         writerConnArr.add(writerConn);
 
@@ -395,14 +383,10 @@ public class DataxTask extends AbstractTask {
     /**
      * parsing synchronized column names in SQL statements
      *
-     * @param dsType
-     *            the database type of the data source
-     * @param dtType
-     *            the database type of the data target
-     * @param dataSourceCfg
-     *            the database connection parameters of the data source
-     * @param sql
-     *            sql for data synchronization
+     * @param dsType        the database type of the data source
+     * @param dtType        the database type of the data target
+     * @param dataSourceCfg the database connection parameters of the data source
+     * @param sql           sql for data synchronization
      * @return Keyword converted column names
      */
     private String[] parsingSqlColumnNames(DbType dsType, DbType dtType, BaseDataSource dataSourceCfg, String sql) {
@@ -421,10 +405,8 @@ public class DataxTask extends AbstractTask {
     /**
      * try grammatical parsing column
      *
-     * @param dbType
-     *            database type
-     * @param sql
-     *            sql for data synchronization
+     * @param dbType database type
+     * @param sql    sql for data synchronization
      * @return column name array
      * @throws RuntimeException if error throws RuntimeException
      */
@@ -436,16 +418,16 @@ public class DataxTask extends AbstractTask {
             notNull(parser, String.format("database driver [%s] is not support", dbType.toString()));
 
             SQLStatement sqlStatement = parser.parseStatement();
-            SQLSelectStatement sqlSelectStatement = (SQLSelectStatement)sqlStatement;
+            SQLSelectStatement sqlSelectStatement = (SQLSelectStatement) sqlStatement;
             SQLSelect sqlSelect = sqlSelectStatement.getSelect();
 
             List<SQLSelectItem> selectItemList = null;
             if (sqlSelect.getQuery() instanceof SQLSelectQueryBlock) {
-                SQLSelectQueryBlock block = (SQLSelectQueryBlock)sqlSelect.getQuery();
+                SQLSelectQueryBlock block = (SQLSelectQueryBlock) sqlSelect.getQuery();
                 selectItemList = block.getSelectList();
             } else if (sqlSelect.getQuery() instanceof SQLUnionQuery) {
-                SQLUnionQuery unionQuery = (SQLUnionQuery)sqlSelect.getQuery();
-                SQLSelectQueryBlock block = (SQLSelectQueryBlock)unionQuery.getRight();
+                SQLUnionQuery unionQuery = (SQLUnionQuery) sqlSelect.getQuery();
+                SQLSelectQueryBlock block = (SQLSelectQueryBlock) unionQuery.getRight();
                 selectItemList = block.getSelectList();
             }
 
@@ -453,7 +435,7 @@ public class DataxTask extends AbstractTask {
                     String.format("select query type [%s] is not support", sqlSelect.getQuery().toString()));
 
             columnNames = new String[selectItemList.size()];
-            for (int i = 0; i < selectItemList.size(); i++ ) {
+            for (int i = 0; i < selectItemList.size(); i++) {
                 SQLSelectItem item = selectItemList.get(i);
 
                 String columnName = null;
@@ -462,10 +444,10 @@ public class DataxTask extends AbstractTask {
                     columnName = item.getAlias();
                 } else if (item.getExpr() != null) {
                     if (item.getExpr() instanceof SQLPropertyExpr) {
-                        SQLPropertyExpr expr = (SQLPropertyExpr)item.getExpr();
+                        SQLPropertyExpr expr = (SQLPropertyExpr) item.getExpr();
                         columnName = expr.getName();
                     } else if (item.getExpr() instanceof SQLIdentifierExpr) {
-                        SQLIdentifierExpr expr = (SQLIdentifierExpr)item.getExpr();
+                        SQLIdentifierExpr expr = (SQLIdentifierExpr) item.getExpr();
                         columnName = expr.getName();
                     }
                 } else {
@@ -480,8 +462,7 @@ public class DataxTask extends AbstractTask {
 
                 columnNames[i] = columnName;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.warn(e.getMessage(), e);
             return null;
         }
@@ -492,10 +473,8 @@ public class DataxTask extends AbstractTask {
     /**
      * try to execute sql to resolve column names
      *
-     * @param baseDataSource
-     *            the database connection parameters
-     * @param sql
-     *            sql for data synchronization
+     * @param baseDataSource the database connection parameters
+     * @param sql            sql for data synchronization
      * @return column name array
      */
     public String[] tryExecuteSqlResolveColumnNames(BaseDataSource baseDataSource, String sql) {
@@ -512,11 +491,10 @@ public class DataxTask extends AbstractTask {
             ResultSetMetaData md = resultSet.getMetaData();
             int num = md.getColumnCount();
             columnNames = new String[num];
-            for (int i = 1; i <= num; i++ ) {
+            for (int i = 1; i <= num; i++) {
                 columnNames[i - 1] = md.getColumnName(i);
             }
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             logger.warn(e.getMessage(), e);
             return null;
         }

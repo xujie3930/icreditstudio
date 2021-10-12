@@ -21,7 +21,6 @@ import org.apache.dolphinscheduler.common.enums.TaskType;
 import org.apache.dolphinscheduler.common.utils.EnumUtils;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.worker.task.datax.DataxTask;
-import org.apache.dolphinscheduler.server.worker.task.sql.SqlTask;
 import org.slf4j.Logger;
 
 /**
@@ -41,8 +40,6 @@ public class TaskManager {
                                        Logger logger)
             throws IllegalArgumentException {
         switch (EnumUtils.getEnum(TaskType.class, taskExecutionContext.getTaskType())) {
-            case SQL:
-                return new SqlTask(taskExecutionContext, logger);
             case DATAX:
                 return new DataxTask(taskExecutionContext, logger);
 

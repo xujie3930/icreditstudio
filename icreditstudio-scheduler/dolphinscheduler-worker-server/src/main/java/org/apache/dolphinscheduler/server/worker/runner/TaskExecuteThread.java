@@ -204,7 +204,7 @@ public class TaskExecuteThread implements Runnable {
         // the default timeout is the maximum value of the integer
         taskExecutionContext.setTaskTimeout(Integer.MAX_VALUE);
         TaskTimeoutParameter taskTimeoutParameter = taskNode.getTaskTimeoutParameter();
-        if (taskTimeoutParameter.getEnable()) {
+        if (taskTimeoutParameter.isEnable()) {
             // get timeout strategy
             taskExecutionContext.setTaskTimeoutStrategy(taskTimeoutParameter.getStrategy().getCode());
             switch (taskTimeoutParameter.getStrategy()) {

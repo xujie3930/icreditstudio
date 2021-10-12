@@ -141,4 +141,46 @@
             </foreach>
         </if>
     </select>
+    <select id="countByDay" resultType="map">
+        select DATE_FORMAT(t.start_time,'%Y-%m-%d') AS date,
+        COUNT(t.id) AS count
+        from t_ds_task_instance t
+        left join  t_ds_task_definition d
+        on d.code=t.task_code
+        where d.workspace_id = #{workspaceId} and d.scheduleType = #{scheduleType}
+        and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
+        <if test="states != null and states.length != 0">
+            and t.state in
+            <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                #{i}
+            </foreach>
+        </if>
+        GROUP BY DATE_FORMAT(t.start_time,'%Y-%m-%d')
+    </select>
+    <select id="runtimeTotalByDefinition" resultType="java.lang.Double">
+        select SUM((unix_timestamp(i.end_time)-unix_timestamp(i.start_time)))/60
+        from t_ds_task_instance i
+        right join
+        t_ds_process_task_relation r
+        on i.task_code = r.post_task_code and r.process_definition_code = #{code}
+        <if test="states != null and states.length != 0">
+            and i.state in
+            <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                #{i}
+            </foreach>
+        </if>
+    </select>
+    <select id="getCountByByDefinitionAndStates" resultType="java.lang.Long">
+    select COUNT(i.id)
+    from t_ds_task_instance i
+    right join
+    t_ds_process_task_relation r
+    on i.task_code = r.post_task_code and r.process_definition_code = #{code}
+    <if test="states != null and states.length != 0">
+        and i.state in
+        <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+            #{i}
+        </foreach>
+    </if>
+    </select>
 </mapper>

@@ -19,10 +19,6 @@ package org.apache.dolphinscheduler.common.utils;
 import org.apache.dolphinscheduler.common.enums.TaskType;
 import org.apache.dolphinscheduler.common.task.AbstractParameters;
 import org.apache.dolphinscheduler.common.task.datax.DataxParameters;
-import org.apache.dolphinscheduler.common.task.python.PythonParameters;
-import org.apache.dolphinscheduler.common.task.shell.ShellParameters;
-import org.apache.dolphinscheduler.common.task.spark.SparkParameters;
-import org.apache.dolphinscheduler.common.task.sql.SqlParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,14 +40,6 @@ public class TaskParametersUtils {
     public static AbstractParameters getParameters(String taskType, String parameter) {
         try {
             switch (EnumUtils.getEnum(TaskType.class, taskType)) {
-                case SHELL:
-                    return JSONUtils.parseObject(parameter, ShellParameters.class);
-                case SQL:
-                    return JSONUtils.parseObject(parameter, SqlParameters.class);
-                case SPARK:
-                    return JSONUtils.parseObject(parameter, SparkParameters.class);
-                case PYTHON:
-                    return JSONUtils.parseObject(parameter, PythonParameters.class);
                 case DATAX:
                     return JSONUtils.parseObject(parameter, DataxParameters.class);
                 default:

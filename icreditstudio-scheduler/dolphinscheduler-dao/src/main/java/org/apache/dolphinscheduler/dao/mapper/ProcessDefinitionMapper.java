@@ -23,6 +23,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -127,4 +128,6 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      */
     @MapKey("id")
     List<Map<String, Object>> listResourcesByUser(@Param("userId") String userId);
+
+    List<Map<String, Object>> selectByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime") Date startOfDay, @Param("endTime")Date endOfDay);
 }

@@ -1,68 +1,70 @@
-///*
-// * Licensed to the Apache Software Foundation (ASF) under one or more
-// * contributor license agreements.  See the NOTICE file distributed with
-// * this work for additional information regarding copyright ownership.
-// * The ASF licenses this file to You under the Apache License, Version 2.0
-// * (the "License"); you may not use this file except in compliance with
-// * the License.  You may obtain a copy of the License at
-// *
-// *    http://www.apache.org/licenses/LICENSE-2.0
-// *
-// * Unless required by applicable law or agreed to in writing, software
-// * distributed under the License is distributed on an "AS IS" BASIS,
-// * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// * See the License for the specific language governing permissions and
-// * limitations under the License.
-// */
-//
-//package org.apache.dolphinscheduler.api.service.impl;
-//
-//import com.baomidou.mybatisplus.core.metadata.IPage;
-//import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-//import org.apache.dolphinscheduler.api.enums.Status;
-//import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
-//import org.apache.dolphinscheduler.api.service.ProjectService;
-//import org.apache.dolphinscheduler.api.service.TaskInstanceService;
-//import org.apache.dolphinscheduler.api.service.UsersService;
-//import org.apache.dolphinscheduler.api.utils.PageInfo;
-//import org.apache.dolphinscheduler.common.Constants;
-//import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-//import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-//import org.apache.dolphinscheduler.common.utils.DateUtils;
-//import org.apache.dolphinscheduler.dao.entity.Project;
-//import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-//import org.apache.dolphinscheduler.dao.entity.User;
-//import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
-//import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
-//import org.apache.dolphinscheduler.service.process.ProcessService;
-//import org.springframework.stereotype.Service;
-//
-//import javax.annotation.Resource;
-//import java.util.*;
-//
-///**
-// * task instance service impl
-// */
-//@Service
-//public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInstanceService {
-//
-//    @Resource
-//    ProjectMapper projectMapper;
-//
-//    @Resource
-//    ProjectService projectService;
-//
-//    @Resource
-//    ProcessService processService;
-//
-//    @Resource
-//    TaskInstanceMapper taskInstanceMapper;
-//
-//    @Resource
-//    ProcessInstanceService processInstanceService;
-//
-//    @Resource
-//    UsersService usersService;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.dolphinscheduler.api.service.impl;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
+import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
+import org.apache.dolphinscheduler.api.service.ProjectService;
+import org.apache.dolphinscheduler.api.service.TaskInstanceService;
+import org.apache.dolphinscheduler.api.service.UsersService;
+import org.apache.dolphinscheduler.api.service.result.TaskCount;
+import org.apache.dolphinscheduler.api.utils.PageInfo;
+import org.apache.dolphinscheduler.common.Constants;
+import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
+import org.apache.dolphinscheduler.common.utils.CollectionUtils;
+import org.apache.dolphinscheduler.common.utils.DateUtils;
+import org.apache.dolphinscheduler.dao.entity.Project;
+import org.apache.dolphinscheduler.dao.entity.TaskInstance;
+import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
+import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
+import org.apache.dolphinscheduler.service.process.ProcessService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
+
+/**
+ * task instance service impl
+ */
+@Service
+public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInstanceService {
+
+    @Resource
+    ProjectMapper projectMapper;
+
+    @Resource
+    ProjectService projectService;
+
+    @Resource
+    ProcessService processService;
+
+    @Resource
+    TaskInstanceMapper taskInstanceMapper;
+
+    @Resource
+    ProcessInstanceService processInstanceService;
+
+    @Resource
+    UsersService usersService;
 //
 //    /**
 //     * query task list by project, process instance, task name, task start time, task end time, task status, keyword paging
@@ -178,4 +180,51 @@
 //
 //        return result;
 //    }
-//}
+
+    @Override
+    public Map<String, Object> queryTaskListPaging(User loginUser, String projectName, Integer processInstanceId, String processInstanceName, String taskName, String executorName, String startDate, String endDate, String searchVal, ExecutionStatus stateType, String host, Integer pageNo, Integer pageSize) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> forceTaskSuccess(User loginUser, String projectName, Integer taskInstanceId) {
+        return null;
+    }
+
+    @Override
+    public Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray) {
+        return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, statusArray);
+    }
+
+    @Override
+    public List<TaskCount> countByDay(SchedulerHomepageRequest request) {
+        Date startTime;
+        Date endTime;
+        //默认统计前七天的数据
+        if (Objects.isNull(request.getShcedulerStartTime()) && Objects.isNull(request.getShcedulerEndTime())){
+            startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -8));
+            endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
+        }else {
+            startTime = DateUtils.getStartOfDay(request.getShcedulerStartTime());
+            endTime = DateUtils.getEndOfDay(request.getShcedulerEndTime());
+        }
+
+        //TODO:数据量大后t_ds_task_definition表加覆盖索引
+        List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), request.getScheduleType(), startTime, endTime);
+        List<TaskCount> list = new ArrayList<>();
+        for (Map<String, Object> m : countByDay) {
+            list.add(new TaskCount((String) m.get("date"), (long)m.get("count")));
+        }
+        return list;
+    }
+
+    @Override
+    public Double runtimeTotalByDefinition(String code, int[] statusArray) {
+        return taskInstanceMapper.runtimeTotalByDefinition(code, statusArray);
+    }
+
+    @Override
+    public Long getCountByByDefinitionAndStates(String code, int[] statusArray) {
+        return taskInstanceMapper.getCountByByDefinitionAndStates(code, statusArray);
+    }
+}

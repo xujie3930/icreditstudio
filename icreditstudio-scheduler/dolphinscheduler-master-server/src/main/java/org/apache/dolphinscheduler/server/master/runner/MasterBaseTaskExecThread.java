@@ -226,7 +226,7 @@ public class MasterBaseTaskExecThread implements Callable<Boolean> {
                     processInstance.getId(),
                     taskInstance.getProcessInstancePriority().getCode(),
                     taskInstance.getId(),
-                    org.apache.dolphinscheduler.common.Constants.DEFAULT_WORKER_GROUP);
+                    Constants.DEFAULT_WORKER_GROUP);
             taskUpdateQueue.put(taskPriority);
             logger.info(String.format("master submit success, task : %s", taskInstance.getName()));
             return true;

@@ -21,7 +21,6 @@ import static org.apache.dolphinscheduler.api.enums.Status.QUERY_WORKFLOW_LINEAG
 import static org.apache.dolphinscheduler.common.Constants.SESSION_USER;
 
 import org.apache.dolphinscheduler.api.aspect.AccessLogAnnotation;
-import org.apache.dolphinscheduler.api.service.WorkFlowLineageService;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.dao.entity.User;

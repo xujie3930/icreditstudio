@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
@@ -24,19 +25,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *  command context
+ * command context
  */
+@Data
 public class CommandContext implements Serializable {
 
     private Map<String, String> items = new LinkedHashMap<>();
-
-    public Map<String, String> getItems() {
-        return items;
-    }
-
-    public void setItems(Map<String, String> items) {
-        this.items = items;
-    }
 
     public void put(String key, String value) {
         items.put(key, value);

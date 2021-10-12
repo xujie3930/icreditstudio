@@ -36,6 +36,14 @@ public class BusinessPageResult<T> implements java.io.Serializable {
 
     private BusinessPageResult(){}
 
+    public BusinessPageResult(long total, long pageNum, long pageSize, List<T> list) {
+        this.total = total;
+        this.pageNum = pageNum;
+        this.pageSize = pageSize;
+        this.list = list;
+        this.pageCount = (total % pageSize > 0) ? (total / pageSize + 1) : (total / pageSize);
+    }
+
     @Deprecated
     public BusinessPageResult(List<T> list, BusinessPageInfo pageQueryRequest, long total){
         BusinessPageResult result = build(list, pageQueryRequest, total);

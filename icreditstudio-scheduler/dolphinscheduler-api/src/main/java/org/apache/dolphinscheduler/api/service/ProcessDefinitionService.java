@@ -25,6 +25,8 @@ import org.apache.dolphinscheduler.dao.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -307,5 +309,7 @@ public interface ProcessDefinitionService {
      * @return The query result has a specific process definition return true
      */
     boolean checkHasAssociatedProcessDefinition(String processDefinitionId, long version);
+
+    List<Map<String, Object>> selectByWorkspaceIdAndTime(String workspaceId, Date startOfDay, Date endOfDay);
 }
 
