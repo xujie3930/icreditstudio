@@ -178,6 +178,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
      * @param processDefineId   process definition id
      * @return check result code
      */
+    @Override
     public Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId) {
         Map<String, Object> result = new HashMap<>(5);
         if (processDefinition == null) {
@@ -195,11 +196,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
 
     @Override
     public Map<String, Object> execProcessInstance(User loginUser, String projectName, String processDefinitionId, String cronTime, CommandType commandType, FailureStrategy failureStrategy, String startNodeList, TaskDependType taskDependType, WarningType warningType, String warningGroupId, RunMode runMode, Priority processInstancePriority, String workerGroup, Integer timeout, Map<String, String> startParams) {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, long processDefineCode) {
         return null;
     }
 

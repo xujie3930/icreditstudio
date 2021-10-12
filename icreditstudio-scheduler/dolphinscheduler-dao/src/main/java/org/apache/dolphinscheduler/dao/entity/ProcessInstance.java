@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.dao.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -22,12 +21,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.enums.*;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
 
 import java.util.Date;
 
@@ -35,7 +31,6 @@ import java.util.Date;
  * process instance
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @TableName("t_ds_process_instance")
 public class ProcessInstance {
@@ -45,22 +40,10 @@ public class ProcessInstance {
      */
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
-
     /**
-     * process definition 表对应的id
+     * process definition id
      */
     private String processDefinitionId;
-
-    /**
-     * process definition code
-     */
-    private Long processDefinitionCode;
-
-    /**
-     * process definition version
-     */
-    private int processDefinitionVersion;
-
     /**
      * process state
      */
@@ -72,13 +55,11 @@ public class ProcessInstance {
     /**
      * start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
      * end time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
     /**
@@ -139,13 +120,11 @@ public class ProcessInstance {
     /**
      * schedule time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date scheduleTime;
 
     /**
      * command start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commandStartTime;
 
     /**
@@ -155,9 +134,7 @@ public class ProcessInstance {
 
     /**
      * process instance json
-     * TODO delete
      */
-    @TableField(exist = false)
     private String processInstanceJson;
 
     /**
@@ -174,7 +151,6 @@ public class ProcessInstance {
     /**
      * tenant code
      */
-    @TableField(exist = false)
     private String tenantCode;
 
     /**
@@ -191,13 +167,11 @@ public class ProcessInstance {
     /**
      * task locations for web
      */
-    @TableField(exist = false)
     private String locations;
 
     /**
      * task connects for web
      */
-    @TableField(exist = false)
     private String connects;
 
     /**
@@ -208,7 +182,6 @@ public class ProcessInstance {
     /**
      * depend processes schedule time
      */
-    @TableField(exist = false)
     private String dependenceScheduleTimes;
 
     /**
@@ -235,14 +208,20 @@ public class ProcessInstance {
     private int timeout;
 
     /**
-     * tenant id
+     * receivers for api
      */
-    private int tenantId;
+    @TableField(exist = false)
+    private String receivers;
 
     /**
-     * varPool string
+     * receivers cc for api
      */
-    private String varPool;
+    @TableField(exist = false)
+    private String receiversCc;
+
+    public ProcessInstance() {
+
+    }
 
     /**
      * set the process name with process define version and timestamp
@@ -251,17 +230,9 @@ public class ProcessInstance {
      */
     public ProcessInstance(ProcessDefinition processDefinition) {
         this.processDefinition = processDefinition;
-        this.name = processDefinition.getName()
-                + "-"
-                +
-                processDefinition.getVersion()
-                + "-"
-                +
-                DateUtils.getCurrentTimeStamp();
-    }
-
-    public boolean isProcessInstanceStop() {
-        return this.state.typeIsFinished();
+        this.name = processDefinition.getName() + "-" +
+                processDefinition.getVersion() + "-" +
+                System.currentTimeMillis();
     }
 
     /**
@@ -287,6 +258,10 @@ public class ProcessInstance {
             return false;
         }
         return historyCmd.startsWith(CommandType.COMPLEMENT_DATA.toString());
+    }
+
+    public boolean isProcessInstanceStop() {
+        return this.state.typeIsFinished();
     }
 
     /**

@@ -93,8 +93,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
 //    @Autowired
 //    private UserMapper userMapper;
 
-    @javax.annotation.Resource
-    private ProcessDefinitionLogMapper processDefinitionLogMapper;
+//    @javax.annotation.Resource
+//    private ProcessDefinitionLogMapper processDefinitionLogMapper;
 
     @javax.annotation.Resource
     private ProcessDefinitionMapper processDefinitionMapper;

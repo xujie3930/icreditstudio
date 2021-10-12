@@ -57,13 +57,13 @@ public class ProcessDefinition {
 
     private Integer scheduleType;//0-周期实例，1-手动实例
 
-    /**
-     * code
-     */
-    private Long code;
+//    /**
+//     * code
+//     */
+//    private Long code;
 
     /**
-     * name
+     * 工作流名称
      */
     private String name;
 
@@ -77,23 +77,21 @@ public class ProcessDefinition {
      */
     private ReleaseState releaseState;
 
-    /**
-     * project id
-     * TODO: delete
-     */
-    @TableField(exist = false)
-    private String projectId;
+//    /**
+//     * project id
+//     * TODO: delete
+//     */
+//    @TableField(exist = false)
+//    private String projectId;
 
     /**
      * project code
      */
-    private Long projectCode;
+    private String projectCode;
 
     /**
      * definition json string
-     * TODO: delete
      */
-//    @TableField(exist = false)
     private String processDefinitionJson;
 
     /**
@@ -164,7 +162,6 @@ public class ProcessDefinition {
 
     /**
      * connects array for web
-     * TODO: delete
      */
     private String connects;
 
@@ -192,18 +189,16 @@ public class ProcessDefinition {
     /**
      * tenant id
      */
-    private int tenantId;
+    private String tenantCode;
 
     /**
      * modify user name
      */
-    @TableField(exist = false)
     private String modifyBy;
 
     /**
      * resource ids
      */
-    @TableField(exist = false)
     private String resourceIds;
 
     /**

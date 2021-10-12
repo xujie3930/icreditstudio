@@ -516,7 +516,7 @@ public class ProcessService {
         String workerGroup = StringUtils.isBlank(command.getWorkerGroup()) ? Constants.DEFAULT_WORKER_GROUP : command.getWorkerGroup();
         processInstance.setWorkerGroup(workerGroup);
         processInstance.setTimeout(processDefinition.getTimeout());
-        processInstance.setTenantId(processDefinition.getTenantId());
+        processInstance.setTenantCode(processDefinition.getTenantCode());
         return processInstance;
     }
 

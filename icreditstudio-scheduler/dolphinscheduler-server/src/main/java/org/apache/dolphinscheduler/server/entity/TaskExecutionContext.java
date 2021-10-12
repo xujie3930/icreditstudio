@@ -131,7 +131,7 @@ public class TaskExecutionContext implements Serializable {
     /**
      * project id
      */
-    private String projectId;
+    private String projectCode;
 
     /**
      * taskParams
