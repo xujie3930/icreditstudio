@@ -59,9 +59,21 @@
         <div class="content">
           <JTable
             ref="table"
+            class="form-table"
             :table-data="tableData"
             :table-configuration="tableConfiguration"
-          ></JTable>
+          >
+            <template #operationColumn="{row, index}">
+              <div class="btn-wrap">
+                <span class="btn" @click="handleAddClick(row, index)">
+                  <i class="el-icon-plus icon"></i>
+                </span>
+                <span class="btn" @click="handleMinusClick(row, index)">
+                  <i class="el-icon-minus icon"></i>
+                </span>
+              </div>
+            </template>
+          </JTable>
         </div>
       </div>
     </div>
@@ -77,7 +89,7 @@ export default {
   data() {
     return {
       title: '新增关联关系',
-      options: [{ value: '选项1', label: '黄金糕' }],
+      options: [{ value: '选项1', label: 'tableB' }],
       value: '',
       form: {
         link: 'left',
@@ -104,14 +116,25 @@ export default {
           icon: 'all-link-gray'
         }
       ],
-      tableData: [],
-      tableConfiguration: tableConfiguration(this)
+      tableData: [{}],
+      tableConfiguration
     }
   },
 
   methods: {
     open() {
       this.$refs.baseDialog.open()
+    },
+
+    handleAddClick(row, idx) {
+      console.log(row, idx)
+      this.tableData.splice(idx + 1, 0, {})
+    },
+
+    handleMinusClick(row, idx) {
+      console.log(row, idx)
+      if (this.tableData.length < 2) return
+      this.tableData.splice(idx, 1)
     },
 
     handleClose() {
@@ -140,7 +163,7 @@ export default {
     font-family: PingFangSC, PingFangSC-Regular;
 
     .label {
-      width: 150px;
+      width: 120px;
       margin-right: 10px;
       text-align: right;
     }
@@ -151,6 +174,31 @@ export default {
       font-weight: 400;
       text-align: left;
       color: #666;
+
+      .form-table {
+        width: 580px;
+      }
+
+      .btn-wrap {
+        @include flex;
+        .btn {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 1px solid #999;
+          margin: 0 10px;
+          line-height: 14px;
+          text-align: center;
+          cursor: pointer;
+          font-size: 12px;
+          border-radius: 2px;
+
+          .icon {
+            font-size: 12px;
+            transform: scale(0.6);
+          }
+        }
+      }
     }
 
     .link-wrap {

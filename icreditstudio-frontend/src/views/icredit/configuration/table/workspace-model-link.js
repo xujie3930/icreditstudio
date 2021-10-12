@@ -4,39 +4,35 @@
  * @Date: 2021-10-11
  */
 
-export default that => ({
+export default {
   refName: 'modelLink',
   id: 'modelLink',
   isBorder: true,
   hasPage: false,
   group: [
     {
-      type: 'text',
+      type: 'select',
       label: 'tableA',
-      prop: 'type'
+      prop: 'type',
+      options: [{ value: 'A' }]
     },
     {
-      type: 'text',
+      type: 'select',
       label: '关系',
-      prop: 'fieldType'
+      prop: 'fieldType',
+      options: [{ value: '=' }]
     },
     {
-      type: 'text',
+      type: 'select',
       label: 'tableB',
-      prop: 'length'
+      prop: 'length',
+      options: [{ value: 'B' }]
     },
     {
-      type: 'operation',
+      type: 'slot',
       label: '操作',
       prop: 'operation',
-      width: 80,
-      operationList: [
-        {
-          func: that.handleViewLogDetail,
-          label: '删除',
-          key: 'delete'
-        }
-      ]
+      width: 80
     }
   ]
-})
+}

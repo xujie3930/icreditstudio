@@ -13,12 +13,16 @@
           :key="idx"
           :class="[
             'icredit-tabs-header__nav',
-            item.name === curTabName ? 'icredit-tabs-header__nav-active' : ''
+            item.id === curTabName ? 'icredit-tabs-header__nav-active' : ''
           ]"
           @click="handleTabsClick(item)"
         >
           <span>{{ item.name }}</span>
-          <i style="margin-left:5px" class="el-icon-close"></i>
+          <i
+            v-if="tabsConfig.length > 1"
+            class="el-icon-close icon"
+            @click.stop="handleDeleteTab(item, idx)"
+          ></i>
         </div>
       </div>
       <el-dropdown trigger="click" class="icredit-tabs-header__options">
@@ -62,14 +66,18 @@ export default {
     },
 
     curTabName: {
-      type: String,
-      default: ''
+      type: [String, Number],
+      default: null
     }
   },
 
   methods: {
     handleTabsClick(tab) {
-      this.$emit('on-change', tab)
+      this.$emit('change', tab)
+    },
+
+    handleDeleteTab(tab, index) {
+      this.$emit('delete', tab, index)
     }
   }
 }
@@ -100,6 +108,17 @@ export default {
       height: 100%;
       cursor: pointer;
       border-right: 1px solid rgba(0, 0, 0, 0.15);
+
+      .icon {
+        padding: 1px;
+        margin-left: 5px;
+        border-radius: 5px;
+
+        &:hover {
+          color: #fff;
+          background-color: #1890ff;
+        }
+      }
 
       &:hover {
         color: #1890ff;

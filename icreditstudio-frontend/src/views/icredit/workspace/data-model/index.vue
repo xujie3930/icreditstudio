@@ -17,13 +17,13 @@
           placeholder="请输入关键字"
           size="mini"
           :loading="searchLoading"
-          v-model="value"
+          @change="handleSelectChange"
         >
           <el-option
-            v-for="item in [{ tableName: 'sss' }]"
+            v-for="item in selectOptions"
             :key="item.tableName"
             :label="item.tableName"
-            :value="item.tableName"
+            :value="item.id"
           >
           </el-option>
         </el-select>
@@ -45,11 +45,13 @@
         @node-click="handleNodeClick"
       >
         <div
-          :disabled="data.disabled"
+          slot-scope="{ node, data }"
           :id="node.id"
           :draggable="node.level > 1"
-          class="custom-tree-node"
-          slot-scope="{ node, data }"
+          :class="[
+            'custom-tree-node',
+            node.parent.disabled || data.disabled ? 'is-disabled' : ''
+          ]"
         >
           <div class="left">
             <span v-if="data.type === '3'" class="circle"></span>
@@ -57,21 +59,29 @@
             <span>{{ data.label }}</span>
           </div>
           <div class="right">
-            <el-dropdown @command="handleCommand">
+            <el-dropdown @command="command => handleCommand(command, node)">
               <span class="el-dropdown-link">
                 <i class="el-icon-more icon"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="data.type === 0" command="add"
-                  >新增表</el-dropdown-item
-                >
-                <el-dropdown-item v-if="data.type !== 2" command="disabled"
-                  >停用</el-dropdown-item
-                >
-                <template v-if="data.type === 2">
+                <!-- 停用 -->
+                <template v-if="node.parent.disabled || data.disabled">
                   <el-dropdown-item command="enabled">启用</el-dropdown-item>
-                  <el-dropdown-item command="edit">编辑</el-dropdown-item>
+                  <el-dropdown-item v-if="data.icon === 'table'" command="edit">
+                    编辑
+                  </el-dropdown-item>
                   <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </template>
+
+                <!-- 启用 -->
+                <template v-else>
+                  <el-dropdown-item
+                    command="add"
+                    v-if="data.icon === 'database'"
+                  >
+                    新增表
+                  </el-dropdown-item>
+                  <el-dropdown-item command="disabled">停用</el-dropdown-item>
                 </template>
               </el-dropdown-menu>
             </el-dropdown>
@@ -84,7 +94,8 @@
       <Tabs
         :cur-tab-name="curTabName"
         :tabs-config="tabsConfig"
-        @on-change="changeTabCallback"
+        @change="changeTabCallback"
+        @delete="deleteTabCallback"
       >
         <TabPanel :current-tab="currentTab" slot="panel" />
       </Tabs>
@@ -107,8 +118,9 @@ export default {
       name: '',
       value: '',
       value1: '',
+      selectOptions: [{ tableName: 'datax_web', id: 1 }],
       searchLoading: false,
-      curTabName: '',
+      curTabName: null,
       currentTab: {},
       curNodeKey: null,
       defalutExpandKey: null,
@@ -168,6 +180,12 @@ export default {
     }
   },
 
+  watch: {
+    curTabName(nVal) {
+      this.$refs.tree.setCurrentKey(nVal)
+    }
+  },
+
   mounted() {
     this.initPage()
   },
@@ -178,7 +196,7 @@ export default {
       this.tabsConfig.push({ name: label, id, ...rest })
       this.defalutExpandKey = [id]
       this.$refs.tree.setCurrentKey(id)
-      this.curTabName = label
+      this.curTabName = id
       this.currentTab = this.treeData[0]
     },
 
@@ -187,7 +205,7 @@ export default {
       console.log('curData, curNode=', curData, curNode)
       const { label, id, ...rest } = curData
       const idx = this.tabsConfig.findIndex(item => item.id === id)
-      this.curTabName = label
+      this.curTabName = id
       this.currentTab = curData
       // tab选项已经存在当前节点
       if (idx > -1) {
@@ -197,7 +215,16 @@ export default {
       }
     },
 
-    handleCommand(command) {
+    handleSelectChange(id) {
+      if (!id) return
+      this.curTabName = id
+      const idx = this.tabsConfig.findIndex(item => item.id === id)
+      this.currentTab = this.tabsConfig[idx]
+    },
+
+    // 下拉菜单
+    handleCommand(command, node) {
+      console.log(node, 'node123')
       switch (command) {
         case 'doc':
           this.$refs.addDoc.$refs.addDocDialog.open()
@@ -222,7 +249,7 @@ export default {
       this.$router.push('/workspace/data-model/add')
     },
 
-    // 停用
+    // 删除
     handleDeleteBtnClick() {
       const options = {
         opType: 'Delete',
@@ -250,9 +277,24 @@ export default {
 
     // 切换Tab
     changeTabCallback(curTab) {
-      const { name } = curTab
-      this.curTabName = name
+      console.log(curTab, 'curTab')
+      const { id } = curTab
+      this.curTabName = id
       this.currentTab = curTab
+      // this.$refs.tree.setCurrentKey(id)
+    },
+
+    // 删除Tab
+    deleteTabCallback(tab, index) {
+      console.log('tab', tab, index)
+      const { id } = tab
+      this.tabsConfig.splice(index, 1)
+      // 删的是当前激活状态的tab
+      if (this.curTabName === id) {
+        const nTabIdx = index ? index - 1 : 0
+        this.currentTab = this.tabsConfig[nTabIdx]
+        this.curTabName = this.tabsConfig[nTabIdx].id
+      }
     }
   }
 }
@@ -401,6 +443,14 @@ export default {
             cursor: pointer;
           }
         }
+      }
+
+      .is-disabled {
+        color: #c0c4cc;
+        cursor: not-allowed;
+        background-image: none;
+        background-color: #fff;
+        border-color: #ebeef5;
       }
 
       ::v-deep {
