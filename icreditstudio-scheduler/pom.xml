@@ -636,8 +636,6 @@
     </dependencyManagement>
 
     <modules>
-        <module>dolphinscheduler-registry-zookeeper</module>
-        <module>dolphinscheduler-registry</module>
         <module>dolphinscheduler-server</module>
         <module>dolphinscheduler-common</module>
         <module>dolphinscheduler-api</module>
