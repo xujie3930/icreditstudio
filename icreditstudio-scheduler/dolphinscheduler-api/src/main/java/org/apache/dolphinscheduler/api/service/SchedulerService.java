@@ -62,7 +62,8 @@ public interface SchedulerService {
                                          String receivers,
                                          String receiversCc,
                                          Priority processInstancePriority,
-                                         String workerGroup);
+                                         String workerGroup,
+                                         String workspaceId);
 
     /**
      * updateProcessInstance schedule

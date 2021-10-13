@@ -22,8 +22,8 @@ import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.alert.AlertSendRequestCommand;
 import org.apache.dolphinscheduler.remote.command.alert.AlertSendResponseCommand;
 import org.apache.dolphinscheduler.remote.config.NettyClientConfig;
+import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 import org.apache.dolphinscheduler.remote.utils.Host;
-import org.apache.dolphinscheduler.remote.utils.JsonSerializer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,7 +104,7 @@ public class AlertClientService {
             Command command = request.convert2Command();
             Command response = this.client.sendSync(address, command, ALERT_REQUEST_TIMEOUT);
             if (response != null) {
-                return JsonSerializer.deserialize(response.getBody(), AlertSendResponseCommand.class);
+                return FastJsonSerializer.deserialize(response.getBody(), AlertSendResponseCommand.class);
             }
         } catch (Exception e) {
             logger.error("sync alert send error", e);

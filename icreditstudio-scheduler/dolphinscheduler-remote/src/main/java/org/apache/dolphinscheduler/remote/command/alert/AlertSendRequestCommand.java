@@ -19,7 +19,7 @@ package org.apache.dolphinscheduler.remote.command.alert;
 
 import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.CommandType;
-import org.apache.dolphinscheduler.remote.utils.JsonSerializer;
+import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 
 import java.io.Serializable;
 
@@ -55,7 +55,7 @@ public class AlertSendRequestCommand implements Serializable {
         this.content = content;
     }
 
-    public AlertSendRequestCommand(){
+    public AlertSendRequestCommand() {
 
     }
 
@@ -73,7 +73,7 @@ public class AlertSendRequestCommand implements Serializable {
     public Command convert2Command() {
         Command command = new Command();
         command.setType(CommandType.ALERT_SEND_REQUEST);
-        byte[] body = JsonSerializer.serialize(this);
+        byte[] body = FastJsonSerializer.serialize(this);
         command.setBody(body);
         return command;
     }

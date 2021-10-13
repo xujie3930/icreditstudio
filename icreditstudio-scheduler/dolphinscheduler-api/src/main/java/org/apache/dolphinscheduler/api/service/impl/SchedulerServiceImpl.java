@@ -24,7 +24,6 @@ import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ServiceException;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.service.MonitorService;
-import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.api.service.SchedulerService;
 import org.apache.dolphinscheduler.api.utils.PageInfo;
 import org.apache.dolphinscheduler.common.Constants;
@@ -57,7 +56,10 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * scheduler service impl
@@ -67,8 +69,8 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
     private static final Logger logger = LoggerFactory.getLogger(SchedulerServiceImpl.class);
 
-    @Autowired
-    private ProjectService projectService;
+//    @Autowired
+//    private ProjectService projectService;
 
     @Autowired
     private ExecutorService executorService;
@@ -125,7 +127,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         // check work flow define release state
         ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
-        result = executorService.checkProcessDefinitionValid(processDefinition, processDefinition.getCode());
+        result = executorService.checkProcessDefinitionValid(processDefinition, processDefineId);
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
             return result;
         }
@@ -191,7 +193,8 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
                                                 String receivers,
                                                 String receiversCc,
                                                 Priority processInstancePriority,
-                                                String workerGroup) {
+                                                String workerGroup,
+                                                String workspaceId) {
 
         Map<String, Object> result = new HashMap<>();
 
@@ -205,7 +208,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         // check work flow define release state
         ProcessDefinition processDefinition = processService.findProcessDefineById(processDefineId);
-        result = executorService.checkProcessDefinitionValid(processDefinition, processDefinition.getCode());
+        result = executorService.checkProcessDefinitionValid(processDefinition, processDefineId);
         if (result.get(Constants.STATUS) != Status.SUCCESS) {
             return result;
         }
@@ -391,7 +394,7 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
                                                 String projectName,
                                                 String id,
                                                 ReleaseState scheduleStatus) {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<String, Object>(5);
 
         Project project = projectMapper.queryByName(projectName);
         // check project auth
@@ -423,38 +426,40 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         if (scheduleStatus == ReleaseState.ONLINE) {
             // check process definition release state
             if (processDefinition.getReleaseState() != ReleaseState.ONLINE) {
+                ProcessDefinition definition = processDefinitionMapper.selectById(scheduleObj.getProcessDefinitionId());
                 logger.info("not release process definition id: {} , name : {}",
                         processDefinition.getId(), processDefinition.getName());
-                putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, processDefinition.getName());
+                putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, definition.getName());
                 return result;
             }
             // check sub process definition release state
-            List<String> subProcessDefineIds = new ArrayList<>();
-            processService.recurseFindSubProcessId(scheduleObj.getProcessDefinitionId(), subProcessDefineIds);
-            Integer[] idArray = subProcessDefineIds.toArray(new Integer[subProcessDefineIds.size()]);
-            if (!subProcessDefineIds.isEmpty()) {
-                List<ProcessDefinition> subProcessDefinitionList =
-                        processDefinitionMapper.queryDefinitionListByIdList(idArray);
-                if (subProcessDefinitionList != null && !subProcessDefinitionList.isEmpty()) {
-                    for (ProcessDefinition subProcessDefinition : subProcessDefinitionList) {
-                        /**
-                         * if there is no online process, exit directly
-                         */
-                        if (subProcessDefinition.getReleaseState() != ReleaseState.ONLINE) {
-                            logger.info("not release process definition id: {} , name : {}",
-                                    subProcessDefinition.getId(), subProcessDefinition.getName());
-                            putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, subProcessDefinition.getId());
-                            return result;
-                        }
-                    }
-                }
-            }
+//            List<Integer> subProcessDefineIds = new ArrayList<>();
+//            processService.recurseFindSubProcessId(scheduleObj.getProcessDefinitionId(), subProcessDefineIds);
+//            Integer[] idArray = subProcessDefineIds.toArray(new Integer[subProcessDefineIds.size()]);
+//            if (subProcessDefineIds.size() > 0) {
+//                List<ProcessDefinition> subProcessDefinitionList =
+//                        processDefinitionMapper.queryDefinitionListByIdList(idArray);
+//                if (subProcessDefinitionList != null && subProcessDefinitionList.size() > 0) {
+//                    for (ProcessDefinition subProcessDefinition : subProcessDefinitionList) {
+//                        /**
+//                         * if there is no online process, exit directly
+//                         */
+//                        if (subProcessDefinition.getReleaseState() != ReleaseState.ONLINE) {
+//                            logger.info("not release process definition id: {} , name : {}",
+//                                    subProcessDefinition.getId(), subProcessDefinition.getName());
+//                            putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, subProcessDefinition.getId());
+//                            return result;
+//                        }
+//                    }
+//                }
+//            }
         }
 
         // check master server exists
-        List<Server> masterServers = monitorService.getServerListFromRegistry(true);
+        List<Server> masterServers = monitorService.getServerListFromZK(true);
 
-        if (masterServers.isEmpty()) {
+
+        if (masterServers.size() == 0) {
             putMsg(result, Status.MASTER_NOT_EXISTS);
             return result;
         }
@@ -466,21 +471,24 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         try {
             switch (scheduleStatus) {
-                case ONLINE:
+                case ONLINE: {
                     logger.info("Call master client set schedule online, project id: {}, flow id: {},host: {}", project.getId(), processDefinition.getId(), masterServers);
-                    setSchedule(project.getId(), scheduleObj);
+                    setSchedule(project.getId(), id);
                     break;
-                case OFFLINE:
+                }
+                case OFFLINE: {
                     logger.info("Call master client set schedule offline, project id: {}, flow id: {},host: {}", project.getId(), processDefinition.getId(), masterServers);
                     deleteSchedule(project.getId(), id);
                     break;
-                default:
+                }
+                default: {
                     putMsg(result, Status.SCHEDULE_STATUS_UNKNOWN, scheduleStatus.toString());
                     return result;
+                }
             }
         } catch (Exception e) {
             result.put(Constants.MSG, scheduleStatus == ReleaseState.ONLINE ? "set online failure" : "set offline failure");
-            throw new ServiceException(result.get(Constants.MSG).toString());
+            throw new RuntimeException(result.get(Constants.MSG).toString());
         }
 
         putMsg(result, Status.SUCCESS);
@@ -556,10 +564,27 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         return result;
     }
 
-    public void setSchedule(String projectId, Schedule schedule) {
-        logger.info("set schedule, project id: {}, scheduleId: {}", projectId, schedule.getId());
+    public void setSchedule(String projectId, String scheduleId) {
+        logger.info("set schedule, project id: {}, scheduleId: {}", projectId, scheduleId);
 
-        QuartzExecutors.getInstance().addJob(ProcessScheduleJob.class, projectId, schedule);
+
+        Schedule schedule = processService.querySchedule(scheduleId);
+        if (schedule == null) {
+            logger.warn("process schedule info not exists");
+            return;
+        }
+
+        Date startDate = schedule.getStartTime();
+        Date endDate = schedule.getEndTime();
+
+        String jobName = QuartzExecutors.buildJobName(scheduleId);
+        String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
+
+        Map<String, Object> dataMap = QuartzExecutors.buildDataMap(projectId, scheduleId, schedule);
+
+        QuartzExecutors.getInstance().addJob(ProcessScheduleJob.class, jobName, jobGroupName, startDate, endDate,
+                schedule.getCrontab(), dataMap);
+
     }
 
     /**

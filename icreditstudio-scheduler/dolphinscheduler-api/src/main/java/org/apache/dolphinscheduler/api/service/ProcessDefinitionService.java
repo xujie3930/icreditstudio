@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.api.service;
 
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.dao.entity.ProcessData;
@@ -24,6 +25,8 @@ import org.apache.dolphinscheduler.dao.entity.User;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,9 +41,9 @@ public interface ProcessDefinitionService {
      * @param projectName           project name
      * @param name                  process definition name
      * @param processDefinitionJson process definition json
-     * @param desc                  description
-     * @param locations             locations for nodes
-     * @param connects              connects for nodes
+     * @param desc description
+     * @param locations locations for nodes
+     * @param connects connects for nodes
      * @return create result code
      * @throws JsonProcessingException JsonProcessingException
      */
@@ -50,7 +53,8 @@ public interface ProcessDefinitionService {
                                                 String processDefinitionJson,
                                                 String desc,
                                                 String locations,
-                                                String connects) throws JsonProcessingException;
+                                                String connects,
+                                                InstanceCreateRequest request) throws JsonProcessingException;
 
     /**
      * query process definition list
@@ -125,7 +129,7 @@ public interface ProcessDefinitionService {
      * @param loginUser            loginUser
      * @param projectName          projectName
      * @param processDefinitionIds processDefinitionIds
-     * @param targetProjectId      targetProjectId
+     * @param targetProjectId targetProjectId
      */
     Map<String, Object> batchMoveProcessDefinition(User loginUser,
                                                    String projectName,
@@ -305,5 +309,7 @@ public interface ProcessDefinitionService {
      * @return The query result has a specific process definition return true
      */
     boolean checkHasAssociatedProcessDefinition(String processDefinitionId, long version);
+
+    List<Map<String, Object>> selectByWorkspaceIdAndTime(String workspaceId, Date startOfDay, Date endOfDay);
 }
 

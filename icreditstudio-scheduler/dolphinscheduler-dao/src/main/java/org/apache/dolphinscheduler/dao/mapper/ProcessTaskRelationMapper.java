@@ -65,4 +65,6 @@ public interface ProcessTaskRelationMapper extends BaseMapper<ProcessTaskRelatio
      */
     int deleteByCode(@Param("projectCode") Long projectCode,
                      @Param("processCode") Long processCode);
+
+    ProcessTaskRelation selectByProcessDefinitionCode(@Param("processCode") Long code);
 }

@@ -16,7 +16,6 @@
  */
 package org.apache.dolphinscheduler.dao.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -26,7 +25,6 @@ import java.util.Date;
  * monitor record for zookeeper
  */
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class ZookeeperRecord {
 
@@ -89,4 +87,19 @@ public class ZookeeperRecord {
      * is normal or not, 1:normal
      */
     private int state;
+
+    public ZookeeperRecord(String hostname, int connections, int watches, long sent, long received, String mode, float minLatency, float avgLatency, float maxLatency, int nodeCount, int state, Date date) {
+        this.hostname = hostname;
+        this.connections = connections;
+        this.watches = watches;
+        this.sent = sent;
+        this.received = received;
+        this.mode = mode;
+        this.minLatency = minLatency;
+        this.avgLatency = avgLatency;
+        this.maxLatency = maxLatency;
+        this.nodeCount = nodeCount;
+        this.state = state;
+        this.date = date;
+    }
 }

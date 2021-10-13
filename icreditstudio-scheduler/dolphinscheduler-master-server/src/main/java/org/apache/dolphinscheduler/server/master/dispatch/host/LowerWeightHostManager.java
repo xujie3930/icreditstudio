@@ -19,13 +19,11 @@ package org.apache.dolphinscheduler.server.master.dispatch.host;
 
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.ResInfo;
 import org.apache.dolphinscheduler.remote.utils.Host;
 import org.apache.dolphinscheduler.remote.utils.NamedThreadFactory;
 import org.apache.dolphinscheduler.server.master.dispatch.context.ExecutionContext;
 import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWeight;
-import org.apache.dolphinscheduler.server.master.dispatch.host.assign.HostWorker;
 import org.apache.dolphinscheduler.server.master.dispatch.host.assign.LowerWeightRoundRobin;
 
 import java.util.Collection;
@@ -102,7 +100,7 @@ public class LowerWeightHostManager extends CommonHostManager {
     }
 
     @Override
-    public HostWorker select(Collection<HostWorker> nodes) {
+    public Host select(Collection<Host> nodes) {
         throw new UnsupportedOperationException("not support");
     }
 
@@ -138,7 +136,7 @@ public class LowerWeightHostManager extends CommonHostManager {
                     Set<HostWeight> hostWeights = new HashSet<>(nodes.size());
                     for (String node : nodes) {
                         String heartbeat = serverNodeManager.getWorkerNodeInfo(node);
-                        HostWeight hostWeight = getHostWeight(node, workerGroup, heartbeat);
+                        HostWeight hostWeight = getHostWeight(node, heartbeat);
                         if (hostWeight != null) {
                             hostWeights.add(hostWeight);
                         }
@@ -153,8 +151,8 @@ public class LowerWeightHostManager extends CommonHostManager {
             }
         }
 
-        public HostWeight getHostWeight(String addr, String workerGroup, String heartbeat) {
-            if (ResInfo.isValidHeartbeatForRegistryInfo(heartbeat)) {
+        public HostWeight getHostWeight(String addr, String heartbeat) {
+            if (ResInfo.isValidHeartbeatForZKInfo(heartbeat)) {
                 String[] parts = heartbeat.split(Constants.COMMA);
                 int status = Integer.parseInt(parts[8]);
                 if (status == Constants.ABNORMAL_NODE_STATUS) {
@@ -165,9 +163,7 @@ public class LowerWeightHostManager extends CommonHostManager {
                 double cpu = Double.parseDouble(parts[0]);
                 double memory = Double.parseDouble(parts[1]);
                 double loadAverage = Double.parseDouble(parts[2]);
-                long startTime = DateUtils.stringToDate(parts[6]).getTime();
-                int weight = getWorkerHostWeightFromHeartbeat(heartbeat);
-                return new HostWeight(HostWorker.of(addr, weight, workerGroup), cpu, memory, loadAverage, startTime);
+                return new HostWeight(Host.of(addr), cpu, memory, loadAverage);
             }
             return null;
         }

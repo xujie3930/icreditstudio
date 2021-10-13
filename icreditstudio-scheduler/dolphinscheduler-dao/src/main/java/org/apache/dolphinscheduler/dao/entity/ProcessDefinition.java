@@ -53,13 +53,17 @@ public class ProcessDefinition {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
-    /**
-     * code
-     */
-    private Long code;
+    private String workspaceId;//新增工作空间id
+
+    private Integer scheduleType;//0-周期实例，1-手动实例
+
+//    /**
+//     * code
+//     */
+//    private Long code;
 
     /**
-     * name
+     * 工作流名称
      */
     private String name;
 
@@ -73,23 +77,21 @@ public class ProcessDefinition {
      */
     private ReleaseState releaseState;
 
-    /**
-     * project id
-     * TODO: delete
-     */
-    @TableField(exist = false)
-    private String projectId;
+//    /**
+//     * project id
+//     * TODO: delete
+//     */
+//    @TableField(exist = false)
+//    private String projectId;
 
     /**
      * project code
      */
-    private Long projectCode;
+    private String projectCode;
 
     /**
      * definition json string
-     * TODO: delete
      */
-//    @TableField(exist = false)
     private String processDefinitionJson;
 
     /**
@@ -160,7 +162,6 @@ public class ProcessDefinition {
 
     /**
      * connects array for web
-     * TODO: delete
      */
     private String connects;
 
@@ -188,18 +189,16 @@ public class ProcessDefinition {
     /**
      * tenant id
      */
-    private int tenantId;
+    private String tenantCode;
 
     /**
      * modify user name
      */
-    @TableField(exist = false)
     private String modifyBy;
 
     /**
      * resource ids
      */
-    @TableField(exist = false)
     private String resourceIds;
 
     /**
@@ -207,133 +206,6 @@ public class ProcessDefinition {
      */
     @TableField(exist = false)
     private String warningGroupId;
-
-//    public ProcessDefinition() {
-//    }
-
-//    public String getUserCode() {
-//        return userCode;
-//    }
-//
-//    public void setUserCode(String userCode) {
-//        this.userCode = userCode;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public int getVersion() {
-//        return version;
-//    }
-//
-//    public void setVersion(int version) {
-//        this.version = version;
-//    }
-//
-//    public int getId() {
-//        return id;
-//    }
-//
-//    public void setId(int id) {
-//        this.id = id;
-//    }
-//
-//    public ReleaseState getReleaseState() {
-//        return releaseState;
-//    }
-//
-//    public void setReleaseState(ReleaseState releaseState) {
-//        this.releaseState = releaseState;
-//    }
-//
-//    public String getProcessDefinitionJson() {
-//        return processDefinitionJson;
-//    }
-//
-//    public void setProcessDefinitionJson(String processDefinitionJson) {
-//        this.processDefinitionJson = processDefinitionJson;
-//    }
-//
-//    public String getReceivers() {
-//        return receivers;
-//    }
-//
-//    public void setReceivers(String receivers) {
-//        this.receivers = receivers;
-//    }
-//
-//    public String getReceiversCc() {
-//        return receiversCc;
-//    }
-//
-//    public void setReceiversCc(String receiversCc) {
-//        this.receiversCc = receiversCc;
-//    }
-//
-//    public Date getCreateTime() {
-//        return createTime;
-//    }
-//
-//    public void setCreateTime(Date createTime) {
-//        this.createTime = createTime;
-//    }
-//
-//    public String getProjectId() {
-//        return projectId;
-//    }
-//
-//    public void setProjectId(String projectId) {
-//        this.projectId = projectId;
-//    }
-//
-//    public Date getUpdateTime() {
-//        return updateTime;
-//    }
-//
-//    public void setUpdateTime(Date updateTime) {
-//        this.updateTime = updateTime;
-//    }
-//
-//    public Flag getFlag() {
-//        return flag;
-//    }
-//
-//    public void setFlag(Flag flag) {
-//        this.flag = flag;
-//    }
-//
-//    public String getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(String userId) {
-//        this.userId = userId;
-//    }
-//
-//    public String getUserName() {
-//        return userName;
-//    }
-//
-//    public void setUserName(String userName) {
-//        this.userName = userName;
-//    }
-//
-//    public String getProjectName() {
-//        return projectName;
-//    }
-//
-//    public void setProjectName(String projectName) {
-//        this.projectName = projectName;
-//    }
-//
-//    public String getGlobalParams() {
-//        return globalParams;
-//    }
 
     public void setGlobalParams(String globalParams) {
         if (globalParams == null) {
@@ -343,10 +215,6 @@ public class ProcessDefinition {
         }
         this.globalParams = globalParams;
     }
-
-//    public List<Property> getGlobalParamList() {
-//        return globalParamList;
-//    }
 
     public void setGlobalParamList(List<Property> globalParamList) {
         this.globalParams = JSONUtils.toJsonString(globalParamList);
@@ -361,128 +229,4 @@ public class ProcessDefinition {
 
         return globalParamMap;
     }
-
-//    public void setGlobalParamMap(Map<String, String> globalParamMap) {
-//        this.globalParamMap = globalParamMap;
-//    }
-//
-//    public String getLocations() {
-//        return locations;
-//    }
-//
-//    public void setLocations(String locations) {
-//        this.locations = locations;
-//    }
-//
-//    public String getConnects() {
-//        return connects;
-//    }
-//
-//    public void setConnects(String connects) {
-//        this.connects = connects;
-//    }
-//
-//    public ReleaseState getScheduleReleaseState() {
-//        return scheduleReleaseState;
-//    }
-//
-//    public void setScheduleReleaseState(ReleaseState scheduleReleaseState) {
-//        this.scheduleReleaseState = scheduleReleaseState;
-//    }
-//
-//    public String getResourceIds() {
-//        return resourceIds;
-//    }
-//
-//    public void setResourceIds(String resourceIds) {
-//        this.resourceIds = resourceIds;
-//    }
-//
-//    public int getTimeout() {
-//        return timeout;
-//    }
-//
-//    public void setTimeout(int timeout) {
-//        this.timeout = timeout;
-//    }
-//
-//    public int getTenantId() {
-//        return tenantId;
-//    }
-//
-//    public void setTenantId(int tenantId) {
-//        this.tenantId = tenantId;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    public String getModifyBy() {
-//        return modifyBy;
-//    }
-//
-//    public void setModifyBy(String modifyBy) {
-//        this.modifyBy = modifyBy;
-//    }
-//
-//    public Long getCode() {
-//        return code;
-//    }
-//
-//    public void setCode(Long code) {
-//        this.code = code;
-//    }
-//
-//    public Long getProjectCode() {
-//        return projectCode;
-//    }
-//
-//    public void setProjectCode(Long projectCode) {
-//        this.projectCode = projectCode;
-//    }
-//
-//    public int getWarningGroupId() {
-//        return warningGroupId;
-//    }
-//
-//    public void setWarningGroupId(int warningGroupId) {
-//        this.warningGroupId = warningGroupId;
-//    }
-//
-//    @Override
-//    public String toString() {
-//        return "ProcessDefinition{"
-//                + "id=" + id
-//                + ", name='" + name + '\''
-//                + ", code=" + code
-//                + ", version=" + version
-//                + ", releaseState=" + releaseState
-//                + ", projectId=" + projectId
-//                + ", projectCode=" + projectCode
-//                + ", processDefinitionJson='" + processDefinitionJson + '\''
-//                + ", description='" + description + '\''
-//                + ", globalParams='" + globalParams + '\''
-//                + ", globalParamList=" + globalParamList
-//                + ", globalParamMap=" + globalParamMap
-//                + ", createTime=" + createTime
-//                + ", updateTime=" + updateTime
-//                + ", flag=" + flag
-//                + ", userId=" + userId
-//                + ", userName='" + userName + '\''
-//                + ", projectName='" + projectName + '\''
-//                + ", locations='" + locations + '\''
-//                + ", connects='" + connects + '\''
-//                + ", scheduleReleaseState=" + scheduleReleaseState
-//                + ", timeout=" + timeout
-//                + ", warningGroupId=" + warningGroupId
-//                + ", tenantId=" + tenantId
-//                + ", modifyBy='" + modifyBy + '\''
-//                + ", resourceIds='" + resourceIds + '\''
-//                + '}';
-//    }
 }

@@ -17,30 +17,41 @@
           placeholder="请输入关键字"
           size="mini"
           :loading="searchLoading"
-          v-model="value"
+          @change="handleSelectChange"
         >
           <el-option
-            v-for="item in [{ tableName: 'sss' }]"
+            v-for="item in selectOptions"
             :key="item.tableName"
             :label="item.tableName"
-            :value="item.tableName"
+            :value="item.id"
           >
           </el-option>
         </el-select>
         <i class="search el-icon-search"></i>
       </div>
 
-      <div class="btn-wrap">
+      <div class="btn-wrap" @click="handleAddTable">
         <i class="icon el-icon-circle-plus-outline"></i>
         <span class="text">新建表</span>
       </div>
 
-      <el-tree class="tree" :data="data">
+      <el-tree
+        class="tree"
+        ref="tree"
+        node-key="id"
+        :data="treeData"
+        :expand-on-click-node="false"
+        :default-expanded-keys="defalutExpandKey"
+        @node-click="handleNodeClick"
+      >
         <div
+          slot-scope="{ node, data }"
           :id="node.id"
           :draggable="node.level > 1"
-          class="custom-tree-node"
-          slot-scope="{ node, data }"
+          :class="[
+            'custom-tree-node',
+            node.parent.disabled || data.disabled ? 'is-disabled' : ''
+          ]"
         >
           <div class="left">
             <span v-if="data.type === '3'" class="circle"></span>
@@ -48,15 +59,30 @@
             <span>{{ data.label }}</span>
           </div>
           <div class="right">
-            <el-dropdown @command="handleCommand">
+            <el-dropdown @command="command => handleCommand(command, node)">
               <span class="el-dropdown-link">
                 <i class="el-icon-more icon"></i>
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item command="doc">新增文件夹</el-dropdown-item>
-                <el-dropdown-item command="flow">新增工作流</el-dropdown-item>
-                <el-dropdown-item command="edit">编辑</el-dropdown-item>
-                <el-dropdown-item command="delete">删除</el-dropdown-item>
+                <!-- 停用 -->
+                <template v-if="node.parent.disabled || data.disabled">
+                  <el-dropdown-item command="enabled">启用</el-dropdown-item>
+                  <el-dropdown-item v-if="data.icon === 'table'" command="edit">
+                    编辑
+                  </el-dropdown-item>
+                  <el-dropdown-item command="delete">删除</el-dropdown-item>
+                </template>
+
+                <!-- 启用 -->
+                <template v-else>
+                  <el-dropdown-item
+                    command="add"
+                    v-if="data.icon === 'database'"
+                  >
+                    新增表
+                  </el-dropdown-item>
+                  <el-dropdown-item command="disabled">停用</el-dropdown-item>
+                </template>
               </el-dropdown-menu>
             </el-dropdown>
           </div>
@@ -65,56 +91,140 @@
     </aside>
 
     <section class="data-develop-section">
-      <Tabs>
-        <TabDetail slot="panel" />
+      <Tabs
+        :cur-tab-name="curTabName"
+        :tabs-config="tabsConfig"
+        @change="changeTabCallback"
+        @delete="deleteTabCallback"
+      >
+        <TabPanel :current-tab="currentTab" slot="panel" />
       </Tabs>
     </section>
+
+    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
   </div>
 </template>
 
 <script>
 import Tabs from '@/views/icredit/components/tabs'
-import TabDetail from './detail'
+import TabPanel from './panel'
+import Message from '@/views/icredit/components/message'
 
 export default {
-  components: { Tabs, TabDetail },
+  components: { Tabs, TabPanel, Message },
 
   data() {
     return {
       name: '',
       value: '',
       value1: '',
+      selectOptions: [{ tableName: 'datax_web', id: 1 }],
       searchLoading: false,
-      data: [
+      curTabName: null,
+      currentTab: {},
+      curNodeKey: null,
+      defalutExpandKey: null,
+      treeData: [
         {
-          label: '水务基础数据梳理',
-          icon: 'dev-business',
-          type: '0',
+          label: 'datax_web',
+          icon: 'database',
+          type: 0,
           id: 1,
+          disabled: false,
+          category: 'database',
           children: [
             {
-              label: '分类1',
-              icon: 'dev-doc',
-              type: '1',
+              label: 'h_app_sysytem',
+              icon: 'table',
+              type: 1,
               id: 2,
-              children: [
-                {
-                  label: '分类1-1',
-                  icon: 'dev-flow',
-                  type: '3',
-                  id: 3
-                }
-              ]
+              disabled: false,
+              category: 'table'
+            },
+            {
+              label: 'h_data_metadata_code',
+              icon: 'table',
+              type: 2,
+              id: 3,
+              disabled: true,
+              category: 'table'
+            }
+          ]
+        },
+        {
+          label: 'datax_web2',
+          icon: 'database',
+          type: 0,
+          id: 6,
+          disabled: true,
+          category: 'database',
+          children: [
+            {
+              label: 'h_app_sysytem',
+              icon: 'table',
+              type: 1,
+              id: 7,
+              category: 'table'
+            },
+            {
+              label: 'h_data_metadata_code',
+              icon: 'table',
+              type: 2,
+              id: 8,
+              category: 'table'
             }
           ]
         }
-      ]
+      ],
+      tabsConfig: []
     }
   },
 
+  watch: {
+    curTabName(nVal) {
+      this.$refs.tree.setCurrentKey(nVal)
+    }
+  },
+
+  mounted() {
+    this.initPage()
+  },
+
   methods: {
-    handleCommand(command) {
-      console.log(command)
+    initPage() {
+      const { label, id, ...rest } = this.treeData[0]
+      this.tabsConfig.push({ name: label, id, ...rest })
+      this.defalutExpandKey = [id]
+      this.$refs.tree.setCurrentKey(id)
+      this.curTabName = id
+      this.currentTab = this.treeData[0]
+    },
+
+    // 点击选中当前节点
+    handleNodeClick(curData, curNode) {
+      console.log('curData, curNode=', curData, curNode)
+      const { label, id, ...rest } = curData
+      const idx = this.tabsConfig.findIndex(item => item.id === id)
+      this.curTabName = id
+      this.currentTab = curData
+      // tab选项已经存在当前节点
+      if (idx > -1) {
+        console.log(id)
+      } else {
+        this.tabsConfig.push({ name: label, id, ...rest })
+      }
+    },
+
+    handleSelectChange(id) {
+      if (!id) return
+      this.curTabName = id
+      const idx = this.tabsConfig.findIndex(item => item.id === id)
+      this.currentTab = this.tabsConfig[idx]
+    },
+
+    // 下拉菜单
+    handleCommand(command, node) {
+      console.log(node, 'node123')
       switch (command) {
         case 'doc':
           this.$refs.addDoc.$refs.addDocDialog.open()
@@ -123,11 +233,67 @@ export default {
           this.$refs.editFlow.$refs.editDialog.open()
           break
         case 'delete':
-          this.$refs.deleteFlow.open({ title: '' })
+          this.handleDeleteBtnClick()
+          break
+        case 'disabled':
+          this.handleDisabledBtnClick()
           break
 
         default:
           break
+      }
+    },
+
+    // 新增表
+    handleAddTable() {
+      this.$router.push('/workspace/data-model/add')
+    },
+
+    // 删除
+    handleDeleteBtnClick() {
+      const options = {
+        opType: 'Delete',
+        title: '删除表xxxx',
+        beforeOperateMsg:
+          '表删除后将不在列表中展示，且不可在启用，危险操作请谨慎处理，确认一定要删除吗？'
+      }
+      this.$refs.operateMessage.open(options)
+    },
+
+    // 停用
+    handleDisabledBtnClick() {
+      const options = {
+        opType: 'Disabled',
+        title: '停用表xxxx',
+        beforeOperateMsg:
+          '停用后，该表将不能再写入内容且不能提供数据服务（后期可点击启用进行恢复），确认要停用吗？'
+      }
+      this.$refs.operateMessage.open(options)
+    },
+
+    messageOperateCallback() {
+      this.$refs.operateMessage.close()
+    },
+
+    // 切换Tab
+    changeTabCallback(curTab) {
+      console.log(curTab, 'curTab')
+      const { id } = curTab
+      this.curTabName = id
+      this.currentTab = curTab
+      // this.$refs.tree.setCurrentKey(id)
+    },
+
+    // 删除Tab
+    deleteTabCallback(tab, index) {
+      console.log('tab', tab, index)
+      const { id } = tab
+      this.tabsConfig.splice(index, 1)
+      // 删的是当前激活状态的tab
+      if (this.curTabName === id) {
+        const nTabIdx = index ? index - 1 : 0
+        this.currentTab = this.tabsConfig[nTabIdx]
+        this.curTabName = this.tabsConfig[nTabIdx].id
       }
     }
   }
@@ -277,6 +443,14 @@ export default {
             cursor: pointer;
           }
         }
+      }
+
+      .is-disabled {
+        color: #c0c4cc;
+        cursor: not-allowed;
+        background-image: none;
+        background-color: #fff;
+        border-color: #ebeef5;
       }
 
       ::v-deep {

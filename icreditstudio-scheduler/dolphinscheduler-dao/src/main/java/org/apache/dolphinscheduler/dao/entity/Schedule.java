@@ -39,6 +39,8 @@ public class Schedule {
 
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
+
+    private String workspaceId;
     /**
      * process definition id
      */

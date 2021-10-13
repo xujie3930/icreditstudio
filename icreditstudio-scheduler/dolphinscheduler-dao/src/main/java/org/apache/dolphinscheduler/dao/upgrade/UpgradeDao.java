@@ -16,8 +16,8 @@
  */
 package org.apache.dolphinscheduler.dao.upgrade;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.enums.DbType;
 import org.apache.dolphinscheduler.common.process.ResourceInfo;
 import org.apache.dolphinscheduler.common.utils.*;
@@ -55,34 +55,37 @@ public abstract class UpgradeDao extends AbstractBaseDao {
 
     /**
      * get datasource
+     *
      * @return DruidDataSource
      */
-    public static DataSource getDataSource(){
+    public static DataSource getDataSource() {
         return ConnectionFactory.getInstance().getDataSource();
     }
 
     /**
      * get db type
+     *
      * @return dbType
      */
-    public static DbType getDbType(){
+    public static DbType getDbType() {
         return dbType;
     }
 
     /**
      * get current dbType
+     *
      * @return
      */
-    private static DbType getCurrentDbType(){
+    private static DbType getCurrentDbType() {
         Connection conn = null;
         try {
             conn = dataSource.getConnection();
             String name = conn.getMetaData().getDatabaseProductName().toUpperCase();
             return DbType.valueOf(name);
         } catch (Exception e) {
-            logger.error(e.getMessage(),e);
+            logger.error(e.getMessage(), e);
             return null;
-        }finally {
+        } finally {
             ConnectionUtils.releaseResource(conn);
         }
     }
@@ -96,11 +99,11 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (dbType != null) {
             switch (dbType) {
                 case MYSQL:
-                    initSqlPath = "/icreditstudio-scheduler/sql/create/release-1.0.0_schema/mysql/";
+                    initSqlPath = "/sql/create/release-1.0.0_schema/mysql/";
                     initSchema(initSqlPath);
                     break;
                 case POSTGRESQL:
-                    initSqlPath = "/icreditstudio-scheduler/sql/create/release-1.2.0_schema/postgresql/";
+                    initSqlPath = "/sql/create/release-1.2.0_schema/postgresql/";
                     initSchema(initSqlPath);
                     break;
                 default:
@@ -298,28 +301,27 @@ public abstract class UpgradeDao extends AbstractBaseDao {
             Map<Integer, String> processDefinitionJsonMap = processDefinitionDao.queryAllProcessDefinition(dataSource.getConnection());
 
             for (Map.Entry<Integer, String> entry : processDefinitionJsonMap.entrySet()) {
-                ObjectNode jsonObject = JSONUtils.parseObject(entry.getValue());
-                ArrayNode tasks = JSONUtils.parseArray(jsonObject.get("tasks").toString());
+                JSONObject jsonObject = JSONObject.parseObject(entry.getValue());
+                JSONArray tasks = JSONArray.parseArray(jsonObject.getString("tasks"));
 
                 for (int i = 0; i < tasks.size(); i++) {
-                    ObjectNode task = (ObjectNode) tasks.path(i);
-                    ObjectNode workerGroupNode = (ObjectNode) task.path("workerGroupId");
-                    Integer workerGroupId = -1;
-                    if (workerGroupNode != null && workerGroupNode.canConvertToInt()) {
-                        workerGroupId = workerGroupNode.asInt(-1);
+                    JSONObject task = tasks.getJSONObject(i);
+                    Integer workerGroupId = task.getInteger("workerGroupId");
+                    if (workerGroupId != null) {
+                        if (workerGroupId == -1) {
+                            task.put("workerGroup", "default");
+                        } else {
+                            task.put("workerGroup", oldWorkerGroupMap.get(workerGroupId));
+                        }
                     }
-                    if (workerGroupId == -1) {
-                        task.put("workerGroup", "default");
-                    } else {
-                        task.put("workerGroup", oldWorkerGroupMap.get(workerGroupId));
-                    }
+
                 }
 
-                jsonObject.remove("task");
+                jsonObject.remove(jsonObject.getString("tasks"));
 
                 jsonObject.put("tasks", tasks);
 
-                replaceProcessDefinitionMap.put(entry.getKey(), jsonObject.toString());
+                replaceProcessDefinitionMap.put(entry.getKey(), jsonObject.toJSONString());
             }
             if (replaceProcessDefinitionMap.size() > 0) {
                 processDefinitionDao.updateProcessDefinitionJson(dataSource.getConnection(), replaceProcessDefinitionMap);
@@ -327,6 +329,7 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         } catch (Exception e) {
             logger.error("update process definition json workergroup error", e);
         }
+
     }
 
     /**
@@ -337,48 +340,48 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         ProcessDefinitionDao processDefinitionDao = new ProcessDefinitionDao();
         Map<Integer, String> replaceProcessDefinitionMap = new HashMap<>();
         try {
-            Map<String, Integer> resourcesMap = resourceDao.listAllResources(dataSource.getConnection());
+            Map<String, String> resourcesMap = resourceDao.listAllResources(dataSource.getConnection());
             Map<Integer, String> processDefinitionJsonMap = processDefinitionDao.queryAllProcessDefinition(dataSource.getConnection());
 
             for (Map.Entry<Integer, String> entry : processDefinitionJsonMap.entrySet()) {
-                ObjectNode jsonObject = JSONUtils.parseObject(entry.getValue());
-                ArrayNode tasks = JSONUtils.parseArray(jsonObject.get("tasks").toString());
+                JSONObject jsonObject = JSONObject.parseObject(entry.getValue());
+                JSONArray tasks = JSONArray.parseArray(jsonObject.getString("tasks"));
 
                 for (int i = 0; i < tasks.size(); i++) {
-                    ObjectNode task = (ObjectNode) tasks.get(i);
-                    ObjectNode param = (ObjectNode) task.get("params");
+                    JSONObject task = tasks.getJSONObject(i);
+                    JSONObject param = (JSONObject) task.get("params");
                     if (param != null) {
 
-                        List<ResourceInfo> resourceList = JSONUtils.toList(param.get("resourceList").toString(), ResourceInfo.class);
-                        ResourceInfo mainJar = JSONUtils.parseObject(param.get("mainJar").toString(), ResourceInfo.class);
-                        if (mainJar != null && mainJar.getId() == 0) {
+                        List<ResourceInfo> resourceList = JSONUtils.toList(param.getString("resourceList"), ResourceInfo.class);
+                        ResourceInfo mainJar = JSONUtils.parseObject(param.getString("mainJar"), ResourceInfo.class);
+                        if (mainJar != null && StringUtils.equalsIgnoreCase("0", mainJar.getId())) {
                             String fullName = mainJar.getRes().startsWith("/") ? mainJar.getRes() : String.format("/%s", mainJar.getRes());
                             if (resourcesMap.containsKey(fullName)) {
                                 mainJar.setId(resourcesMap.get(fullName));
-                                param.put("mainJar", JSONUtils.parseObject(JSONUtils.toJsonString(mainJar)));
+                                param.put("mainJar", JSONUtils.parseObject(JSONObject.toJSONString(mainJar)));
                             }
                         }
 
                         if (CollectionUtils.isNotEmpty(resourceList)) {
                             List<ResourceInfo> newResourceList = resourceList.stream().map(resInfo -> {
                                 String fullName = resInfo.getRes().startsWith("/") ? resInfo.getRes() : String.format("/%s", resInfo.getRes());
-                                if (resInfo.getId() == 0 && resourcesMap.containsKey(fullName)) {
+                                if (StringUtils.equalsIgnoreCase("0", resInfo.getId()) && resourcesMap.containsKey(fullName)) {
                                     resInfo.setId(resourcesMap.get(fullName));
                                 }
                                 return resInfo;
                             }).collect(Collectors.toList());
-                            param.put("resourceList", JSONUtils.parseObject(JSONUtils.toJsonString(newResourceList)));
+                            param.put("resourceList", JSONArray.parse(JSONObject.toJSONString(newResourceList)));
                         }
                     }
                     task.put("params", param);
 
                 }
 
-                jsonObject.remove("tasks");
+                jsonObject.remove(jsonObject.getString("tasks"));
 
                 jsonObject.put("tasks", tasks);
 
-                replaceProcessDefinitionMap.put(entry.getKey(), jsonObject.toString());
+                replaceProcessDefinitionMap.put(entry.getKey(), jsonObject.toJSONString());
             }
             if (replaceProcessDefinitionMap.size() > 0) {
                 processDefinitionDao.updateProcessDefinitionJson(dataSource.getConnection(), replaceProcessDefinitionMap);
@@ -399,7 +402,7 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (StringUtils.isEmpty(rootDir)) {
             throw new RuntimeException("Environment variable user.dir not found");
         }
-        String sqlFilePath = MessageFormat.format("{0}/icreditstudio-scheduler/sql/upgrade/{1}/{2}/dolphinscheduler_dml.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
+        String sqlFilePath = MessageFormat.format("{0}/sql/upgrade/{1}/{2}/dolphinscheduler_dml.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
         logger.info("sqlSQLFilePath" + sqlFilePath);
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -475,7 +478,7 @@ public abstract class UpgradeDao extends AbstractBaseDao {
         if (StringUtils.isEmpty(rootDir)) {
             throw new RuntimeException("Environment variable user.dir not found");
         }
-        String sqlFilePath = MessageFormat.format("{0}/icreditstudio-scheduler/sql/upgrade/{1}/{2}/dolphinscheduler_ddl.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
+        String sqlFilePath = MessageFormat.format("{0}/sql/upgrade/{1}/{2}/dolphinscheduler_ddl.sql", rootDir, schemaDir, getDbType().name().toLowerCase());
         Connection conn = null;
         PreparedStatement pstmt = null;
         try {
@@ -540,4 +543,50 @@ public abstract class UpgradeDao extends AbstractBaseDao {
 
     }
 
+    /**
+     * upgrade DolphinScheduler sqoop task params
+     * ds-1.3.4 modify the sqoop task params for process definition json
+     */
+    public void upgradeDolphinSchedulerSqoopTaskParams() {
+        upgradeProcessDefinitionJsonSqoopTaskParams();
+    }
+
+    /**
+     * upgradeProcessDefinitionJsonSqoopTaskParams
+     */
+    protected void upgradeProcessDefinitionJsonSqoopTaskParams() {
+        ProcessDefinitionDao processDefinitionDao = new ProcessDefinitionDao();
+        Map<Integer, String> replaceProcessDefinitionMap = new HashMap<>();
+
+        try {
+            Map<Integer, String> processDefinitionJsonMap = processDefinitionDao.queryAllProcessDefinition(dataSource.getConnection());
+            for (Map.Entry<Integer, String> entry : processDefinitionJsonMap.entrySet()) {
+                JSONObject jsonObject = JSONObject.parseObject(entry.getValue());
+                JSONArray tasks = JSONArray.parseArray(jsonObject.getString("tasks"));
+
+                for (int i = 0; i < tasks.size(); i++) {
+                    JSONObject task = tasks.getJSONObject(i);
+                    String taskType = task.getString("type");
+                    if ("SQOOP".equals(taskType) && !task.getString("params").contains("jobType")) {
+                        JSONObject taskParams = JSONObject.parseObject(task.getString("params"));
+                        taskParams.put("jobType", "TEMPLATE");
+                        taskParams.put("jobName", "sqoop-job");
+                        taskParams.put("hadoopCustomParams", new JSONArray());
+                        taskParams.put("sqoopAdvancedParams", new JSONArray());
+
+                        task.remove(task.getString("params"));
+                        task.put("params", taskParams);
+                    }
+                    jsonObject.remove(jsonObject.getString("tasks"));
+                    jsonObject.put("tasks", tasks);
+                    replaceProcessDefinitionMap.put(entry.getKey(), jsonObject.toJSONString());
+                }
+            }
+            if (replaceProcessDefinitionMap.size() > 0) {
+                processDefinitionDao.updateProcessDefinitionJson(dataSource.getConnection(), replaceProcessDefinitionMap);
+            }
+        } catch (Exception e) {
+            logger.error("update process definition json sqoop task params error: {}", e.getMessage());
+        }
+    }
 }

@@ -17,17 +17,20 @@
 
 package org.apache.dolphinscheduler.server.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
 /**
- *  master/worker task transport
+ * master/worker task transport
  */
-public class DataxTaskExecutionContext implements Serializable{
+@Data
+public class DataxTaskExecutionContext implements Serializable {
 
     /**
      * dataSourceId
      */
-    private int dataSourceId;
+    private String dataSourceId;
 
     /**
      * sourcetype
@@ -42,7 +45,7 @@ public class DataxTaskExecutionContext implements Serializable{
     /**
      * dataTargetId
      */
-    private int dataTargetId;
+    private String dataTargetId;
 
     /**
      * targetType
@@ -54,63 +57,63 @@ public class DataxTaskExecutionContext implements Serializable{
      */
     private String targetConnectionParams;
 
-    public int getDataSourceId() {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(int dataSourceId) {
-        this.dataSourceId = dataSourceId;
-    }
-
-    public int getSourcetype() {
-        return sourcetype;
-    }
-
-    public void setSourcetype(int sourcetype) {
-        this.sourcetype = sourcetype;
-    }
-
-    public String getSourceConnectionParams() {
-        return sourceConnectionParams;
-    }
-
-    public void setSourceConnectionParams(String sourceConnectionParams) {
-        this.sourceConnectionParams = sourceConnectionParams;
-    }
-
-    public int getDataTargetId() {
-        return dataTargetId;
-    }
-
-    public void setDataTargetId(int dataTargetId) {
-        this.dataTargetId = dataTargetId;
-    }
-
-    public int getTargetType() {
-        return targetType;
-    }
-
-    public void setTargetType(int targetType) {
-        this.targetType = targetType;
-    }
-
-    public String getTargetConnectionParams() {
-        return targetConnectionParams;
-    }
-
-    public void setTargetConnectionParams(String targetConnectionParams) {
-        this.targetConnectionParams = targetConnectionParams;
-    }
-
-    @Override
-    public String toString() {
-        return "DataxTaskExecutionContext{" +
-                "dataSourceId=" + dataSourceId +
-                ", sourcetype=" + sourcetype +
-                ", sourceConnectionParams='" + sourceConnectionParams + '\'' +
-                ", dataTargetId=" + dataTargetId +
-                ", targetType=" + targetType +
-                ", targetConnectionParams='" + targetConnectionParams + '\'' +
-                '}';
-    }
+//    public int getDataSourceId() {
+//        return dataSourceId;
+//    }
+//
+//    public void setDataSourceId(int dataSourceId) {
+//        this.dataSourceId = dataSourceId;
+//    }
+//
+//    public int getSourcetype() {
+//        return sourcetype;
+//    }
+//
+//    public void setSourcetype(int sourcetype) {
+//        this.sourcetype = sourcetype;
+//    }
+//
+//    public String getSourceConnectionParams() {
+//        return sourceConnectionParams;
+//    }
+//
+//    public void setSourceConnectionParams(String sourceConnectionParams) {
+//        this.sourceConnectionParams = sourceConnectionParams;
+//    }
+//
+//    public int getDataTargetId() {
+//        return dataTargetId;
+//    }
+//
+//    public void setDataTargetId(int dataTargetId) {
+//        this.dataTargetId = dataTargetId;
+//    }
+//
+//    public int getTargetType() {
+//        return targetType;
+//    }
+//
+//    public void setTargetType(int targetType) {
+//        this.targetType = targetType;
+//    }
+//
+//    public String getTargetConnectionParams() {
+//        return targetConnectionParams;
+//    }
+//
+//    public void setTargetConnectionParams(String targetConnectionParams) {
+//        this.targetConnectionParams = targetConnectionParams;
+//    }
+//
+//    @Override
+//    public String toString() {
+//        return "DataxTaskExecutionContext{" +
+//                "dataSourceId=" + dataSourceId +
+//                ", sourcetype=" + sourcetype +
+//                ", sourceConnectionParams='" + sourceConnectionParams + '\'' +
+//                ", dataTargetId=" + dataTargetId +
+//                ", targetType=" + targetType +
+//                ", targetConnectionParams='" + targetConnectionParams + '\'' +
+//                '}';
+//    }
 }

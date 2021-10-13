@@ -95,10 +95,22 @@
         <protostuff.version>1.7.2</protostuff.version>
         <reflections.version>0.9.12</reflections.version>
         <byte-buddy.version>1.9.16</byte-buddy.version>
+        <fastjson.version>1.2.61</fastjson.version>
+        <commons.email.version>1.5</commons.email.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-email</artifactId>
+                <version>${commons.email.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-boot-starter</artifactId>

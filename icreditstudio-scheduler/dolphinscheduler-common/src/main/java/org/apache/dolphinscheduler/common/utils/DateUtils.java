@@ -202,6 +202,13 @@ public class DateUtils {
         return calendar.getTime();
     }
 
+    public static Date getSomeMonth(Date date, int month) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, month);
+        return calendar.getTime();
+    }
+
     /**
      * get the hour of day.
      *

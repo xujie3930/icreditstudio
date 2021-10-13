@@ -17,6 +17,7 @@
 
 package org.apache.dolphinscheduler.api.service;
 
+import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import org.apache.dolphinscheduler.dao.entity.User;
 
 import java.util.Map;
@@ -34,7 +35,7 @@ public interface ProjectService {
      * @param desc       description
      * @return returns an error if it exists
      */
-    Map<String, Object> createProject(User accessUser, String name, String desc);
+    Map<String, Object> createProject(User accessUser, String name, String desc, InstanceCreateRequest request);
 
     /**
      * query project details by id

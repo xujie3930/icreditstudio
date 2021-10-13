@@ -40,8 +40,8 @@ public class ResourceDao {
      * @param conn connection
      * @return map that key is full_name and value is id
      */
-    Map<String, Integer> listAllResources(Connection conn) {
-        Map<String, Integer> resourceMap = new HashMap<>();
+    Map<String, String> listAllResources(Connection conn) {
+        Map<String, String> resourceMap = new HashMap<>();
 
         String sql = String.format("SELECT id,full_name FROM t_ds_resources");
         ResultSet rs = null;
@@ -51,7 +51,7 @@ public class ResourceDao {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                Integer id = rs.getInt(1);
+                String id = rs.getString(1);
                 String fullName = rs.getString(2);
                 resourceMap.put(fullName, id);
             }

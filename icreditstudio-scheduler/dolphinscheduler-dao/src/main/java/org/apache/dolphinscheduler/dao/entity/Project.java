@@ -80,6 +80,8 @@ public class Project {
      */
     private Date updateTime;
 
+    private String workspaceId;
+
 //    /**
 //     * permission
 //     */

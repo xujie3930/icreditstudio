@@ -17,20 +17,20 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import static org.apache.dolphinscheduler.common.utils.Preconditions.checkNotNull;
-
+import com.google.common.collect.Sets;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.MonitorService;
-import org.apache.dolphinscheduler.service.registry.RegistryMonitor;
+import org.apache.dolphinscheduler.api.utils.ZookeeperMonitor;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.NodeType;
+import org.apache.dolphinscheduler.common.enums.ZKNodeType;
 import org.apache.dolphinscheduler.common.model.Server;
 import org.apache.dolphinscheduler.common.model.WorkerServerModel;
 import org.apache.dolphinscheduler.dao.MonitorDBDao;
 import org.apache.dolphinscheduler.dao.entity.MonitorRecord;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.entity.ZookeeperRecord;
-import org.apache.dolphinscheduler.service.registry.RegistryClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,10 +38,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Sets;
+import static org.apache.dolphinscheduler.common.utils.Preconditions.checkNotNull;
 
 /**
  * monitor service impl
@@ -50,10 +47,7 @@ import com.google.common.collect.Sets;
 public class MonitorServiceImpl extends BaseServiceImpl implements MonitorService {
 
     @Autowired
-    private RegistryMonitor registryMonitor;
-
-    @Autowired
-    private RegistryClient registryClient;
+    private ZookeeperMonitor zookeeperMonitor;
 
     @Autowired
     private MonitorDBDao monitorDBDao;
@@ -65,7 +59,7 @@ public class MonitorServiceImpl extends BaseServiceImpl implements MonitorServic
      * @return data base state
      */
     @Override
-    public Map<String,Object> queryDatabaseState(User loginUser) {
+    public Map<String, Object> queryDatabaseState(User loginUser) {
         Map<String, Object> result = new HashMap<>();
 
         List<MonitorRecord> monitorRecordList = monitorDBDao.queryDatabaseState();
@@ -84,13 +78,13 @@ public class MonitorServiceImpl extends BaseServiceImpl implements MonitorServic
      * @return master information list
      */
     @Override
-    public Map<String,Object> queryMaster(User loginUser) {
+    public Map<String, Object> queryMaster(User loginUser) {
 
         Map<String, Object> result = new HashMap<>();
 
-        List<Server> masterServers = getServerListFromRegistry(true);
+        List<Server> masterServers = getServerListFromZK(true);
         result.put(Constants.DATA_LIST, masterServers);
-        putMsg(result,Status.SUCCESS);
+        putMsg(result, Status.SUCCESS);
 
         return result;
     }
@@ -102,10 +96,10 @@ public class MonitorServiceImpl extends BaseServiceImpl implements MonitorServic
      * @return zookeeper information list
      */
     @Override
-    public Map<String,Object> queryZookeeperState(User loginUser) {
+    public Map<String, Object> queryZookeeperState(User loginUser) {
         Map<String, Object> result = new HashMap<>();
 
-        List<ZookeeperRecord> zookeeperRecordList = registryMonitor.zookeeperInfoList();
+        List<ZookeeperRecord> zookeeperRecordList = zookeeperMonitor.zookeeperInfoList();
 
         result.put(Constants.DATA_LIST, zookeeperRecordList);
         putMsg(result, Status.SUCCESS);
@@ -121,10 +115,10 @@ public class MonitorServiceImpl extends BaseServiceImpl implements MonitorServic
      * @return worker information list
      */
     @Override
-    public Map<String,Object> queryWorker(User loginUser) {
+    public Map<String, Object> queryWorker(User loginUser) {
 
         Map<String, Object> result = new HashMap<>();
-        List<WorkerServerModel> workerServers = getServerListFromRegistry(false)
+        List<WorkerServerModel> workerServers = getServerListFromZK(false)
                 .stream()
                 .map((Server server) -> {
                     WorkerServerModel model = new WorkerServerModel();
@@ -142,28 +136,28 @@ public class MonitorServiceImpl extends BaseServiceImpl implements MonitorServic
         Map<String, WorkerServerModel> workerHostPortServerMapping = workerServers
                 .stream()
                 .collect(Collectors.toMap(
-                    (WorkerServerModel worker) -> {
-                        String[] s = worker.getZkDirectories().iterator().next().split("/");
-                        return s[s.length - 1];
-                    }
-                    , Function.identity()
-                    , (WorkerServerModel oldOne, WorkerServerModel newOne) -> {
-                        oldOne.getZkDirectories().addAll(newOne.getZkDirectories());
-                        return oldOne;
-                    }));
+                        (WorkerServerModel worker) -> {
+                            String[] s = worker.getZkDirectories().iterator().next().split("/");
+                            return s[s.length - 1];
+                        }
+                        , Function.identity()
+                        , (WorkerServerModel oldOne, WorkerServerModel newOne) -> {
+                            oldOne.getZkDirectories().addAll(newOne.getZkDirectories());
+                            return oldOne;
+                        }));
 
         result.put(Constants.DATA_LIST, workerHostPortServerMapping.values());
-        putMsg(result,Status.SUCCESS);
+        putMsg(result, Status.SUCCESS);
 
         return result;
     }
 
     @Override
-    public List<Server> getServerListFromRegistry(boolean isMaster) {
+    public List<Server> getServerListFromZK(boolean isMaster) {
 
-        checkNotNull(registryMonitor);
-        NodeType nodeType = isMaster ? NodeType.MASTER : NodeType.WORKER;
-        return registryClient.getServerList(nodeType);
+        checkNotNull(zookeeperMonitor);
+        ZKNodeType nodeType = isMaster ? ZKNodeType.MASTER : ZKNodeType.WORKER;
+        return zookeeperMonitor.getServerList(nodeType);
     }
 
 }

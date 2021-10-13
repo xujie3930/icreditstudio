@@ -75,7 +75,7 @@ public class ProjectController extends BaseController {
                                 @RequestParam("projectName") String projectName,
                                 @RequestParam(value = "description", required = false) String description) {
 
-        Map<String, Object> result = projectService.createProject(accessUser, projectName, description);
+        Map<String, Object> result = projectService.createProject(accessUser, projectName, description, null);
         return returnDataList(result);
     }
 

@@ -19,7 +19,7 @@ package org.apache.dolphinscheduler.server.worker;
 
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.IStoppable;
-import org.apache.dolphinscheduler.common.enums.NodeType;
+import org.apache.dolphinscheduler.common.enums.ZKNodeType;
 import org.apache.dolphinscheduler.common.thread.Stopper;
 import org.apache.dolphinscheduler.remote.NettyRemotingServer;
 import org.apache.dolphinscheduler.remote.command.CommandType;
@@ -29,16 +29,9 @@ import org.apache.dolphinscheduler.server.worker.processor.DBTaskAckProcessor;
 import org.apache.dolphinscheduler.server.worker.processor.DBTaskResponseProcessor;
 import org.apache.dolphinscheduler.server.worker.processor.TaskExecuteProcessor;
 import org.apache.dolphinscheduler.server.worker.processor.TaskKillProcessor;
-import org.apache.dolphinscheduler.server.worker.registry.WorkerRegistryClient;
+import org.apache.dolphinscheduler.server.worker.registry.WorkerRegistry;
 import org.apache.dolphinscheduler.server.worker.runner.RetryReportTaskStatusThread;
-import org.apache.dolphinscheduler.server.worker.runner.WorkerManagerThread;
-import org.apache.dolphinscheduler.service.alert.AlertClientService;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
-
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +40,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import javax.annotation.PostConstruct;
+import java.util.Set;
 
 /**
  * worker server
@@ -75,7 +71,7 @@ public class WorkerServer implements IStoppable {
      * worker registry
      */
     @Autowired
-    private WorkerRegistryClient workerRegistryClient;
+    private WorkerRegistry workerRegistry;
 
     /**
      * worker config
@@ -90,16 +86,8 @@ public class WorkerServer implements IStoppable {
     @Autowired
     private SpringApplicationContext springApplicationContext;
 
-    /**
-     * alert model netty remote server
-     */
-    private AlertClientService alertClientService;
-
     @Autowired
     private RetryReportTaskStatusThread retryReportTaskStatusThread;
-
-    @Autowired
-    private WorkerManagerThread workerManagerThread;
 
     /**
      * worker server startup, not use web service
@@ -116,14 +104,11 @@ public class WorkerServer implements IStoppable {
      */
     @PostConstruct
     public void run() {
-        // alert-server client registry
-        alertClientService = new AlertClientService(workerConfig.getAlertListenHost(), Constants.ALERT_RPC_PORT);
-
         // init remoting server
         NettyServerConfig serverConfig = new NettyServerConfig();
         serverConfig.setListenPort(workerConfig.getListenPort());
         this.nettyRemotingServer = new NettyRemotingServer(serverConfig);
-        this.nettyRemotingServer.registerProcessor(CommandType.TASK_EXECUTE_REQUEST, new TaskExecuteProcessor(alertClientService));
+        this.nettyRemotingServer.registerProcessor(CommandType.TASK_EXECUTE_REQUEST, new TaskExecuteProcessor());
         this.nettyRemotingServer.registerProcessor(CommandType.TASK_KILL_REQUEST, new TaskKillProcessor());
         this.nettyRemotingServer.registerProcessor(CommandType.DB_TASK_ACK, new DBTaskAckProcessor());
         this.nettyRemotingServer.registerProcessor(CommandType.DB_TASK_RESPONSE, new DBTaskResponseProcessor());
@@ -131,19 +116,15 @@ public class WorkerServer implements IStoppable {
 
         // worker registry
         try {
-            this.workerRegistryClient.registry();
-            this.workerRegistryClient.setRegistryStoppable(this);
-            Set<String> workerZkPaths = this.workerRegistryClient.getWorkerZkPaths();
+            this.workerRegistry.registry();
+            this.workerRegistry.getZookeeperRegistryCenter().setStoppable(this);
+            Set<String> workerZkPaths = this.workerRegistry.getWorkerZkPaths();
 
-            this.workerRegistryClient.handleDeadServer(workerZkPaths, NodeType.WORKER, Constants.DELETE_OP);
+            this.workerRegistry.getZookeeperRegistryCenter().getRegisterOperator().handleDeadServer(workerZkPaths, ZKNodeType.WORKER, Constants.DELETE_ZK_OP);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
-
-        // task execute manager
-        this.workerManagerThread.start();
-
         // retry report task status
         this.retryReportTaskStatusThread.start();
 
@@ -179,8 +160,7 @@ public class WorkerServer implements IStoppable {
 
             // close
             this.nettyRemotingServer.close();
-            this.workerRegistryClient.unRegistry();
-            this.alertClientService.close();
+            this.workerRegistry.unRegistry();
         } catch (Exception e) {
             logger.error("worker server stop exception ", e);
         }

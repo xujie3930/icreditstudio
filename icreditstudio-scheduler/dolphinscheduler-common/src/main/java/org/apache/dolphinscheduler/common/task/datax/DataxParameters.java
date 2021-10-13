@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.common.task.datax;
 
+import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.process.ResourceInfo;
 import org.apache.dolphinscheduler.common.task.AbstractParameters;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * DataX parameter
  */
+@Data
 public class DataxParameters extends AbstractParameters {
 
     /**
@@ -48,7 +49,7 @@ public class DataxParameters extends AbstractParameters {
     /**
      * datasource id
      */
-    private int dataSource;
+    private String dataSource;
 
     /**
      * data target type，eg  MYSQL, POSTGRES ...
@@ -58,7 +59,7 @@ public class DataxParameters extends AbstractParameters {
     /**
      * datatarget id
      */
-    private int dataTarget;
+    private String dataTarget;
 
     /**
      * sql
@@ -90,133 +91,12 @@ public class DataxParameters extends AbstractParameters {
      */
     private int jobSpeedRecord;
 
-    /**
-     * Xms memory
-     */
-    private int xms;
-
-    /**
-     * Xmx memory
-     */
-    private int xmx;
-
-    public int getCustomConfig() {
-        return customConfig;
-    }
-
-    public void setCustomConfig(int customConfig) {
-        this.customConfig = customConfig;
-    }
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
-    }
-
-    public String getDsType() {
-        return dsType;
-    }
-
-    public void setDsType(String dsType) {
-        this.dsType = dsType;
-    }
-
-    public int getDataSource() {
-        return dataSource;
-    }
-
-    public void setDataSource(int dataSource) {
-        this.dataSource = dataSource;
-    }
-
-    public String getDtType() {
-        return dtType;
-    }
-
-    public void setDtType(String dtType) {
-        this.dtType = dtType;
-    }
-
-    public int getDataTarget() {
-        return dataTarget;
-    }
-
-    public void setDataTarget(int dataTarget) {
-        this.dataTarget = dataTarget;
-    }
-
-    public String getSql() {
-        return sql;
-    }
-
-    public void setSql(String sql) {
-        this.sql = sql;
-    }
-
-    public String getTargetTable() {
-        return targetTable;
-    }
-
-    public void setTargetTable(String targetTable) {
-        this.targetTable = targetTable;
-    }
-
-    public List<String> getPreStatements() {
-        return preStatements;
-    }
-
-    public void setPreStatements(List<String> preStatements) {
-        this.preStatements = preStatements;
-    }
-
-    public List<String> getPostStatements() {
-        return postStatements;
-    }
-
-    public void setPostStatements(List<String> postStatements) {
-        this.postStatements = postStatements;
-    }
-
-    public int getJobSpeedByte() {
-        return jobSpeedByte;
-    }
-
-    public void setJobSpeedByte(int jobSpeedByte) {
-        this.jobSpeedByte = jobSpeedByte;
-    }
-
-    public int getJobSpeedRecord() {
-        return jobSpeedRecord;
-    }
-
-    public void setJobSpeedRecord(int jobSpeedRecord) {
-        this.jobSpeedRecord = jobSpeedRecord;
-    }
-
-    public int getXms() {
-        return xms;
-    }
-
-    public void setXms(int xms) {
-        this.xms = xms;
-    }
-
-    public int getXmx() {
-        return xmx;
-    }
-
-    public void setXmx(int xmx) {
-        this.xmx = xmx;
-    }
 
     @Override
     public boolean checkParameters() {
         if (customConfig == Flag.NO.ordinal()) {
-            return dataSource != 0
-                    && dataTarget != 0
+            return StringUtils.equals("0", dataSource)
+                    && !StringUtils.equals("0", dataTarget)
                     && StringUtils.isNotEmpty(sql)
                     && StringUtils.isNotEmpty(targetTable);
         } else {
@@ -227,25 +107,5 @@ public class DataxParameters extends AbstractParameters {
     @Override
     public List<ResourceInfo> getResourceFilesList() {
         return new ArrayList<>();
-    }
-
-    @Override
-    public String toString() {
-        return "DataxParameters{"
-                + "customConfig=" + customConfig
-                + ", json='" + json + '\''
-                + ", dsType='" + dsType + '\''
-                + ", dataSource=" + dataSource
-                + ", dtType='" + dtType + '\''
-                + ", dataTarget=" + dataTarget
-                + ", sql='" + sql + '\''
-                + ", targetTable='" + targetTable + '\''
-                + ", preStatements=" + preStatements
-                + ", postStatements=" + postStatements
-                + ", jobSpeedByte=" + jobSpeedByte
-                + ", jobSpeedRecord=" + jobSpeedRecord
-                + ", xms=" + xms
-                + ", xmx=" + xmx
-                + '}';
     }
 }

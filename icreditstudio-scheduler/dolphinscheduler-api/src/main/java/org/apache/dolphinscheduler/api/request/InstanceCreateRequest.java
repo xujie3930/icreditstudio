@@ -12,6 +12,11 @@ import java.util.List;
  **/
 @Data
 public class InstanceCreateRequest {
+
+    /**
+     * 工作空间id
+     */
+    private String workspaceId;
     /**
      * 租户
      */

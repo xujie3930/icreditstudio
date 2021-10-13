@@ -61,10 +61,10 @@ public interface ExecutorService {
      * check whether the process definition can be executed
      *
      * @param processDefinition process definition
-     * @param processDefineCode process definition code
+     * @param processDefineId process definition code
      * @return check result code
      */
-    Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, long processDefineCode);
+    Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId);
 
     /**
      * do action to process instance：pause, stop, repeat, recover from pause, recover from stop
@@ -80,11 +80,11 @@ public interface ExecutorService {
 
     Map<String, Object> newExecute(User loginUser, String projectName, String processDefinitionId, ExecuteType executeType);
 
-    /**
-     * check if sub processes are offline before starting process definition
-     *
-     * @param processDefineId process definition id
-     * @return check result code
-     */
-    Map<String, Object> startCheckByProcessDefinedId(String processDefineId);
+//    /**
+//     * check if sub processes are offline before starting process definition
+//     *
+//     * @param processDefineId process definition id
+//     * @return check result code
+//     */
+//    Map<String, Object> startCheckByProcessDefinedId(String processDefineId);
 }

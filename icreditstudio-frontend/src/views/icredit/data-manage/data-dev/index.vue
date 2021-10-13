@@ -84,7 +84,7 @@
     </aside>
 
     <section class="data-develop-section">
-      <Tabs>
+      <Tabs :tabs-config="tabsConfig">
         <TabDetail slot="panel" />
       </Tabs>
     </section>
@@ -134,6 +134,12 @@ export default {
             }
           ]
         }
+      ],
+      tabsConfig: [
+        { name: '平台门户' },
+        { name: '工作流11' },
+        { name: '文件夹名' },
+        { name: 'BI数据报表' }
       ]
     }
   },

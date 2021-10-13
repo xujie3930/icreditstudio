@@ -33,14 +33,6 @@ public class TaskKillRequestCommand implements Serializable {
      */
     private String taskInstanceId;
 
-//    public String getTaskInstanceId() {
-//        return taskInstanceId;
-//    }
-//
-//    public void setTaskInstanceId(int taskInstanceId) {
-//        this.taskInstanceId = taskInstanceId;
-//    }
-
     /**
      * package request command
      *
@@ -53,11 +45,4 @@ public class TaskKillRequestCommand implements Serializable {
         command.setBody(body);
         return command;
     }
-
-//    @Override
-//    public String toString() {
-//        return "TaskKillRequestCommand{"
-//                + "taskInstanceId=" + taskInstanceId
-//                + '}';
-//    }
 }

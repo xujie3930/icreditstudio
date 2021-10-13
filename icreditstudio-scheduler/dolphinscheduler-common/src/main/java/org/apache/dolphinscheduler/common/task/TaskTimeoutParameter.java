@@ -16,11 +16,13 @@
  */
 package org.apache.dolphinscheduler.common.task;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.TaskTimeoutStrategy;
 
 /**
  * task timeout parameter
  */
+@Data
 public class TaskTimeoutParameter {
 
     private boolean enable;
@@ -33,33 +35,6 @@ public class TaskTimeoutParameter {
      */
     private int interval;
 
-    public boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public TaskTimeoutStrategy getStrategy() {
-        return strategy;
-    }
-
-    public void setStrategy(TaskTimeoutStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public int getInterval() {
-        return interval;
-    }
-
-    public void setInterval(int interval) {
-        this.interval = interval;
-    }
-
-    public TaskTimeoutParameter() {
-    }
-
     public TaskTimeoutParameter(boolean enable) {
         this.enable = enable;
     }
@@ -68,14 +43,5 @@ public class TaskTimeoutParameter {
         this.enable = enable;
         this.strategy = strategy;
         this.interval = interval;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskTimeoutParameter{" +
-                "enable=" + enable +
-                ", strategy=" + strategy +
-                ", interval=" + interval +
-                '}';
     }
 }

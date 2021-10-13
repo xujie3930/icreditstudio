@@ -48,6 +48,7 @@ public class TaskDefinitionLog extends TaskDefinition {
     public TaskDefinitionLog(TaskDefinition taskDefinition) {
         super();
         this.setId(taskDefinition.getId());
+        this.setWorkspaceId(taskDefinition.getWorkspaceId());
         this.setCode(taskDefinition.getCode());
         this.setVersion(taskDefinition.getVersion());
         this.setName(taskDefinition.getName());

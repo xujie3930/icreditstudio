@@ -8,6 +8,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuild
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
+import com.jinninghui.datasphere.icreditstudio.datasync.vo.DataSyncDispatchTaskPageVO;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -119,4 +120,12 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @return
      */
     BusinessResult<Boolean> cease(DataSyncExecParam param);
+
+    /**
+     * 周期任务列表
+     * @param param
+     * @return
+     */
+    BusinessPageResult<DataSyncDispatchTaskPageVO> dispatchPage(DataSyncDispatchTaskPageParam param);
+
 }

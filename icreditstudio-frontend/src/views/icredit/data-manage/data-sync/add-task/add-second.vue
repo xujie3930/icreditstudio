@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="2" />
       <div class="add-task-content">
@@ -372,7 +371,6 @@
 </template>
 
 <script>
-import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import Affiliations from './affiliations'
 import dayjs from 'dayjs'
@@ -397,7 +395,7 @@ const viewDefaultData = {
 }
 
 export default {
-  components: { Back, HeaderStepBar, Affiliations, Dialog },
+  components: { HeaderStepBar, Affiliations, Dialog },
   mixins: [crud],
 
   data() {
@@ -618,6 +616,12 @@ export default {
 
     // 可视化-删除已选择的的表
     handleDeleteTagClick(idx, name) {
+      !this.secondTaskForm.fieldInfos.length
+        ? this.handleDeleteTable(idx)
+        : this.handleDeleteTableConfirm(idx, name)
+    },
+
+    handleDeleteTableConfirm(idx, name) {
       this.$confirm(
         `当前表中字段已被宽表识别，删除后宽表中的信息将会丢失，确认要删除${name}`,
         '提示',
@@ -627,39 +631,44 @@ export default {
           type: 'warning'
         }
       )
-        .then(() => {
-          // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
-          switch (idx) {
-            case 0:
-              this.selectedTable.splice(0, 1)
-              this.selectedTable.splice(0, 1)
-              this.secondTaskForm.view.splice(0, 1)
-              break
-            case 2:
-              this.selectedTable.splice(2, 1)
-              this.selectedTable.splice(2, 1)
-              this.secondTaskForm.view.splice(1, 1)
-              this.secondTaskForm.view.splice(0, 1)
-              this.selectedTable[0].isChecked = false
-              break
-            case 4:
-              this.selectedTable.splice(4, 1)
-              this.selectedTable.splice(4, 1)
-              this.secondTaskForm.view.splice(1, 1)
-              this.secondTaskForm.view.length === 2 &&
-                this.secondTaskForm.view.splice(1, 1)
-              break
-            case 6:
-              this.selectedTable.splice(6, 1)
-              this.selectedTable.splice(6, 1)
-              this.secondTaskForm.view.splice(2, 1)
-              break
-
-            default:
-              break
-          }
-        })
+        .then(() => this.handleDeleteTable(idx))
         .catch(() => {})
+    },
+
+    handleDeleteTable(idx) {
+      this.secondTaskForm.fieldInfos = []
+      this.secondTaskForm.syncCondition.incrementalField = []
+      this.secondTaskForm.syncCondition.partition = []
+      // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
+      switch (idx) {
+        case 0:
+          this.selectedTable.splice(0, 1)
+          this.selectedTable.splice(0, 1)
+          this.secondTaskForm.view.splice(0, 1)
+          break
+        case 2:
+          this.selectedTable.splice(2, 1)
+          this.selectedTable.splice(2, 1)
+          this.secondTaskForm.view.splice(1, 1)
+          this.secondTaskForm.view.splice(0, 1)
+          this.selectedTable[0].isChecked = false
+          break
+        case 4:
+          this.selectedTable.splice(4, 1)
+          this.selectedTable.splice(4, 1)
+          this.secondTaskForm.view.splice(1, 1)
+          this.secondTaskForm.view.length === 2 &&
+            this.secondTaskForm.view.splice(1, 1)
+          break
+        case 6:
+          this.selectedTable.splice(6, 1)
+          this.selectedTable.splice(6, 1)
+          this.secondTaskForm.view.splice(2, 1)
+          break
+
+        default:
+          break
+      }
     },
 
     // 可视化-点击关联图标打开关联弹窗
@@ -751,6 +760,7 @@ export default {
     // 验证宽表信息
     handleVerifyWidthTableName() {
       const { wideTableName } = this.secondTaskForm
+      if (!wideTableName) return
       const valid = validStrZh(wideTableName)
       const validSp = validStrSpecial(wideTableName.replaceAll('_', ''))
       if (!valid) {
@@ -760,13 +770,6 @@ export default {
         this.$message.error('宽表名称只能输入英文字母、下划线和数字！')
         this.secondTaskForm.wideTableName = ''
       }
-    },
-
-    // 返回提示
-    handleBackClick() {
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
-      this.$router.push('/data-manage/data-sync')
     },
 
     // 表单参数缓存以及过滤处理
@@ -1199,7 +1202,7 @@ export default {
 @import '~@/styles/public/data-manage';
 
 .add-task {
-  margin-top: -7px;
+  margin-top: 30px;
   height: calc(100% - 134px);
   overflow: hidden;
 }
