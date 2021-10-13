@@ -48,8 +48,8 @@ public class ProcessTaskRelationServiceImpl extends BaseServiceImpl implements
     @Resource
     private ProjectMapper projectMapper;
 
-    @Autowired
-    private ProjectService projectService;
+//    @Autowired
+//    private ProjectService projectService;
 
     @Resource
     private ProcessTaskRelationMapper processTaskRelationMapper;

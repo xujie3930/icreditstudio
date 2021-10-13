@@ -29,7 +29,7 @@ public class HomePageController {
     @Autowired
     private HomePageService homePageService;
 
-    @PostMapping(value = "rough")
+    @PostMapping(value = "/rough")
     public BusinessResult<TaskRough> rough(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.rough(request);
     }

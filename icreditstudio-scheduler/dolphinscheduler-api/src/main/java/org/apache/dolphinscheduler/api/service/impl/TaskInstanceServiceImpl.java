@@ -48,23 +48,23 @@ import java.util.*;
 @Service
 public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInstanceService {
 
-    @Resource
-    ProjectMapper projectMapper;
-
-    @Resource
-    ProjectService projectService;
-
-    @Resource
-    ProcessService processService;
+//    @Resource
+//    ProjectMapper projectMapper;
+//
+//    @Resource
+//    ProjectService projectService;
+//
+//    @Resource
+//    ProcessService processService;
 
     @Resource
     TaskInstanceMapper taskInstanceMapper;
 
-    @Resource
-    ProcessInstanceService processInstanceService;
-
-    @Resource
-    UsersService usersService;
+//    @Resource
+//    ProcessInstanceService processInstanceService;
+//
+//    @Resource
+//    UsersService usersService;
 //
 //    /**
 //     * query task list by project, process instance, task name, task start time, task end time, task status, keyword paging

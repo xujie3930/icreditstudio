@@ -2,6 +2,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.*;
 import org.apache.dolphinscheduler.api.service.result.*;
@@ -9,6 +10,7 @@ import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
@@ -17,14 +19,12 @@ import java.util.*;
  * @description homepageService
  * @create 2021-10-08 15:13
  **/
+@Slf4j
+@Service
 public class HomePageServiceImpl implements HomePageService {
 
     @Autowired
     private ProcessDefinitionService processDefinitionService;
-    @Autowired
-    private TaskDefinitionService taskDefinitionService;
-    @Autowired
-    private ProcessInstanceService processInstanceService;
     @Autowired
     private TaskInstanceService taskInstanceService;
 

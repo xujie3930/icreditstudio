@@ -74,21 +74,21 @@ import java.util.stream.Collectors;
 @Service
 public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements ProcessDefinitionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
-
-    private static final String PROCESSDEFINITIONCODE = "processDefinitionCode";
-
-    private static final String PROCESSDEFINITIONID = "processDefinitionId";
-
-    private static final String RELEASESTATE = "releaseState";
-
-    private static final String TASKS = "tasks";
-
-    @javax.annotation.Resource
-    private ProjectMapper projectMapper;
-
-    @javax.annotation.Resource
-    private ProjectService projectService;
+//    private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionServiceImpl.class);
+//
+//    private static final String PROCESSDEFINITIONCODE = "processDefinitionCode";
+//
+//    private static final String PROCESSDEFINITIONID = "processDefinitionId";
+//
+//    private static final String RELEASESTATE = "releaseState";
+//
+//    private static final String TASKS = "tasks";
+//
+//    @javax.annotation.Resource
+//    private ProjectMapper projectMapper;
+//
+//    @javax.annotation.Resource
+//    private ProjectService projectService;
 
 //    @Autowired
 //    private UserMapper userMapper;
@@ -99,26 +99,26 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
     @javax.annotation.Resource
     private ProcessDefinitionMapper processDefinitionMapper;
 
-    @javax.annotation.Resource
-    private ProcessInstanceService processInstanceService;
-
-    @javax.annotation.Resource
-    private TaskInstanceMapper taskInstanceMapper;
-
-    @javax.annotation.Resource
-    private ScheduleMapper scheduleMapper;
-
-    @javax.annotation.Resource
-    private ProcessService processService;
-
-    @javax.annotation.Resource
-    private ProcessTaskRelationMapper processTaskRelationMapper;
-
-    @javax.annotation.Resource
-    TaskDefinitionLogMapper taskDefinitionLogMapper;
-
-    @javax.annotation.Resource
-    private SchedulerService schedulerService;
+//    @javax.annotation.Resource
+//    private ProcessInstanceService processInstanceService;
+//
+//    @javax.annotation.Resource
+//    private TaskInstanceMapper taskInstanceMapper;
+//
+//    @javax.annotation.Resource
+//    private ScheduleMapper scheduleMapper;
+//
+//    @javax.annotation.Resource
+//    private ProcessService processService;
+//
+//    @javax.annotation.Resource
+//    private ProcessTaskRelationMapper processTaskRelationMapper;
+//
+//    @javax.annotation.Resource
+//    TaskDefinitionLogMapper taskDefinitionLogMapper;
+//
+//    @javax.annotation.Resource
+//    private SchedulerService schedulerService;
 //
 //    /**
 //     * create process definition
