@@ -48,6 +48,7 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String workspaceId) {
+        //查询接口不考虑redis上锁
         List<TaskSituationResult> taskSituationResultList = (List<TaskSituationResult>) RedisUtils.get(workspaceId);
         if (!CollectionUtils.isEmpty(taskSituationResultList)){
             return BusinessResult.success(taskSituationResultList);
