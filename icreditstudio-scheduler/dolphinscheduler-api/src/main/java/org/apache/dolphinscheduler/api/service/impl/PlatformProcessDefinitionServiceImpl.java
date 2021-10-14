@@ -3,7 +3,8 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
-import org.apache.dolphinscheduler.api.param.CreatePlatformTaskParam;
+import org.apache.dolphinscheduler.api.param.CreatePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.ReleasePlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
 import org.apache.dolphinscheduler.api.utils.CheckUtils;
@@ -34,7 +35,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     private ProcessDefinitionMapper processDefinitionMapper;
 
     @Override
-    public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformTaskParam param) {
+    public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
@@ -67,6 +68,19 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
         return BusinessResult.success(result);
+    }
+
+    @Override
+    public BusinessResult<Boolean> release(ReleasePlatformProcessDefinitionParam param) {
+        ReleaseState state = ReleaseState.getEnum(param.getReleaseState());
+
+        HashMap<String, Object> result = new HashMap<>();
+        // check state
+        if (null == state) {
+            putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "releaseState");
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+        return BusinessResult.success(true);
     }
 
     /**
