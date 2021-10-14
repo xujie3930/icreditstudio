@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@antv/g6": "^4.3.11",
     "@antv/x6": "^1.26.2",
     "@antv/x6-vue-shape": "^1.2.10",
     "@jnh/icredit-ui": "^1.0.8",
