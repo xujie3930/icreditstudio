@@ -58,6 +58,13 @@ public class ProcessDefinitionController extends BaseController {
     @Autowired
     private ProcessDefinitionService processDefinitionService;
 
+    @PostMapping("/test")
+    public Result test() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("one", "SUCCESS");
+        return returnDataList(result);
+    }
+
     /**
      * create process definition
      *
@@ -91,7 +98,7 @@ public class ProcessDefinitionController extends BaseController {
                                           @RequestParam(value = "description", required = false) String description) throws JsonProcessingException {
 
         Map<String, Object> result = processDefinitionService.createProcessDefinition(loginUser, projectName, name, json,
-                description, locations, connects, null);
+                description, locations, connects);
         return returnDataList(result);
     }
 
@@ -217,7 +224,7 @@ public class ProcessDefinitionController extends BaseController {
 
         //  Judge whether to go online after editing,0 means offline, 1 means online
         if (releaseState == ReleaseState.ONLINE) {
-            result = processDefinitionService.releaseProcessDefinition(loginUser, projectName, id, releaseState);
+//            result = processDefinitionService.releaseProcessDefinition(loginUser, projectName, id, releaseState);
         }
         return returnDataList(result);
     }
@@ -315,21 +322,23 @@ public class ProcessDefinitionController extends BaseController {
      * @param releaseState release state
      * @return release result code
      */
+
     @ApiOperation(value = "releaseProcessDefinition", notes = "RELEASE_PROCESS_DEFINITION_NOTES")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "PROCESS_DEFINITION_NAME", required = true, paramType = "String"),
+            @ApiImplicitParam(name = "name", value = "PROCESS_DEFINITION_NAME", required = true, type = "String"),
             @ApiImplicitParam(name = "processId", value = "PROCESS_DEFINITION_ID", required = true, dataType = "Int", example = "100"),
-            @ApiImplicitParam(name = "releaseState", value = "PROCESS_DEFINITION_CONNECTS", required = true, dataType = "ReleaseState"),
+            @ApiImplicitParam(name = "releaseState", value = "PROCESS_DEFINITION_CONNECTS", required = true, dataType = "Int", example = "100"),
     })
     @PostMapping(value = "/release")
     @ResponseStatus(HttpStatus.OK)
     @ApiException(RELEASE_PROCESS_DEFINITION_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result releaseProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                            @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                           @RequestParam(value = "processId", required = true) String processId,
-                                           @RequestParam(value = "releaseState", required = true) ReleaseState releaseState) {
+                                           @RequestParam(value = "processId", required = true) int processId,
+                                           @RequestParam(value = "releaseState", required = true) int releaseState) {
 
+        logger.info("login user {}, release process definition, project name: {}, release state: {}",
+                loginUser.getUserName(), projectName, releaseState);
         Map<String, Object> result = processDefinitionService.releaseProcessDefinition(loginUser, projectName, processId, releaseState);
         return returnDataList(result);
     }

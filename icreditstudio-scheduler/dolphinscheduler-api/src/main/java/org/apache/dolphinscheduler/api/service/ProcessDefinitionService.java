@@ -17,9 +17,7 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import org.apache.dolphinscheduler.api.request.InstanceCreateRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.dao.entity.ProcessData;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,23 +36,16 @@ public interface ProcessDefinitionService {
      * create process definition
      *
      * @param loginUser             login user
-     * @param projectName           project name
+     * @param projectCode           project name
      * @param name                  process definition name
      * @param processDefinitionJson process definition json
-     * @param desc description
-     * @param locations locations for nodes
-     * @param connects connects for nodes
+     * @param desc                  description
+     * @param locations             locations for nodes
+     * @param connects              connects for nodes
      * @return create result code
      * @throws JsonProcessingException JsonProcessingException
      */
-    Map<String, Object> createProcessDefinition(User loginUser,
-                                                String projectName,
-                                                String name,
-                                                String processDefinitionJson,
-                                                String desc,
-                                                String locations,
-                                                String connects,
-                                                InstanceCreateRequest request) throws JsonProcessingException;
+    Map<String, Object> createProcessDefinition(User loginUser, String projectCode, String name, String processDefinitionJson, String desc, String locations, String connects) throws JsonProcessingException;
 
     /**
      * query process definition list
@@ -129,7 +120,7 @@ public interface ProcessDefinitionService {
      * @param loginUser            loginUser
      * @param projectName          projectName
      * @param processDefinitionIds processDefinitionIds
-     * @param targetProjectId targetProjectId
+     * @param targetProjectId      targetProjectId
      */
     Map<String, Object> batchMoveProcessDefinition(User loginUser,
                                                    String projectName,
@@ -184,15 +175,12 @@ public interface ProcessDefinitionService {
      * release process definition: online / offline
      *
      * @param loginUser    login user
-     * @param projectName  project name
+     * @param projectCode  project name
      * @param id           process definition id
      * @param releaseState release state
      * @return release result code
      */
-    Map<String, Object> releaseProcessDefinition(User loginUser,
-                                                 String projectName,
-                                                 String id,
-                                                 ReleaseState releaseState);
+    Map<String, Object> releaseProcessDefinition(User loginUser, String projectCode, int id, int releaseState);
 
     /**
      * batch export process definition by ids

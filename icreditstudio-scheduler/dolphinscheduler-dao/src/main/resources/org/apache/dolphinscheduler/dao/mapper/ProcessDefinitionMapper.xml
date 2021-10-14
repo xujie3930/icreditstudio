@@ -21,7 +21,7 @@
     <select id="verifyByDefineName" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinition">
         select pd.*
         from t_ds_process_definition pd
-        WHERE pd.project_id = #{projectId}
+        WHERE pd.project_code = #{projectCode}
           and pd.name = #{processDefinitionName}
     </select>
     <select id="queryByDefineName" resultType="org.apache.dolphinscheduler.dao.entity.ProcessDefinition">
