@@ -33,23 +33,33 @@
         </div>
         <div id="pieChart" style="height:300px"></div>
       </div>
+
       <div class="schedule-chart-right">
         <div class="title">
-          <span class="left">近一天运行时长排行</span>
+          <span class="left">调度任务数量情况</span>
           <el-date-picker
             v-model="date"
-            style="width: 300px"
+            style="width: 240px; margin-left:5px"
             type="daterange"
             range-separator="-"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size="small"
+            size="mini"
           >
           </el-date-picker>
-          <el-tabs v-model="activeName">
-            <el-tab-pane label="周期实例" name="first"></el-tab-pane>
-            <el-tab-pane label="手动实例" name="second"></el-tab-pane>
-          </el-tabs>
+          <div class="tab">
+            <span
+              :class="[
+                'tab-item',
+                item.name === activeName ? 'tab-item-active' : ''
+              ]"
+              v-for="item in tabItems"
+              :key="item.name"
+              @click="handleChangTabClick(item.name)"
+            >
+              {{ item.label }}
+            </span>
+          </div>
         </div>
         <div class="right-wrap">
           <div class="right-wrap-header"></div>
@@ -115,7 +125,12 @@ export default {
         { key: '', value: 8, name: '实时任务记录速度', unit: 'RPS ' }
       ],
       date: [],
-      activeName: 'first'
+      activeName: 'sync',
+      tabItems: [
+        { label: '同步任务', name: 'sync' },
+        { label: '开发任务', name: 'dev' },
+        { label: '治理任务', name: 'govern' }
+      ]
     }
   },
 
@@ -131,6 +146,10 @@ export default {
 
     renderLineChart(id) {
       renderChart(id, optionsMapping[id])
+    },
+
+    handleChangTabClick(name) {
+      this.activeName = name
     }
   }
 }
@@ -150,12 +169,46 @@ export default {
     font-weight: 400;
     text-align: left;
     color: #262626;
-    line-height: 20px;
     margin: 0 16px;
+    height: 32px;
+    line-height: 32px;
 
     .right {
       font-size: 13px;
       color: #999;
+    }
+
+    .tab {
+      .tab-item {
+        position: relative;
+        width: 56px;
+        height: 20px;
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: #333;
+        line-height: 20px;
+        margin-left: 14px;
+        cursor: pointer;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .tab-item-active {
+        &::before {
+          position: absolute;
+          content: '';
+          bottom: -5px;
+          left: 13px;
+          width: 30px;
+          height: 2px;
+          background: #1890ff;
+          border-radius: 3px;
+        }
+      }
     }
   }
 
@@ -166,7 +219,7 @@ export default {
   &::before {
     content: '';
     position: absolute;
-    top: 15px;
+    top: 21px;
     left: 0;
     width: 4px;
     height: 18px;
@@ -179,7 +232,7 @@ export default {
   &-header {
     @include header;
     width: 100%;
-    height: 143px;
+    height: 150px;
 
     &-content {
       @include flex;
