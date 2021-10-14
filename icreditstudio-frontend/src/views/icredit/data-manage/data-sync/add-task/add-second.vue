@@ -1208,7 +1208,6 @@ export default {
       API.dataSyncFluzzyDictionary({ name })
         .then(({ success, data }) => {
           if (success && data) {
-            console.log(data)
             // eslint-disable-next-line no-param-reassign
             row.dictionaryOptions = data
           }
@@ -1235,6 +1234,7 @@ export default {
               switch (key) {
                 case 'fieldInfos':
                   this.secondTaskForm[key] = this.hadleFieldInfos(value)
+                  this.oldFieldInfos = this.hadleFieldInfos(value)
                   break
                 case 'view':
                   this.secondTaskForm[key] = value
