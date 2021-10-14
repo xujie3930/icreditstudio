@@ -8,7 +8,11 @@ import { mapState } from 'vuex'
 export default {
   watch: {
     workspaceId(nVal) {
-      nVal && this.mixinRetrieveTableData()
+      const { mixinRetrieveTableData, mixinChangeWorkspaceId } = this
+      if (nVal) {
+        mixinRetrieveTableData && this.mixinRetrieveTableData()
+        mixinChangeWorkspaceId && mixinChangeWorkspaceId()
+      }
     }
   },
 
@@ -22,6 +26,8 @@ export default {
         workspaceId: this.workspaceId,
         ...params
       }
-    }
+    },
+
+    mixinChangeWorkspaceId() {}
   }
 }
