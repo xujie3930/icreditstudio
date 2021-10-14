@@ -637,8 +637,11 @@ export default {
 
     handleDeleteTable(idx) {
       this.secondTaskForm.fieldInfos = []
-      this.secondTaskForm.syncCondition.incrementalField = []
-      this.secondTaskForm.syncCondition.partition = []
+      this.secondTaskForm.syncCondition.incrementalField = ''
+      this.secondTaskForm.syncCondition.partition = ''
+      this.increFieldsOptions = []
+      this.zoningOptions = []
+
       // 因为最多只有四张表所以通过表的index来删除selectedTable里面相关连的线
       switch (idx) {
         case 0:
@@ -1007,33 +1010,106 @@ export default {
             break
 
           case 2:
-            this.selectedTable[3] = {
+            // 第一张表
+            this.selectedTable[0] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[0].leftSource,
+              database: graphicData[0].leftSourceDatabase
+            }
+
+            this.selectedTable[1] = {
               type: 'line',
-              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              iconName: iconMapping[graphicData[0].associatedType]?.icon,
               isShow: true
             }
+
+            // 第二张表
+            this.selectedTable[2] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[0].rightSource,
+              database: graphicData[0].rightSourceDatabase
+            }
+
+            this.selectedTable[3] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[1].associatedType]?.icon,
+              isShow: true
+            }
+
+            // 第三张表
             this.selectedTable[4] = {
               type: 'tag',
               isChecked: true,
               isShowDot: false,
               datasourceId: '',
-              name: graphicData[2].rightSource,
-              database: graphicData[2].rightSourceDatabase
+              name: graphicData[1].rightSource,
+              database: graphicData[1].rightSourceDatabase
             }
+
             this.selectedTable[5] = {
               type: 'line',
-              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              iconName: iconMapping[graphicData[1].associatedType]?.icon,
               isShow: true
             }
             break
 
           case 3:
+            // 第一张表
+            this.selectedTable[0] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[0].leftSource,
+              database: graphicData[0].leftSourceDatabase
+            }
+
+            this.selectedTable[1] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[0].associatedType]?.icon,
+              isShow: true
+            }
+
+            // 第二张表
+            this.selectedTable[2] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[1].leftSource,
+              database: graphicData[1].leftSourceDatabase
+            }
+
             this.selectedTable[3] = {
+              type: 'line',
+              iconName: iconMapping[graphicData[1].associatedType]?.icon,
+              isShow: true
+            }
+
+            // 第三张表
+            this.selectedTable[4] = {
+              type: 'tag',
+              isChecked: true,
+              isShowDot: false,
+              datasourceId: '',
+              name: graphicData[2].leftSource,
+              database: graphicData[2].leftSourceDatabase
+            }
+
+            this.selectedTable[5] = {
               type: 'line',
               iconName: iconMapping[graphicData[2].associatedType]?.icon,
               isShow: true
             }
-            this.selectedTable[4] = {
+
+            // 第四张表
+            this.selectedTable[6] = {
               type: 'tag',
               isChecked: true,
               isShowDot: false,
@@ -1041,28 +1117,10 @@ export default {
               name: graphicData[2].rightSource,
               database: graphicData[2].rightSourceDatabase
             }
-            this.selectedTable[5] = {
-              type: 'line',
-              iconName: iconMapping[graphicData[2].associatedType]?.icon,
-              isShow: true
-            }
 
-            this.selectedTable[5] = {
-              type: 'line',
-              iconName: iconMapping[graphicData[3].associatedType]?.icon,
-              isShow: true
-            }
-            this.selectedTable[6] = {
-              type: 'tag',
-              isChecked: true,
-              isShowDot: false,
-              datasourceId: '',
-              name: graphicData[3].rightSource,
-              database: graphicData[3].rightSourceDatabase
-            }
             this.selectedTable[7] = {
               type: 'line',
-              iconName: iconMapping[graphicData[3].associatedType]?.icon,
+              iconName: iconMapping[graphicData[2].associatedType]?.icon,
               isShow: true
             }
             break
