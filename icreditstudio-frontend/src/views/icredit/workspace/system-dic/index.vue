@@ -1,24 +1,23 @@
 <!--
- * @Author: lizheng
- * @Description: 数仓建模
- * @Date: 2021-10-08
+ * @Description: 系统字典
+ * @Date: 2021-10-12
 -->
 
 <template>
   <div class="data-develop w100">
     <aside class="data-develop-aside">
-      <div class="title">数仓</div>
-      <div class="search-select">
+      <div class="title">字典</div>
+      <div class="search-select" style="margin-bottom: 10px">
         <el-select
           class="text-select"
           filterable
           clearable
           remote
-          placeholder="请输入关键字"
+          placeholder="请输入分类名称"
           size="mini"
+          v-model="value"
           :loading="searchLoading"
           @change="handleSelectChange"
-          v-model="value"
         >
           <el-option
             v-for="item in selectOptions"
@@ -31,11 +30,6 @@
         <i class="search el-icon-search"></i>
       </div>
 
-      <div class="btn-wrap" @click="handleAddTable">
-        <i class="icon el-icon-circle-plus-outline"></i>
-        <span class="text">新建表</span>
-      </div>
-
       <el-tree
         class="tree"
         ref="tree"
@@ -45,47 +39,10 @@
         :default-expanded-keys="defalutExpandKey"
         @node-click="handleNodeClick"
       >
-        <div
-          slot-scope="{ node, data }"
-          :id="node.id"
-          :draggable="node.level > 1"
-          :class="[
-            'custom-tree-node',
-            node.parent.disabled || data.disabled ? 'is-disabled' : ''
-          ]"
-        >
+        <div slot-scope="{ node, data }" :id="node.id" class="custom-tree-node">
           <div class="left">
-            <span v-if="data.type === '3'" class="circle"></span>
             <JSvg class="jsvg-icon" :name="data.icon"></JSvg>
             <span>{{ data.label }}</span>
-          </div>
-          <div class="right">
-            <el-dropdown @command="command => handleCommand(command, node)">
-              <span class="el-dropdown-link">
-                <i class="el-icon-more icon"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <!-- 停用 -->
-                <template v-if="node.parent.disabled || data.disabled">
-                  <el-dropdown-item command="enabled">启用</el-dropdown-item>
-                  <el-dropdown-item v-if="data.icon === 'table'" command="edit">
-                    编辑
-                  </el-dropdown-item>
-                  <el-dropdown-item command="delete">删除</el-dropdown-item>
-                </template>
-
-                <!-- 启用 -->
-                <template v-else>
-                  <el-dropdown-item
-                    command="add"
-                    v-if="data.icon === 'database'"
-                  >
-                    新增表
-                  </el-dropdown-item>
-                  <el-dropdown-item command="disabled">停用</el-dropdown-item>
-                </template>
-              </el-dropdown-menu>
-            </el-dropdown>
           </div>
         </div>
       </el-tree>
@@ -127,25 +84,45 @@ export default {
       defalutExpandKey: null,
       treeData: [
         {
-          label: 'datax_web',
+          label: '数据标准',
           icon: 'database',
-          type: 0,
+          level: 0,
           id: 1,
           disabled: false,
           category: 'database',
           children: [
             {
-              label: 'h_app_sysytem',
+              label: '标准类型',
               icon: 'table',
-              type: 1,
-              id: 2,
+              level: 1,
+              id: 21,
               disabled: false,
-              category: 'table'
+              category: 'table',
+              children: [
+                {
+                  label: '数据元标准',
+                  icon: 'table',
+                  level: 2,
+                  id: 22,
+                  disabled: false,
+                  category: 'table',
+                  children: [
+                    {
+                      label: '表示词',
+                      icon: 'table',
+                      level: 3,
+                      id: 23,
+                      disabled: false,
+                      category: 'table'
+                    }
+                  ]
+                }
+              ]
             },
             {
               label: 'h_data_metadata_code',
               icon: 'table',
-              type: 2,
+              level: 2,
               id: 3,
               disabled: true,
               category: 'table'
@@ -155,7 +132,7 @@ export default {
         {
           label: 'datax_web2',
           icon: 'database',
-          type: 0,
+          level: 0,
           id: 6,
           disabled: true,
           category: 'database',
@@ -163,14 +140,14 @@ export default {
             {
               label: 'h_app_sysytem',
               icon: 'table',
-              type: 1,
+              level: 1,
               id: 7,
               category: 'table'
             },
             {
               label: 'h_data_metadata_code',
               icon: 'table',
-              type: 2,
+              level: 2,
               id: 8,
               category: 'table'
             }
@@ -223,33 +200,6 @@ export default {
       this.currentTab = this.tabsConfig[idx]
     },
 
-    // 下拉菜单
-    handleCommand(command, node) {
-      console.log(node, 'node123')
-      switch (command) {
-        case 'doc':
-          this.$refs.addDoc.$refs.addDocDialog.open()
-          break
-        case 'edit':
-          this.$refs.editFlow.$refs.editDialog.open()
-          break
-        case 'delete':
-          this.handleDeleteBtnClick()
-          break
-        case 'disabled':
-          this.handleDisabledBtnClick()
-          break
-
-        default:
-          break
-      }
-    },
-
-    // 新增表
-    handleAddTable() {
-      this.$router.push('/workspace/data-model/add')
-    },
-
     // 删除
     handleDeleteBtnClick() {
       const options = {
@@ -257,17 +207,6 @@ export default {
         title: '删除表xxxx',
         beforeOperateMsg:
           '表删除后将不在列表中展示，且不可在启用，危险操作请谨慎处理，确认一定要删除吗？'
-      }
-      this.$refs.operateMessage.open(options)
-    },
-
-    // 停用
-    handleDisabledBtnClick() {
-      const options = {
-        opType: 'Disabled',
-        title: '停用表xxxx',
-        beforeOperateMsg:
-          '停用后，该表将不能再写入内容且不能提供数据服务（后期可点击启用进行恢复），确认要停用吗？'
       }
       this.$refs.operateMessage.open(options)
     },

@@ -55,8 +55,8 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     @Autowired
     private ProjectMapper projectMapper;
 
-    @Autowired
-    private ProjectService projectService;
+//    @Autowired
+//    private ProjectService projectService;
 
     @Autowired
     private ProcessDefinitionMapper processDefinitionMapper;

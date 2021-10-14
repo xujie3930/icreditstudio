@@ -1,28 +1,23 @@
 /*
- * @Description: 调度中心-周期任务
+ * @Description: 调度中心-同步任务调度
  * @Date: 2021-09-24
  */
 export default _this => {
   return {
-    refName: 'cycle-task',
-    id: 'cycle-task',
+    refName: 'syncTask',
+    id: 'syncTask',
     isBorder: true,
     hasPage: true,
     group: [
       {
         type: 'index',
-        label: '序号',
+        label: '任务ID',
         width: 100
       },
       {
         type: 'text',
-        label: '任务姓名',
-        prop: 'userName'
-      },
-      {
-        type: 'text',
-        label: '任务类型',
-        prop: 'orgName'
+        label: '同步任务名称',
+        prop: 'syncTaskName'
       },
       {
         type: 'text',
@@ -32,7 +27,14 @@ export default _this => {
       {
         type: 'text',
         label: '任务状态',
-        prop: 'telPhone'
+        prop: 'taskStatus',
+        width: 80,
+        formatter: (row, col, val) => (val ? '启用' : '停用')
+      },
+      {
+        type: 'text',
+        label: '调度类型',
+        prop: 'orgName'
       },
       {
         type: 'date',
@@ -52,21 +54,32 @@ export default _this => {
         width: 170
       },
       {
+        type: 'date',
+        label: '近一次执行状态',
+        prop: 'createTime',
+        width: 170
+      },
+      {
         type: 'operation',
         label: '操作',
         prop: 'operation',
         fixed: 'right',
-        width: 150,
+        width: 200,
         operationList: [
           {
-            func: _this.handleOpenDagPage,
-            label: 'DAG',
-            key: 'dag'
+            func: _this.handleReRuningTask,
+            label: '重跑',
+            key: 'rerunning'
+          },
+          {
+            func: _this.handleStopTask,
+            label: '终止',
+            key: 'stop'
           },
           {
             func: _this.handleViewLog,
-            label: '查看日志',
-            key: 'viewLog'
+            label: '历史日志',
+            key: 'historyLog'
           }
         ]
       }

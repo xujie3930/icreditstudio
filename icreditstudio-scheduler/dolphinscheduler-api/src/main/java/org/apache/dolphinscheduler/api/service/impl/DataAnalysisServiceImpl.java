@@ -35,8 +35,8 @@ public class DataAnalysisServiceImpl extends BaseServiceImpl implements DataAnal
     @Resource
     private ProjectMapper projectMapper;
 
-    @Resource
-    private ProjectService projectService;
+//    @Resource
+//    private ProjectService projectService;
 
     @Resource
     private ProcessInstanceMapper processInstanceMapper;

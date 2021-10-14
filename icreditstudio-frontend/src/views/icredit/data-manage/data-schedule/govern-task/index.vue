@@ -1,9 +1,8 @@
 <!--
  * @Author: lizheng
- * @Description: 任务
- * @Date: 2021-09-23
+ * @Description: 治理调度
+ * @Date: 2021-10-13
 -->
-
 <template>
   <ScheduleList
     ref="scheduleList"
@@ -14,8 +13,8 @@
 
 <script>
 import ScheduleList from '../schedule-list'
-import formOption from '@/views/icredit/configuration/form/schedule-cycle-task'
-import tableConfiguration from '@/views/icredit/configuration/table/schedule-cycle-task'
+import formOption from '@/views/icredit/configuration/form/schedule-sync-task'
+import tableConfiguration from '@/views/icredit/configuration/table/schedule-sync-task'
 
 export default {
   components: { ScheduleList },
