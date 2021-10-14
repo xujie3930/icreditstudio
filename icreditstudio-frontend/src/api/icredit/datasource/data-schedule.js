@@ -18,7 +18,7 @@ const dataScheduleHomeCount = params =>
   getAction('/scheduler/homepage/situation', params)
 
 // 首页-近一天运行时长排行
-const dataScheduleHomeErrDay = params =>
+const dataScheduleHomeRunDay = params =>
   postAction('/scheduler/homepage/situation', params)
 
 // 首页-近一月运行出错排行
@@ -29,6 +29,6 @@ export default {
   dataScheduleHomeRough,
   dataScheduleHomeRuntime,
   dataScheduleHomeCount,
-  dataScheduleHomeErrDay,
+  dataScheduleHomeRunDay,
   dataScheduleHomeErrMonth
 }

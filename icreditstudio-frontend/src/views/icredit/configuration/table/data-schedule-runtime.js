@@ -14,22 +14,23 @@ export default {
     {
       type: 'text',
       label: '任务id',
-      prop: 'taskName'
+      prop: 'id'
     },
     {
       type: 'text',
       label: '任务名称',
-      prop: 'taskName'
+      prop: 'name'
     },
     {
       type: 'text',
       label: '运行时长(分)',
-      prop: 'taskBuildMode'
+      prop: 'speedTime'
     },
     {
       type: 'text',
       label: '任务类型',
-      prop: 'execMode'
+      prop: 'scheduleType',
+      formatter: (row, col, val) => (val ? '数据开发' : '数据开发')
     }
   ]
 }
