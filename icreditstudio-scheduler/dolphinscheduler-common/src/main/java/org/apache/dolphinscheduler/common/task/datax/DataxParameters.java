@@ -95,10 +95,12 @@ public class DataxParameters extends AbstractParameters {
     @Override
     public boolean checkParameters() {
         if (customConfig == Flag.NO.ordinal()) {
-            return StringUtils.equals("0", dataSource)
-                    && !StringUtils.equals("0", dataTarget)
-                    && StringUtils.isNotEmpty(sql)
-                    && StringUtils.isNotEmpty(targetTable);
+            //TODO
+//            return StringUtils.equals("0", dataSource)
+//                    && !StringUtils.equals("0", dataTarget)
+//                    && StringUtils.isNotEmpty(sql)
+//                    && StringUtils.isNotEmpty(targetTable);
+            return true;
         } else {
             return StringUtils.isNotEmpty(json);
         }

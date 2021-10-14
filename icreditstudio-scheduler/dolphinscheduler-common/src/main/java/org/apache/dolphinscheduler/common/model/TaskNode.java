@@ -128,7 +128,7 @@ public class TaskNode {
     /**
      * worker group id
      */
-    private Integer workerGroupId;
+    private String workerGroupId;
 
 
     /**
