@@ -14,6 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateW
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
@@ -27,6 +28,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFie
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncDispatchTaskPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -38,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +68,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private Parser<String, SyncCondition> syncConditionParser;
     @Resource
     private MetadataFeign metadataFeign;
+    @Autowired
+    private SyncTaskMapper syncTaskMapper;
 
     @Override
     @BusinessParamsValidate
@@ -486,5 +492,32 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         wrapper.orderByAsc(SyncTaskEntity.TASK_STATUS);
         wrapper.orderByDesc(SyncTaskEntity.LAST_SCHEDULING_TIME);
         return wrapper;
+    }
+
+    @Override
+    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(DataSyncDispatchTaskPageParam param) {
+        DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
+        BeanUtils.copyProperties(param, dispatchPageDTO);
+        dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
+        long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
+        List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
+        for (DataSyncDispatchTaskPageResult dataSyncDispatchTaskPageResult : dispatchList) {
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){
+                dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){
+                dataSyncDispatchTaskPageResult.setDispatchStatus(ExecStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchStatus())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {
+                dataSyncDispatchTaskPageResult.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getTaskStatus())).getDesc());
+            }
+        }
+        return BusinessPageResult.build(dispatchList, param, dispatchCount);
+    }
+
+    @Override
+    public String getProcessInstanceIdById(String id) {
+        SyncTaskEntity syncTask = syncTaskMapper.selectById(id);
+        return syncTask == null ? null : syncTask.getScheduleId();
     }
 }

@@ -14,10 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -181,4 +178,17 @@ public class DataSyncController {
         System.out.println(timeInterval);
         return BusinessResult.success(timeInterval);
     }
+
+    @PostMapping("/dispatchPage")
+    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
+        DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
+        BeanCopyUtils.copyProperties(dispatchPageRequest, param);
+        return syncTaskService.dispatchPage(param);
+    }
+
+    @GetMapping("/getProcessInstanceId")
+    public String getProcessInstanceIdById(@RequestParam("taskId") String taskId){
+        return syncTaskService.getProcessInstanceIdById(taskId);
+    }
+
 }

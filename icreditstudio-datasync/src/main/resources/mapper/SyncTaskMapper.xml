@@ -35,4 +35,57 @@
         create_by,update_time,update_by,
         del_flag
     </sql>
+
+    <select id="countDispatch" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="java.lang.Long">
+        SELECT count(1)
+        FROM icredit_sync_task
+        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        <if test="taskStatus != null and taskStatus != ''">
+            AND task_status = #{taskStatus}
+        </if>
+        <if test="dispatchStatus != null and dispatchStatus != ''">
+            AND exec_status = #{dispatchStatus}
+        </if>
+        <if test="dispatchType != null and dispatchType != ''">
+            AND collect_mode = #{dispatchType}
+        </if>
+        <if test="dispatchStartTime != null and dispatchStartTime != ''">
+            AND last_update_time &gt;= #{dispatchStartTime}
+        </if>
+        <if test="dispatchEndTime != null and dispatchEndTime != ''">
+            AND last_update_time &lt;= #{dispatchEndTime}
+        </if>
+        <if test="taskName != null and taskName != ''">
+            AND task_name LIKE concat('%',#{taskName},'%')
+        </if>
+        --         AND version is not null
+        limit #{pageNum},#{pageSize}
+    </select>
+    <select id="dispatchList" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.DataSyncDispatchTaskPageResult">
+        SELECT id AS taskId,task_name AS taskName,task_status AS taskStatus,last_update_time AS createTime,last_scheduling_time AS lastDispatchTime,version AS taskVersion,
+        collect_mode AS dispatchType,'' AS dispatchPeriod,exec_status AS dispatchStatus
+        FROM icredit_sync_task
+        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        <if test="taskStatus != null and taskStatus != ''">
+            AND task_status = #{taskStatus}
+        </if>
+        <if test="dispatchStatus != null and dispatchStatus != ''">
+            AND exec_status = #{dispatchStatus}
+        </if>
+        <if test="dispatchType != null and dispatchType != ''">
+            AND collect_mode = #{dispatchType}
+        </if>
+        <if test="dispatchStartTime != null and dispatchStartTime != ''">
+            AND last_update_time &gt;= #{dispatchStartTime}
+        </if>
+        <if test="dispatchEndTime != null and dispatchEndTime != ''">
+            AND last_update_time &lt;= #{dispatchEndTime}
+        </if>
+        <if test="taskName != null and taskName != ''">
+            AND task_name LIKE concat('%',#{taskName},'%')
+        </if>
+        --         AND version is not null
+        ORDER BY last_update_time DESC
+        limit #{pageNum},#{pageSize}
+    </select>
 </mapper>
