@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.CreatePlatformTaskParam;
-import org.apache.dolphinscheduler.api.service.PlatformTaskService;
+import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
 import org.apache.dolphinscheduler.api.utils.CheckUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -28,7 +28,7 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class PlatformTaskServiceImpl extends BaseServiceImpl implements PlatformTaskService {
+public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implements PlatformProcessDefinitionService {
 
     @Resource
     private ProcessDefinitionMapper processDefinitionMapper;

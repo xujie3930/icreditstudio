@@ -7,7 +7,7 @@ import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
 /**
  * @author Peng
  */
-public interface PlatformTaskService {
+public interface PlatformProcessDefinitionService {
 
     /**
      * icredit平台一个任务对应一个工作流定义
