@@ -27,11 +27,14 @@
     >
     </crud-basic>
     <ViewLog ref="viewLog" />
+    <Message ref="message" @on-confirm="handleConfirm" />
   </div>
 </template>
 
 <script>
 import ViewLog from './view'
+import Message from '@/views/icredit/components/message'
+
 import crud from '@/mixins/crud'
 
 export default {
@@ -39,11 +42,14 @@ export default {
 
   mixins: [crud],
 
-  components: { ViewLog },
+  components: { ViewLog, Message },
 
   data() {
     return {
-      mixinTableData: [{ userName: 'ss' }]
+      mixinTableData: [
+        { syncTaskName: 'ss', taskStatus: 0 },
+        { syncTaskName: 'sss', taskStatus: 1 }
+      ]
     }
   },
 
@@ -73,6 +79,11 @@ export default {
     }
   },
 
-  methods: {}
+  methods: {
+    handleConfirm(option) {
+      this.$emit('confirm', option)
+      this.$refs.message.close()
+    }
+  }
 }
 </script>

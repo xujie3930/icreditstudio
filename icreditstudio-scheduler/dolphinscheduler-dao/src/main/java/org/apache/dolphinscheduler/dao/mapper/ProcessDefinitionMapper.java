@@ -35,11 +35,11 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     /**
      * verify process definition by name
      *
-     * @param projectId projectId
-     * @param name      name
+     * @param projectCode projectCode
+     * @param name        name
      * @return process definition
      */
-    ProcessDefinition verifyByDefineName(@Param("projectId") String projectId,
+    ProcessDefinition verifyByDefineName(@Param("projectCode") String projectCode,
                                          @Param("processDefinitionName") String name);
 
     /**
@@ -129,5 +129,5 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     @MapKey("id")
     List<Map<String, Object>> listResourcesByUser(@Param("userId") String userId);
 
-    List<Map<String, Object>> selectByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime") Date startOfDay, @Param("endTime")Date endOfDay);
+    List<Map<String, Object>> selectByWorkspaceIdAndTime(@Param("workspaceId") String workspaceId, @Param("startTime") Date startOfDay, @Param("endTime") Date endOfDay);
 }

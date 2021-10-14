@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="schedule w100">
-    <div class="schedule-header">
+    <div class="schedule-header" v-loading="roughDataloading">
       <div class="title">
         <span class="left">近72小时内的调度情况</span>
       </div>
@@ -27,29 +27,39 @@
     </div>
 
     <div class="schedule-chart">
-      <div class="schedule-chart-left">
+      <div class="schedule-chart-left" v-loading="runtimeDataLoading">
         <div class="title">
           <span class="left">当天运行情况</span>
         </div>
         <div id="pieChart" style="height:300px"></div>
       </div>
-      <div class="schedule-chart-right">
+
+      <div class="schedule-chart-right" v-loading="countDataLoading">
         <div class="title">
-          <span class="left">近一天运行时长排行</span>
+          <span class="left">调度任务数量情况</span>
           <el-date-picker
             v-model="date"
-            style="width: 300px"
+            style="width: 240px; margin-left:5px"
             type="daterange"
             range-separator="-"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size="small"
+            size="mini"
           >
           </el-date-picker>
-          <el-tabs v-model="activeName">
-            <el-tab-pane label="周期实例" name="first"></el-tab-pane>
-            <el-tab-pane label="手动实例" name="second"></el-tab-pane>
-          </el-tabs>
+          <div class="tab">
+            <span
+              :class="[
+                'tab-item',
+                item.name === activeName ? 'tab-item-active' : ''
+              ]"
+              v-for="item in tabItems"
+              :key="item.name"
+              @click="handleChangTabClick(item.name)"
+            >
+              {{ item.label }}
+            </span>
+          </div>
         </div>
         <div class="right-wrap">
           <div class="right-wrap-header"></div>
@@ -62,7 +72,7 @@
       <div class="schedule-footer-left">
         <div class="title">
           <span class="left">近一天运行时长排行</span>
-          <span class="right">上次更新： 2021-07-06</span>
+          <span class="right">上次更新：{{ yesterday }}</span>
         </div>
         <div class="content">
           <j-table
@@ -77,7 +87,7 @@
       <div class="schedule-footer-right">
         <div class="title">
           <span class="left">近一月运行出错排行</span>
-          <span class="right">上次更新： 2021-07-06</span>
+          <span class="right">上次更新：{{ yesterday }}</span>
         </div>
         <div class="content">
           <j-table
@@ -97,8 +107,13 @@ import lfTableConfiguration from '@/views/icredit/configuration/table/data-sched
 import rgTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runerror'
 import { renderChart } from '@/utils/echarts'
 import { optionsMapping } from './contant'
+import API from '@/api/icredit'
+import workspace from '@/mixins/workspace'
+import dayjs from 'dayjs'
 
 export default {
+  mixins: [workspace],
+
   data() {
     return {
       lfTableConfiguration,
@@ -108,15 +123,41 @@ export default {
       lfTableLoading: false,
       rgTableLoading: false,
       scheduleSituation: [
-        { key: '', value: 25, name: '总调度任务数', unit: '个' },
-        { key: '', value: 5, name: '执行失败实例', unit: '个' },
-        { key: '', value: 15000, name: '新增数据量条数', unit: '万条' },
-        { key: '', value: 0, name: '新增总数据量', unit: 'KB' },
-        { key: '', value: 8, name: '实时任务记录速度', unit: 'RPS ' }
+        { key: 'taskCount', value: 25, name: '总调度任务数', unit: '个' },
+        { key: 'failCount', value: 5, name: '执行失败实例', unit: '个' },
+        {
+          key: 'newlyLine',
+          value: 15000,
+          name: '新增数据量条数',
+          unit: '万条'
+        },
+        { key: 'newlyDataSize', value: 0, name: '新增总数据量', unit: 'KB' },
+        {
+          key: 'currentSpeed',
+          value: 8,
+          name: '实时任务记录速度',
+          unit: 'RPS '
+        }
       ],
       date: [],
-      activeName: 'first'
+      activeName: 'sync',
+      tabItems: [
+        { label: '同步任务', name: 'sync' },
+        { label: '开发任务', name: 'dev' },
+        { label: '治理任务', name: 'govern' }
+      ],
+      yesterday: dayjs(new Date()).format('YYYY-MM-DD'),
+
+      roughDataloading: false,
+      runtimeDataLoading: false,
+      countDataLoading: false,
+      runDayDataLoading: false,
+      errMonthDataLoading: false
     }
+  },
+
+  created() {
+    // this.initPage()
   },
 
   mounted() {
@@ -125,12 +166,86 @@ export default {
   },
 
   methods: {
+    initPage() {
+      this.getHomeRoughData()
+    },
+
     renderPieChart(id) {
       renderChart(id, optionsMapping[id])
     },
 
     renderLineChart(id) {
       renderChart(id, optionsMapping[id])
+    },
+
+    handleChangTabClick(name) {
+      this.activeName = name
+    },
+
+    // 获取近72小时内的调度情况数据
+    getHomeRoughData() {
+      const { workspaceId, scheduleSituation } = this
+      this.roughDataloading = true
+      API.dataScheduleHomeRough({ workspaceId })
+        .then(({ success, data }) => {
+          if (success) {
+            console.log('datalplp', data)
+            this.scheduleSituation = scheduleSituation.map(
+              ({ key, value, ...rest }) => {
+                return {
+                  key,
+                  value: data[key],
+                  ...rest
+                }
+              }
+            )
+          }
+        })
+        .finally(() => {
+          this.roughDataloading = false
+        })
+    },
+
+    // 获取当天运行情况数据
+    getHomeRuntimeData() {},
+
+    getHomeCountData() {},
+
+    // 获取近一天运行时长排行数据
+    getHomeRunDayData() {
+      const { workspaceId } = this
+      this.lfTableLoading = true
+      API.dataScheduleHomeRunDay({ workspaceId })
+        .then(({ success, data }) => {
+          if (success) {
+            console.log(data)
+            this.lfTableData = data
+          }
+        })
+        .finally(() => {
+          this.lfTableLoading = false
+        })
+    },
+
+    // 获取近一月运行出错排行数据
+    getHomeErrMonthData() {
+      const { workspaceId } = this
+      this.rgTableLoading = true
+      API.dataScheduleHomeErrMonth({ workspaceId })
+        .then(({ success, data }) => {
+          if (success) {
+            console.log(data)
+            this.rgTableData = data
+          }
+        })
+        .finally(() => {
+          this.rgTableLoading = false
+        })
+    },
+
+    mixinChangeWorkspaceId() {
+      console.log('this.wokspaceId=', this.workspaceId)
+      // this.initPage()
     }
   }
 }
@@ -150,12 +265,46 @@ export default {
     font-weight: 400;
     text-align: left;
     color: #262626;
-    line-height: 20px;
     margin: 0 16px;
+    height: 32px;
+    line-height: 32px;
 
     .right {
       font-size: 13px;
       color: #999;
+    }
+
+    .tab {
+      .tab-item {
+        position: relative;
+        width: 56px;
+        height: 20px;
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: #333;
+        line-height: 20px;
+        margin-left: 14px;
+        cursor: pointer;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .tab-item-active {
+        &::before {
+          position: absolute;
+          content: '';
+          bottom: -5px;
+          left: 13px;
+          width: 30px;
+          height: 2px;
+          background: #1890ff;
+          border-radius: 3px;
+        }
+      }
     }
   }
 
@@ -166,7 +315,7 @@ export default {
   &::before {
     content: '';
     position: absolute;
-    top: 15px;
+    top: 21px;
     left: 0;
     width: 4px;
     height: 18px;
@@ -179,7 +328,7 @@ export default {
   &-header {
     @include header;
     width: 100%;
-    height: 143px;
+    height: 150px;
 
     &-content {
       @include flex;

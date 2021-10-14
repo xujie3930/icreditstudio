@@ -9,6 +9,7 @@
     ref="baseDialog"
     width="480px"
     :title="title"
+    :after-title-name="afterTitleName"
     @on-confirm="confirm"
   >
     <div class="content">
@@ -31,6 +32,7 @@ export default {
       opType: '',
       title: '',
       name: '',
+      afterTitleName: '',
       afterOperateMsg: '',
       beforeOperateMsg: '',
       dialogVisible: false
@@ -48,6 +50,7 @@ export default {
         beforeOperateMsg
       } = options
       this.name = row?.name || name
+      this.afterTitleName = options?.afterTitleName
       this.opType = opType
       this.row = row
       this.title = title

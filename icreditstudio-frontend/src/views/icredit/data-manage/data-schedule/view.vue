@@ -1,10 +1,16 @@
 <!--
- * @Description: 查看日志
+ * @Description: 查看历史日志
  * @Date: 2021-09-26
 -->
 <template>
   <div>
-    <BaseDialog ref="baseDialog" width="70vw" hideFooter :title="title">
+    <BaseDialog
+      ref="baseDialog"
+      width="70vw"
+      hideFooter
+      :before-title-name="titleName"
+      :title="title"
+    >
       <j-table
         ref="viewLogTable"
         v-loading="tableLoading"
@@ -26,7 +32,8 @@ export default {
 
   data() {
     return {
-      title: 'xxx(工作流名称)历史执行情况',
+      title: '历史执行情况',
+      titleName: '',
       tableLoading: false,
       tableData: [{ taskName: 'KPLKPL' }],
       tableConfiguration: tableConfiguration(this)
@@ -34,6 +41,11 @@ export default {
   },
 
   methods: {
+    open(row) {
+      this.titleName = row.syncTaskName
+      this.$refs.baseDialog.open()
+    },
+
     handleViewLogDetail(row) {
       console.log('detail', row)
       this.$refs.detailLogDialog.open()

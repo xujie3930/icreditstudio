@@ -26,14 +26,27 @@ export default [
   },
   {
     type: 'select',
-    label: '任务类型',
+    label: '执行状态',
+    ruleProp: 'runStatus',
+    model: '',
+    isSearch: true,
+    options: [
+      { value: '', label: '全部' },
+      { value: '0', label: '成功' },
+      { value: '1', label: '失败' },
+      { value: '2', label: '草稿' }
+    ]
+  },
+  {
+    type: 'select',
+    label: '调度类型',
     ruleProp: 'taskType',
     model: '',
     isSearch: true,
     options: [
       { value: '', label: '全部' },
-      { value: 'N', label: '同步任务' },
-      { value: 'Y', label: '数据开发任务' }
+      { value: 'N', label: '手动执行' },
+      { value: 'Y', label: '周期执行' }
     ]
   },
   {
