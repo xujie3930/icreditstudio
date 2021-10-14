@@ -4,10 +4,10 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.HomePageService;
-import org.apache.dolphinscheduler.api.service.result.RunErrorRank;
-import org.apache.dolphinscheduler.api.service.result.TaskCount;
-import org.apache.dolphinscheduler.api.service.result.TaskRough;
-import org.apache.dolphinscheduler.api.service.result.TaskSituation;
+import org.apache.dolphinscheduler.api.service.result.RunErrorRankResult;
+import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
+import org.apache.dolphinscheduler.api.service.result.TaskRoughResult;
+import org.apache.dolphinscheduler.api.service.result.TaskSituationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,17 +30,17 @@ public class HomePageController {
     private HomePageService homePageService;
 
     @PostMapping(value = "/rough")
-    public BusinessResult<TaskRough> rough(@RequestBody SchedulerHomepageRequest request) {
+    public BusinessResult<TaskRoughResult> rough(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.rough(request);
     }
 
     @PostMapping(value = "/situation/today")
-    public BusinessResult<List<TaskSituation>> situation(@RequestBody SchedulerHomepageRequest request) {
+    public BusinessResult<List<TaskSituationResult>> situation(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.situation(request.getWorkspaceId());
     }
 
     @PostMapping(value = "/taskCount")
-    public BusinessResult<List<TaskCount>> taskCount(@RequestBody SchedulerHomepageRequest request) {
+    public BusinessResult<List<TaskCountResult>> taskCount(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.taskCount(request);
     }
 
@@ -50,7 +50,7 @@ public class HomePageController {
     }
 
     @PostMapping(value = "/runErrorRank")
-    public BusinessResult<List<RunErrorRank>> runErrorRank(@RequestBody SchedulerHomepageRequest request) {
+    public BusinessResult<List<RunErrorRankResult>> runErrorRank(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.runErrorRank(request);
     }
 
