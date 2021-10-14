@@ -8,7 +8,7 @@ import lombok.Data;
  * @create 2021-10-09 18:34
  **/
 @Data
-public class TaskCount {
+public class TaskCountResult {
     /**
      * 日期
      */
@@ -18,10 +18,10 @@ public class TaskCount {
      */
     private Long count;
 
-    public TaskCount() {
+    public TaskCountResult() {
     }
 
-    public TaskCount(String date, Long count) {
+    public TaskCountResult(String date, Long count) {
         this.date = date;
         this.count = count;
     }

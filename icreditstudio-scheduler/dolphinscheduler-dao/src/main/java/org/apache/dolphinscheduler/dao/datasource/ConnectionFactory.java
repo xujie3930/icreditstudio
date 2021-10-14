@@ -112,7 +112,6 @@ public class ConnectionFactory extends SpringConnectionFactory {
 
         sqlSessionFactoryBean.setTypeEnumsPackage("org.apache.dolphinscheduler.*.enums");
         sqlSessionFactory = sqlSessionFactoryBean.getObject();
-
         return sqlSessionFactory;
 }
 

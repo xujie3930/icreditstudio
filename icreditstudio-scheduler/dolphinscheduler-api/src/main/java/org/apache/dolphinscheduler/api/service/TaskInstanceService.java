@@ -17,9 +17,8 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
-import org.apache.dolphinscheduler.api.service.result.TaskCount;
+import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.User;
 
@@ -78,9 +77,9 @@ public interface TaskInstanceService {
      * @param request
      * @return
      */
-    List<TaskCount> countByDay(SchedulerHomepageRequest request);
+    List<TaskCountResult> countByDay(SchedulerHomepageRequest request);
 
-    Double runtimeTotalByDefinition(String code, int[] statusArray);
+    Double runtimeTotalByDefinition(Long code, int[] statusArray);
 
-    Long getCountByByDefinitionAndStates(String code, int[] statusArray);
+    Long getCountByByDefinitionAndStates(Long code, int[] statusArray);
 }

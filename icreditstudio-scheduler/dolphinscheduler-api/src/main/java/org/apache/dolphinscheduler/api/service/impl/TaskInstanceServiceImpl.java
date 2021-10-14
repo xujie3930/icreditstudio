@@ -17,26 +17,13 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
-import org.apache.dolphinscheduler.api.service.ProcessInstanceService;
-import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.api.service.TaskInstanceService;
-import org.apache.dolphinscheduler.api.service.UsersService;
-import org.apache.dolphinscheduler.api.service.result.TaskCount;
-import org.apache.dolphinscheduler.api.utils.PageInfo;
-import org.apache.dolphinscheduler.common.Constants;
+import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.entity.User;
-import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
-import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -197,12 +184,12 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     }
 
     @Override
-    public List<TaskCount> countByDay(SchedulerHomepageRequest request) {
+    public List<TaskCountResult> countByDay(SchedulerHomepageRequest request) {
         Date startTime;
         Date endTime;
         //默认统计前七天的数据
         if (Objects.isNull(request.getShcedulerStartTime()) && Objects.isNull(request.getShcedulerEndTime())){
-            startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -8));
+            startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -15));
             endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
         }else {
             startTime = DateUtils.getStartOfDay(request.getShcedulerStartTime());
@@ -210,21 +197,21 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
         }
 
         //TODO:数据量大后t_ds_task_definition表加覆盖索引
-        List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), request.getScheduleType(), startTime, endTime);
-        List<TaskCount> list = new ArrayList<>();
+        List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), request.getScheduleType(), startTime, endTime,  new int[]{});
+        List<TaskCountResult> list = new ArrayList<>();
         for (Map<String, Object> m : countByDay) {
-            list.add(new TaskCount((String) m.get("date"), (long)m.get("count")));
+            list.add(new TaskCountResult((String) m.get("date"), (long)m.get("count")));
         }
         return list;
     }
 
     @Override
-    public Double runtimeTotalByDefinition(String code, int[] statusArray) {
+    public Double runtimeTotalByDefinition(Long code, int[] statusArray) {
         return taskInstanceMapper.runtimeTotalByDefinition(code, statusArray);
     }
 
     @Override
-    public Long getCountByByDefinitionAndStates(String code, int[] statusArray) {
+    public Long getCountByByDefinitionAndStates(Long code, int[] statusArray) {
         return taskInstanceMapper.getCountByByDefinitionAndStates(code, statusArray);
     }
 }

@@ -129,11 +129,11 @@
         order by instance.start_time desc
     </select>
     <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
-        select count(0)
+        select count(t.id)
         from t_ds_task_instance t
         left join  t_ds_task_definition d
         on d.code=t.task_code
-        where t.workspace_id = #{workspaceId} and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
+        where d.workspace_id = #{workspaceId} and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
         <if test="states != null and states.length != 0">
             and t.state in
             <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
@@ -143,7 +143,7 @@
     </select>
     <select id="countByDay" resultType="map">
         select DATE_FORMAT(t.start_time,'%Y-%m-%d') AS date,
-        COUNT(t.id) AS count
+        IFNULL(COUNT(t.id),0) AS count
         from t_ds_task_instance t
         left join  t_ds_task_definition d
         on d.code=t.task_code
@@ -158,11 +158,11 @@
         GROUP BY DATE_FORMAT(t.start_time,'%Y-%m-%d')
     </select>
     <select id="runtimeTotalByDefinition" resultType="java.lang.Double">
-        select SUM((unix_timestamp(i.end_time)-unix_timestamp(i.start_time)))/60
+        select ifnull(SUM((unix_timestamp(i.end_time)-unix_timestamp(i.start_time)))/60, 0)
         from t_ds_task_instance i
         right join
         t_ds_process_task_relation r
-        on i.task_code = r.post_task_code and r.process_definition_code = #{code}
+        on i.task_code = r.post_task_code and r.post_task_code = #{code}
         <if test="states != null and states.length != 0">
             and i.state in
             <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
@@ -171,11 +171,11 @@
         </if>
     </select>
     <select id="getCountByByDefinitionAndStates" resultType="java.lang.Long">
-    select COUNT(i.id)
+    select ifnull(COUNT(i.id), 0)
     from t_ds_task_instance i
     right join
     t_ds_process_task_relation r
-    on i.task_code = r.post_task_code and r.process_definition_code = #{code}
+    on i.task_code = r.post_task_code and r.post_task_code = #{code}
     <if test="states != null and states.length != 0">
         and i.state in
         <foreach collection="states" index="index" item="i" open="(" separator="," close=")">

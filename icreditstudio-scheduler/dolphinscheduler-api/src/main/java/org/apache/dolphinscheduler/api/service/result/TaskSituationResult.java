@@ -8,7 +8,7 @@ import lombok.Data;
  * @create 2021-10-09 18:34
  **/
 @Data
-public class TaskSituation {
+public class TaskSituationResult {
     /**
      * 执行情况
      */
@@ -22,10 +22,10 @@ public class TaskSituation {
      */
     private double rate;
 
-    public TaskSituation() {
+    public TaskSituationResult() {
     }
 
-    public TaskSituation(String taskDesc, Long count, double rate) {
+    public TaskSituationResult(String taskDesc, Long count, double rate) {
         this.taskDesc = taskDesc;
         this.count = count;
         this.rate = rate;
