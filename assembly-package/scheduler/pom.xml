@@ -46,7 +46,7 @@
                         </goals>
                         <configuration>
                             <skipAssembly>false</skipAssembly>
-                            <finalName>jnh-datasphere-icreditstudio-scheduler-${project.version}</finalName>
+                            <finalName>jnh-datasphere-icreditstudio-scheduler-${project.version}-bin</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <attach>false</attach>
                             <descriptors>

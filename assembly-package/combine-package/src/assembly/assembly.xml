@@ -1,0 +1,34 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/backend-microservices/target/jnh-datasphere-icreditstudio-services-${project.version}-bin
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-services-bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+
+</assembly>
