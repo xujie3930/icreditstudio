@@ -17,16 +17,14 @@
 
 package org.apache.dolphinscheduler.dao.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.dolphinscheduler.dao.entity.DefinitionGroupByUser;
 import org.apache.dolphinscheduler.dao.entity.TaskDefinition;
-
 import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
-
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
  * task definition mapper interface
@@ -37,11 +35,11 @@ public interface TaskDefinitionMapper extends BaseMapper<TaskDefinition> {
      * query task definition by name
      *
      * @param projectCode projectCode
-     * @param name name
+     * @param name        name
      * @return task definition
      */
     TaskDefinition queryByDefinitionName(@Param("projectCode") Long projectCode,
-                                      @Param("taskDefinitionName") String name);
+                                         @Param("taskDefinitionName") String name);
 
     /**
      * query task definition by id
@@ -97,7 +95,7 @@ public interface TaskDefinitionMapper extends BaseMapper<TaskDefinition> {
      * @return resource ids list
      */
     @MapKey("id")
-    List<Map<String, Object>> listResourcesByUser(@Param("userId") Integer userId);
+    List<Map<String, Object>> listResourcesByUser(@Param("userId") String userId);
 
     /**
      * delete task definition by code
@@ -106,4 +104,6 @@ public interface TaskDefinitionMapper extends BaseMapper<TaskDefinition> {
      * @return int
      */
     int deleteByCode(@Param("code") Long code);
+
+    void updateSchedulerTypeByCode(@Param("type")int type, @Param("code")long postTaskCode);
 }

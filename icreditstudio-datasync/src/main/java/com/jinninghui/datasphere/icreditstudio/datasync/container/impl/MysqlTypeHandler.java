@@ -2,51 +2,67 @@ package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractDialectTypeHandler;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.Formatter;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedType;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.AssociatedEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedCondition;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.AssociatedData;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 /**
  * @author Peng
  */
 @Component
 public class MysqlTypeHandler extends AbstractDialectTypeHandler {
+    Formatter<AssociatedFormatterVo> typeHandler = new MysqlQueryStatementFormatter();
+
     @Override
     public String format(AssociatedFormatterVo associatedFormatterVo) {
+        Objects.requireNonNull(associatedFormatterVo);
+
         List<TableInfo> sourceTables = associatedFormatterVo.getSourceTables();
+        List<TableInfo> collect = Optional.ofNullable(sourceTables).orElse(Lists.newArrayList())
+                .stream()
+                .map(s -> {
+                    String database = s.getDatabase();
+                    s.setTableName(new StringJoiner(".").add(database).add(s.getTableName()).toString());
+                    return s;
+                }).collect(Collectors.toList());
+        associatedFormatterVo.setSourceTables(collect);
+
         List<AssociatedData> assoc = associatedFormatterVo.getAssoc();
-        String sql = "select * from ";
-        String assocStr = "";
-        if (CollectionUtils.isNotEmpty(sourceTables) && sourceTables.size() == 1) {
-            assocStr = sourceTables.get(0).getTableName();
-        } else {
-            StringJoiner add = new StringJoiner(" ");
-            for (AssociatedData associatedData : assoc) {
-                if (StringUtils.isBlank(assocStr)) {
+        Optional.ofNullable(assoc).orElse(Lists.newArrayList())
+                .stream()
+                .forEach(associatedData -> {
+                    String leftSource = associatedData.getLeftSource();
+                    String leftSourceDatabase = associatedData.getLeftSourceDatabase();
+                    StringJoiner leftSourceJoiner = new StringJoiner(".").add(leftSourceDatabase).add(leftSource);
+                    associatedData.setLeftSource(leftSourceJoiner.toString());
+
+                    String rightSource = associatedData.getRightSource();
+                    String rightSourceDatabase = associatedData.getRightSourceDatabase();
+                    StringJoiner rightSourceJoiner = new StringJoiner(".").add(rightSourceDatabase).add(rightSource);
+                    associatedData.setRightSource(rightSourceJoiner.toString());
+
                     List<AssociatedCondition> conditions = associatedData.getConditions();
-                    add.add(associatedData.getLeftSource());
-                    String transfer = transfer(associatedFormatterVo.getDialect(), associatedData, conditions);
-                    add.add(transfer);
-                    assocStr = add.toString();
-                } else {
-                    List<AssociatedCondition> conditions = associatedData.getConditions();
-                    String transfer = transfer(associatedFormatterVo.getDialect(), associatedData, conditions);
-                    add.add(transfer);
-                    assocStr = add.toString();
-                }
-            }
-        }
-        return new StringJoiner("").add(sql).add(assocStr).toString();
+                    Optional.ofNullable(conditions).orElse(Lists.newArrayList())
+                            .stream().forEach(associatedCondition -> {
+                        String left = associatedCondition.getLeft();
+                        associatedCondition.setLeft(new StringJoiner(".").merge(leftSourceJoiner).add(left).toString());
+
+                        String right = associatedCondition.getRight();
+                        associatedCondition.setRight(new StringJoiner(".").merge(rightSourceJoiner).add(right).toString());
+                    });
+                });
+        return typeHandler.format(associatedFormatterVo);
     }
 
     @Override
@@ -56,30 +72,11 @@ public class MysqlTypeHandler extends AbstractDialectTypeHandler {
 
     @Override
     public List<String> getAssocConditions() {
-        return Lists.newArrayList("=", ">", "<");
+        return Lists.newArrayList("=");
     }
 
     @Override
     public String getDialect() {
         return "mysql";
-    }
-
-    private String transfer(String dialect, AssociatedData ad, List<AssociatedCondition> conditions) {
-        StringJoiner sj = new StringJoiner(" ");
-        sj.add(AssociatedUtil.find(dialect).keyword(ad.getAssociatedType()));
-        sj.add(ad.getRightSource());
-        sj.add("on");
-        String con = "";
-        StringJoiner c = new StringJoiner(" ");
-        for (AssociatedCondition condition : conditions) {
-            c.add(con);
-            if (c.length() != 0) {
-                c.add("and");
-            }
-            c.add(condition.getLeft());
-            c.add(condition.getAssociate());
-            c.add(condition.getRight());
-        }
-        return sj.merge(c).toString();
     }
 }

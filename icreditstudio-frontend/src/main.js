@@ -9,7 +9,7 @@ import component from './plugins/process/component'
 
 import '@/config/config.mount.js'
 
-import JUI from '@jnh/j-ui'
+import JUI from '@jnh/icredit-ui'
 import VueEditor from 'vue2-editor'
 
 import '@/utils/vue.ls.js'
@@ -17,13 +17,13 @@ import '@/utils/vue.ls.js'
 import '@/router/permission'
 import '@/components/svg/index'
 
-// import '@jnh/j-ui/lib/theme/lib/index.css'; // 默认样式
+// import '@jnh/icredit-ui/lib/theme/lib/index.css'; // 默认样式
+import 'iview/dist/styles/iview.css'
 import '@/styles/common/_iframe.scss' // 自定义主题色
 
 // 公共样式、布局样式
 import '@/styles/public/index.scss'
 import '@/styles/project.scss'
-import 'iview/dist/styles/iview.css'
 
 import '@/directive/auth'
 

@@ -17,27 +17,28 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 /**
- *  execute task request command
+ * execute task request command
  */
+@Data
 public class TaskExecuteAckCommand implements Serializable {
 
     /**
      * taskInstanceId
      */
-    private int taskInstanceId;
+    private String taskInstanceId;
 
     /**
      * startTime
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
@@ -60,56 +61,8 @@ public class TaskExecuteAckCommand implements Serializable {
      */
     private String executePath;
 
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public String getLogPath() {
-        return logPath;
-    }
-
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-
-    public String getExecutePath() {
-        return executePath;
-    }
-
-    public void setExecutePath(String executePath) {
-        this.executePath = executePath;
-    }
-
     /**
-     *  package request command
+     * package request command
      *
      * @return command
      */
@@ -119,17 +72,5 @@ public class TaskExecuteAckCommand implements Serializable {
         byte[] body = JSONUtils.toJsonByteArray(this);
         command.setBody(body);
         return command;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskExecuteAckCommand{"
-                + "taskInstanceId=" + taskInstanceId
-                + ", startTime=" + startTime
-                + ", host='" + host + '\''
-                + ", status=" + status
-                + ", logPath='" + logPath + '\''
-                + ", executePath='" + executePath + '\''
-                + '}';
     }
 }

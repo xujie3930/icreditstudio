@@ -17,26 +17,6 @@
 
 package org.apache.dolphinscheduler.remote;
 
-import org.apache.dolphinscheduler.remote.codec.NettyDecoder;
-import org.apache.dolphinscheduler.remote.codec.NettyEncoder;
-import org.apache.dolphinscheduler.remote.command.CommandType;
-import org.apache.dolphinscheduler.remote.config.NettyServerConfig;
-import org.apache.dolphinscheduler.remote.exceptions.RemoteException;
-import org.apache.dolphinscheduler.remote.handler.NettyServerHandler;
-import org.apache.dolphinscheduler.remote.processor.NettyRequestProcessor;
-import org.apache.dolphinscheduler.remote.utils.Constants;
-import org.apache.dolphinscheduler.remote.utils.NettyUtils;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -46,6 +26,24 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import org.apache.dolphinscheduler.remote.codec.NettyDecoder;
+import org.apache.dolphinscheduler.remote.codec.NettyEncoder;
+import org.apache.dolphinscheduler.remote.command.CommandType;
+import org.apache.dolphinscheduler.remote.config.NettyServerConfig;
+import org.apache.dolphinscheduler.remote.exceptions.RemoteException;
+import org.apache.dolphinscheduler.remote.handler.NettyServerHandler;
+import org.apache.dolphinscheduler.remote.processor.NettyRequestProcessor;
+import org.apache.dolphinscheduler.remote.utils.Constants;
+import org.apache.dolphinscheduler.remote.utils.NettyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * remoting netty server
@@ -201,7 +199,7 @@ public class NettyRemotingServer {
      * register processor
      *
      * @param commandType command type
-     * @param processor processor
+     * @param processor   processor
      */
     public void registerProcessor(final CommandType commandType, final NettyRequestProcessor processor) {
         this.registerProcessor(commandType, processor, null);
@@ -211,8 +209,8 @@ public class NettyRemotingServer {
      * register processor
      *
      * @param commandType command type
-     * @param processor processor
-     * @param executor thread executor
+     * @param processor   processor
+     * @param executor    thread executor
      */
     public void registerProcessor(final CommandType commandType, final NettyRequestProcessor processor, final ExecutorService executor) {
         this.serverHandler.registerProcessor(commandType, processor, executor);
@@ -236,7 +234,9 @@ public class NettyRemotingServer {
                 if (workGroup != null) {
                     this.workGroup.shutdownGracefully();
                 }
-                defaultExecutor.shutdown();
+                if (defaultExecutor != null) {
+                    defaultExecutor.shutdown();
+                }
             } catch (Exception ex) {
                 logger.error("netty server close exception", ex);
             }

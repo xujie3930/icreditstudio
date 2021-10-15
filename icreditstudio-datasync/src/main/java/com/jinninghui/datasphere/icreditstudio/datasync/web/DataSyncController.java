@@ -4,10 +4,9 @@ package com.jinninghui.datasphere.icreditstudio.datasync.web;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuildInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -15,10 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -174,4 +170,25 @@ public class DataSyncController {
         BeanCopyUtils.copyProperties(request, param);
         return syncTaskService.cease(param);
     }
+
+    @PostMapping("/test")
+    public BusinessResult<SyncTimeInterval> test(@RequestBody SyncCondition condition) {
+        TimeInterval interval = new TimeInterval();
+        SyncTimeInterval timeInterval = interval.getSyncTimeInterval(condition, n -> true);
+        System.out.println(timeInterval);
+        return BusinessResult.success(timeInterval);
+    }
+
+    @PostMapping("/dispatchPage")
+    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
+        DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
+        BeanCopyUtils.copyProperties(dispatchPageRequest, param);
+        return syncTaskService.dispatchPage(param);
+    }
+
+    @GetMapping("/getProcessInstanceId")
+    public String getProcessInstanceIdById(@RequestParam("taskId") String taskId){
+        return syncTaskService.getProcessInstanceIdById(taskId);
+    }
+
 }

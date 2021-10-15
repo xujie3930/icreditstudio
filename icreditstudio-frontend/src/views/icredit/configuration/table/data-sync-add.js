@@ -6,7 +6,7 @@
 
 export default {
   refName: 'data-sync-add',
-  id: '',
+  id: 'dataSyncAdd',
   isBorder: true,
   hasPage: false,
   maxHeight: 360,
@@ -43,7 +43,7 @@ export default {
       prop: 'associateDict'
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '备注',
       prop: 'remark'
     }

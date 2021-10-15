@@ -11,7 +11,15 @@
       :width="width"
       :top="top"
     >
-      <div class="icredit-dialog-title" slot="title">{{ title }}</div>
+      <div class="icredit-dialog-title" slot="title">
+        <span v-if="beforeTitleName" style="color: #1890ff">
+          {{ beforeTitleName }}
+        </span>
+        {{ title }}
+        <span v-if="afterTitleName" style="color: #1890ff">
+          {{ afterTitleName }}
+        </span>
+      </div>
       <div class="icredit-dialog-content">
         <slot />
       </div>
@@ -58,6 +66,16 @@ export default {
     title: {
       type: String,
       default: 'dialog title'
+    },
+
+    beforeTitleName: {
+      type: String,
+      default: ''
+    },
+
+    afterTitleName: {
+      type: String,
+      default: ''
     },
 
     footer: {

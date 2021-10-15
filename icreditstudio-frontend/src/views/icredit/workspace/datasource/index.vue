@@ -44,9 +44,21 @@
           <!-- 最近一次同步状态 -->
           <template #lastSyncStatusColumn="{row}">
             <span
-              :style="{ color: !row.lastSyncStatus ? '#52c41a' : '#ff4d4f' }"
+              :style="{
+                color: !row.lastSyncStatus
+                  ? '#52c41a'
+                  : row.lastSyncStatus === 1
+                  ? '#ff4d4f'
+                  : '#606266'
+              }"
             >
-              {{ !row.lastSyncStatus ? '成功' : '失败' }}
+              {{
+                !row.lastSyncStatus
+                  ? '成功'
+                  : row.lastSyncStatus === 1
+                  ? '失败'
+                  : '-'
+              }}
             </span>
           </template>
 
@@ -147,7 +159,7 @@ export default {
       mixinSearchFormConfig: {
         models: { name: '', type: '', status: '' }
       },
-      tableConfiguration: tableConfiguration(this),
+      tableConfiguration,
       fetchConfig: {
         retrieve: {
           url: '/datasource/pageList',
@@ -180,8 +192,9 @@ export default {
         row,
         opType: 'Disabled',
         title: '数据源停用',
-        beforeOperateMsg: '当前数据源有工作流（',
-        afterOperateMsg: '）在调度，请先下线工作流后再停用。'
+        beforeOperateMsg:
+          '停用后在工作流设置中不能再使用该数据源，确认停用该数据源吗？'
+        // afterOperateMsg: '）在调度，请先下线工作流后再停用。'
       }
       this.$refs.operateMessage.open(options)
     },
@@ -212,6 +225,7 @@ export default {
               title: '操作提示',
               message: '数据源同步成功！'
             })
+            this.mixinRetrieveTableData()
           }
         })
         .catch(() => {

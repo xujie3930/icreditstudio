@@ -8,6 +8,7 @@
     hideFooter
     title="查看同步任务"
     ref="taskDialog"
+    width="70vw"
     @on-close="close"
   >
     <el-tabs
@@ -26,9 +27,7 @@
               v-for="item in taskDetailInfo"
             >
               <div class="label">
-                <span
-                  v-if="item.key !== 'taskDescription'"
-                  class="required-icon"
+                <span v-if="item.key !== 'taskDescribe'" class="required-icon"
                   >*
                 </span>
                 <span>{{ item.label }}</span>
@@ -38,6 +37,7 @@
           </div>
         </div>
       </el-tab-pane>
+
       <el-tab-pane label="数据源详情" name="BuildDetial">
         <div class="tab-wrap">
           <!-- <div class="tab-wrap__title">数据源详情</div> -->
@@ -58,7 +58,7 @@
                     </div>
                   </el-popover>
                 </div>
-                <span v-else>无</span>
+                <span v-else>略</span>
               </el-col>
             </el-row>
 
@@ -88,12 +88,20 @@
 
               <el-col class="col" :span="4">
                 <span> 日期格式：</span>
-                <span>{{ datasourceDetailInfo.syncCondition.partition }}</span>
+                <span>{{
+                  dateFieldMapping[datasourceDetailInfo.syncCondition.partition]
+                }}</span>
               </el-col>
 
               <el-col class="col" :span="6">
                 <span> 时间过滤条件：</span>
-                <span>T + {{ datasourceDetailInfo.syncCondition.n }}</span>
+                <span
+                  v-if="
+                    datasourceDetailInfo.syncCondition.n ||
+                      datasourceDetailInfo.syncCondition.n === 0
+                  "
+                  >T + {{ datasourceDetailInfo.syncCondition.n }}</span
+                >
               </el-col>
             </el-row>
 
@@ -106,6 +114,7 @@
           </div>
         </div>
       </el-tab-pane>
+
       <el-tab-pane label="任务调度详情" name="DispatchDetial">
         <div class="tab-wrap">
           <div class="tab-wrap__title">通道控制</div>
@@ -127,6 +136,12 @@
                 <el-radio :label="1">限流</el-radio>
               </el-radio-group>
             </div>
+            <div v-if="buildDetailInfo.syncRate" class="content-item">
+              <div class="label">
+                <span>限流速率</span>
+              </div>
+              <div>{{ buildDetailInfo.limitRate }} 条/s</div>
+            </div>
           </div>
         </div>
         <div class="tab-wrap">
@@ -141,7 +156,7 @@
                 {{ scheduleTypeMapping[buildDetailInfo.scheduleType] }}
               </span>
             </div>
-            <div class="content-item">
+            <div class="content-item" v-if="buildDetailInfo.scheduleType">
               <div class="label">
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
@@ -166,13 +181,16 @@ import {
   createModeMapping,
   scheduleTypeMapping,
   taskDetailInfo,
-  radioBtnOption
+  radioBtnOption,
+  dateFieldMapping
 } from './contant'
 
 export default {
   components: { BaseDialog, Figure },
   data() {
     this.scheduleTypeMapping = scheduleTypeMapping
+    this.dateFieldMapping = dateFieldMapping
+
     return {
       row: {},
       detailLoading: false,

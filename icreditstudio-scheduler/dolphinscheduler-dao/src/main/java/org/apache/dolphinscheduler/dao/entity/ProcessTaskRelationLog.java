@@ -17,31 +17,33 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * process task relation log
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_process_task_relation_log")
 public class ProcessTaskRelationLog extends ProcessTaskRelation {
 
     /**
      * operator user id
      */
-    private int operator;
+    private String operator;
 
     /**
      * operate time
      */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
-
-    public ProcessTaskRelationLog() {
-        super();
-    }
 
     public ProcessTaskRelationLog(ProcessTaskRelation processTaskRelation) {
         super();
@@ -58,26 +60,5 @@ public class ProcessTaskRelationLog extends ProcessTaskRelation {
         this.setConditionParams(processTaskRelation.getConditionParams());
         this.setCreateTime(processTaskRelation.getCreateTime());
         this.setUpdateTime(processTaskRelation.getUpdateTime());
-    }
-
-    public int getOperator() {
-        return operator;
-    }
-
-    public void setOperator(int operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

@@ -35,7 +35,7 @@ public interface WorkerGroupService {
      * @param addrList addr list
      * @return create or update result code
      */
-    Map<String, Object> saveWorkerGroup(User loginUser, int id, String name, String addrList);
+    Map<String, Object> saveWorkerGroup(User loginUser, String id, String name, String addrList);
 
     /**
      * query worker group paging
@@ -60,7 +60,7 @@ public interface WorkerGroupService {
      * @param id worker group id
      * @return delete result code
      */
-    Map<String, Object> deleteWorkerGroupById(User loginUser, Integer id);
+    Map<String, Object> deleteWorkerGroupById(User loginUser, String id);
 
     /**
      * query all worker address list

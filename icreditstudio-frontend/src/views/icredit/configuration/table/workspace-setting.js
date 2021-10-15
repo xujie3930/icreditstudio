@@ -1,5 +1,10 @@
+/*
+ * @Author: lizheng
+ * @Description: 空间设置
+ * @Date: 2021-08-17
+ */
+
 export default _this => {
-  console.log(_this.workspaceCreateAuth, 'workspaceCreateAuth')
   return {
     refName: 'workspace-setting',
     id: 'setting',
@@ -67,39 +72,7 @@ export default _this => {
         label: '操作',
         prop: 'operation',
         width: '250px',
-        fixed: 'right',
-
-        operationList: [
-          {
-            func: ({ row }) => _this.handleOperateClick(row, 'view'),
-            label: '查看',
-            key: 'view'
-          },
-          {
-            func: ({ row }) => _this.handleOperateClick(row, 'disabled'),
-            label: '停用',
-            key: 'disabled',
-            isHide: ({ row }) => row.status
-          },
-          {
-            func: _this.handleDeleteClick,
-            label: '删除',
-            key: 'delete',
-            isHide: ({ row }) => !row.status
-          },
-          {
-            func: ({ row }) => _this.handleOperateClick(row, 'enabled'),
-            label: '启用',
-            key: 'enabled',
-            show: false
-          },
-          {
-            func: _this.mixinHandleEdit,
-            label: '编辑',
-            key: 'update',
-            isHide: ({ row }) => !row.status
-          }
-        ]
+        fixed: 'right'
       }
     ]
   }

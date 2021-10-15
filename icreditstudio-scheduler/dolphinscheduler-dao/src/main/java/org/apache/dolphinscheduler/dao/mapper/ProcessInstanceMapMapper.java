@@ -16,8 +16,8 @@
  */
 package org.apache.dolphinscheduler.dao.mapper;
 
-import org.apache.dolphinscheduler.dao.entity.ProcessInstanceMap;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.dolphinscheduler.dao.entity.ProcessInstanceMap;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -29,33 +29,37 @@ public interface ProcessInstanceMapMapper extends BaseMapper<ProcessInstanceMap>
 
     /**
      * query process instance by parentId
+     *
      * @param parentProcessId parentProcessId
-     * @param parentTaskId parentTaskId
+     * @param parentTaskId    parentTaskId
      * @return process instance map
      */
-    ProcessInstanceMap queryByParentId(@Param("parentProcessId") int parentProcessId,
-                                       @Param("parentTaskId") int parentTaskId);
+    ProcessInstanceMap queryByParentId(@Param("parentProcessId") String parentProcessId,
+                                       @Param("parentTaskId") String parentTaskId);
 
 
     /**
      * query by sub process id
+     *
      * @param subProcessId subProcessId
      * @return process instance map
      */
-    ProcessInstanceMap queryBySubProcessId(@Param("subProcessId") Integer subProcessId);
+    ProcessInstanceMap queryBySubProcessId(@Param("subProcessId") String subProcessId);
 
     /**
      * delete by parent process id
+     *
      * @param parentProcessId parentProcessId
      * @return delete result
      */
-    int deleteByParentProcessId(@Param("parentProcessId") int parentProcessId);
+    int deleteByParentProcessId(@Param("parentProcessId") String parentProcessId);
 
     /**
-     *  query sub process instance  ids by parent instance id
+     * query sub process instance  ids by parent instance id
+     *
      * @param parentInstanceId parentInstanceId
      * @return sub process instance ids
      */
-    List<Integer> querySubIdListByParentId(@Param("parentInstanceId") int parentInstanceId);
+    List<String> querySubIdListByParentId(@Param("parentInstanceId") String parentInstanceId);
 
 }

@@ -5,7 +5,9 @@
  */
 
 import dataSyncApi from './data-sync'
+import dataScheduleApi from './data-schedule'
 
 export default {
-  ...dataSyncApi
+  ...dataSyncApi,
+  ...dataScheduleApi
 }

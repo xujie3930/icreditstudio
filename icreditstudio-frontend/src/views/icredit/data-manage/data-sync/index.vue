@@ -41,6 +41,10 @@
           @handleSizeChange="mixinHandleSizeChange"
           @handleCurrentChange="mixinHandleCurrentChange"
         >
+          <!-- <template #empty>
+            <Empty />
+          </template> -->
+
           <!-- 任务状态 -->
           <template #taskStatusColumn="{row: {taskStatus}}">
             <span :style="{ color: taskStatusMapping[taskStatus || 0].color }">
@@ -90,9 +94,10 @@
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)"
+              v-if="row.taskStatus === 0 && row.execStatus !== 2"
               @click="handleRunBtnClick(row, 'Run')"
             >
+              <!-- v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)" -->
               立即执行
             </el-button>
             <el-button
@@ -134,6 +139,7 @@ import tableConfiguration from '@/views/icredit/configuration/table/data-manage-
 import formOption from '@/views/icredit/configuration/form/data-manage-sync'
 import Message from '@/views/icredit/components/message'
 import Detail from './detail'
+// import Empty from '@/views/icredit/components/empty'
 import API from '@/api/icredit'
 
 export default {
@@ -154,7 +160,7 @@ export default {
           execStatus: ''
         }
       },
-      tableConfiguration: tableConfiguration(this),
+      tableConfiguration,
       fetchConfig: { retrieve: { url: '/datasync/syncTasks', method: 'post' } },
 
       // 任务状态值映射
@@ -179,7 +185,7 @@ export default {
 
   methods: {
     handleAddSyncTask() {
-      this.$router.push('/data-manage/add-task')
+      this.$router.push('/data-manage/add-task?opType=add')
     },
 
     // 删除
@@ -197,6 +203,7 @@ export default {
 
     // 查看操作
     handleViewBtnClick(row, opType) {
+      console.log('row', row)
       this.$refs.dataDetail.open({ row, opType })
     },
 
@@ -252,7 +259,7 @@ export default {
       console.log(row, opType)
       const params = {
         path: '/data-manage/add-task',
-        query: { taskId: row.taskId }
+        query: { opType: 'edit', taskId: row.taskId }
       }
       this.$router.push(params)
     },

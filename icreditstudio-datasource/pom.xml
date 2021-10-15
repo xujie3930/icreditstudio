@@ -36,10 +36,10 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <excludes>
+               <!-- <excludes>
                     <exclude>*.xml</exclude>
                     <exclude>*.yml</exclude>
-                </excludes>
+                </excludes>-->
             </resource>
         </resources>
         <plugins>

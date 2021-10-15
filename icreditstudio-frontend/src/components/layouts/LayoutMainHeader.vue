@@ -1,10 +1,9 @@
 <template>
   <div class="iframe-layout-main-header">
-    <div class="iframe-layout-main-header-crumbs">
+    <div class="iframe-layout-main-header-crumbs" @click="handleCollapse">
       <j-svg
         name="header-collapse"
         :class="['header-collapse', isCollapse ? 'unfold' : 'fold']"
-        @on-click="handleCollapse"
       />
     </div>
 
@@ -26,8 +25,8 @@
         @change="workspaceIdChange"
       >
         <el-option
-          v-for="item in workspaceList"
-          :key="item.id"
+          v-for="(item, idx) in workspaceList"
+          :key="`${item.id}-${idx}`"
           :label="item.name"
           :value="item.id"
         >
@@ -313,7 +312,9 @@ export default {
   @include flex;
   width: 64px;
   height: 64px;
-  background: #339dff;
+  background-color: #0072db;
+  cursor: pointer;
+
   .header-collapse {
     width: 22px;
     height: 20px;

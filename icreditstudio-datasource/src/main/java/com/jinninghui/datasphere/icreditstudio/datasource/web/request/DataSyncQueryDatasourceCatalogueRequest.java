@@ -13,15 +13,15 @@ public class DataSyncQueryDatasourceCatalogueRequest {
     /**
      * 工作空间ID
      */
-    @NotBlank(message = "")
+    @NotBlank(message = "70000005")
     private String workspaceId;
     /**
      * 数据源名称
      */
     private String tableName;
     /**
-     * 数据源类型【0:】
+     * 数据源类型【0:外部数据源，1：本地数据源，2：区块链】
      */
-    @NotNull(message = "")
+    @NotNull(message = "70000006")
     private Integer sourceType;
 }

@@ -59,4 +59,11 @@
         WHERE project_code = #{projectCode}
         and process_definition_code = #{processCode}
     </delete>
+
+    <select id="selectByProcessDefinitionCode" resultType="org.apache.dolphinscheduler.dao.entity.ProcessTaskRelation">
+        select
+        <include refid="baseSql"/>
+        from t_ds_process_task_relation
+        WHERE process_definition_code = #{processCode}
+    </select>
 </mapper>

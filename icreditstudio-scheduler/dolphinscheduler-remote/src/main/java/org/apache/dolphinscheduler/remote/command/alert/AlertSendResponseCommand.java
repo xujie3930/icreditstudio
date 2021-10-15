@@ -19,7 +19,7 @@ package org.apache.dolphinscheduler.remote.command.alert;
 
 import org.apache.dolphinscheduler.remote.command.Command;
 import org.apache.dolphinscheduler.remote.command.CommandType;
-import org.apache.dolphinscheduler.remote.utils.JsonSerializer;
+import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 
 import java.io.Serializable;
 import java.util.List;
@@ -68,7 +68,7 @@ public class AlertSendResponseCommand implements Serializable {
     public Command convert2Command(long opaque) {
         Command command = new Command(opaque);
         command.setType(CommandType.ALERT_SEND_RESPONSE);
-        byte[] body = JsonSerializer.serialize(this);
+        byte[] body = FastJsonSerializer.serialize(this);
         command.setBody(body);
         return command;
     }

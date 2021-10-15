@@ -14,40 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.service.log;
 
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.LoggerUtils;
-import org.apache.dolphinscheduler.common.utils.NetUtils;
 import org.apache.dolphinscheduler.remote.NettyRemotingClient;
 import org.apache.dolphinscheduler.remote.command.Command;
-import org.apache.dolphinscheduler.remote.command.log.GetLogBytesRequestCommand;
-import org.apache.dolphinscheduler.remote.command.log.GetLogBytesResponseCommand;
-import org.apache.dolphinscheduler.remote.command.log.RemoveTaskLogRequestCommand;
-import org.apache.dolphinscheduler.remote.command.log.RemoveTaskLogResponseCommand;
-import org.apache.dolphinscheduler.remote.command.log.RollViewLogRequestCommand;
-import org.apache.dolphinscheduler.remote.command.log.RollViewLogResponseCommand;
-import org.apache.dolphinscheduler.remote.command.log.ViewLogRequestCommand;
-import org.apache.dolphinscheduler.remote.command.log.ViewLogResponseCommand;
+import org.apache.dolphinscheduler.remote.command.log.*;
 import org.apache.dolphinscheduler.remote.config.NettyClientConfig;
+import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 import org.apache.dolphinscheduler.remote.utils.Host;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /**
  * log client
  */
-public class LogClientService implements AutoCloseable {
+public class LogClientService {
 
     private static final Logger logger = LoggerFactory.getLogger(LogClientService.class);
 
     private final NettyClientConfig clientConfig;
 
     private final NettyRemotingClient client;
-
-    private volatile boolean isRunning;
 
     /**
      * request time out
@@ -61,27 +49,24 @@ public class LogClientService implements AutoCloseable {
         this.clientConfig = new NettyClientConfig();
         this.clientConfig.setWorkerThreads(4);
         this.client = new NettyRemotingClient(clientConfig);
-        this.isRunning = true;
     }
 
     /**
      * close
      */
-    @Override
     public void close() {
         this.client.close();
-        this.isRunning = false;
         logger.info("logger client closed");
     }
 
     /**
      * roll view log
      *
-     * @param host host
-     * @param port port
-     * @param path path
+     * @param host        host
+     * @param port        port
+     * @param path        path
      * @param skipLineNum skip line number
-     * @param limit limit
+     * @param limit       limit
      * @return log content
      */
     public String rollViewLog(String host, int port, String path, int skipLineNum, int limit) {
@@ -93,7 +78,7 @@ public class LogClientService implements AutoCloseable {
             Command command = request.convert2Command();
             Command response = this.client.sendSync(address, command, LOG_REQUEST_TIMEOUT);
             if (response != null) {
-                RollViewLogResponseCommand rollReviewLog = JSONUtils.parseObject(
+                RollViewLogResponseCommand rollReviewLog = FastJsonSerializer.deserialize(
                         response.getBody(), RollViewLogResponseCommand.class);
                 return rollReviewLog.getMsg();
             }
@@ -119,16 +104,12 @@ public class LogClientService implements AutoCloseable {
         String result = "";
         final Host address = new Host(host, port);
         try {
-            if (NetUtils.getHost().equals(host)) {
-                result = LoggerUtils.readWholeFileContent(request.getPath());
-            } else {
-                Command command = request.convert2Command();
-                Command response = this.client.sendSync(address, command, LOG_REQUEST_TIMEOUT);
-                if (response != null) {
-                    ViewLogResponseCommand viewLog = JSONUtils.parseObject(
-                            response.getBody(), ViewLogResponseCommand.class);
-                    result = viewLog.getMsg();
-                }
+            Command command = request.convert2Command();
+            Command response = this.client.sendSync(address, command, LOG_REQUEST_TIMEOUT);
+            if (response != null) {
+                ViewLogResponseCommand viewLog = FastJsonSerializer.deserialize(
+                        response.getBody(), ViewLogResponseCommand.class);
+                return viewLog.getMsg();
             }
         } catch (Exception e) {
             logger.error("view log error", e);
@@ -155,7 +136,7 @@ public class LogClientService implements AutoCloseable {
             Command command = request.convert2Command();
             Command response = this.client.sendSync(address, command, LOG_REQUEST_TIMEOUT);
             if (response != null) {
-                GetLogBytesResponseCommand getLog = JSONUtils.parseObject(
+                GetLogBytesResponseCommand getLog = FastJsonSerializer.deserialize(
                         response.getBody(), GetLogBytesResponseCommand.class);
                 return getLog.getData();
             }
@@ -166,6 +147,7 @@ public class LogClientService implements AutoCloseable {
         }
         return result;
     }
+
 
     /**
      * remove task log
@@ -184,7 +166,7 @@ public class LogClientService implements AutoCloseable {
             Command command = request.convert2Command();
             Command response = this.client.sendSync(address, command, LOG_REQUEST_TIMEOUT);
             if (response != null) {
-                RemoveTaskLogResponseCommand taskLogResponse = JSONUtils.parseObject(
+                RemoveTaskLogResponseCommand taskLogResponse = FastJsonSerializer.deserialize(
                         response.getBody(), RemoveTaskLogResponseCommand.class);
                 return taskLogResponse.getStatus();
             }
@@ -194,9 +176,5 @@ public class LogClientService implements AutoCloseable {
             this.client.closeChannel(address);
         }
         return result;
-    }
-
-    public boolean isRunning() {
-        return isRunning;
     }
 }

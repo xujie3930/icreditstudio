@@ -23,6 +23,7 @@ import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.dao.entity.User;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -33,115 +34,119 @@ public interface SchedulerService {
     /**
      * save schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param processDefineId process definition id
-     * @param schedule scheduler
-     * @param warningType warning type
-     * @param warningGroupId warning group id
-     * @param failureStrategy failure strategy
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param processDefineId         process definition id
+     * @param schedule                scheduler
+     * @param warningType             warning type
+     * @param warningGroupId          warning group id
+     * @param failureStrategy         failure strategy
      * @param processInstancePriority process instance priority
-     * @param workerGroup worker group
+     * @param workerGroup             worker group
      * @return create result code
      */
     Map<String, Object> insertSchedule(User loginUser, String projectName,
-                                       Integer processDefineId,
+                                       String processDefineId,
                                        String schedule,
                                        WarningType warningType,
-                                       int warningGroupId,
+                                       String warningGroupId,
                                        FailureStrategy failureStrategy,
+                                       String receivers,
+                                       String receiversCc,
                                        Priority processInstancePriority,
-                                       String workerGroup);
+                                       String workerGroup) throws IOException;
 
     /**
      * updateProcessInstance schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param id scheduler id
-     * @param scheduleExpression scheduler
-     * @param warningType warning type
-     * @param warningGroupId warning group id
-     * @param failureStrategy failure strategy
-     * @param workerGroup worker group
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param id                      scheduler id
+     * @param scheduleExpression      scheduler
+     * @param warningType             warning type
+     * @param warningGroupId          warning group id
+     * @param failureStrategy         failure strategy
+     * @param workerGroup             worker group
      * @param processInstancePriority process instance priority
-     * @param scheduleStatus schedule status
+     * @param scheduleStatus          schedule status
      * @return update result code
      */
     Map<String, Object> updateSchedule(User loginUser,
                                        String projectName,
-                                       Integer id,
+                                       String id,
                                        String scheduleExpression,
                                        WarningType warningType,
-                                       int warningGroupId,
+                                       String warningGroupId,
                                        FailureStrategy failureStrategy,
+                                       String receivers,
+                                       String receiversCc,
                                        ReleaseState scheduleStatus,
                                        Priority processInstancePriority,
-                                       String workerGroup);
+                                       String workerGroup) throws IOException;
 
 
     /**
      * set schedule online or offline
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param id scheduler id
+     * @param loginUser      login user
+     * @param projectName    project name
+     * @param id             scheduler id
      * @param scheduleStatus schedule status
      * @return publish result code
      */
     Map<String, Object> setScheduleState(User loginUser,
                                          String projectName,
-                                         Integer id,
+                                         String id,
                                          ReleaseState scheduleStatus);
 
     /**
      * query schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser       login user
+     * @param projectCode     project code
      * @param processDefineId process definition id
-     * @param pageNo page number
-     * @param pageSize page size
-     * @param searchVal search value
+     * @param pageNo          page number
+     * @param pageSize        page size
+     * @param searchVal       search value
      * @return schedule list page
      */
-    Map<String, Object> querySchedule(User loginUser, String projectName, Integer processDefineId, String searchVal, Integer pageNo, Integer pageSize);
+    Map<String, Object> querySchedule(User loginUser, String projectCode, String processDefineId, String searchVal, Integer pageNo, Integer pageSize);
 
     /**
      * query schedule list
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser   login user
+     * @param projectCode project code
      * @return schedule list
      */
-    Map<String, Object> queryScheduleList(User loginUser, String projectName);
+    Map<String, Object> queryScheduleList(User loginUser, String projectCode);
 
     /**
      * delete schedule
      *
-     * @param projectId project id
-     * @param scheduleId schedule id
+     * @param projectCode project code
+     * @param scheduleId  schedule id
      * @throws RuntimeException runtime exception
      */
-    void deleteSchedule(int projectId, int scheduleId);
+    void deleteSchedule(String projectCode, String scheduleId);
 
     /**
      * delete schedule by id
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param scheduleId scheule id
+     * @param loginUser   login user
+     * @param projectCode project code
+     * @param scheduleId  scheule id
      * @return delete result code
      */
-    Map<String, Object> deleteScheduleById(User loginUser, String projectName, Integer scheduleId);
+    Map<String, Object> deleteScheduleById(User loginUser, String projectCode, String scheduleId);
 
     /**
      * preview schedule
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param schedule schedule expression
+     * @param loginUser   login user
+     * @param projectCode project code
+     * @param schedule    schedule expression
      * @return the next five fire time
      */
-    Map<String, Object> previewSchedule(User loginUser, String projectName, String schedule);
+    Map<String, Object> previewSchedule(User loginUser, String projectCode, String schedule);
 }

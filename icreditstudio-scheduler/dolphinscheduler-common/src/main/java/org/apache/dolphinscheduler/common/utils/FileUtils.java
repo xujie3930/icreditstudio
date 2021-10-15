@@ -14,50 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.common.utils;
-
-import static org.apache.dolphinscheduler.common.Constants.DATA_BASEDIR_PATH;
-import static org.apache.dolphinscheduler.common.Constants.RESOURCE_VIEW_SUFFIXS;
-import static org.apache.dolphinscheduler.common.Constants.RESOURCE_VIEW_SUFFIXS_DEFAULT_VALUE;
-import static org.apache.dolphinscheduler.common.Constants.YYYYMMDDHHMMSS;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.apache.dolphinscheduler.common.Constants.*;
 
 /**
  * file utils
  */
 public class FileUtils {
-
     public static final Logger logger = LoggerFactory.getLogger(FileUtils.class);
 
     public static final String DATA_BASEDIR = PropertyUtils.getString(DATA_BASEDIR_PATH, "/tmp/dolphinscheduler");
 
     public static final ThreadLocal<Logger> taskLoggerThreadLocal = new ThreadLocal<>();
-
-    private FileUtils() {
-        throw new UnsupportedOperationException("Construct FileUtils");
-    }
 
     /**
      * get file suffix
@@ -98,7 +78,7 @@ public class FileUtils {
      * get upload file absolute path and name
      *
      * @param tenantCode tenant code
-     * @param filename file name
+     * @param filename   file name
      * @return local file path
      */
     public static String getUploadFilename(String tenantCode, String filename) {
@@ -114,16 +94,15 @@ public class FileUtils {
     /**
      * directory of process execution
      *
-     * @param projectCode project code
-     * @param processDefineCode process definition Code
-     * @param processDefineVersion process definition version
+     * @param projectId         project id
+     * @param processDefineId   process definition id
      * @param processInstanceId process instance id
-     * @param taskInstanceId task instance id
+     * @param taskInstanceId    task instance id
      * @return directory of process execution
      */
-    public static String getProcessExecDir(long projectCode, long processDefineCode, int processDefineVersion, int processInstanceId, int taskInstanceId) {
-        String fileName = String.format("%s/exec/process/%d/%s/%d/%d", DATA_BASEDIR,
-                projectCode, processDefineCode + "_" + processDefineVersion, processInstanceId, taskInstanceId);
+    public static String getProcessExecDir(String projectId, String processDefineId, String processInstanceId, String taskInstanceId) {
+        String fileName = String.format("%s/exec/process/%d/%d/%d/%d", DATA_BASEDIR,
+                projectId, processDefineId, processInstanceId, taskInstanceId);
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -140,12 +119,13 @@ public class FileUtils {
     }
 
     /**
-     * create directory if absent
+     * create directory and user
      *
      * @param execLocalPath execute local path
+     * @param userName      user name
      * @throws IOException errors
      */
-    public static void createWorkDirIfAbsent(String execLocalPath) throws IOException {
+    public static void createWorkDirAndUserIfAbsent(String execLocalPath, String userName) throws IOException {
         //if work dir exists, first delete
         File execLocalPathFile = new File(execLocalPath);
 
@@ -158,12 +138,34 @@ public class FileUtils {
         String mkdirLog = "create dir success " + execLocalPath;
         LoggerUtils.logInfo(Optional.ofNullable(logger), mkdirLog);
         LoggerUtils.logInfo(Optional.ofNullable(taskLoggerThreadLocal.get()), mkdirLog);
+
+        //if not exists this user,then create
+        OSUtils.taskLoggerThreadLocal.set(taskLoggerThreadLocal.get());
+        try {
+            if (!OSUtils.getUserList().contains(userName)) {
+                boolean isSuccessCreateUser = OSUtils.createUser(userName);
+
+                String infoLog;
+                if (isSuccessCreateUser) {
+                    infoLog = String.format("create user name success %s", userName);
+                } else {
+                    infoLog = String.format("create user name fail %s", userName);
+                }
+                LoggerUtils.logInfo(Optional.ofNullable(logger), infoLog);
+                LoggerUtils.logInfo(Optional.ofNullable(taskLoggerThreadLocal.get()), infoLog);
+            }
+        } catch (Throwable e) {
+            LoggerUtils.logError(Optional.ofNullable(logger), e);
+            LoggerUtils.logError(Optional.ofNullable(taskLoggerThreadLocal.get()), e);
+        }
+        OSUtils.taskLoggerThreadLocal.remove();
     }
+
 
     /**
      * write content to file ,if parent path not exists, it will do one's utmost to mkdir
      *
-     * @param content content
+     * @param content  content
      * @param filePath target file path
      * @return true if write success
      */
@@ -178,7 +180,7 @@ public class FileUtils {
                 return false;
             }
             bufferedReader = new BufferedReader(new StringReader(content));
-            bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(distFile), StandardCharsets.UTF_8));
+            bufferedWriter = new BufferedWriter(new FileWriter(distFile));
             char[] buf = new char[1024];
             int len;
             while ((len = bufferedReader.read(buf)) != -1) {
@@ -204,11 +206,11 @@ public class FileUtils {
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @throws IOException in case of an I/O error
-     * @throws java.io.UnsupportedEncodingException if the encoding is not supported by the VM
+     * @throws IOException                  in case of an I/O error
+     * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      * @since 2.4
      */
     public static void writeStringToFile(File file, String data, Charset encoding) throws IOException {
@@ -221,11 +223,11 @@ public class FileUtils {
      * NOTE: As from v1.3, the parent directories of the file will be created
      * if they do not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @throws IOException in case of an I/O error
-     * @throws java.io.UnsupportedEncodingException if the encoding is not supported by the VM
+     * @throws IOException                  in case of an I/O error
+     * @throws UnsupportedEncodingException if the encoding is not supported by the VM
      */
     public static void writeStringToFile(File file, String data, String encoding) throws IOException {
         writeStringToFile(file, data, encoding, false);
@@ -234,11 +236,11 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
+     * @param append   if {@code true}, then the String will be added to the
+     *                 end of the file rather than overwriting
      * @throws IOException in case of an I/O error
      * @since 2.3
      */
@@ -256,14 +258,14 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file     the file to write
+     * @param data     the content to write to the file
      * @param encoding the encoding to use, {@code null} means platform default
-     * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
-     * @throws IOException in case of an I/O error
+     * @param append   if {@code true}, then the String will be added to the
+     *                 end of the file rather than overwriting
+     * @throws IOException                 in case of an I/O error
      * @throws UnsupportedCharsetException thrown instead of {@link UnsupportedEncodingException} in version 2.2 if the encoding is not
-     * supported by the VM
+     *                                     supported by the VM
      * @since 2.1
      */
     public static void writeStringToFile(File file, String data, String encoding, boolean append) throws IOException {
@@ -284,10 +286,10 @@ public class FileUtils {
     /**
      * Writes a String to a file creating the file if it does not exist using the default encoding for the VM.
      *
-     * @param file the file to write
-     * @param data the content to write to the file
+     * @param file   the file to write
+     * @param data   the content to write to the file
      * @param append if {@code true}, then the String will be added to the
-     * end of the file rather than overwriting
+     *               end of the file rather than overwriting
      * @throws IOException in case of an I/O error
      * @since 2.1
      */
@@ -332,9 +334,9 @@ public class FileUtils {
      * An exception is thrown if the file exists but cannot be written to.
      * An exception is thrown if the parent directory cannot be created.
      *
-     * @param file the file to open for output, must not be {@code null}
+     * @param file   the file to open for output, must not be {@code null}
      * @param append if {@code true}, then bytes will be added to the
-     * end of the file rather than overwriting
+     *               end of the file rather than overwriting
      * @return a new {@link FileOutputStream} for the specified file
      * @throws IOException if the file object is a directory
      * @throws IOException if the file cannot be written to
@@ -357,6 +359,7 @@ public class FileUtils {
         }
         return new FileOutputStream(file, append);
     }
+
 
     /**
      * deletes a directory recursively
@@ -383,10 +386,7 @@ public class FileUtils {
      * @throws IOException in case deletion is unsuccessful
      */
     public static void deleteFile(String filename) throws IOException {
-        File file = new File(filename);
-        if (file.exists()) {
-            org.apache.commons.io.FileUtils.forceDelete(file);
-        }
+        org.apache.commons.io.FileUtils.forceDelete(new File(filename));
     }
 
     /**
@@ -429,5 +429,6 @@ public class FileUtils {
             throw new RuntimeException(e);
         }
     }
+
 
 }

@@ -17,9 +17,13 @@
 
 package org.apache.dolphinscheduler.api.service;
 
+import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
+import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.User;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -58,4 +62,24 @@ public interface TaskInstanceService {
      */
     Map<String, Object> forceTaskSuccess(User loginUser, String projectName, Integer taskInstanceId);
 
+    /**
+     * 根据工作空间，起止时间，状态，查询task数量
+     * @param workspaceId
+     * @param startTime
+     * @param endTime
+     * @param statusArray
+     * @return
+     */
+    Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray);
+
+    /**
+     * 统计task数量/天
+     * @param request
+     * @return
+     */
+    List<TaskCountResult> countByDay(SchedulerHomepageRequest request);
+
+    Double runtimeTotalByDefinition(Long code, int[] statusArray);
+
+    Long getCountByByDefinitionAndStates(Long code, int[] statusArray);
 }

@@ -17,42 +17,38 @@
 
 package org.apache.dolphinscheduler.server.master.dispatch.host.assign;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 /**
  * random selector
+ * @param <T> T
  */
-public class RandomSelector extends AbstractSelector<HostWorker> {
+public class RandomSelector<T> implements Selector<T> {
+
+    private final Random random = new Random();
 
     @Override
-    public HostWorker doSelect(final Collection<HostWorker> source) {
+    public T select(final Collection<T> source) {
 
-        List<HostWorker> hosts = new ArrayList<>(source);
-        int size = hosts.size();
-        int[] weights = new int[size];
-        int totalWeight = 0;
-        int index = 0;
-
-        for (HostWorker host : hosts) {
-            totalWeight += host.getHostWeight();
-            weights[index] = host.getHostWeight();
-            index++;
+        if (source == null || source.size() == 0) {
+            throw new IllegalArgumentException("Empty source.");
         }
 
-        if (totalWeight > 0) {
-            int offset = ThreadLocalRandom.current().nextInt(totalWeight);
-
-            for (int i = 0; i < size; i++) {
-                offset -= weights[i];
-                if (offset < 0) {
-                    return hosts.get(i);
-                }
-            }
+        /**
+         * if only one , return directly
+         */
+        if (source.size() == 1) {
+            return (T) source.toArray()[0];
         }
-        return hosts.get(ThreadLocalRandom.current().nextInt(size));
+
+        int size = source.size();
+        /**
+         *  random select
+         */
+        int randomIndex = random.nextInt(size);
+
+        return (T) source.toArray()[randomIndex];
     }
 
 }

@@ -7,7 +7,10 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncE
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDdlConditionParam;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.HDFSUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,6 +24,7 @@ import java.util.stream.Collectors;
  * @author xujie
  * @since 2021-08-25
  */
+@Slf4j
 @Service
 public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper, IcreditDdlSyncEntity> implements IcreditDdlSyncService {
     @Override
@@ -33,6 +37,18 @@ public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper,
         if (CollectionUtils.isNotEmpty(list)) {
             results = list.parallelStream()
                     .filter(Objects::nonNull)
+                    .map(entity -> {
+                        String columnsInfo = entity.getColumnsInfo();
+                        if (StringUtils.isNotBlank(columnsInfo)) {
+                            try {
+                                String stringFromHDFS = HDFSUtils.getStringFromHDFS(columnsInfo);
+                                entity.setColumnsInfo(stringFromHDFS);
+                            } catch (Exception e) {
+                                log.error("从hdfs获取数据源表信息失败", e);
+                            }
+                        }
+                        return entity;
+                    })
                     .collect(Collectors.groupingBy(IcreditDdlSyncEntity::getDatasourceId, Collectors.maxBy(Comparator.comparing(IcreditDdlSyncEntity::getVersion))));
         }
         return Optional.ofNullable(results).orElse(Maps.newHashMap());

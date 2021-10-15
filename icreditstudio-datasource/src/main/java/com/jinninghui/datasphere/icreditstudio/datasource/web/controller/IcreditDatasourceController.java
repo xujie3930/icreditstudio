@@ -64,9 +64,9 @@ public class IcreditDatasourceController {
     @Logable
     public BusinessResult<Boolean> update(@RequestBody IcreditDatasourceUpdateRequest request) {
 
-        IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
-        BeanCopyUtils.copyProperties(request, entity);
-        return BusinessResult.success(datasourceService.updateById(entity));
+        IcreditDatasourceUpdateParam param = new IcreditDatasourceUpdateParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.updateDef(param);
     }
 
     /**
@@ -142,6 +142,7 @@ public class IcreditDatasourceController {
      * @param request
      * @return
      */
+    @Logable
     @PostMapping("/getConnectionInfo")
     public BusinessResult<ConnectionInfo> getConnectionInfo(@RequestBody ConnectionInfoRequest request) {
         ConnectionInfoParam param = new ConnectionInfoParam();
@@ -155,6 +156,7 @@ public class IcreditDatasourceController {
      * @param request
      * @return
      */
+    @Logable
     @PostMapping("/getTableInfo")
     public BusinessResult<List<SourceTableInfo>> getTableInfo(@RequestBody DataSourceTableInfoRequest request) {
         DataSourceTableInfoParam param = new DataSourceTableInfoParam();
@@ -163,11 +165,12 @@ public class IcreditDatasourceController {
     }
 
     /**
-     * 根据数据库名称获取
+     * 根据条件获取数据源信息
      *
      * @param request
      * @return
      */
+    @Logable
     @PostMapping("/getDataSources")
     BusinessResult<List<IcreditDatasourceEntity>> getDataSources(@RequestBody DataSourcesQueryRequest request) {
         DataSourcesQueryParam param = new DataSourcesQueryParam();

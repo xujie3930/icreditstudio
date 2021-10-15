@@ -17,30 +17,24 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
 
 /**
- *  kill task request command
+ * kill task request command
  */
+@Data
 public class TaskKillRequestCommand implements Serializable {
 
     /**
-     *  task id
+     * task id
      */
-    private int taskInstanceId;
-
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
+    private String taskInstanceId;
 
     /**
-     *  package request command
+     * package request command
      *
      * @return command
      */
@@ -50,12 +44,5 @@ public class TaskKillRequestCommand implements Serializable {
         byte[] body = JSONUtils.toJsonByteArray(this);
         command.setBody(body);
         return command;
-    }
-
-    @Override
-    public String toString() {
-        return "TaskKillRequestCommand{"
-                + "taskInstanceId=" + taskInstanceId
-                + '}';
     }
 }

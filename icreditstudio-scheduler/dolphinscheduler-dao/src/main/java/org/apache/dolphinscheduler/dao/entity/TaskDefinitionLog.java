@@ -17,21 +17,27 @@
 
 package org.apache.dolphinscheduler.dao.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.Date;
 
 /**
  * task definition log
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @TableName("t_ds_task_definition_log")
 public class TaskDefinitionLog extends TaskDefinition {
 
     /**
      * operator user id
      */
-    private int operator;
+    private String operator;
 
     /**
      * operate time
@@ -39,13 +45,10 @@ public class TaskDefinitionLog extends TaskDefinition {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date operateTime;
 
-    public TaskDefinitionLog() {
-        super();
-    }
-
     public TaskDefinitionLog(TaskDefinition taskDefinition) {
         super();
         this.setId(taskDefinition.getId());
+        this.setWorkspaceId(taskDefinition.getWorkspaceId());
         this.setCode(taskDefinition.getCode());
         this.setVersion(taskDefinition.getVersion());
         this.setName(taskDefinition.getName());
@@ -70,26 +73,5 @@ public class TaskDefinitionLog extends TaskDefinition {
         this.setFailRetryInterval(taskDefinition.getFailRetryInterval());
         this.setFailRetryTimes(taskDefinition.getFailRetryTimes());
         this.setFlag(taskDefinition.getFlag());
-    }
-
-    public int getOperator() {
-        return operator;
-    }
-
-    public void setOperator(int operator) {
-        this.operator = operator;
-    }
-
-    public Date getOperateTime() {
-        return operateTime;
-    }
-
-    public void setOperateTime(Date operateTime) {
-        this.operateTime = operateTime;
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

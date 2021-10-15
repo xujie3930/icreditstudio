@@ -106,7 +106,8 @@ export default {
         Array(num)
           .fill('*')
           .join('')
-      return showPassword ? getHideIcon(String(password).length) : password
+
+      return showPassword ? password : getHideIcon(String(password).length)
     }
   },
 

@@ -8,7 +8,9 @@ export default {
     mixinDialog() {
       // 模态框状态改变时，初始化form表单的校验结果，避免上次的失败校验影响到本次
       this.$nextTick(() => {
-        const refDom = this.$refs.crud.$refs.form.$refs[this.mixinDialogFormConfig.refName]
+        const refDom = this.$refs.crud.$refs.form.$refs[
+          this.mixinDialogFormConfig.refName
+        ]
         if (refDom) {
           refDom.clearValidate()
         }
@@ -30,13 +32,13 @@ export default {
       mixinSearchFormItems: [], // 搜索的配置
       mixinSearchFormFunc: [
         {
+          btnText: '重置',
+          btnEmitName: 'mixinReset'
+        },
+        {
           btnText: '查询',
           btnEmitName: 'mixinSearch',
           type: 'primary'
-        },
-        {
-          btnText: '重置',
-          btnEmitName: 'mixinReset'
         }
       ],
       mixinSearchFormConfig: {
@@ -90,8 +92,9 @@ export default {
       this.mixinFilterTableOperationByPermission(this.tableConfiguration.group)
     }
     if (Array.isArray(this.formOption)) {
-      this.mixinSearchFormItems = deepClone(this.formOption)
-        .filter(e => e.isSearch)
+      this.mixinSearchFormItems = deepClone(this.formOption).filter(
+        e => e.isSearch
+      )
     }
   },
   methods: {
@@ -100,14 +103,16 @@ export default {
      */
     toggleTableSelection(rows) {
       if (this.$refs.crud) {
-        const refDom = this.$refs.crud.$refs?.table?.$refs[this.tableConfiguration.refName]
+        const refDom = this.$refs.crud.$refs?.table?.$refs[
+          this.tableConfiguration.refName
+        ]
         if (refDom) {
           if (rows) {
             rows.forEach(row => {
-              refDom.toggleRowSelection(row);
-            });
+              refDom.toggleRowSelection(row)
+            })
           } else {
-            refDom.clearSelection();
+            refDom.clearSelection()
           }
         }
       }
@@ -125,7 +130,7 @@ export default {
     },
     /* 获取表格数据 */
     mixinRetrieveTableData() {
-      this.toggleTableSelection()// 刷新列表时重置勾选项
+      this.toggleTableSelection() // 刷新列表时重置勾选项
       const request = this._request('retrieve')
       if (!request) return
       this.mixinTableLoading = true
@@ -133,10 +138,16 @@ export default {
         .then(res => {
           if (res.success) {
             const { total, pageNum, pageCount } = res.data
-            const _data = this.tableConfiguration?.hasPage ? res.data?.list : res.data
-            this.mixinTableData = this.interceptorsResponseTableData(_data || [], res)
+            const _data = this.tableConfiguration?.hasPage
+              ? res.data?.list
+              : res.data
+            this.mixinTableData = this.interceptorsResponseTableData(
+              _data || [],
+              res
+            )
             this.mixinTablePagination.total = total || 0
-            this.mixinTablePagination.currentPage = pageNum > pageCount ? pageCount : pageNum
+            this.mixinTablePagination.currentPage =
+              pageNum > pageCount ? pageCount : pageNum
           }
         })
         .catch(err => {
@@ -159,7 +170,9 @@ export default {
       request
         .then(res => {
           if (res.success) {
-            const _data = this.tableConfiguration?.hasPage ? res.data?.list : res.data
+            const _data = this.tableConfiguration?.hasPage
+              ? res.data?.list
+              : res.data
             resolve(this.interceptorsResponseLazyTableData(_data || []))
           }
         })
@@ -172,7 +185,7 @@ export default {
     },
     /* 懒加载获取级联选择器数据并渲染节点 */
     mixinLazyTreeData(node, resolve) {
-      const { value } = node;
+      const { value } = node
       const _lazyParams = {
         lazy: true,
         parentId: value || '',
@@ -197,13 +210,13 @@ export default {
     },
     /* 校验表单填写规范 */
     validForm(formName) {
-      let validFlag = true;
+      let validFlag = true
       if (formName) {
         const refDom = this.$refs.crud.$refs.form.$refs[formName]
         if (refDom) {
           refDom.validate(valid => {
             validFlag = valid
-          });
+          })
         }
       }
       return validFlag
@@ -265,13 +278,13 @@ export default {
               console.log(err)
             })
         })
-        .catch(() => {
-        })
+        .catch(() => {})
     },
     /* 批量删除 */
     mixinHandleMultipleDelete({ validBeforeEvent }) {
       const { mixinSelectedData } = this
-      if (!validBeforeEvent || validBeforeEvent(mixinSelectedData)) { // 自定义的删除前置校验拦截
+      if (!validBeforeEvent || validBeforeEvent(mixinSelectedData)) {
+        // 自定义的删除前置校验拦截
         this.$confirm('确定删除选中数据?', '询问', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -296,8 +309,7 @@ export default {
                 console.log(err)
               })
           })
-          .catch(() => {
-          })
+          .catch(() => {})
       }
     },
     /**
@@ -330,7 +342,9 @@ export default {
     },
     /* 表格重置 */
     mixinHandleReset(autoRefreshTable = true) {
-      this.$refs.crud ? this.$refs.crud.$refs.searchForm.reset() : this.$refs.searchForm.reset()
+      this.$refs.crud
+        ? this.$refs.crud.$refs.searchForm.reset()
+        : this.$refs.searchForm.reset()
       autoRefreshTable && this.mixinRetrieveTableData()
     },
     mixinHandleLazyTable({ row, resolve }) {
@@ -360,51 +374,51 @@ export default {
         // newFile.forEach((value, key) => {
         //   console.log('key %s: value %s', key, value);
         // })
-        importFile(this.fetchConfig.import?.url, newFile)
-          .then(res => {
-            if (res.data.errorCount === 0) {
-              this.$message.success('导入成功!')
-            } else {
-              let errorHtml = ''
-              res.data.noPassList.forEach(item => {
-                errorHtml += `<p>${item.errorMsg}</p>`
-              })
-              this.$notify({
-                title: `导入完成，已成功${res.data.successCount}条，失败${res.data.errorCount}条`,
-                message: errorHtml,
-                dangerouslyUseHTMLString: true,
-                type: 'warning'
-              });
-            }
-            setTimeout(() => {
-              this.mixinRetrieveTableData()
-            }, 1500)
-          })
+        importFile(this.fetchConfig.import?.url, newFile).then(res => {
+          if (res.data.errorCount === 0) {
+            this.$message.success('导入成功!')
+          } else {
+            let errorHtml = ''
+            res.data.noPassList.forEach(item => {
+              errorHtml += `<p>${item.errorMsg}</p>`
+            })
+            this.$notify({
+              title: `导入完成，已成功${res.data.successCount}条，失败${res.data.errorCount}条`,
+              message: errorHtml,
+              dangerouslyUseHTMLString: true,
+              type: 'warning'
+            })
+          }
+          setTimeout(() => {
+            this.mixinRetrieveTableData()
+          }, 1500)
+        })
       }
     },
     mixinHandleExport() {
       const params = this.interceptorsRequestExport()
-      getAction(
-        this.fetchConfig.export?.url,
-        params,
-        { responseType: 'blob' }
-      )
-        .then(res => {
-          fileDownload(res, '列表数据导出.xlsx')
-        })
+      getAction(this.fetchConfig.export?.url, params, {
+        responseType: 'blob'
+      }).then(res => {
+        fileDownload(res, '列表数据导出.xlsx')
+      })
     },
     mixinHandleView({ row }, title) {
-      Promise.resolve(this.interceptorsBeforeView(
-        deepClone(this.formOption)
-          .filter(e => !e.viewHide)
-          .map(e => {
-            const _currentVal = row[e.ruleProp]
-            return Object.assign(e, {
-              model: this._isUndefinedOrNull(_currentVal) ? e.model : _currentVal,
-              disabled: true
+      Promise.resolve(
+        this.interceptorsBeforeView(
+          deepClone(this.formOption)
+            .filter(e => !e.viewHide)
+            .map(e => {
+              const _currentVal = row[e.ruleProp]
+              return Object.assign(e, {
+                model: this._isUndefinedOrNull(_currentVal)
+                  ? e.model
+                  : _currentVal,
+                disabled: true
+              })
             })
-          })
-      )).then(_data => {
+        )
+      ).then(_data => {
         this.mixinDialogFormItems = _data
         this.$refs.crud.updateModels(this.mixinDialogFormItems)
         this.mixinDialogFormFunc[0].hide = true
@@ -415,17 +429,22 @@ export default {
     },
     mixinHandleEdit({ row }) {
       this.mixinUpdate = row
-      Promise.resolve(this.interceptorsBeforeEdit(
-        deepClone(this.formOption)
-          .filter(e => !e.editHide)
-          .map(e => {
-            const _currentVal = row[e.ruleProp]
-            return Object.assign(e, {
-              model: this._isUndefinedOrNull(_currentVal) ? e.model : _currentVal,
-              disabled: e.editDisabled
-            })
-          }), row
-      )).then(_data => {
+      Promise.resolve(
+        this.interceptorsBeforeEdit(
+          deepClone(this.formOption)
+            .filter(e => !e.editHide)
+            .map(e => {
+              const _currentVal = row[e.ruleProp]
+              return Object.assign(e, {
+                model: this._isUndefinedOrNull(_currentVal)
+                  ? e.model
+                  : _currentVal,
+                disabled: e.editDisabled
+              })
+            }),
+          row
+        )
+      ).then(_data => {
         this.mixinDialogFormItems = _data
         this.$refs.crud.updateModels(this.mixinDialogFormItems)
         this.mixinDialogType = 1
@@ -434,7 +453,7 @@ export default {
     },
     mixinHandleCancel() {
       this.mixinDialog = false
-      this.mixinDialogFormFunc[0].hide = false// 恢复默认显示下次弹框中的确认按钮
+      this.mixinDialogFormFunc[0].hide = false // 恢复默认显示下次弹框中的确认按钮
     },
 
     /**
@@ -464,10 +483,7 @@ export default {
           )
           break
         case 'lazy':
-          _params = Object.assign(
-            {},
-            row
-          )
+          _params = Object.assign({}, row)
           break
         case 'create':
           _params = this.mixinDialogFormConfig.models
@@ -511,7 +527,11 @@ export default {
       const _config = Object.assign(
         {},
         this.fetchConfig[type],
-        { [method === 'get' ? 'params' : 'data']: this[`interceptorsRequest${upperCaseFirst(type)}`](_params, row) } // 调用暴露给外部实例的重写方法
+        {
+          [method === 'get' ? 'params' : 'data']: this[
+            `interceptorsRequest${upperCaseFirst(type)}`
+          ](_params, row)
+        } // 调用暴露给外部实例的重写方法
       )
       return axios(_config)
     },
@@ -569,7 +589,9 @@ export default {
      * @param params
      * @return {*}
      */
-    interceptorsRequestExport(params = { ...this.mixinSearchFormConfig.models }) {
+    interceptorsRequestExport(
+      params = { ...this.mixinSearchFormConfig.models }
+    ) {
       return params
     },
     /**
@@ -623,14 +645,10 @@ export default {
      * 暴露给实例的相关回调
      * 可以通过 return true 终止内部的后续操作
      */
-    interceptorsResponseCreate() {
-    },
-    interceptorsResponseUpdate() {
-    },
-    interceptorsResponseDelete() {
-    },
-    interceptorsResponseMultipleDelete() {
-    },
+    interceptorsResponseCreate() {},
+    interceptorsResponseUpdate() {},
+    interceptorsResponseDelete() {},
+    interceptorsResponseMultipleDelete() {},
     _isUndefinedOrNull(val) {
       return val === undefined || val === null
     }

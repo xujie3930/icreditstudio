@@ -14,47 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.dao.mapper;
-
-import org.apache.dolphinscheduler.dao.entity.Project;
-import org.apache.dolphinscheduler.dao.entity.ProjectUser;
-
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import org.apache.dolphinscheduler.dao.entity.Project;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * project mapper interface
  */
 public interface ProjectMapper extends BaseMapper<Project> {
-    /**
-     * query project detail by code
-     * @param projectCode projectCode
-     * @return project
-     */
-    Project queryByCode(@Param("projectCode") Long projectCode);
 
     /**
-     * TODO: delete
      * query project detail by id
+     *
      * @param projectId projectId
      * @return project
      */
-    Project queryDetailById(@Param("projectId") int projectId);
-
-    /**
-     * query project detail by code
-     * @param projectCode projectCode
-     * @return project
-     */
-    Project queryDetailByCode(@Param("projectCode") Long projectCode);
+    Project queryDetailById(@Param("projectId") String projectId);
 
     /**
      * query project by name
+     *
      * @param projectName projectName
      * @return project
      */
@@ -62,61 +46,38 @@ public interface ProjectMapper extends BaseMapper<Project> {
 
     /**
      * project page
-     * @param page page
-     * @param userId userId
+     *
+     * @param page       page
+     * @param userId     userId
      * @param searchName searchName
      * @return project Ipage
      */
     IPage<Project> queryProjectListPaging(IPage<Project> page,
-                                          @Param("userId") int userId,
+                                          @Param("userId") String userId,
                                           @Param("searchName") String searchName);
 
     /**
-     *  query create project user
+     * query create project user
+     *
      * @param userId userId
      * @return project list
      */
-    List<Project> queryProjectCreatedByUser(@Param("userId") int userId);
+    List<Project> queryProjectCreatedByUser(@Param("userId") String userId);
 
     /**
      * query authed project list by userId
+     *
      * @param userId userId
      * @return project list
      */
-    List<Project> queryAuthedProjectListByUserId(@Param("userId") int userId);
-
-    /**
-     * query relation project list by userId
-     * @param userId userId
-     * @return project list
-     */
-    List<Project> queryRelationProjectListByUserId(@Param("userId") int userId);
+    List<Project> queryAuthedProjectListByUserId(@Param("userId") String userId);
 
     /**
      * query project except userId
+     *
      * @param userId userId
      * @return project list
      */
-    List<Project> queryProjectExceptUserId(@Param("userId") int userId);
-
-    /**
-     * query project list by userId
-     * @param userId
-     * @return
-     */
-    List<Project> queryProjectCreatedAndAuthorizedByUserId(@Param("userId") int userId);
-
-    /**
-     * query project name and user name by processInstanceId.
-     * @param processInstanceId processInstanceId
-     * @return projectName and userName
-     */
-    ProjectUser queryProjectWithUserByProcessInstanceId(@Param("processInstanceId") int processInstanceId);
-
-    /**
-     * query all project
-     * @return projectList
-     */
-    List<Project> queryAllProject();
+    List<Project> queryProjectExceptUserId(@Param("userId") String userId);
 
 }

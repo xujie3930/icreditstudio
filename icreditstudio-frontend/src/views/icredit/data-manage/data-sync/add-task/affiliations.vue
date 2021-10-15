@@ -9,6 +9,7 @@
     ref="baseDialog"
     width="1000px"
     :title="title"
+    :hideFooter="opType === 'edit'"
     @on-confirm="confirm"
   >
     <el-form ref="form" :model="form" label-width="100px" v-loading="loading">
@@ -49,7 +50,7 @@
                   style="width:100%"
                   v-model="item.left"
                   placeholder="请选择"
-                  @change="handleChangeLeftSelect(item, idx)"
+                  @change="handleChangeLeftSelect(item)"
                 >
                   <el-option
                     v-for="item in aTableOption"
@@ -80,7 +81,7 @@
                   style="width:100%"
                   v-model="item.right"
                   placeholder="请选择"
-                  @change="handleChangeRightSelect(item, idx)"
+                  @change="handleChangeRightSelect(item)"
                 >
                   <el-option
                     v-for="item in bTableOption"
@@ -97,6 +98,7 @@
                   type="primary"
                   icon="el-icon-plus"
                   circle
+                  :disabled="opType === 'edit'"
                   @click="handleAddClick"
                 >
                 </el-button>
@@ -104,7 +106,9 @@
                   type="danger"
                   icon="el-icon-minus"
                   circle
-                  :disabled="form.linkTypeData.conditions.length < 2"
+                  :disabled="
+                    form.linkTypeData.conditions.length < 2 || opType === 'edit'
+                  "
                   @click="handleMinusClick(idx)"
                 ></el-button>
               </el-col>
@@ -119,7 +123,7 @@
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
-import { deepClone } from '@/utils/util'
+import { deepClone, unique } from '@/utils/util'
 import { iconMapping } from '../contant'
 
 export default {
@@ -127,14 +131,13 @@ export default {
 
   data() {
     return {
+      valid: true,
       idx: null,
-      lfTbIdx: null,
-      rhTbIdx: null,
       leftSelectVal: {},
       rightSelectVal: {},
 
       title: '',
-      value: '',
+      opType: '',
       loading: false,
       aTableName: '',
       bTableName: '',
@@ -156,12 +159,10 @@ export default {
 
   methods: {
     open(options) {
-      console.log(options, 'option')
       const {
         idx,
-        lfTbIdx,
-        rhTbIdx,
         title,
+        opType,
         dialect,
         leftTable,
         rightTable,
@@ -169,10 +170,10 @@ export default {
         conditions
       } = options
 
+      this.valid = true
       this.title = title
       this.idx = idx
-      this.lfTbIdx = lfTbIdx
-      this.rhTbIdx = rhTbIdx
+      this.opType = opType
       this.leftTable = leftTable
       this.rightTable = rightTable
       this.aTableName = leftTable.name
@@ -182,6 +183,7 @@ export default {
 
       this.$refs.baseDialog.open()
       this.getLinkTypeData(dialect)
+      if (opType === 'edit') return
       this.getTableField('aTableOption', {
         datasourceId: leftTable.datasourceId,
         tableName: leftTable.name
@@ -214,24 +216,31 @@ export default {
       } = this
       const relationData = {
         idx: this.idx,
-        lfTbIdx: this.lfTbIdx,
-        rhTbIdx: this.rhTbIdx,
         associatedType: form.associatedType,
-        conditions: linkTypeData.conditions,
+        conditions: unique(linkTypeData.conditions),
         leftSource: leftTable.name,
         leftSourceDatabase: leftTable.database,
         rightSource: rightTable.name,
         rightSourceDatabase: rightTable.database
       }
-      this.validate(relationData)
+
+      // 关联条件必填
+      if (relationData.conditions.length) {
+        relationData.conditions.forEach(({ left, right, associate }) => {
+          this.valid = left && associate && right
+        })
+
+        !this.valid && this.$message.error('请先选择要关联的表字段及关联关系！')
+        this.closeBtnLoading()
+      }
+
+      this.valid && this.validate(relationData)
     },
 
     validate(relationData) {
-      console.log('relationData', relationData)
       this.$refs.form.validate(valid => {
         if (valid) {
           this.close()
-
           this.$emit('on-confirm', relationData)
         }
         this.closeBtnLoading()
@@ -239,18 +248,17 @@ export default {
     },
 
     handleTagClick(curTag) {
-      console.log(curTag)
-      this.form.associatedType = curTag.code
+      this.opType !== 'edit' && (this.form.associatedType = curTag.code)
+      this.$refs.form.clearValidate()
     },
 
-    handleChangeLeftSelect(item, idx) {
-      console.log('this.aTableOption[idx]', this.aTableOption[idx])
+    handleChangeLeftSelect(item) {
       const { left, right } = item
       this.leftSelectVal = this.aTableOption.find(({ name }) => name === left)
+
       if (right) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
-        console.log(fieldType, rType)
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
           item.left = ''
@@ -262,14 +270,13 @@ export default {
       }
     },
 
-    handleChangeRightSelect(item, idx) {
-      console.log('this.bTableOption[idx]', this.bTableOption[idx])
+    handleChangeRightSelect(item) {
       const { left, right } = item
       this.rightSelectVal = this.bTableOption.find(({ name }) => name === right)
+
       if (left) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
-        console.log(fieldType, rType)
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
           item.right = ''

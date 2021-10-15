@@ -17,6 +17,8 @@
 
 package org.apache.dolphinscheduler.remote.command;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 
 import java.io.Serializable;
@@ -24,35 +26,12 @@ import java.io.Serializable;
 /**
  * db task ack request command
  */
+@Data
+@AllArgsConstructor
 public class DBTaskAckCommand implements Serializable {
 
-    private int taskInstanceId;
     private int status;
-
-    public DBTaskAckCommand() {
-        super();
-    }
-
-    public DBTaskAckCommand(int status, int taskInstanceId) {
-        this.status = status;
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public int getTaskInstanceId() {
-        return taskInstanceId;
-    }
-
-    public void setTaskInstanceId(int taskInstanceId) {
-        this.taskInstanceId = taskInstanceId;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
+    private String taskInstanceId;
 
     /**
      * package response command
@@ -65,10 +44,5 @@ public class DBTaskAckCommand implements Serializable {
         byte[] body = JSONUtils.toJsonByteArray(this);
         command.setBody(body);
         return command;
-    }
-
-    @Override
-    public String toString() {
-        return "DBTaskAckCommand{" + "taskInstanceId=" + taskInstanceId + ", status=" + status + '}';
     }
 }

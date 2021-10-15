@@ -46,7 +46,7 @@
     </dependencies>
 
     <build>
-        <resources>
+        <!--<resources>
             <resource>
                 <directory>src/main/resources</directory>
                 <excludes>
@@ -55,7 +55,7 @@
                     <exclude>*.xml</exclude>
                 </excludes>
             </resource>
-        </resources>
+        </resources>-->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

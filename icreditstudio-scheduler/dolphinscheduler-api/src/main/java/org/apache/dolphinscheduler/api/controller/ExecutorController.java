@@ -17,43 +17,27 @@
 
 package org.apache.dolphinscheduler.api.controller;
 
-import static org.apache.dolphinscheduler.api.enums.Status.CHECK_PROCESS_DEFINITION_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.EXECUTE_PROCESS_INSTANCE_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.START_PROCESS_INSTANCE_ERROR;
-
+import io.swagger.annotations.*;
 import org.apache.dolphinscheduler.api.aspect.AccessLogAnnotation;
 import org.apache.dolphinscheduler.api.enums.ExecuteType;
 import org.apache.dolphinscheduler.api.exceptions.ApiException;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.RunMode;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.WarningType;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.dao.entity.User;
-
-import java.util.Map;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.text.ParseException;
+import java.util.Map;
+
+import static org.apache.dolphinscheduler.api.enums.Status.EXECUTE_PROCESS_INSTANCE_ERROR;
+import static org.apache.dolphinscheduler.api.enums.Status.START_PROCESS_INSTANCE_ERROR;
 
 /**
  * executor controller
@@ -63,26 +47,30 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("projects/{projectName}/executors")
 public class ExecutorController extends BaseController {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExecutorController.class);
+
     @Autowired
     private ExecutorService execService;
 
     /**
      * execute process instance
      *
-     * @param loginUser login user
-     * @param projectName project name
-     * @param processDefinitionId process definition id
-     * @param scheduleTime schedule time
-     * @param failureStrategy failure strategy
-     * @param startNodeList start nodes list
-     * @param taskDependType task depend type
-     * @param execType execute type
-     * @param warningType warning type
-     * @param warningGroupId warning group id
-     * @param runMode run mode
+     * @param loginUser               login user
+     * @param projectName             project name
+     * @param processDefinitionId     process definition id
+     * @param scheduleTime            schedule time
+     * @param failureStrategy         failure strategy
+     * @param startNodeList           start nodes list
+     * @param taskDependType          task depend type
+     * @param execType                execute type
+     * @param warningType             warning type
+     * @param warningGroupId          warning group id
+     * @param receivers               receivers
+     * @param receiversCc             receivers cc
+     * @param runMode                 run mode
      * @param processInstancePriority process instance priority
-     * @param workerGroup worker group
-     * @param timeout timeout
+     * @param workerGroup             worker group
+     * @param timeout                 timeout
      * @return start process result code
      */
     @ApiOperation(value = "startProcessInstance", notes = "RUN_PROCESS_INSTANCE_NOTES")
@@ -95,6 +83,8 @@ public class ExecutorController extends BaseController {
             @ApiImplicitParam(name = "execType", value = "COMMAND_TYPE", dataType = "CommandType"),
             @ApiImplicitParam(name = "warningType", value = "WARNING_TYPE", required = true, dataType = "WarningType"),
             @ApiImplicitParam(name = "warningGroupId", value = "WARNING_GROUP_ID", required = true, dataType = "Int", example = "100"),
+            @ApiImplicitParam(name = "receivers", value = "RECEIVERS", dataType = "String"),
+            @ApiImplicitParam(name = "receiversCc", value = "RECEIVERS_CC", dataType = "String"),
             @ApiImplicitParam(name = "runMode", value = "RUN_MODE", dataType = "RunMode"),
             @ApiImplicitParam(name = "processInstancePriority", value = "PROCESS_INSTANCE_PRIORITY", required = true, dataType = "Priority"),
             @ApiImplicitParam(name = "workerGroup", value = "WORKER_GROUP", dataType = "String", example = "default"),
@@ -103,44 +93,46 @@ public class ExecutorController extends BaseController {
     @PostMapping(value = "start-process-instance")
     @ResponseStatus(HttpStatus.OK)
     @ApiException(START_PROCESS_INSTANCE_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
     public Result startProcessInstance(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                                        @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                                       @RequestParam(value = "processDefinitionId") int processDefinitionId,
+                                       @RequestParam(value = "processDefinitionId") String processDefinitionId,
                                        @RequestParam(value = "scheduleTime", required = false) String scheduleTime,
                                        @RequestParam(value = "failureStrategy", required = true) FailureStrategy failureStrategy,
                                        @RequestParam(value = "startNodeList", required = false) String startNodeList,
                                        @RequestParam(value = "taskDependType", required = false) TaskDependType taskDependType,
                                        @RequestParam(value = "execType", required = false) CommandType execType,
                                        @RequestParam(value = "warningType", required = true) WarningType warningType,
-                                       @RequestParam(value = "warningGroupId", required = false) int warningGroupId,
+                                       @RequestParam(value = "warningGroupId", required = false) String warningGroupId,
+                                       @RequestParam(value = "receivers", required = false) String receivers,
+                                       @RequestParam(value = "receiversCc", required = false) String receiversCc,
                                        @RequestParam(value = "runMode", required = false) RunMode runMode,
                                        @RequestParam(value = "processInstancePriority", required = false) Priority processInstancePriority,
                                        @RequestParam(value = "workerGroup", required = false, defaultValue = "default") String workerGroup,
-                                       @RequestParam(value = "timeout", required = false) Integer timeout,
-                                       @RequestParam(value = "startParams", required = false) String startParams) {
+                                       @RequestParam(value = "timeout", required = false) Integer timeout) throws ParseException {
+        logger.info("login user {}, start process instance, project name: {}, process definition id: {}, schedule time: {}, "
+                        + "failure policy: {}, node name: {}, node dep: {}, notify type: {}, "
+                        + "notify group id: {},receivers:{},receiversCc:{}, run mode: {},process instance priority:{}, workerGroup: {}, timeout: {}",
+                loginUser.getUserName(), projectName, processDefinitionId, scheduleTime,
+                failureStrategy, startNodeList, taskDependType, warningType, workerGroup, receivers, receiversCc, runMode, processInstancePriority,
+                workerGroup, timeout);
 
         if (timeout == null) {
             timeout = Constants.MAX_TASK_TIMEOUT;
         }
-        Map<String, String> startParamMap = null;
-        if (startParams != null) {
-            startParamMap = JSONUtils.toMap(startParams);
-        }
+
         Map<String, Object> result = execService.execProcessInstance(loginUser, projectName, processDefinitionId, scheduleTime, execType, failureStrategy,
                 startNodeList, taskDependType, warningType,
-                warningGroupId, runMode, processInstancePriority, workerGroup, timeout, startParamMap);
+                warningGroupId, receivers, receiversCc, runMode, processInstancePriority, workerGroup, timeout);
         return returnDataList(result);
     }
-
 
     /**
      * do action to process instance：pause, stop, repeat, recover from pause, recover from stop
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser         login user
+     * @param projectName       project name
      * @param processInstanceId process instance id
-     * @param executeType execute type
+     * @param executeType       execute type
      * @return execute result code
      */
     @ApiOperation(value = "execute", notes = "EXECUTE_ACTION_TO_PROCESS_INSTANCE_NOTES")
@@ -155,31 +147,31 @@ public class ExecutorController extends BaseController {
     //TODO:工作流执行,这里插入Command
     public Result execute(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
                           @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                          @RequestParam("processInstanceId") Integer processInstanceId,
+                          @RequestParam("processInstanceId") String processInstanceId,
                           @RequestParam("executeType") ExecuteType executeType
     ) {
         Map<String, Object> result = execService.execute(loginUser, projectName, processInstanceId, executeType);
         return returnDataList(result);
     }
 
-    /**
-     * check process definition and all of the son process definitions is on line.
-     *
-     * @param loginUser login user
-     * @param processDefinitionId process definition id
-     * @return check result code
-     */
-    @ApiOperation(value = "startCheckProcessDefinition", notes = "START_CHECK_PROCESS_DEFINITION_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "processDefinitionId", value = "PROCESS_DEFINITION_ID", required = true, dataType = "Int", example = "100")
-    })
-    @PostMapping(value = "/start-check")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiException(CHECK_PROCESS_DEFINITION_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result startCheckProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                              @RequestParam(value = "processDefinitionId") int processDefinitionId) {
-        Map<String, Object> result = execService.startCheckByProcessDefinedId(processDefinitionId);
-        return returnDataList(result);
-    }
+//    /**
+//     * check process definition and all of the son process definitions is on line.
+//     *
+//     * @param loginUser login user
+//     * @param processDefinitionId process definition id
+//     * @return check result code
+//     */
+//    @ApiOperation(value = "startCheckProcessDefinition", notes = "START_CHECK_PROCESS_DEFINITION_NOTES")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "processDefinitionId", value = "PROCESS_DEFINITION_ID", required = true, dataType = "Int", example = "100")
+//    })
+//    @PostMapping(value = "/start-check")
+//    @ResponseStatus(HttpStatus.OK)
+//    @ApiException(CHECK_PROCESS_DEFINITION_ERROR)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result startCheckProcessDefinition(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
+//                                              @RequestParam(value = "processDefinitionId") String processDefinitionId) {
+//        Map<String, Object> result = execService.startCheckByProcessDefinedId(processDefinitionId);
+//        return returnDataList(result);
+//    }
 }

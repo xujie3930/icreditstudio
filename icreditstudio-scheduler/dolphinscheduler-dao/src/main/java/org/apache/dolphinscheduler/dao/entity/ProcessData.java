@@ -16,100 +16,42 @@
  */
 package org.apache.dolphinscheduler.dao.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.process.Property;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 
 import java.util.List;
 
 /**
  * definition json data structure
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ProcessData {
-  /**
-   * task list
-   */
-  private List<TaskNode> tasks;
+    /**
+     * task list
+     */
+    private List<TaskNode> tasks;
 
-  /**
-   * global parameters
-   */
-  private List<Property> globalParams;
-
-
-  private int timeout;
-
-  private int tenantId;
+    /**
+     * global parameters
+     */
+    private List<Property> globalParams;
 
 
-  public ProcessData() {
-  }
+    private int timeout;
 
-  /**
-   *
-   * @param tasks tasks
-   * @param globalParams globalParams
-   */
-  public ProcessData(List<TaskNode> tasks, List<Property> globalParams) {
-    this.tasks = tasks;
-    this.globalParams = globalParams;
-  }
+    private String tenantCode;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+    /**
+     * @param tasks        tasks
+     * @param globalParams globalParams
+     */
+    public ProcessData(List<TaskNode> tasks, List<Property> globalParams) {
+        this.tasks = tasks;
+        this.globalParams = globalParams;
     }
-
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-
-    ProcessData that = (ProcessData) o;
-
-    return CollectionUtils.equalLists(tasks, that.tasks) &&
-        CollectionUtils.equalLists(globalParams, that.globalParams);
-  }
-
-  public List<TaskNode> getTasks() {
-    return tasks;
-  }
-
-  public void setTasks(List<TaskNode> tasks) {
-    this.tasks = tasks;
-  }
-
-  public List<Property> getGlobalParams() {
-    return globalParams;
-  }
-
-  public void setGlobalParams(List<Property> globalParams) {
-    this.globalParams = globalParams;
-  }
-
-  public int getTimeout() {
-    return timeout;
-  }
-
-  public void setTimeout(int timeout) {
-    this.timeout = timeout;
-  }
-
-  public int getTenantId() {
-    return tenantId;
-  }
-
-  public void setTenantId(int tenantId) {
-    this.tenantId = tenantId;
-  }
-
-  @Override
-  public String toString() {
-    return "ProcessData{" +
-            "tasks=" + tasks +
-            ", globalParams=" + globalParams +
-            ", timeout=" + timeout +
-            ", tenantId=" + tenantId +
-            '}';
-  }
 }

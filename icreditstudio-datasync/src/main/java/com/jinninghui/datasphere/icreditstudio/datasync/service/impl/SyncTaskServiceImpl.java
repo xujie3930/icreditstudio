@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -12,6 +13,8 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
@@ -25,6 +28,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFie
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncDispatchTaskPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -36,6 +40,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +68,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private Parser<String, SyncCondition> syncConditionParser;
     @Resource
     private MetadataFeign metadataFeign;
+    @Resource
+    private SyncTaskMapper syncTaskMapper;
 
     @Override
     @BusinessParamsValidate
@@ -73,6 +81,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             taskId = oneStepSave(param);
         }
         if (CallStepEnum.TWO == CallStepEnum.find(param.getCallStep())) {
+            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = twoStepSave(param);
         }
         if (CallStepEnum.THREE == CallStepEnum.find(param.getCallStep())) {
@@ -84,6 +93,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
+//            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
@@ -148,6 +158,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         entity.setVersion(param.getVersion());
         entity.setSourceType(param.getSourceType());
+        entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
         if (StringUtils.isNotBlank(param.getTaskId())) {
             Map<String, Object> columnMap = Maps.newHashMap();
             columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
@@ -281,7 +292,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
                 info.setTargetSource(wideTable.getTargetSource());
                 info.setSql(wideTable.getSqlStr());
-                info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+
+                List<TableInfo> tableInfos = JSONArray.parseArray(wideTable.getSourceTables(), TableInfo.class);
+                if (CollectionUtils.size(tableInfos) == 1) {
+                    TableInfo tableInfo = tableInfos.get(0);
+                    AssociatedData data = new AssociatedData();
+                    data.setLeftSourceDatabase(tableInfo.getDatabase());
+                    data.setLeftSource(tableInfo.getTableName());
+                    info.setView(Lists.newArrayList(data));
+                } else {
+                    info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+                }
                 List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTable.getId());
                 info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
             }
@@ -317,18 +338,36 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         //取得宽表sql
         String wideTableSql = generateWideTable.getWideTableSql(param);
+        log.info("取得宽表的sql语句", wideTableSql);
         //校验sql语法
         generateWideTable.verifySql(wideTableSql, param);
 
-        List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = null;
-        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode())) {
-            databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+        WideTable wideTable = new WideTable();
+        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode()) && CollectionUtils.isEmpty(param.getSqlInfo().getDatabaseHost())) {
+            List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
+            log.info("相同数据库信息", JSONObject.toJSONString(databaseInfos));
+            //如何不同主机有相同数据库则返回给用户选择
+            if (CollectionUtils.isNotEmpty(databaseInfos)) {
+                wideTable.setSameNameDataBase(databaseInfos);
+                wideTable.setSql(wideTableSql);
+            } else {
+                //取得数据源ID
+                String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+                log.info("数据源ID", dataSourceId);
+                //生成宽表数据列
+                try {
+                    wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
+                }catch (Exception e){
+                    throw new AppException("60000027");
+                }
+            }
+        } else {
+            //取得数据源ID
+            String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
+            log.info("数据源ID", dataSourceId);
+            //生成宽表数据列
+            wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
         }
-        //取得数据源ID
-        String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
-        //生成宽表数据列
-        WideTable wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
-        wideTable.setSameNameDataBase(databaseInfos);
         return BusinessResult.success(wideTable);
     }
 
@@ -457,5 +496,36 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         wrapper.orderByAsc(SyncTaskEntity.TASK_STATUS);
         wrapper.orderByDesc(SyncTaskEntity.LAST_SCHEDULING_TIME);
         return wrapper;
+    }
+
+    @Override
+    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(DataSyncDispatchTaskPageParam param) {
+        DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
+        BeanUtils.copyProperties(param, dispatchPageDTO);
+        dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
+        long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
+        List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
+        for (DataSyncDispatchTaskPageResult dataSyncDispatchTaskPageResult : dispatchList) {
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchPeriod())){
+                JSONObject obj = (JSONObject)JSONObject.parse(dataSyncDispatchTaskPageResult.getDispatchPeriod());
+                dataSyncDispatchTaskPageResult.setDispatchPeriod(obj.getString("cron"));//执行周期
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){//调度类型
+                dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){//执行状态
+                dataSyncDispatchTaskPageResult.setDispatchStatus(ExecStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchStatus())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {//任务状态
+                dataSyncDispatchTaskPageResult.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getTaskStatus())).getDesc());
+            }
+        }
+        return BusinessPageResult.build(dispatchList, param, dispatchCount);
+    }
+
+    @Override
+    public String getProcessInstanceIdById(String id) {
+        SyncTaskEntity syncTask = syncTaskMapper.selectById(id);
+        return syncTask == null ? null : syncTask.getScheduleId();
     }
 }

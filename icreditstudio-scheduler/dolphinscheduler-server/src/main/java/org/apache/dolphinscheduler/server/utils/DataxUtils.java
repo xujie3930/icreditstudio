@@ -48,6 +48,8 @@ public class DataxUtils {
 
     public static final String DATAX_WRITER_PLUGIN_CLICKHOUSE = "clickhousewriter";
 
+    public static final String DATAX_WRITER_PLUGIN_HIVE = "hdfswriter";
+
     public static String getReaderPluginName(DbType dbType) {
         switch (dbType) {
             case MYSQL:
@@ -77,6 +79,8 @@ public class DataxUtils {
                 return DATAX_WRITER_PLUGIN_SQLSERVER;
             case CLICKHOUSE:
                 return DATAX_WRITER_PLUGIN_CLICKHOUSE;
+            case HIVE:
+                return DATAX_WRITER_PLUGIN_HIVE;
             default:
                 return null;
         }

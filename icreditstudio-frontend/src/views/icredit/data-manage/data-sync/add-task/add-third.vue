@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task">
       <HeaderStepBar :cur-step="3" />
 
@@ -51,6 +50,7 @@
             label-width="35%"
             v-if="taskForm.syncRate"
             label="限流速率"
+            prop="limitRate"
           >
             <el-input
               clearable
@@ -84,18 +84,25 @@
         >
           <el-input
             style="width: 500px"
-            placeholder="请输入内容"
+            placeholder="请输入或选择cron表达式"
             v-model="taskForm.cron"
           >
-            <div slot="append" class="cron-suffix" @click="handleOpenCron">
-              <i class="el-icon-open "></i>
-            </div>
+            <el-button
+              slot="append"
+              icon="el-icon-open"
+              @click="handleOpenCron"
+            ></el-button>
           </el-input>
         </el-form-item>
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button class="btn" @click="$router.push('/data-manage/add-build')">
+        <el-button
+          class="btn"
+          @click="
+            $router.push(`/data-manage/add-build?step=third&opType=${opType}`)
+          "
+        >
           上一步
         </el-button>
         <el-button
@@ -116,23 +123,34 @@
       </footer>
     </div>
 
-    <Cron ref="cron" v-model="taskForm.cron" />
+    <Cron
+      ref="cron"
+      :value="taskForm.cron"
+      @on-close="taskForm.cron = ''"
+      @on-confirm="value => (taskForm.cron = value)"
+    />
   </div>
 </template>
 
 <script>
 import HeaderStepBar from './header-step-bar'
-import Back from '@/views/icredit/components/back'
 import Cron from '@/components/cron'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
 
 export default {
-  components: { HeaderStepBar, Back, Cron },
+  components: { HeaderStepBar, Cron },
 
   data() {
+    const verifyLimitRate = (rule, value, cb) => {
+      const num = parseInt(value, 10) || 0
+      this.taskForm.limitRate = num
+      cb()
+    }
+
     return {
+      opType: '',
       detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
@@ -158,6 +176,7 @@ export default {
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
+        limitRate: [{ validator: verifyLimitRate, trigger: 'blur' }],
         cron: [
           {
             required: true,
@@ -179,6 +198,7 @@ export default {
 
   methods: {
     initPage() {
+      this.opType = this.$route.query?.opType || 'add'
       const beforeStepForm = this.$ls.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
@@ -211,6 +231,7 @@ export default {
                 if (callStep === 4) {
                   this.$router.push('/data-manage/data-sync')
                   this.$ls.remove('taskForm')
+                  this.$ls.remove('selectedTable')
                 }
               }
             })
@@ -219,12 +240,6 @@ export default {
             })
         }
       })
-    },
-
-    // 返回提示
-    handleBackClick() {
-      this.$ls.remove('taskForm')
-      this.$router.push('/data-manage/data-sync')
     },
 
     // 编辑情况下获取详情
@@ -251,7 +266,7 @@ export default {
 @import '~@/styles/public/data-manage';
 
 .add-task {
-  margin-top: -7px;
+  margin-top: 30px;
 }
 
 .add-task-content {
@@ -287,11 +302,6 @@ export default {
 
   .suffix-label {
     margin-top: 2px;
-  }
-
-  .cron-suffix {
-    cursor: pointer;
-    padding: 0;
   }
 
   .fade-enter-active,

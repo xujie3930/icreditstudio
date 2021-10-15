@@ -22,7 +22,7 @@
 
 .el-menu-item.is-active {
   color: $--color-primary;
-  border-left: 4px solid $--color-primary !important;
+  border-left: 5px solid $--color-primary !important;
   background-color: $--color-aside-bg-active !important;
 }
 
@@ -42,4 +42,5 @@
 .el-table td.is-center,
 .el-table th.is-center {
   text-align: center;
+  padding: 8px 0;
 }

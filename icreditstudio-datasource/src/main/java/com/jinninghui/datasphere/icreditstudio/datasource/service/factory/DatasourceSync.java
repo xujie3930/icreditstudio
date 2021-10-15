@@ -98,7 +98,7 @@ public interface DatasourceSync {
             return "测试连接成功";
         } catch (Exception e) {
             logger.error("异常信息:{},异常打印:{}", e.getMessage(), e.toString());
-            throw new AppException("70000000");
+            throw new AppException("70000007");
         }
     }
 

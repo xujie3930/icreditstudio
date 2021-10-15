@@ -112,9 +112,11 @@ export default {
       }
       if (this.dVal === '?' && this.weekVal === '?') {
         this.$message.error('日期与星期不可以同时为“不指定”')
+        return ''
       }
       if (this.dVal !== '?' && this.weekVal !== '?') {
         this.$message.error('日期与星期必须有一个为“不指定”')
+        return ''
       }
       const v = `${this.sVal} ${this.mVal} ${this.hVal} ${this.dVal} ${this.monthVal} ${this.weekVal} ${this.yearVal}`
       if (v !== this.value) {
@@ -130,17 +132,21 @@ export default {
 
   methods: {
     updateVal() {
-      if (!this.value) {
-        return
-      }
-      const arrays = this.value.split(' ')
-      this.sVal = arrays[0]
-      this.mVal = arrays[1]
-      this.hVal = arrays[2]
-      this.dVal = arrays[3]
-      this.monthVal = arrays[4]
-      this.weekVal = arrays[5]
-      this.yearVal = arrays[6]
+      const arr = this.value
+        ? this.value.split(' ')
+        : ['*', '*', '*', '?', '*', '*', '*']
+      const field = [
+        'sVal',
+        'mVal',
+        'hVal',
+        'dVal',
+        'monthVal',
+        'weekVal',
+        'yearVal'
+      ]
+      field.forEach((item, idx) => {
+        this[item] = arr[idx]
+      })
     },
 
     open() {
@@ -149,6 +155,7 @@ export default {
 
     close() {
       this.dialogVisible = false
+      this.$emit('on-close')
     },
 
     confirm() {

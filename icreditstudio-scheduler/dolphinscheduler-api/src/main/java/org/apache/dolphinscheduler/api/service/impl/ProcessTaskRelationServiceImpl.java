@@ -26,15 +26,15 @@ import org.apache.dolphinscheduler.dao.entity.Project;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.mapper.ProcessTaskRelationMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * task definition service impl
@@ -45,20 +45,20 @@ public class ProcessTaskRelationServiceImpl extends BaseServiceImpl implements
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessTaskRelationServiceImpl.class);
 
-    @Autowired
+    @Resource
     private ProjectMapper projectMapper;
 
-    @Autowired
-    private ProjectService projectService;
+//    @Autowired
+//    private ProjectService projectService;
 
-    @Autowired
+    @Resource
     private ProcessTaskRelationMapper processTaskRelationMapper;
 
     /**
      * query process task relation
      *
-     * @param loginUser login user
-     * @param projectName project name
+     * @param loginUser             login user
+     * @param projectName           project name
      * @param processDefinitionCode process definition code
      */
     @Override
@@ -66,10 +66,10 @@ public class ProcessTaskRelationServiceImpl extends BaseServiceImpl implements
         Map<String, Object> result = new HashMap<>();
         Project project = projectMapper.queryByName(projectName);
         // check project auth
-        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-        if (checkResult.get(Constants.STATUS) != Status.SUCCESS) {
-            return checkResult;
-        }
+//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
+//        if (checkResult.get(Constants.STATUS) != Status.SUCCESS) {
+//            return checkResult;
+//        }
         List<ProcessTaskRelation> processTaskRelationList = processTaskRelationMapper.queryByProcessCode(project.getCode(), processDefinitionCode);
         result.put(Constants.DATA_LIST, processTaskRelationList);
         putMsg(result, Status.SUCCESS);

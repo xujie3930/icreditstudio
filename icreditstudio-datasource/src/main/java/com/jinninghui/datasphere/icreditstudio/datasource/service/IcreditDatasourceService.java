@@ -79,4 +79,6 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      * @return
      */
     BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param);
+
+    BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param);
 }

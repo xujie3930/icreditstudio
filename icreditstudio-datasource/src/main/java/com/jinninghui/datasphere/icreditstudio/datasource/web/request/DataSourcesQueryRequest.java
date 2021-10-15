@@ -7,8 +7,12 @@ import lombok.Data;
  */
 @Data
 public class DataSourcesQueryRequest {
-
+    /**
+     * 数据源名称
+     */
     private String databaseName;
-
+    /**
+     * 数据源ID
+     */
     private String datasourceId;
 }

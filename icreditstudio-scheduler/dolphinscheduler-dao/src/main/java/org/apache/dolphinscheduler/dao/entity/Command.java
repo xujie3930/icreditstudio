@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 import org.apache.dolphinscheduler.common.enums.*;
 
 import java.util.Date;
@@ -27,14 +28,15 @@ import java.util.Date;
 /**
  * command
  */
+@Data
 @TableName("t_ds_command")
 public class Command {
 
     /**
      * id
      */
-    @TableId(value="id", type=IdType.AUTO)
-    private int id;
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
 
     /**
      * command type
@@ -46,13 +48,13 @@ public class Command {
      * process definition id
      */
     @TableField("process_definition_id")
-    private int processDefinitionId;
+    private String processDefinitionId;
 
     /**
      * executor id
      */
     @TableField("executor_id")
-    private int executorId;
+    private String executorId;
 
     /**
      * command parameter, format json
@@ -82,7 +84,7 @@ public class Command {
      * warning group id
      */
     @TableField("warning_group_id")
-    private Integer warningGroupId;
+    private String warningGroupId;
 
     /**
      * schedule time
@@ -125,11 +127,11 @@ public class Command {
             CommandType commandType,
             TaskDependType taskDependType,
             FailureStrategy failureStrategy,
-            int executorId,
-            int processDefinitionId,
+            String executorId,
+            String processDefinitionId,
             String commandParam,
             WarningType warningType,
-            int warningGroupId,
+            String warningGroupId,
             Date scheduleTime,
             String workerGroup,
             Priority processInstancePriority) {
@@ -146,212 +148,6 @@ public class Command {
         this.updateTime = new Date();
         this.workerGroup = workerGroup;
         this.processInstancePriority = processInstancePriority;
-    }
-
-
-    public TaskDependType getTaskDependType() {
-        return taskDependType;
-    }
-
-    public void setTaskDependType(TaskDependType taskDependType) {
-        this.taskDependType = taskDependType;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public CommandType getCommandType() {
-        return commandType;
-    }
-
-    public void setCommandType(CommandType commandType) {
-        this.commandType = commandType;
-    }
-
-    public int getProcessDefinitionId() {
-        return processDefinitionId;
-    }
-
-    public void setProcessDefinitionId(int processDefinitionId) {
-        this.processDefinitionId = processDefinitionId;
-    }
-
-
-    public FailureStrategy getFailureStrategy() {
-        return failureStrategy;
-    }
-
-    public void setFailureStrategy(FailureStrategy failureStrategy) {
-        this.failureStrategy = failureStrategy;
-    }
-
-    public void setCommandParam(String commandParam) {
-        this.commandParam = commandParam;
-    }
-
-    public String getCommandParam() {
-        return commandParam;
-    }
-
-    public WarningType getWarningType() {
-        return warningType;
-    }
-
-    public void setWarningType(WarningType warningType) {
-        this.warningType = warningType;
-    }
-
-    public Integer getWarningGroupId() {
-        return warningGroupId;
-    }
-
-    public void setWarningGroupId(Integer warningGroupId) {
-        this.warningGroupId = warningGroupId;
-    }
-
-    public Date getScheduleTime() {
-        return scheduleTime;
-    }
-
-    public void setScheduleTime(Date scheduleTime) {
-        this.scheduleTime = scheduleTime;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public int getExecutorId() {
-        return executorId;
-    }
-
-    public void setExecutorId(int executorId) {
-        this.executorId = executorId;
-    }
-
-    public Priority getProcessInstancePriority() {
-        return processInstancePriority;
-    }
-
-    public void setProcessInstancePriority(Priority processInstancePriority) {
-        this.processInstancePriority = processInstancePriority;
-    }
-
-    public Date getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Date updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public String getWorkerGroup() {
-        return workerGroup;
-    }
-
-    public void setWorkerGroup(String workerGroup) {
-        this.workerGroup = workerGroup;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Command command = (Command) o;
-
-        if (id != command.id) {
-            return false;
-        }
-        if (processDefinitionId != command.processDefinitionId) {
-            return false;
-        }
-        if (executorId != command.executorId) {
-            return false;
-        }
-        if (workerGroup != null ? workerGroup.equals(command.workerGroup) : command.workerGroup == null) {
-            return false;
-        }
-        if (commandType != command.commandType) {
-            return false;
-        }
-        if (commandParam != null ? !commandParam.equals(command.commandParam) : command.commandParam != null) {
-            return false;
-        }
-        if (taskDependType != command.taskDependType) {
-            return false;
-        }
-        if (failureStrategy != command.failureStrategy) {
-            return false;
-        }
-        if (warningType != command.warningType) {
-            return false;
-        }
-        if (warningGroupId != null ? !warningGroupId.equals(command.warningGroupId) : command.warningGroupId != null) {
-            return false;
-        }
-        if (scheduleTime != null ? !scheduleTime.equals(command.scheduleTime) : command.scheduleTime != null) {
-            return false;
-        }
-        if (startTime != null ? !startTime.equals(command.startTime) : command.startTime != null) {
-            return false;
-        }
-        if (processInstancePriority != command.processInstancePriority) {
-            return false;
-        }
-        return !(updateTime != null ? !updateTime.equals(command.updateTime) : command.updateTime != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = id;
-        result = 31 * result + (commandType != null ? commandType.hashCode() : 0);
-        result = 31 * result + processDefinitionId;
-        result = 31 * result + executorId;
-        result = 31 * result + (commandParam != null ? commandParam.hashCode() : 0);
-        result = 31 * result + (taskDependType != null ? taskDependType.hashCode() : 0);
-        result = 31 * result + (failureStrategy != null ? failureStrategy.hashCode() : 0);
-        result = 31 * result + (warningType != null ? warningType.hashCode() : 0);
-        result = 31 * result + (warningGroupId != null ? warningGroupId.hashCode() : 0);
-        result = 31 * result + (scheduleTime != null ? scheduleTime.hashCode() : 0);
-        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
-        result = 31 * result + (processInstancePriority != null ? processInstancePriority.hashCode() : 0);
-        result = 31 * result + (updateTime != null ? updateTime.hashCode() : 0);
-        result = 31 * result + (workerGroup != null ? workerGroup.hashCode() : 0);
-        return result;
-    }
-    @Override
-    public String toString() {
-        return "Command{" +
-                "id=" + id +
-                ", commandType=" + commandType +
-                ", processDefinitionId=" + processDefinitionId +
-                ", executorId=" + executorId +
-                ", commandParam='" + commandParam + '\'' +
-                ", taskDependType=" + taskDependType +
-                ", failureStrategy=" + failureStrategy +
-                ", warningType=" + warningType +
-                ", warningGroupId=" + warningGroupId +
-                ", scheduleTime=" + scheduleTime +
-                ", startTime=" + startTime +
-                ", processInstancePriority=" + processInstancePriority +
-                ", updateTime=" + updateTime +
-                ", workerGroup='" + workerGroup + '\'' +
-                '}';
     }
 }
 

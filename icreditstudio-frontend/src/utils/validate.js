@@ -36,10 +36,27 @@ export const validIpAddress = ip => {
 
 // 特殊字符表单校验
 export const verifySpecialStr = (rule, value, cb) => {
-  console.log(value, 'ddd')
   if (validStrSpecial(value)) {
     cb(new Error('该名称中包含不规范字符，请重新输入'))
   } else {
     cb()
   }
+}
+
+/**
+ * 是否是数字
+ * @param {any} value
+ * @return {Boolean}
+ */
+export function isNumber(value) {
+  return typeof value === 'number'
+}
+
+/**
+ * 是否是空的
+ * @param {any} value
+ * @return {Boolean}
+ */
+export function isNull(value) {
+  return value === undefined || value === null || value === ''
 }

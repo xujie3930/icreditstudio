@@ -16,5 +16,5 @@ public class HiveProperties {
     private String driverClass;
     private String username;
     private String password;
-    private String address;
+    private String nodes;
 }

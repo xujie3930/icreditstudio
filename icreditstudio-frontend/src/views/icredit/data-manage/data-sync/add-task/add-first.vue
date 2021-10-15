@@ -5,7 +5,6 @@
 -->
 <template>
   <div class="add-task-page">
-    <Back @on-jump="handleBackClick" />
     <div class="add-task" v-loading="detailLoading">
       <HeaderStepBar />
 
@@ -21,7 +20,7 @@
             v-model.trim="taskForm.taskName"
             placeholder="请输入任务名"
             clearable
-            :maxlength="14"
+            :maxlength="50"
             show-word-limit
           ></el-input>
         </el-form-item>
@@ -49,7 +48,7 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="工作空间描述" prop="taskDescribe">
+        <el-form-item label="任务描述" prop="taskDescribe">
           <el-input
             clearable
             show-word-limit
@@ -79,17 +78,18 @@
 </template>
 
 <script>
-import Back from '@/views/icredit/components/back'
 import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { verifySpecialStr } from '@/utils/validate'
 
 export default {
-  components: { Back, HeaderStepBar },
+  components: { HeaderStepBar },
 
   data() {
     return {
+      step: '',
+      opType: '',
       detailLoading: false,
       saveSettingLoading: false,
       createModeOptions: [
@@ -113,8 +113,7 @@ export default {
         ],
         createMode: [
           { required: true, message: '创建方式不能为空', trigger: 'change' }
-        ],
-        taskDescribe: [{ validator: verifySpecialStr, trigger: 'blur' }]
+        ]
       }
     }
   },
@@ -129,6 +128,9 @@ export default {
 
   methods: {
     initPage() {
+      this.opType = this.$route.query?.opType || 'add'
+      this.step = this.$route.query?.opType || ''
+      this.opType === 'add' && !this.step && this.$ls.remove('taskForm')
       this.taskForm = this.$ls.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
@@ -151,7 +153,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value, typeof value)
               this.taskForm[key] = value
             }
           }
@@ -163,7 +164,6 @@ export default {
 
     // 自动生成任务名规则
     autoGenerateTaskName(name) {
-      console.log(name, 'kokoo')
       if (name) return false
       const prefixStrArr = ['mysql', 'oracle', 'postSql', 'excel']
       const suffixStrArr = ['hive', 'hdfs']
@@ -202,10 +202,11 @@ export default {
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          const { createMode } = this.taskForm
           this.$ls.set('taskForm', this.taskForm)
           this.$router.push({
             path: '/data-manage/add-build',
-            query: { createMode: this.taskForm.createMode }
+            query: { createMode, opType: this.opType, step: 'first' }
           })
         }
       })

@@ -14,50 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.dolphinscheduler.dao.entity;
-
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.common.enums.FailureStrategy;
-import org.apache.dolphinscheduler.common.enums.Flag;
-import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.TaskDependType;
-import org.apache.dolphinscheduler.common.enums.WarningType;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-
-import java.util.Date;
-import java.util.Objects;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.apache.dolphinscheduler.common.enums.*;
+
+import java.util.Date;
 
 /**
  * process instance
  */
+@Data
+@AllArgsConstructor
 @TableName("t_ds_process_instance")
 public class ProcessInstance {
 
     /**
      * id
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private int id;
-
+    @TableId(value = "id", type = IdType.ID_WORKER_STR)
+    private String id;
     /**
-     * process definition code
+     * process definition id
      */
-    private Long processDefinitionCode;
-
-    /**
-     * process definition version
-     */
-    private int processDefinitionVersion;
-
+    private String processDefinitionId;
     /**
      * process state
      */
@@ -69,13 +55,11 @@ public class ProcessInstance {
     /**
      * start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date startTime;
 
     /**
      * end time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date endTime;
 
     /**
@@ -131,18 +115,16 @@ public class ProcessInstance {
     /**
      * warning group
      */
-    private Integer warningGroupId;
+    private String warningGroupId;
 
     /**
      * schedule time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date scheduleTime;
 
     /**
      * command start time
      */
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date commandStartTime;
 
     /**
@@ -152,15 +134,13 @@ public class ProcessInstance {
 
     /**
      * process instance json
-     * TODO delete
      */
-    @TableField(exist = false)
     private String processInstanceJson;
 
     /**
      * executor id
      */
-    private int executorId;
+    private String executorId;
 
     /**
      * executor name
@@ -171,7 +151,6 @@ public class ProcessInstance {
     /**
      * tenant code
      */
-    @TableField(exist = false)
     private String tenantCode;
 
     /**
@@ -188,13 +167,11 @@ public class ProcessInstance {
     /**
      * task locations for web
      */
-    @TableField(exist = false)
     private String locations;
 
     /**
      * task connects for web
      */
-    @TableField(exist = false)
     private String connects;
 
     /**
@@ -205,7 +182,6 @@ public class ProcessInstance {
     /**
      * depend processes schedule time
      */
-    @TableField(exist = false)
     private String dependenceScheduleTimes;
 
     /**
@@ -232,14 +208,16 @@ public class ProcessInstance {
     private int timeout;
 
     /**
-     * tenant id
+     * receivers for api
      */
-    private int tenantId;
+    @TableField(exist = false)
+    private String receivers;
 
     /**
-     * varPool string
+     * receivers cc for api
      */
-    private String varPool;
+    @TableField(exist = false)
+    private String receiversCc;
 
     public ProcessInstance() {
 
@@ -252,257 +230,9 @@ public class ProcessInstance {
      */
     public ProcessInstance(ProcessDefinition processDefinition) {
         this.processDefinition = processDefinition;
-        this.name = processDefinition.getName()
-                + "-"
-                +
-                processDefinition.getVersion()
-                + "-"
-                +
-                DateUtils.getCurrentTimeStamp();
-    }
-
-    public String getVarPool() {
-        return varPool;
-    }
-
-    public void setVarPool(String varPool) {
-        this.varPool = varPool;
-    }
-
-    public ProcessDefinition getProcessDefinition() {
-        return processDefinition;
-    }
-
-    public void setProcessDefinition(ProcessDefinition processDefinition) {
-        this.processDefinition = processDefinition;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public ExecutionStatus getState() {
-        return state;
-    }
-
-    public void setState(ExecutionStatus state) {
-        this.state = state;
-    }
-
-    public Flag getRecovery() {
-        return recovery;
-    }
-
-    public void setRecovery(Flag recovery) {
-        this.recovery = recovery;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(Date startTime) {
-        this.startTime = startTime;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
-    }
-
-    public int getRunTimes() {
-        return runTimes;
-    }
-
-    public void setRunTimes(int runTimes) {
-        this.runTimes = runTimes;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public CommandType getCommandType() {
-        return commandType;
-    }
-
-    public void setCommandType(CommandType commandType) {
-        this.commandType = commandType;
-    }
-
-    public String getCommandParam() {
-        return commandParam;
-    }
-
-    public void setCommandParam(String commandParam) {
-        this.commandParam = commandParam;
-    }
-
-    public TaskDependType getTaskDependType() {
-        return taskDependType;
-    }
-
-    public void setTaskDependType(TaskDependType taskDependType) {
-        this.taskDependType = taskDependType;
-    }
-
-    public int getMaxTryTimes() {
-        return maxTryTimes;
-    }
-
-    public void setMaxTryTimes(int maxTryTimes) {
-        this.maxTryTimes = maxTryTimes;
-    }
-
-    public FailureStrategy getFailureStrategy() {
-        return failureStrategy;
-    }
-
-    public void setFailureStrategy(FailureStrategy failureStrategy) {
-        this.failureStrategy = failureStrategy;
-    }
-
-    public boolean isProcessInstanceStop() {
-        return this.state.typeIsFinished();
-    }
-
-    public WarningType getWarningType() {
-        return warningType;
-    }
-
-    public void setWarningType(WarningType warningType) {
-        this.warningType = warningType;
-    }
-
-    public Integer getWarningGroupId() {
-        return warningGroupId;
-    }
-
-    public void setWarningGroupId(Integer warningGroupId) {
-        this.warningGroupId = warningGroupId;
-    }
-
-    public Date getScheduleTime() {
-        return scheduleTime;
-    }
-
-    public void setScheduleTime(Date scheduleTime) {
-        this.scheduleTime = scheduleTime;
-    }
-
-    public Date getCommandStartTime() {
-        return commandStartTime;
-    }
-
-    public void setCommandStartTime(Date commandStartTime) {
-        this.commandStartTime = commandStartTime;
-    }
-
-    public String getGlobalParams() {
-        return globalParams;
-    }
-
-    public void setGlobalParams(String globalParams) {
-        this.globalParams = globalParams;
-    }
-
-    public String getProcessInstanceJson() {
-        return processInstanceJson;
-    }
-
-    public void setProcessInstanceJson(String processInstanceJson) {
-        this.processInstanceJson = processInstanceJson;
-    }
-
-    public String getTenantCode() {
-        return tenantCode;
-    }
-
-    public void setTenantCode(String tenantCode) {
-        this.tenantCode = tenantCode;
-    }
-
-    public String getQueue() {
-        return queue;
-    }
-
-    public void setQueue(String queue) {
-        this.queue = queue;
-    }
-
-    public int getExecutorId() {
-        return executorId;
-    }
-
-    public void setExecutorId(int executorId) {
-        this.executorId = executorId;
-    }
-
-    public Flag getIsSubProcess() {
-        return isSubProcess;
-    }
-
-    public void setIsSubProcess(Flag isSubProcess) {
-        this.isSubProcess = isSubProcess;
-    }
-
-    public Priority getProcessInstancePriority() {
-        return processInstancePriority;
-    }
-
-    public void setProcessInstancePriority(Priority processInstancePriority) {
-        this.processInstancePriority = processInstancePriority;
-    }
-
-    public String getLocations() {
-        return locations;
-    }
-
-    public void setLocations(String locations) {
-        this.locations = locations;
-    }
-
-    public String getConnects() {
-        return connects;
-    }
-
-    public void setConnects(String connects) {
-        this.connects = connects;
-    }
-
-    public String getHistoryCmd() {
-        return historyCmd;
-    }
-
-    public void setHistoryCmd(String historyCmd) {
-        this.historyCmd = historyCmd;
-    }
-
-    public String getExecutorName() {
-        return executorName;
-    }
-
-    public void setExecutorName(String executorName) {
-        this.executorName = executorName;
+        this.name = processDefinition.getName() + "-" +
+                processDefinition.getVersion() + "-" +
+                System.currentTimeMillis();
     }
 
     /**
@@ -530,6 +260,10 @@ public class ProcessInstance {
         return historyCmd.startsWith(CommandType.COMPLEMENT_DATA.toString());
     }
 
+    public boolean isProcessInstanceStop() {
+        return this.state.typeIsFinished();
+    }
+
     /**
      * get current command type,
      * if start with complement data,return complement
@@ -542,160 +276,4 @@ public class ProcessInstance {
         }
         return commandType;
     }
-
-    public String getDependenceScheduleTimes() {
-        return dependenceScheduleTimes;
-    }
-
-    public void setDependenceScheduleTimes(String dependenceScheduleTimes) {
-        this.dependenceScheduleTimes = dependenceScheduleTimes;
-    }
-
-    public String getDuration() {
-        return duration;
-    }
-
-    public void setDuration(String duration) {
-        this.duration = duration;
-    }
-
-    public String getWorkerGroup() {
-        return workerGroup;
-    }
-
-    public void setWorkerGroup(String workerGroup) {
-        this.workerGroup = workerGroup;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public int getTenantId() {
-        return this.tenantId;
-    }
-
-    public void setTenantId(int tenantId) {
-        this.tenantId = tenantId;
-    }
-
-    public Long getProcessDefinitionCode() {
-        return processDefinitionCode;
-    }
-
-    public void setProcessDefinitionCode(Long processDefinitionCode) {
-        this.processDefinitionCode = processDefinitionCode;
-    }
-
-    public int getProcessDefinitionVersion() {
-        return processDefinitionVersion;
-    }
-
-    public void setProcessDefinitionVersion(int processDefinitionVersion) {
-        this.processDefinitionVersion = processDefinitionVersion;
-    }
-
-    @Override
-    public String toString() {
-        return "ProcessInstance{"
-                + "id=" + id
-                + ", state=" + state
-                + ", recovery=" + recovery
-                + ", startTime=" + startTime
-                + ", endTime=" + endTime
-                + ", runTimes=" + runTimes
-                + ", name='" + name + '\''
-                + ", host='" + host + '\''
-                + ", processDefinition="
-                + processDefinition
-                + ", commandType="
-                + commandType
-                + ", commandParam='"
-                + commandParam
-                + '\''
-                + ", taskDependType="
-                + taskDependType
-                + ", maxTryTimes="
-                + maxTryTimes
-                + ", failureStrategy="
-                + failureStrategy
-                + ", warningType="
-                + warningType
-                + ", warningGroupId="
-                + warningGroupId
-                + ", scheduleTime="
-                + scheduleTime
-                + ", commandStartTime="
-                + commandStartTime
-                + ", globalParams='"
-                + globalParams
-                + '\''
-                + ", processInstanceJson='"
-                + processInstanceJson
-                + '\''
-                + ", executorId="
-                + executorId
-                + ", tenantCode='"
-                + tenantCode
-                + '\''
-                + ", queue='"
-                + queue
-                + '\''
-                + ", isSubProcess="
-                + isSubProcess
-                + ", locations='"
-                + locations
-                + '\''
-                + ", connects='"
-                + connects
-                + '\''
-                + ", historyCmd='"
-                + historyCmd
-                + '\''
-                + ", dependenceScheduleTimes='"
-                + dependenceScheduleTimes
-                + '\''
-                + ", duration="
-                + duration
-                + ", processInstancePriority="
-                + processInstancePriority
-                + ", workerGroup='"
-                + workerGroup
-                + '\''
-                + ", timeout="
-                + timeout
-                + ", tenantId="
-                + tenantId
-                + ", processDefinitionCode='"
-                + processDefinitionCode
-                + '\''
-                + ", processDefinitionVersion='"
-                + processDefinitionVersion
-                + '\''
-                + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        ProcessInstance that = (ProcessInstance) o;
-
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
 }

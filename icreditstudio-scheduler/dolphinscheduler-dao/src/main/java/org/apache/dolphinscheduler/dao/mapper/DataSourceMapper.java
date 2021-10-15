@@ -34,7 +34,7 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
      * @param type type
      * @return datasource list
      */
-    List<DataSource> queryDataSourceByType(@Param("userId") int userId, @Param("type") Integer type);
+    List<DataSource> queryDataSourceByType(@Param("userId") String userId, @Param("type") Integer type);
 
     /**
      * datasource page
@@ -44,7 +44,7 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
      * @return datasource IPage
      */
     IPage<DataSource> selectPaging(IPage<DataSource> page,
-                                   @Param("userId") int userId,
+                                   @Param("userId") String userId,
                                    @Param("name") String name);
 
     /**
@@ -60,14 +60,14 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
      * @param userId userId
      * @return datasource list
      */
-    List<DataSource> queryAuthedDatasource(@Param("userId") int userId);
+    List<DataSource> queryAuthedDatasource(@Param("userId") String userId);
 
     /**
      * query datasource except userId
      * @param userId userId
      * @return datasource list
      */
-    List<DataSource> queryDatasourceExceptUserId(@Param("userId") int userId);
+    List<DataSource> queryDatasourceExceptUserId(@Param("userId") String userId);
 
     /**
      * list all datasource by type
@@ -85,7 +85,7 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
      * @param <T> T
      * @return UDF function list
      */
-    <T> List<DataSource> listAuthorizedDataSource(@Param("userId") int userId,@Param("dataSourceIds")T[] dataSourceIds);
+    <T> List<DataSource> listAuthorizedDataSource(@Param("userId") String userId,@Param("dataSourceIds")T[] dataSourceIds);
 
 
 }
