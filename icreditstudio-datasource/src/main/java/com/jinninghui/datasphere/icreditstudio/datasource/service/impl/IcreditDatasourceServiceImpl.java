@@ -7,10 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceDelFlagEnum;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceSyncStatusEnum;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.SourceTypeTransferEnum;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
@@ -137,7 +134,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
         Date date = new Date();
-        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
+        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
         IcreditDatasourceEntity dataEntity;
         dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null) {
@@ -232,6 +229,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
                 .category(SourceTypeTransferEnum.getCatalogue(param.getSourceType()))
+                .status(DatasourceStatusEnum.ENABLE.getCode())
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
@@ -372,7 +370,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     public BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param) {
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         //若数据源发生改动，则需要判断uri是否正确
-        if (StringUtils.isNotBlank(param.getUri())){
+        if (StringUtils.isNotBlank(param.getUri())) {
             IcreditDatasourceTestConnectRequest testConnectRequest = new IcreditDatasourceTestConnectRequest(datasourceEntity.getType(), param.getUri());
             checkDatabase(testConnectRequest);
         }
@@ -418,6 +416,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());
+        }
+        if (Objects.nonNull(param.getStatus())) {
+            wrapper.eq(IcreditDatasourceEntity.STATUS, param.getStatus());
         }
         wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, "N");
         return wrapper;

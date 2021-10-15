@@ -7,7 +7,7 @@ import org.apache.dolphinscheduler.dao.entity.User;
  * @author Peng
  */
 @Data
-public class CreatePlatformTaskRequest {
+public class CreatePlatformProcessDefinitionRequest {
     /**
      * 访问用户
      */

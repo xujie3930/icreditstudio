@@ -31,6 +31,11 @@ spring:
           uri: lb://metadata # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
           predicates:
             - Path=/metadata/**
+        - id: dolphinscheduler # 我们⾃定义的路由 ID，保持唯⼀
+            #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://dolphinscheduler # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+              - Path=/dolphinscheduler/**
   application:
     name: api-gateway
   redis:

@@ -27,4 +27,8 @@ public class IcreditDatasourceConditionParam {
      * uri
      */
     private String uri;
+    /**
+     * 0：启用，1：停用
+     */
+    private Integer status;
 }

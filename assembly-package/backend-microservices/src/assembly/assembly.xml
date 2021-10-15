@@ -7,19 +7,10 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
-        <fileSet>
-            <directory>${project.parent.basedir}</directory>
-            <outputDirectory>.</outputDirectory>
-            <includes>
-                <include>README*</include>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
-            </includes>
-        </fileSet>
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/bin/
+                ${project.basedir}/bin/
             </directory>
             <outputDirectory>bin</outputDirectory>
             <includes>
@@ -30,7 +21,7 @@
         </fileSet>
         <fileSet>
             <directory>
-                ${project.parent.basedir}/db/
+                ${project.basedir}/db/
             </directory>
             <outputDirectory>db</outputDirectory>
             <includes>
@@ -40,7 +31,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-datasource/target/jnh-datasphere-icreditstudio-datasource-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-datasource/target/jnh-datasphere-icreditstudio-datasource-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-datasource</outputDirectory>
             <includes>
@@ -50,7 +41,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-datasync/target/jnh-datasphere-icreditstudio-datasync-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-datasync/target/jnh-datasphere-icreditstudio-datasync-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-datasync</outputDirectory>
             <includes>
@@ -60,7 +51,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-gateway/target/jnh-datasphere-icreditstudio-gateway-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-gateway/target/jnh-datasphere-icreditstudio-gateway-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-gateway</outputDirectory>
             <includes>
@@ -70,7 +61,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-metadata/target/jnh-datasphere-icreditstudio-metadata-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-metadata/target/jnh-datasphere-icreditstudio-metadata-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-metadata</outputDirectory>
             <includes>
@@ -80,7 +71,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-system/target/jnh-datasphere-icreditstudio-system-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-system/target/jnh-datasphere-icreditstudio-system-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-system</outputDirectory>
             <includes>
@@ -90,7 +81,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-workspace/target/jnh-datasphere-icreditstudio-workspace-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-workspace/target/jnh-datasphere-icreditstudio-workspace-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-workspace</outputDirectory>
             <includes>
@@ -100,7 +91,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/icreditstudio-datadev/target/jnh-datasphere-icreditstudio-datadev-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-datadev/target/jnh-datasphere-icreditstudio-datadev-${project.version}-dist
             </directory>
             <outputDirectory>servers/icreditstudio-datadev</outputDirectory>
             <includes>

@@ -2,8 +2,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.RedisUtils;
+//import com.jinninghui.datasphere.icreditstudio.framework.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.*;
@@ -48,22 +47,15 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String workspaceId) {
-        List<TaskSituationResult> taskSituationResultList = (List<TaskSituationResult>) RedisUtils.get(workspaceId);
-        if (!CollectionUtils.isEmpty(taskSituationResultList)){
-            return BusinessResult.success(taskSituationResultList);
-        }
-//        Date date = new Date();
-//        Date startTime = DateUtils.getStartOfDay(date);
-//        Date endTime = DateUtils.getEndOfDay((date));
-        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -14));
-        Date endTime = DateUtils.getEndOfDay((DateUtils.getSomeDay(new Date(), -1)));
+        Date date = new Date();
+        Date startTime = DateUtils.getStartOfDay(date);
+        Date endTime = DateUtils.getEndOfDay((date));
         Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
         Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode()});
         Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.RUNNING_EXECUTION.getCode()});
         Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(),
                 ExecutionStatus.WAITTING_DEPEND.getCode()});
-        taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
-        RedisUtils.set(workspaceId, taskSituationResultList, 5 * 60);
+        List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
         return BusinessResult.success(taskSituationResultList);
     }
 

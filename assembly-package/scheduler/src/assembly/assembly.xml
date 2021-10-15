@@ -1,0 +1,74 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>
+                ${project.basedir}/bin/
+            </directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.basedir}/db/
+            </directory>
+            <outputDirectory>db</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-api/target/jnh-datasphere-icreditstudio-scheduler-api-${project.version}-dist
+            </directory>
+            <outputDirectory>scheduler/icreditstudio-scheduler-api</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-master-server/target/jnh-datasphere-icreditstudio-scheduler-master-${project.version}-dist
+            </directory>
+            <outputDirectory>scheduler/icreditstudio-scheduler-master-server</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-worker-server/target/jnh-datasphere-icreditstudio-scheduler-worker-${project.version}-dist
+            </directory>
+            <outputDirectory>scheduler/icreditstudio-scheduler-worker-server</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <unpack>false</unpack>
+            <useStrictFiltering>true</useStrictFiltering>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
