@@ -5,7 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.HiveIn
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 
-class HiveInputConfig extends BaseInputConfig {
+class HiveInputProperties extends BaseInputProperties {
 
   @BeanProperty
   var database: String = _

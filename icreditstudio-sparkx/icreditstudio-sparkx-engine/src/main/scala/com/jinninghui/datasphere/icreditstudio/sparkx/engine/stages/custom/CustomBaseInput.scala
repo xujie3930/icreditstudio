@@ -1,12 +1,12 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseProperties
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
 trait CustomBaseInput extends BaseWorker {
-  override def process(bean: BaseConfig)(implicit ss: SparkSession): Unit = {}
+  override def process(bean: BaseProperties)(implicit ss: SparkSession): Unit = {}
 
   /**
    * 自定义处理任务，处理 RDD 数据，生成 SparkSQL 表

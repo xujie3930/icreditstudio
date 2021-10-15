@@ -5,7 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.JdbcIn
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 
-class JDBCInputConfig extends BaseInputConfig {
+class JDBCInputProperties extends BaseInputProperties {
 
   @BeanProperty
   var driver: String = _

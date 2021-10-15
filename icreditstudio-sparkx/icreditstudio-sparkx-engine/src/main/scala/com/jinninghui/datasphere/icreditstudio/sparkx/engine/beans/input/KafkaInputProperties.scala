@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.KafkaI
 
 import scala.beans.BeanProperty
 
-class KafkaInputConfig extends StreamInputConfig {
+class KafkaInputProperties extends StreamInputProperties {
   @BeanProperty
   var items: java.util.List[KafkaInputItem] = _
 

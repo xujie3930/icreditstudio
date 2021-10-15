@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseProperties
 import org.apache.spark.sql.SparkSession
 
 class HDFSCsvInputWorker extends HDFSInputWorker {
@@ -11,5 +11,5 @@ class HDFSCsvInputWorker extends HDFSInputWorker {
    * @param ss   SparkSession
    */
   // TODO
-  override def process(bean: BaseConfig)(implicit ss: SparkSession): Unit = ???
+  override def process(bean: BaseProperties)(implicit ss: SparkSession): Unit = ???
 }

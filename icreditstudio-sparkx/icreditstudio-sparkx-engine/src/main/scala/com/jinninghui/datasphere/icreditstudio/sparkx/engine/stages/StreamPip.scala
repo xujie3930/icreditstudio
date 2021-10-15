@@ -1,8 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages
 
 import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, BusinessConfig}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.{BaseInputConfig, StreamInputConfig}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, Context}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.{BaseInputProperties, StreamInputProperties}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.function.BaseUDF
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.custom.CustomBaseInput
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{ReflectUtils, SparkUtil}
@@ -22,7 +22,7 @@ object StreamPip extends Logging {
    * @param config BusConfigBean
    * @param ss     SparkSession
    */
-  def startPip(config: BusinessConfig)(implicit ss: SparkSession, ssc: StreamingContext): Unit = {
+  def startPip(config: Context)(implicit ss: SparkSession, ssc: StreamingContext): Unit = {
     logger.info(s"pipline ${config.configFile} ${config.eventDate} start.")
     // 加载 udf
     Option(config.udf).filter(_.nonEmpty).foreach(clazzs =>
@@ -30,7 +30,7 @@ object StreamPip extends Logging {
         ReflectUtils.apply.getInstance[BaseUDF](udf).setup()
       })
     // 加载输入数据，注册成表
-    val kafkaInput = config.inputs.head.asInstanceOf[StreamInputConfig]
+    val kafkaInput = config.inputs.head.asInstanceOf[StreamInputProperties]
     val dstream = getDstream(kafkaInput)
     dstream.map(record => record.value()).foreachRDD(rdd => {
       logger.info(s"batch start.")
@@ -55,8 +55,8 @@ object StreamPip extends Logging {
     ssc.awaitTermination()
   }
 
-  def getDstream(item: BaseConfig)(implicit ss: SparkSession, ssc: StreamingContext): DStream[ConsumerRecord[String, String]] = {
-    val bean = item.asInstanceOf[BaseInputConfig]
+  def getDstream(item: BaseProperties)(implicit ss: SparkSession, ssc: StreamingContext): DStream[ConsumerRecord[String, String]] = {
+    val bean = item.asInstanceOf[BaseProperties]
     ReflectUtils.apply.getInstance[StreamBaseInputWorker](bean.workerClass).initDS(bean)
   }
 
@@ -67,7 +67,7 @@ object StreamPip extends Logging {
    * @param stageName stageName
    * @param ss        ss
    */
-  def processStage(items: java.util.List[_ <: BaseConfig], stageName: String)(implicit ss: SparkSession): Unit = {
+  def processStage(items: java.util.List[_ <: BaseProperties], stageName: String)(implicit ss: SparkSession): Unit = {
     Option(items).filter(!_.isEmpty).foreach(lst => {
       for (i <- lst.indices) {
         val item = lst(i)

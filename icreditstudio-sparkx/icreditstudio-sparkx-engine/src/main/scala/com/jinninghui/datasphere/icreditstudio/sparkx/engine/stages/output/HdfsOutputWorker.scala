@@ -1,7 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, HDFSOutputFormats}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.HDFSOutputConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, HDFSOutputFormats}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.HDFSOutputProperties
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.HDFSUtils
 import org.apache.spark.sql.SparkSession
@@ -11,8 +11,8 @@ object HdfsOutputWorker {
 }
 
 class HdfsOutputWorker extends BaseWorker {
-  override def process(config: BaseConfig)(implicit ss: SparkSession): Unit = {
-    val item = config.asInstanceOf[HDFSOutputConfig]
+  override def process(config: BaseProperties)(implicit ss: SparkSession): Unit = {
+    val item = config.asInstanceOf[HDFSOutputProperties]
     var df = ss.table(item.srcName)
     Option(item.partations).filter(part => part > 0).foreach(part => df = df.repartition(part))
     logger.info(s"try to save to ${item.path}.")

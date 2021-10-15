@@ -7,40 +7,40 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output._
 
 object ConfigMapping {
   // input 支持的类型
-  val inputBeans = Map(InputTypes.classpathFile.toString -> classOf[ClasspathFileInputConfig],
-    InputTypes.classpathFile.toString -> classOf[ClasspathFileInputConfig],
-    InputTypes.hdfscsv.toString -> classOf[HDFSCsvInputConfig],
-    InputTypes.hdfsfile.toString -> classOf[TxtInputConfig],
-    InputTypes.hive.toString -> classOf[HiveInputConfig],
-    InputTypes.jdbc.toString -> classOf[JDBCInputConfig],
-    InputTypes.kafka.toString -> classOf[KafkaInputConfig],
-    InputTypes.customClasspath.toString -> classOf[CustomClasspathInputConfig],
-    InputTypes.customHdfs.toString -> classOf[CustomHDFSInputConfig]
+  val inputBeans = Map(InputTypes.classpathFile.toString -> classOf[ClasspathFileInputProperties],
+    InputTypes.classpathFile.toString -> classOf[ClasspathFileInputProperties],
+    InputTypes.hdfscsv.toString -> classOf[HDFSCsvInputProperties],
+    InputTypes.hdfsfile.toString -> classOf[TxtInputProperties],
+    InputTypes.hive.toString -> classOf[HiveInputProperties],
+    InputTypes.jdbc.toString -> classOf[JDBCInputProperties],
+    InputTypes.kafka.toString -> classOf[KafkaInputProperties],
+    InputTypes.customClasspath.toString -> classOf[CustomClasspathInputProperties],
+    InputTypes.customHdfs.toString -> classOf[CustomHDFSInputProperties]
   )
 
   // process 支持的类型
-  val processBeans = Map(ProcessTypes.sql.toString -> classOf[SQLTransformConfig],
-    ProcessTypes.clazz.toString -> classOf[CustomTransformConfig]
+  val processBeans = Map(ProcessTypes.sql.toString -> classOf[SQLTransformProperties],
+    ProcessTypes.clazz.toString -> classOf[CustomTransformProperties]
   )
   // output
-  val outputBeans = Map(OutputTypes.hive.toString -> classOf[HiveOutputConfig],
-    OutputTypes.jdbc.toString -> classOf[JDBCOutputConfig],
-    OutputTypes.kafkaField.toString -> classOf[KafkaFieldOutputConfig],
-    OutputTypes.kafkaJson.toString -> classOf[KafkaJsonOutputConfig],
-    OutputTypes.hdfsfile.toString -> classOf[HDFSOutputConfig]
+  val outputBeans = Map(OutputTypes.hive.toString -> classOf[HiveOutputProperties],
+    OutputTypes.jdbc.toString -> classOf[JDBCOutputProperties],
+    OutputTypes.kafkaField.toString -> classOf[KafkaFieldOutputProperties],
+    OutputTypes.kafkaJson.toString -> classOf[KafkaJsonOutputProperties],
+    OutputTypes.hdfsfile.toString -> classOf[HDFSOutputProperties]
   )
 
-  def getInputConfigClass(typeName: String): Class[_ <: BaseInputConfig] = {
+  def getInputConfigClass(typeName: String): Class[_ <: BaseProperties] = {
     val config = inputBeans.getOrElse(typeName, null)
     config
   }
 
-  def getProcessConfigClass(typeName: String): Class[_ <: BaseTransformConfig] = {
+  def getProcessConfigClass(typeName: String): Class[_ <: BaseTransformProperties] = {
     val config = processBeans.getOrElse(typeName, null)
     config
   }
 
-  def getOutputConfigClass(typeName: String): Class[_ <: BaseOutputConfig] = {
+  def getOutputConfigClass(typeName: String): Class[_ <: BaseOutputProperties] = {
     val config = outputBeans.getOrElse(typeName, null)
     config
   }

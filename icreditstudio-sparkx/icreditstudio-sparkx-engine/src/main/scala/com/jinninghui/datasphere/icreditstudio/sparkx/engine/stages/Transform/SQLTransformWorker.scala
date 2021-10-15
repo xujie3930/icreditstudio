@@ -1,8 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.Transform
 
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{AppUtil, DimUtils}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.SQLTransformConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.SQLTransformProperties
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.SysConstants
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import org.apache.commons.lang3.StringUtils
@@ -15,9 +15,9 @@ object SQLTransformWorker {
 class SQLTransformWorker extends BaseWorker {
 
 
-  override def process(item: BaseConfig)(implicit ss: SparkSession): Unit = {
+  override def process(item: BaseProperties)(implicit ss: SparkSession): Unit = {
     initVariables()
-    val process = item.asInstanceOf[SQLTransformConfig]
+    val process = item.asInstanceOf[SQLTransformProperties]
     var sql = process.sql
     if (StringUtils.isNotBlank(process.dimKey)) {
       sql = getDimSQLs(process.sql, process.dimKey, process.allPlaceholder).mkString(" union all ")

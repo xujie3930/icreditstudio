@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output
 
 import scala.beans.BeanProperty
 
-class KafkaOutputConfig extends BaseOutputConfig {
+class KafkaOutputProperties extends BaseOutputProperties {
   @BeanProperty
   var srcName: String = _
   @BeanProperty

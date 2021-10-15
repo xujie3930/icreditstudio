@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform
 
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.Transform.CustomTransformWorker
 
-class CustomTransformConfig extends BaseTransformConfig {
+class CustomTransformProperties extends BaseTransformProperties {
 
   setWorkerClass(classOf[CustomTransformWorker].getName)
 

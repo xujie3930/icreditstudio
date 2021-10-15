@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output.Kafka
 
 import scala.beans.BeanProperty
 
-class KafkaFieldOutputConfig extends KafkaOutputConfig {
+class KafkaFieldOutputProperties extends KafkaOutputProperties {
   @BeanProperty
   var fs: String = _
 

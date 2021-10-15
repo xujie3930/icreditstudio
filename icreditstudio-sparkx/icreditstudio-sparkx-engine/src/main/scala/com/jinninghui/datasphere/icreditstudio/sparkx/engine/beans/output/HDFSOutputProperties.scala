@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output.HdfsO
 
 import scala.beans.BeanProperty
 
-class HDFSOutputConfig extends BaseOutputConfig {
+class HDFSOutputProperties extends BaseOutputProperties {
   @BeanProperty
   var format: String = _
   @BeanProperty

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.StringUtils
 
 import scala.beans.BeanProperty
 
-class FileInputConfig extends BaseInputConfig {
+class FileInputProperties extends BaseInputProperties {
 
   @BeanProperty
   var columns: String = _

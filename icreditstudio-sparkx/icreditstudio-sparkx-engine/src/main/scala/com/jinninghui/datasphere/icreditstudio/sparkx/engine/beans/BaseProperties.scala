@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 
-class BaseConfig extends Logging with Serializable {
+class BaseProperties extends Logging with Serializable {
   @BeanProperty
   var tag = NodeTypes.root.toString
 

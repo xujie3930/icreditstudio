@@ -1,7 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.{KafkaInputConfig, KafkaInputItem}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.{KafkaInputProperties, KafkaInputItem}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.StreamBaseInputWorker
 import org.apache.commons.collections4.CollectionUtils
 import org.apache.commons.lang3.StringUtils
@@ -22,8 +22,8 @@ class KafkaInputWorker extends StreamBaseInputWorker {
    * @param bean BaseInputConfig
    * @param ss   SparkSession
    */
-  override def initDS(bean: BaseConfig)(implicit ss: SparkSession, ssc: StreamingContext): DStream[ConsumerRecord[String, String]] = {
-    val kafkaInput = bean.asInstanceOf[KafkaInputConfig]
+  override def initDS(bean: BaseProperties)(implicit ss: SparkSession, ssc: StreamingContext): DStream[ConsumerRecord[String, String]] = {
+    val kafkaInput = bean.asInstanceOf[KafkaInputProperties]
     kafkaInput.items.map(kafkaInputItem => {
       val kafkaParams: Map[String, Object] = getKafkaParam(kafkaInputItem)
       KafkaUtils.createDirectStream[String, String](

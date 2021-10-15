@@ -1,11 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, NodeTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, NodeTypes}
 import org.apache.commons.lang3.StringUtils
 
 import scala.beans.BeanProperty
 
-class BaseInputConfig extends BaseConfig {
+class BaseInputProperties extends BaseProperties {
   tag = NodeTypes.inputs.toString
 
   @BeanProperty

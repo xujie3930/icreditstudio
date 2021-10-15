@@ -2,8 +2,8 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output
 
 import java.sql.DriverManager
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.JDBCOutputConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BaseProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.JDBCOutputProperties
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.JDBCSparkUtils
 import org.apache.commons.collections4.CollectionUtils
@@ -12,8 +12,8 @@ import org.apache.spark.sql.SparkSession
 import scala.collection.JavaConversions._
 
 class JdbcOutputWorker extends BaseWorker {
-  override def process(config: BaseConfig)(implicit ss: SparkSession): Unit = {
-    val item = config.asInstanceOf[JDBCOutputConfig]
+  override def process(config: BaseProperties)(implicit ss: SparkSession): Unit = {
+    val item = config.asInstanceOf[JDBCOutputProperties]
     // 执行前置sql逻辑，一般为删除操作
     Option(item.preSQL).filter(pre => CollectionUtils.isNotEmpty(pre)).foreach(pre => {
       executePreSQL(item)
@@ -42,7 +42,7 @@ class JdbcOutputWorker extends BaseWorker {
    *
    * @param item JDBC 配置
    */
-  def executePreSQL(item: JDBCOutputConfig): Unit = {
+  def executePreSQL(item: JDBCOutputProperties): Unit = {
     logger.info(s"connect url: ${item.url}")
     Class.forName(item.driver)
     val conn = DriverManager.getConnection(item.url, item.user, item.password)

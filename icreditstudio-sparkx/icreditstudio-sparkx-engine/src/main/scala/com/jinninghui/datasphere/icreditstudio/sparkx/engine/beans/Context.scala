@@ -2,13 +2,13 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans
 
 import java.util
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.BaseInputConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.BaseOutputConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.BaseTransformConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.BaseInputProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output.BaseOutputProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.BaseTransformProperties
 
 import scala.beans.BeanProperty
 
-class BusinessConfig extends BaseConfig {
+class Context extends BaseProperties {
   var configFile: String = _
   var eventDate: String = _
   var isStreaming: Boolean = false
@@ -44,13 +44,13 @@ class BusinessConfig extends BaseConfig {
   var persistHiveDb: String = _
 
   @BeanProperty
-  var inputs: java.util.List[BaseInputConfig] = _
+  var inputs: java.util.List[BaseProperties] = _
 
   @BeanProperty
-  var processes: java.util.List[BaseTransformConfig] = _
+  var processes: java.util.List[BaseTransformProperties] = _
 
   @BeanProperty
-  var outputs: java.util.List[BaseOutputConfig] = _
+  var outputs: java.util.List[BaseOutputProperties] = _
 
   @BeanProperty
   var hiveEnabled: Boolean = true

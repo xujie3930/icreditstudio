@@ -1,7 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils
 
 import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.Context
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.CacheConstants
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.SysConstants
 import org.apache.spark.SparkConf
@@ -19,7 +19,7 @@ object SparkUtil extends Logging {
    * @param variables variables
    * @return
    */
-  def getSparkConf(appConf: BusinessConfig, variables: String, conf: SparkConf): Unit = {
+  def getSparkConf(appConf: Context, variables: String, conf: SparkConf): Unit = {
     conf.set("com.jinninghui.datasphere.icreditstudio.sparkx.engine.variables", variables)
     conf.set("spark.sql.crossJoin.enabled", "true")
       .set("hive.exec.dynamic.partition", "true")

@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input
 
 import scala.beans.BeanProperty
 
-class CustomInputConfig extends BaseInputConfig {
+class CustomInputProperties extends BaseInputProperties {
   @BeanProperty
   var clazz: String = _
   @BeanProperty

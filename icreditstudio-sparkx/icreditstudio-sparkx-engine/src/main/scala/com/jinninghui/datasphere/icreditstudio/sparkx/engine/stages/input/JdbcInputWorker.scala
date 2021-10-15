@@ -1,7 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, InputTypes}
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.JDBCInputConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, InputTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.input.JDBCInputProperties
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.BaseWorker
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.JDBCSparkUtils
 import org.apache.spark.sql.SparkSession
@@ -22,8 +22,8 @@ class JdbcInputWorker extends BaseWorker {
    * @param bean InputItemBean
    * @param ss   SparkSession
    */
-  override def process(bean: BaseConfig)(implicit ss: SparkSession): Unit = {
-    val item = bean.asInstanceOf[JDBCInputConfig]
+  override def process(bean: BaseProperties)(implicit ss: SparkSession): Unit = {
+    val item = bean.asInstanceOf[JDBCInputProperties]
     val filterd = JDBCSparkUtils.filterValues(item)
     item.dbtable.foreach { case (src, dist) =>
       filterd.put("dbtable", src)

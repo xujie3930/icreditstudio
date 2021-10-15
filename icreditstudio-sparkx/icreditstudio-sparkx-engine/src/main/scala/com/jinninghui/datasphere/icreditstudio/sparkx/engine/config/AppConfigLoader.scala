@@ -3,8 +3,8 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.config
 import com.alibaba.fastjson.serializer.SerializeFilter
 import com.alibaba.fastjson.{JSON, JSONObject}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.ConfigMapping
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.BaseTransformConfig
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, BusinessConfig, InputTypes, NodeTypes, PersistTypes, ProcessTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform.BaseTransformProperties
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, Context, InputTypes, NodeTypes, PersistTypes, ProcessTypes}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.{AppConstants, SysConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.{AppUtil, ConfigException, DateUtil, ReflectUtils}
 import org.apache.commons.collections4.CollectionUtils
@@ -26,12 +26,12 @@ object AppConfigLoader extends ConfigLoader {
    * @param file file
    * @return
    */
-  def loadAppConfig(file: String): BusinessConfig = {
+  def loadAppConfig(file: String): Context = {
     loadDefaultConfig()
     logger.info(s"start process $file.")
     val appConfigStr = loadYaml2String(file)
     val strFormated = AppUtil.formatVariableStr(appConfigStr)
-    var busconfig = JSON.parseObject(strFormated, classOf[BusinessConfig])
+    var busconfig = JSON.parseObject(strFormated, classOf[Context])
     // check name and type
     configNameCheck(busconfig.inputs)
     configNameCheck(busconfig.processes)
@@ -44,7 +44,7 @@ object AppConfigLoader extends ConfigLoader {
     val variableReplaced = variableReplace(strFormated, variables)
 
     // 变量替换后，重新生成 bean
-    busconfig = JSON.parseObject(variableReplaced, classOf[BusinessConfig])
+    busconfig = JSON.parseObject(variableReplaced, classOf[Context])
     string2Config(variableReplaced, busconfig)
     checkPersist(busconfig)
     // 个性化配置存储
@@ -60,7 +60,7 @@ object AppConfigLoader extends ConfigLoader {
     val stream = this.getClass.getClassLoader.getResourceAsStream(defaultFile)
     if (null != stream) {
       val defaultStr = loadYaml2String(defaultFile)
-      val busconfig = JSON.parseObject(defaultStr, classOf[BusinessConfig])
+      val busconfig = JSON.parseObject(defaultStr, classOf[Context])
       SysConstants.SYS_SPARK_CONFIG.putAll(parseSparkConfStrings(busconfig.getEnvs.getSpark))
       SysConstants.SYS_DEFALUT_VARIABLES.putAll(busconfig.getConstansMap)
 
@@ -74,7 +74,7 @@ object AppConfigLoader extends ConfigLoader {
    *
    * @param busconfig
    */
-  private def checkPersist(busconfig: BusinessConfig): Unit = {
+  private def checkPersist(busconfig: Context): Unit = {
     if (hasPersists) {
       val persistType = busconfig.getPersistType
       persistType match {
@@ -93,7 +93,7 @@ object AppConfigLoader extends ConfigLoader {
   /**
    * String 形式的 yaml 转 javaBean
    */
-  private def string2Config(string: String, bean: BusinessConfig): Unit = {
+  private def string2Config(string: String, bean: Context): Unit = {
     val jsonObject = JSON.parseObject(string)
     boxItems(bean.inputs, bean, jsonObject)
     boxItems(bean.processes, bean, jsonObject)
@@ -110,7 +110,7 @@ object AppConfigLoader extends ConfigLoader {
   /**
    * 封装 input process output 具体配置
    */
-  private def boxItems(items: java.util.List[_ <: BaseConfig], bean: BusinessConfig, jsonObject: JSONObject): Unit = {
+  private def boxItems(items: java.util.List[_ <: BaseProperties], bean: Context, jsonObject: JSONObject): Unit = {
     Option(items).filter(lst => CollectionUtils.isNotEmpty(lst))
       .foreach(lst => {
         val nodeType = items.head.tag
@@ -125,7 +125,7 @@ object AppConfigLoader extends ConfigLoader {
               ConfigMapping.getInputConfigClass(theType)
             // processes
             case nodeType if nodeType == NodeTypes.processes.toString =>
-              val config = JSON.parseObject(JSON.toJSONString(jsonObject, new Array[SerializeFilter](0)), classOf[BaseTransformConfig])
+              val config = JSON.parseObject(JSON.toJSONString(jsonObject, new Array[SerializeFilter](0)), classOf[BaseTransformProperties])
               config.doCheck()
               theType = if (StringUtils.isNotBlank(config.clazz))
                 ProcessTypes.clazz.toString
@@ -159,7 +159,7 @@ object AppConfigLoader extends ConfigLoader {
    * @param item item
    * @tparam T
    */
-  private def configNameCheck[T <: BaseConfig](item: java.util.List[T]): Unit = {
+  private def configNameCheck[T <: BaseProperties](item: java.util.List[T]): Unit = {
     Option(item).filter(inputs => CollectionUtils.isNotEmpty(inputs))
       .foreach(imputs => {
         imputs.foreach(input => input.nameCheck())
@@ -240,7 +240,7 @@ object AppConfigLoader extends ConfigLoader {
    * @param businessConfig 常量类
    * @return
    */
-  private def mergeVariables(businessConfig: BusinessConfig): mutable.Map[String, String] = {
+  private def mergeVariables(businessConfig: Context): mutable.Map[String, String] = {
     val constansClass = businessConfig.constansCls
     val sysClass = classOf[SysConstants].getName
     val appClass = classOf[AppConstants].getName

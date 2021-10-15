@@ -3,14 +3,14 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.config
 import java.text.SimpleDateFormat
 import java.util.Date
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.Context
 import org.apache.commons.lang3.time.DateFormatUtils
 
 object BusConfig {
   private var baseWorkdir: String = _
   private var eventDate: String = DateFormatUtils.format(new Date(), "yyyyMMdd")
   private var eventDate10: String = _
-  private var busConfig: BusinessConfig = _
+  private var busConfig: Context = _
 
   def apply: BusConfig = new BusConfig()
 }
@@ -24,7 +24,7 @@ class BusConfig extends BaseConfigLoader(Options.parse) {
    * @param options 输入参数
    * @return 参数封装的BusConfigBean
    */
-  def parseOptions(options: Array[String]): BusinessConfig = {
+  def parseOptions(options: Array[String]): Context = {
     parse(options)
     val configFile = getString("app.opts.config")
     BusConfig.eventDate = getString("app.opts.date")
@@ -62,7 +62,7 @@ class BusConfig extends BaseConfigLoader(Options.parse) {
     str
   }
 
-  def getConfig(): BusinessConfig = {
+  def getConfig(): Context = {
     BusConfig.busConfig
   }
 }

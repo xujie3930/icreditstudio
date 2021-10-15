@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output.HiveO
 
 import scala.beans.BeanProperty
 
-class HiveOutputConfig extends BaseOutputConfig {
+class HiveOutputProperties extends BaseOutputProperties {
 
   @BeanProperty
   var database: String = _

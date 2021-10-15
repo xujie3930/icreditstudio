@@ -1,10 +1,10 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.transform
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, NodeTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, NodeTypes}
 
 import scala.beans.BeanProperty
 
-class BaseTransformConfig extends BaseConfig {
+class BaseTransformProperties extends BaseProperties {
   tag = NodeTypes.processes.toString
 
   @BeanProperty

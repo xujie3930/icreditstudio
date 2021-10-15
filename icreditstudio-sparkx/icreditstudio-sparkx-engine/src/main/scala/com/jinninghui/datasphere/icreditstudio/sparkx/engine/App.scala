@@ -3,7 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.serializer.SerializeFilter
 import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.BusinessConfig
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.Context
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.{BusConfig, CacheConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.constants.{AppConstants, SysConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.{BatchPip, StreamPip}
@@ -27,12 +27,12 @@ object App extends Logging {
     logger.info(s"context exit success.")
   }
 
-  private def batch(appConfig: BusinessConfig)(implicit sparkSession: SparkSession): Unit = {
+  private def batch(appConfig: Context)(implicit sparkSession: SparkSession): Unit = {
     logger.info("start batch process.")
     BatchPip.startPip(appConfig)
   }
 
-  private def stream(appConfig: BusinessConfig)(implicit sparkSession: SparkSession): Unit = {
+  private def stream(appConfig: Context)(implicit sparkSession: SparkSession): Unit = {
     logger.info("start stream process.")
     implicit val ssc: StreamingContext = new StreamingContext(sparkSession.sparkContext, Seconds(appConfig.streamBatchSeconds))
     StreamPip.startPip(appConfig)

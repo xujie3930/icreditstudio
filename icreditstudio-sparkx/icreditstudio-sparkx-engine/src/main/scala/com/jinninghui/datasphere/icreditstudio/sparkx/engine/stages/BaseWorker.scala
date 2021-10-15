@@ -2,7 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages
 
 import com.alibaba.fastjson.JSON
 import com.jinninghui.datasphere.icreditstudio.sparkx.common.Logging
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, PersistTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, PersistTypes}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.config.{BusConfig, CacheConstants}
 import com.jinninghui.datasphere.icreditstudio.sparkx.engine.utils.HDFSUtils
 import org.apache.hadoop.fs.Path
@@ -12,7 +12,7 @@ import org.apache.spark.sql.{Row, SaveMode, SparkSession}
 trait BaseWorker extends Logging {
   protected var variables: java.util.HashMap[String, String] = _
 
-  def process(bean: BaseConfig)(implicit ss: SparkSession): Unit
+  def process(bean: BaseProperties)(implicit ss: SparkSession): Unit
 
   protected def initVariables()(implicit ss: SparkSession): Unit = {
     val str = ss.sparkContext.getConf.get("com.jinninghui.datasphere.icreditstudio.sparkx.engine.variables")
@@ -40,7 +40,7 @@ trait BaseWorker extends Logging {
    * @param process ProcessItemBean
    * @param ss      SparkSession
    */
-  protected def afterProcess(process: BaseConfig)(implicit ss: SparkSession): Unit = {
+  protected def afterProcess(process: BaseProperties)(implicit ss: SparkSession): Unit = {
     val resultTables = process.name.split(",", -1).map(_.trim)
     val conf = BusConfig.apply.getConfig()
     resultTables.filter(t => ss.catalog.tableExists(t))

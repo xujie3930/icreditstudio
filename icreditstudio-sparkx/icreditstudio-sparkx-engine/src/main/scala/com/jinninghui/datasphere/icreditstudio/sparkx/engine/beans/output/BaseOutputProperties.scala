@@ -1,9 +1,9 @@
 package com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.output
 
-import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseConfig, NodeTypes}
+import com.jinninghui.datasphere.icreditstudio.sparkx.engine.beans.{BaseProperties, NodeTypes}
 import org.apache.commons.lang3.StringUtils
 
-class BaseOutputConfig extends BaseConfig {
+class BaseOutputProperties extends BaseProperties {
   tag = NodeTypes.outputs.toString
 
   override def nameCheck(): Unit = {

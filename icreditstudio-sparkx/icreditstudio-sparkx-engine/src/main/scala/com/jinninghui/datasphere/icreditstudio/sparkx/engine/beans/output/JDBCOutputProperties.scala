@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.output.JdbcO
 
 import scala.beans.BeanProperty
 
-class JDBCOutputConfig extends BaseOutputConfig {
+class JDBCOutputProperties extends BaseOutputProperties {
   @BeanProperty
   var driver: String = _
   @BeanProperty

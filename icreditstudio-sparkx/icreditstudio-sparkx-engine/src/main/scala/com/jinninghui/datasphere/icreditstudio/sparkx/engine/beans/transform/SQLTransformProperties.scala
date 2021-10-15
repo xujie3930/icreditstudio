@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.Transform.SQ
 
 import scala.beans.BeanProperty
 
-class SQLTransformConfig extends BaseTransformConfig {
+class SQLTransformProperties extends BaseTransformProperties {
 
   setWorkerClass(classOf[SQLTransformWorker].getName)
 

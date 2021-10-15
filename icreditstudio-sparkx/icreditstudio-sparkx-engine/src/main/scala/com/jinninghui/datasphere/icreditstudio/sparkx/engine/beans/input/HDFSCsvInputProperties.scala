@@ -4,7 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.sparkx.engine.stages.input.HDFSCs
 
 import scala.beans.BeanProperty
 
-class HDFSCsvInputConfig extends BaseInputConfig {
+class HDFSCsvInputProperties extends BaseInputProperties {
 
   @BeanProperty
   var columns: String = _
