@@ -72,30 +72,34 @@ export const scheduleTaskOptions = {
     ])
   },
   grid: {
-    left: '3%',
-    right: '4%',
+    left: '2%',
+    right: '6%',
     bottom: '9%',
     containLabel: true
   },
 
   xAxis: {
     type: 'category',
+    name: '2021',
     boundaryGap: false,
-    data: [
-      '11.07',
-      '11.08',
-      '11.09',
-      '11.10',
-      '11.11',
-      '11.12',
-      '11.13',
-      '11.14',
-      '11.15',
-      '11.16'
-    ]
+    data: ['10/1', '10/2', '10/3', '10/4', '10/5', '10/6', '10/7'],
+    axisLabel: {
+      formatter: val => val,
+      fontWeight: 400,
+      fontSize: 12,
+      color: '#8c8c8c',
+      fontFamily: 'SourceHanSansCN, SourceHanSansCN-Regular'
+    }
   },
   yAxis: {
-    type: 'value'
+    type: 'value',
+    axisLabel: {
+      formatter: val => val,
+      fontWeight: 400,
+      fontSize: 12,
+      color: '#8c8c8c',
+      fontFamily: 'SourceHanSansCN, SourceHanSansCN-Regular'
+    }
   },
   series: [
     {
@@ -103,7 +107,15 @@ export const scheduleTaskOptions = {
       type: 'line',
       stack: '总量1',
       areaStyle: {},
-      data: ['10', '22', '10', '50', '13', '31', '15', '10', '22', '10'],
+      data: [
+        '82230',
+        '120230',
+        '110230',
+        '120232',
+        '130230',
+        '70230',
+        '100230'
+      ],
       itemStyle: { color: '#32A8FF' }
     }
   ]

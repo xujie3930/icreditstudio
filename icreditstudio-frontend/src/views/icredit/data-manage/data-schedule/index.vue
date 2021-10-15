@@ -39,12 +39,13 @@
           <span class="left">调度任务数量情况</span>
           <el-date-picker
             v-model="date"
+            size="mini"
             style="width: 240px; margin-left:5px"
             type="daterange"
             range-separator="-"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
-            size="mini"
+            :picker-options="pickerOptions"
           >
           </el-date-picker>
           <div class="tab">
@@ -147,6 +148,16 @@ export default {
         { label: '治理任务', name: 'govern' }
       ],
       yesterday: dayjs(new Date()).format('YYYY-MM-DD'),
+      pickerOptions: {
+        disabledDate: time => {
+          const pickTimeStamp = time.getTime()
+          const nowTimeStamp = new Date().getTime()
+          const yearTimeStamp = new Date().setFullYear(
+            new Date().getFullYear() - 1
+          )
+          return pickTimeStamp > nowTimeStamp || pickTimeStamp < yearTimeStamp
+        }
+      },
 
       roughDataloading: false,
       runtimeDataLoading: false,
@@ -157,7 +168,7 @@ export default {
   },
 
   created() {
-    // this.initPage()
+    this.initPage()
   },
 
   mounted() {
