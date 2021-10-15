@@ -502,13 +502,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
         List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
         for (DataSyncDispatchTaskPageResult dataSyncDispatchTaskPageResult : dispatchList) {
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchPeriod())){
+                JSONObject obj = (JSONObject)JSONObject.parse(dataSyncDispatchTaskPageResult.getDispatchPeriod());
+                dataSyncDispatchTaskPageResult.setDispatchPeriod(obj.getString("cron"));//执行周期
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){//调度类型
                 dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
             }
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){//执行状态
                 dataSyncDispatchTaskPageResult.setDispatchStatus(ExecStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchStatus())).getDesc());
             }
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {//任务状态
                 dataSyncDispatchTaskPageResult.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getTaskStatus())).getDesc());
             }
         }
