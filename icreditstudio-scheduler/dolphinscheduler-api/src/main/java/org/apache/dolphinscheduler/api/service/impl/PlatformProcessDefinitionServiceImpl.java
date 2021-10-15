@@ -3,8 +3,10 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
-import org.apache.dolphinscheduler.api.param.CreatePlatformTaskParam;
-import org.apache.dolphinscheduler.api.service.PlatformTaskService;
+import org.apache.dolphinscheduler.api.param.CreatePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.ReleasePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
+import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
 import org.apache.dolphinscheduler.api.utils.CheckUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -17,7 +19,9 @@ import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.dao.entity.ProcessData;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
+import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
+import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -28,13 +32,17 @@ import java.util.*;
  */
 @Slf4j
 @Service
-public class PlatformTaskServiceImpl extends BaseServiceImpl implements PlatformTaskService {
+public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implements PlatformProcessDefinitionService {
 
     @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
+    @Resource
+    private ScheduleMapper scheduleMapper;
+    @Resource
+    private PlatformSchedulerService schedulerService;
 
     @Override
-    public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformTaskParam param) {
+    public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
@@ -67,6 +75,46 @@ public class PlatformTaskServiceImpl extends BaseServiceImpl implements Platform
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
         return BusinessResult.success(result);
+    }
+
+    @Override
+    public BusinessResult<Boolean> release(ReleasePlatformProcessDefinitionParam param) {
+        ReleaseState state = ReleaseState.getEnum(param.getReleaseState());
+
+        HashMap<String, Object> result = new HashMap<>();
+        // check state
+        if (null == state) {
+            putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "releaseState");
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+
+        ProcessDefinition processDefinition = processDefinitionMapper.selectById(param.getProcessDefinitionId());
+
+        switch (state) {
+            case ONLINE:
+                processDefinition.setReleaseState(state);
+                processDefinitionMapper.updateById(processDefinition);
+                break;
+            case OFFLINE:
+                processDefinition.setReleaseState(state);
+                processDefinitionMapper.updateById(processDefinition);
+                List<Schedule> scheduleList = scheduleMapper.selectAllByProcessDefineArray(
+                        new String[]{processDefinition.getId()}
+                );
+
+                for (Schedule schedule : scheduleList) {
+                    log.info("set schedule offline, project id: {}, schedule id: {}, process definition id: {}", param.getProjectCode(), schedule.getId(), param.getProcessDefinitionId());
+                    // set status
+                    schedule.setReleaseState(ReleaseState.OFFLINE);
+                    scheduleMapper.updateById(schedule);
+                    schedulerService.deleteSchedule(param.getProjectCode(), schedule.getId());
+                }
+                break;
+            default:
+                putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "releaseState");
+                return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+        return BusinessResult.success(true);
     }
 
     /**
