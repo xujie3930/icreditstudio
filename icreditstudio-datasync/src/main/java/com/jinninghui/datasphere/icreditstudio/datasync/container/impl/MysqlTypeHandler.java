@@ -72,7 +72,7 @@ public class MysqlTypeHandler extends AbstractDialectTypeHandler {
 
     @Override
     public List<String> getAssocConditions() {
-        return Lists.newArrayList("=", ">", "<");
+        return Lists.newArrayList("=");
     }
 
     @Override

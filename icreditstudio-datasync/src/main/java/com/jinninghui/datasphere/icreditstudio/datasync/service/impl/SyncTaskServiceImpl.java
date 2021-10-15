@@ -68,7 +68,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private Parser<String, SyncCondition> syncConditionParser;
     @Resource
     private MetadataFeign metadataFeign;
-    @Autowired
+    @Resource
     private SyncTaskMapper syncTaskMapper;
 
     @Override
@@ -93,7 +93,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
-            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
+//            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
@@ -355,7 +355,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
                 log.info("数据源ID", dataSourceId);
                 //生成宽表数据列
-                wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
+                try {
+                    wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
+                }catch (Exception e){
+                    throw new AppException("60000027");
+                }
             }
         } else {
             //取得数据源ID
