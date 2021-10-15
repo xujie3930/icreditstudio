@@ -4,7 +4,7 @@ cd ..
 HOME=`pwd`
 
 export ICREDIT_STUDIO_LOG_PATH=$HOME/logs
-export SERVER_CLASS= org.apache.dolphinscheduler.server.master.MasterServer
+export SERVER_CLASS=org.apache.dolphinscheduler.server.master.MasterServer
 
 if test -z "$SERVER_HEAP_SIZE"
 then
