@@ -8,7 +8,7 @@ import lombok.Data;
  * @create 2021-10-09 18:34
  **/
 @Data
-public class TaskRough {
+public class TaskRoughResult {
     /**
      * 总调度任务数
      */
@@ -20,7 +20,7 @@ public class TaskRough {
     /**
      * 新增数据量条数
      */
-    private Long newlyLine;
+    private Long newlyLine = 0L;
     /**
      * 新增总数据量，单位KB
      */

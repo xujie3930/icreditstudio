@@ -86,12 +86,8 @@ export default {
 
   computed: {
     onlyOneTable() {
-      const {
-        associatedType,
-        conditions,
-        rightSourceDatabase
-      } = this.dataSource[0]
-      return associatedType && conditions && rightSourceDatabase
+      const { conditions, rightSourceDatabase } = this.dataSource[0]
+      return Boolean(conditions && rightSourceDatabase)
     }
   },
 

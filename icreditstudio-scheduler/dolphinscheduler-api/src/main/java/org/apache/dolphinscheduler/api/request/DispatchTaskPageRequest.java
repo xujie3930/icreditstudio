@@ -12,11 +12,13 @@ public class DispatchTaskPageRequest extends BusinessBasePageForm {
     private String taskName;
     //任务状态
     private String taskStatus;
-    //任务类型
-    private String taskType;
-    //任务执行时间 -- 开始
-    private String taskStartTime;
-    //任务执行时间 -- 结束
-    private String taskEndTime;
+    //调度执行状态
+    private String dispatchStatus;
+    //调度类型
+    private String dispatchType;
+    //调度执行时间 -- 开始
+    private String dispatchStartTime;
+    //调度执行时间 -- 结束
+    private String dispatchEndTime;
 
 }

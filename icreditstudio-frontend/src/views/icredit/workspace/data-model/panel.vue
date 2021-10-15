@@ -65,8 +65,8 @@
         </el-tab-pane>
       </template>
 
-      <el-tab-pane v-else label="ER图" name="firth">
-        <div class="er-wrap">ER图</div>
+      <el-tab-pane v-else label="ER图" name="er">
+        <ERChart ref="erChart" />
       </el-tab-pane>
     </el-tabs>
 
@@ -75,13 +75,14 @@
 </template>
 
 <script>
+import ERChart from './er'
 import Relations from './relations'
 import tbConfig from '@/views/icredit/configuration/table/workspace-model-relation'
 import tbSamplesConfig from '@/views/icredit/configuration/table/workspace-model-samples'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-data-model'
 
 export default {
-  components: { Relations },
+  components: { ERChart, Relations },
 
   data() {
     return {
@@ -155,7 +156,11 @@ export default {
   },
 
   methods: {
-    handleClick() {},
+    handleClick() {
+      if (this.activeName === 'er') {
+        this.$refs.erChart.renderChart()
+      }
+    },
 
     handleAddRelation() {
       this.$refs.relation.open()

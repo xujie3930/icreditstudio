@@ -22,6 +22,7 @@ import static org.apache.dolphinscheduler.common.Constants.DATASOURCE_PROPERTIES
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.utils.PropertyUtils;
 
+import org.apache.ibatis.logging.stdout.StdOutImpl;
 import org.apache.ibatis.mapping.DatabaseIdProvider;
 import org.apache.ibatis.mapping.VendorDatabaseIdProvider;
 import org.apache.ibatis.session.SqlSession;
@@ -133,6 +134,8 @@ public class SpringConnectionFactory {
         configuration.setCallSettersOnNulls(true);
         configuration.setJdbcTypeForNull(JdbcType.NULL);
         configuration.addInterceptor(paginationInterceptor());
+        //增加sql打印到控制台
+        configuration.setLogImpl(StdOutImpl.class);
         MybatisSqlSessionFactoryBean sqlSessionFactoryBean = new MybatisSqlSessionFactoryBean();
         sqlSessionFactoryBean.setConfiguration(configuration);
         sqlSessionFactoryBean.setDataSource(dataSource());

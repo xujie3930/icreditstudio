@@ -4,11 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskBuildInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskDefineInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.TaskScheduleInfo;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
-import com.jinninghui.datasphere.icreditstudio.datasync.vo.DataSyncDispatchTaskPageVO;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -122,10 +118,16 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     BusinessResult<Boolean> cease(DataSyncExecParam param);
 
     /**
-     * 周期任务列表
+     * 同步任务调度列表
      * @param param
      * @return
      */
-    BusinessPageResult<DataSyncDispatchTaskPageVO> dispatchPage(DataSyncDispatchTaskPageParam param);
+    BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(DataSyncDispatchTaskPageParam param);
 
+    /**
+     * 获取流程定义ID
+     * @param id
+     * @return
+     */
+    String getProcessInstanceIdById(String id);
 }

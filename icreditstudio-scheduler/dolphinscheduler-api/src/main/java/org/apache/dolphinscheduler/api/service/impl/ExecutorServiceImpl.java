@@ -21,7 +21,6 @@ import org.apache.dolphinscheduler.api.enums.ExecuteType;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.service.MonitorService;
-import org.apache.dolphinscheduler.api.service.ProjectService;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Server;
@@ -32,7 +31,6 @@ import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
-import org.apache.dolphinscheduler.dao.mapper.ProjectMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 import org.slf4j.Logger;
@@ -53,12 +51,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     private static final Logger logger = LoggerFactory.getLogger(ExecutorService.class);
 
     @Autowired
-    private ProjectMapper projectMapper;
-
-//    @Autowired
-//    private ProjectService projectService;
-
-    @Autowired
     private ProcessDefinitionMapper processDefinitionMapper;
 
     @Autowired
@@ -76,7 +68,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
      * execute process instance
      *
      * @param loginUser               login user
-     * @param projectName             project name
+     * @param projectCode             project code
      * @param processDefinitionId     process Definition Id
      * @param cronTime                cron time
      * @param commandType             command type
@@ -94,7 +86,8 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
      * @return execute process instance code
      * @throws ParseException Parse Exception
      */
-    public Map<String, Object> execProcessInstance(User loginUser, String projectName,
+    @Override
+    public Map<String, Object> execProcessInstance(User loginUser, String projectCode,
                                                    String processDefinitionId, String cronTime, CommandType commandType,
                                                    FailureStrategy failureStrategy, String startNodeList,
                                                    TaskDependType taskDependType, WarningType warningType, String warningGroupId,
@@ -106,11 +99,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             putMsg(result, Status.TASK_TIMEOUT_PARAMS_ERROR);
             return result;
         }
-        Project project = projectMapper.queryByName(projectName);
-//        Map<String, Object> checkResultAndAuth = checkResultAndAuth(loginUser, projectName, project);
-//        if (checkResultAndAuth != null) {
-//            return checkResultAndAuth;
-//        }
 
         // check process define release state
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
@@ -119,18 +107,10 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
             return result;
         }
 
-//        if (!checkTenantSuitable(processDefinition)) {
-//            logger.error("there is not any valid tenant for the process definition: id:{},name:{}, ",
-//                    processDefinition.getId(), processDefinition.getName());
-//            putMsg(result, Status.TENANT_NOT_SUITABLE);
-//            return result;
-//        }
-
         // check master exists
         if (!checkMasterExists(result)) {
             return result;
         }
-
 
         /**
          * create command
@@ -193,12 +173,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         return result;
     }
 
-
-    @Override
-    public Map<String, Object> execProcessInstance(User loginUser, String projectName, String processDefinitionId, String cronTime, CommandType commandType, FailureStrategy failureStrategy, String startNodeList, TaskDependType taskDependType, WarningType warningType, String warningGroupId, RunMode runMode, Priority processInstancePriority, String workerGroup, Integer timeout, Map<String, String> startParams) {
-        return null;
-    }
-
     /**
      * do action to process instance：pause, stop, repeat, recover from pause, recover from stop
      *
@@ -211,7 +185,7 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     @Override
     public Map<String, Object> execute(User loginUser, String projectName, String processInstanceId, ExecuteType executeType) {
         Map<String, Object> result = new HashMap<>(5);
-        Project project = projectMapper.queryByName(projectName);
+//        Project project = projectMapper.queryByName(projectName);
 
 //        Map<String, Object> checkResult = checkResultAndAuth(loginUser, projectName, project);
 //        if (checkResult != null) {
@@ -286,19 +260,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
     public Map<String, Object> newExecute(User loginUser, String projectName, String processDefinitionId, ExecuteType executeType) {
         return null;
     }
-
-//    /**
-//     * check tenant suitable
-//     *
-//     * @param processDefinition process definition
-//     * @return true if tenant suitable, otherwise return false
-//     */
-//    private boolean checkTenantSuitable(ProcessDefinition processDefinition) {
-//        // checkTenantExists();
-//        Tenant tenant = processService.getTenantForProcess(processDefinition.getTenantId(),
-//                processDefinition.getUserId());
-//        return tenant != null;
-//    }
 
     /**
      * Check the state of process instance and the type of operation match
@@ -477,7 +438,6 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
         return result;
     }
 
-
     /**
      * create command
      *
@@ -555,12 +515,12 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
                 } else if (runMode == RunMode.RUN_MODE_PARALLEL) {
                     List<Schedule> schedules = processService.queryReleaseSchedulerListByProcessDefinitionId(processDefineId);
                     List<Date> listDate = new LinkedList<>();
-                    if (!CollectionUtils.isEmpty(schedules)) {
+                    if (CollectionUtils.isNotEmpty(schedules)) {
                         for (Schedule item : schedules) {
                             listDate.addAll(CronUtils.getSelfFireDateList(start, end, item.getCrontab()));
                         }
                     }
-                    if (!CollectionUtils.isEmpty(listDate)) {
+                    if (CollectionUtils.isNotEmpty(listDate)) {
                         // loop by schedule date
                         for (Date date : listDate) {
                             cmdParam.put(CMDPARAM_COMPLEMENT_DATA_START_DATE, DateUtils.dateToString(date));
@@ -594,23 +554,4 @@ public class ExecutorServiceImpl extends BaseServiceImpl implements ExecutorServ
 
         return 0;
     }
-
-//    /**
-//     * check result and auth
-//     *
-//     * @param loginUser
-//     * @param projectName
-//     * @param project
-//     * @return
-//     */
-//    private Map<String, Object> checkResultAndAuth(User loginUser, String projectName, Project project) {
-//        // check project auth
-//        Map<String, Object> checkResult = projectService.checkProjectAndAuth(loginUser, project, projectName);
-//        Status status = (Status) checkResult.get(Constants.STATUS);
-//        if (status != Status.SUCCESS) {
-//            return checkResult;
-//        }
-//        return null;
-//    }
-
 }

@@ -8,17 +8,17 @@ import lombok.Data;
  * @create 2021-10-11 16:39
  **/
 @Data
-public class RuntimeRank {
+public class RuntimeRankResult {
 
     private Integer id;
     private String name;
     private Double speedTime;
     private Integer scheduleType;
 
-    public RuntimeRank() {
+    public RuntimeRankResult() {
     }
 
-    public RuntimeRank(Integer id, String name, Double speedTime, Integer scheduleType) {
+    public RuntimeRankResult(Integer id, String name, Double speedTime, Integer scheduleType) {
         this.id = id;
         this.name = name;
         this.speedTime = speedTime;

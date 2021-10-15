@@ -11,12 +11,14 @@ public class DataSyncDispatchTaskPageDTO {
     private String taskName;
     //任务状态
     private String taskStatus;
-    //任务类型
-    private String taskType;
+    //调度执行状态
+    private String dispatchStatus;
+    //调度类型
+    private String dispatchType;
     //任务执行时间 -- 开始
-    private String taskStartTime;
+    private String dispatchStartTime;
     //任务执行时间 -- 结束
-    private String taskEndTime;
+    private String dispatchEndTime;
     //页数
     private int pageNum = 1;
     //一页显示数量

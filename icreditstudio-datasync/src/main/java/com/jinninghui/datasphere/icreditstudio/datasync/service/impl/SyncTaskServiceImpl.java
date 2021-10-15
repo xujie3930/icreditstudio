@@ -28,7 +28,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFie
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.vo.DataSyncDispatchTaskPageVO;
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncDispatchTaskPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -495,17 +495,29 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
-    public BusinessPageResult<DataSyncDispatchTaskPageVO> dispatchPage(DataSyncDispatchTaskPageParam param) {
+    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
+        dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
         long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
-        List<DataSyncDispatchTaskPageVO> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
-        for (DataSyncDispatchTaskPageVO dataSyncDispatchTaskPageVO : dispatchList) {
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageVO.getTaskStatus())) {
-                dataSyncDispatchTaskPageVO.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageVO.getTaskStatus())).getDesc());
+        List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
+        for (DataSyncDispatchTaskPageResult dataSyncDispatchTaskPageResult : dispatchList) {
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){
+                dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){
+                dataSyncDispatchTaskPageResult.setDispatchStatus(ExecStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchStatus())).getDesc());
+            }
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {
+                dataSyncDispatchTaskPageResult.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getTaskStatus())).getDesc());
             }
         }
         return BusinessPageResult.build(dispatchList, param, dispatchCount);
     }
 
+    @Override
+    public String getProcessInstanceIdById(String id) {
+        SyncTaskEntity syncTask = syncTaskMapper.selectById(id);
+        return syncTask == null ? null : syncTask.getScheduleId();
+    }
 }
