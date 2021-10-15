@@ -16,4 +16,13 @@ public interface PlatformSchedulerService {
      * @return
      */
     BusinessResult<CreateSchedulerResult> createSchedule(CreateSchedulerParam param);
+
+    /**
+     * delete schedule
+     *
+     * @param projectCode project code
+     * @param scheduleId  schedule id
+     * @throws RuntimeException runtime exception
+     */
+    void deleteSchedule(String projectCode, String scheduleId);
 }
