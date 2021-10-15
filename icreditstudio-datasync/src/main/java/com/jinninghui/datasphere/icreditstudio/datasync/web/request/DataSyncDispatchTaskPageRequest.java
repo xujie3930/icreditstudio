@@ -11,11 +11,11 @@ public class DataSyncDispatchTaskPageRequest extends BusinessBasePageForm {
     //任务名称
     private String taskName;
     //任务状态
-    private String taskStatus;
+    private Integer taskStatus;
     //调度执行状态
-    private String dispatchStatus;
+    private Integer dispatchStatus;
     //调度类型
-    private String dispatchType;
+    private Integer dispatchType;
     //调度执行时间 -- 开始
     private String dispatchStartTime;
     //调度执行时间 -- 结束

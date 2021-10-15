@@ -59,11 +59,10 @@
             AND task_name LIKE concat('%',#{taskName},'%')
         </if>
         --         AND version is not null
-        limit #{pageNum},#{pageSize}
     </select>
     <select id="dispatchList" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.DataSyncDispatchTaskPageResult">
         SELECT id AS taskId,task_name AS taskName,task_status AS taskStatus,last_update_time AS createTime,last_scheduling_time AS lastDispatchTime,version AS taskVersion,
-        collect_mode AS dispatchType,'' AS dispatchPeriod,exec_status AS dispatchStatus
+        collect_mode AS dispatchType,task_param_json AS dispatchPeriod,exec_status AS dispatchStatus
         FROM icredit_sync_task
         WHERE workspace_id = #{workspaceId} AND delete_flag = 0
         <if test="taskStatus != null and taskStatus != ''">

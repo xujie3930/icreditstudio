@@ -8,8 +8,8 @@
 
     <fileSets>
         <fileSet>
-            <directory>${project.parent.basedir}</directory>
-            <outputDirectory>.</outputDirectory>
+            <directory>${project.basedir}</directory>
+            <outputDirectory></outputDirectory>
             <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>
@@ -17,25 +17,28 @@
             </includes>
         </fileSet>
 
-
         <fileSet>
             <directory>
-                backend-microservices/target/jnh-datasphere-icreditstudio-services-${project.version}-bin
+                ${project.basedir}/bin/
             </directory>
-            <outputDirectory>jnh-datasphere-icreditstudio-services</outputDirectory>
+            <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
         </fileSet>
-
         <fileSet>
             <directory>
-                scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin
+                ${project.basedir}/src/main/resources/
             </directory>
-            <outputDirectory>jnh-datasphere-icreditstudio-scheduler</outputDirectory>
+            <outputDirectory>conf</outputDirectory>
             <includes>
-                <include>**/*</include>
+                <include>application.properties</include>
+                <include>*.xml</include>
             </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
         </fileSet>
 
     </fileSets>
@@ -43,6 +46,7 @@
 
     <dependencySets>
         <dependencySet>
+            <outputDirectory>lib</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <useTransitiveDependencies>true</useTransitiveDependencies>
             <unpack>false</unpack>
