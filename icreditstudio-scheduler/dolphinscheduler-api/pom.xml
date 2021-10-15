@@ -269,5 +269,10 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.jinninghui.datasphere</groupId>
+            <artifactId>icreditstudio-servicecenter</artifactId>
+        </dependency>
+
     </dependencies>
 </project>

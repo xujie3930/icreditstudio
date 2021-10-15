@@ -137,7 +137,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
         Date date = new Date();
-        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁，防止重复点击
+        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
         IcreditDatasourceEntity dataEntity;
         dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null) {
