@@ -4,6 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.exceptions.ServiceException;
 import org.apache.dolphinscheduler.api.param.CreateSchedulerParam;
 import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
@@ -17,6 +18,7 @@ import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
+import org.apache.dolphinscheduler.service.quartz.QuartzExecutors;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -80,5 +82,18 @@ public class PlatformSchedulerServiceImpl extends BaseServiceImpl implements Pla
         CreateSchedulerResult result = new CreateSchedulerResult();
         result.setSchedulerId(scheduleObj.getId());
         return BusinessResult.success(result);
+    }
+
+    @Override
+    public void deleteSchedule(String projectCode, String scheduleId) {
+        log.info("delete schedules of project id:{}, schedule id:{}", projectCode, scheduleId);
+
+        String jobName = QuartzExecutors.buildJobName(scheduleId);
+        String jobGroupName = QuartzExecutors.buildJobGroupName(projectCode);
+
+        if (!QuartzExecutors.getInstance().deleteJob(jobName, jobGroupName)) {
+            log.warn("set offline failure:projectId:{},scheduleId:{}", projectCode, scheduleId);
+            throw new ServiceException("set offline failure");
+        }
     }
 }
