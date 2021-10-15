@@ -179,6 +179,9 @@ export default {
   methods: {
     initPage() {
       this.getHomeRoughData()
+      this.getHomeRuntimeData()
+      this.getHomeRunDayData()
+      this.getHomeErrMonthData()
     },
 
     renderPieChart(id) {
@@ -218,7 +221,19 @@ export default {
     },
 
     // 获取当天运行情况数据
-    getHomeRuntimeData() {},
+    getHomeRuntimeData() {
+      const { workspaceId } = this
+      this.runtimeDataLoading = true
+      API.dataScheduleHomeRuntime({ workspaceId })
+        .then(({ success, data }) => {
+          if (success) {
+            console.log(data)
+          }
+        })
+        .finally(() => {
+          this.runtimeDataLoading = false
+        })
+    },
 
     getHomeCountData() {},
 

@@ -27,7 +27,7 @@ export default [
   {
     type: 'select',
     label: '执行状态',
-    ruleProp: 'runStatus',
+    ruleProp: 'dispatchStatus',
     model: '',
     isSearch: true,
     options: [
@@ -40,7 +40,7 @@ export default [
   {
     type: 'select',
     label: '调度类型',
-    ruleProp: 'taskType',
+    ruleProp: 'dispatchType',
     model: '',
     isSearch: true,
     options: [
@@ -55,7 +55,7 @@ export default [
     startPlaceholder: '开始日期',
     endPlaceholder: '结束日期',
     model: '',
-    ruleProp: 'loginTime',
+    ruleProp: 'scheduleTime',
     isSearch: true,
     format: 'yyyy-MM-dd',
     valueFormat: 'timestamp'

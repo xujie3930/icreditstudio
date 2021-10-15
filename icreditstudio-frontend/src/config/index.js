@@ -1,7 +1,7 @@
 /* 基础配置 */
 const baseConfig = {
-  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.4:13249',
-  baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.201:13249',
+  baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.24:13249',
+  // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.201:13249',
   // 请求超时时间
   timeout: 9000,
   // 项目名称
