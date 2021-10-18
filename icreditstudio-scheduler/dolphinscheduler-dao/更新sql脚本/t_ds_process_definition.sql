@@ -1,4 +1,5 @@
 -- auto-generated definition
+drop table  if exists t_ds_process_definition;
 create table t_ds_process_definition
 (
     id                      varchar(30)              not null comment 'key'
