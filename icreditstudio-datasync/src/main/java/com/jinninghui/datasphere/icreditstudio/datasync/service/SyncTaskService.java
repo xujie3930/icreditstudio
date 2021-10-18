@@ -122,7 +122,7 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @param param
      * @return
      */
-    BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(DataSyncDispatchTaskPageParam param);
+    BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param);
 
     /**
      * 获取流程定义ID

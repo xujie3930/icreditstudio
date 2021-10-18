@@ -29,7 +29,7 @@ public class DispatchController {
      * @return
      */
     @PostMapping("/page")
-    public BusinessPageResult<DispatchTaskPageResult> dispatchPage(@RequestBody DispatchTaskPageRequest dispatchPageRequest){
+    public BusinessResult<BusinessPageResult<DispatchTaskPageResult>> dispatchPage(@RequestBody DispatchTaskPageRequest dispatchPageRequest){
         DispatchTaskPageParam param = new DispatchTaskPageParam();
         BeanCopyUtils.copyProperties(dispatchPageRequest, param);
         return dispatchService.dispatchPage(param);

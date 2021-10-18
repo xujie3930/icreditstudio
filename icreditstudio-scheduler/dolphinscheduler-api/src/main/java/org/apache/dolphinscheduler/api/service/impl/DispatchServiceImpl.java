@@ -35,7 +35,7 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessPageResult<DispatchTaskPageResult> dispatchPage(DispatchTaskPageParam param) {
+    public BusinessResult<BusinessPageResult<DispatchTaskPageResult>> dispatchPage(DispatchTaskPageParam param) {
         return dataSyncDispatchTaskFeignClient.dispatchPage(param);
     }
 

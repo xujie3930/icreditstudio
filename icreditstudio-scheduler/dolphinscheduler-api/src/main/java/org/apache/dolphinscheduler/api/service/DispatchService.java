@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface DispatchService {
 
-    BusinessPageResult<DispatchTaskPageResult> dispatchPage(DispatchTaskPageParam param);
+    BusinessResult<BusinessPageResult<DispatchTaskPageResult>> dispatchPage(DispatchTaskPageParam param);
 
     BusinessResult<Boolean> startOrStop(String taskId, String execType);
 
