@@ -17,9 +17,9 @@
 
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.service.LoggerService;
-import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
@@ -65,23 +65,20 @@ public class LoggerServiceImpl implements LoggerService {
      * @return log string data
      */
     @Override
-    public Result queryLog(String taskInstId, int skipLineNum, int limit) {
+    public BusinessResult<String> queryLog(String taskInstId, int skipLineNum, int limit) {
 
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstId);
 
         if (taskInstance == null || StringUtils.isBlank(taskInstance.getHost())) {
-            return new Result(Status.TASK_INSTANCE_NOT_FOUND.getCode(), Status.TASK_INSTANCE_NOT_FOUND.getMsg());
+            return BusinessResult.fail("", Status.TASK_INSTANCE_NOT_FOUND.getMsg());
         }
 
         String host = getHost(taskInstance.getHost());
 
-        Result result = new Result(Status.SUCCESS.getCode(), Status.SUCCESS.getMsg());
-
         logger.info("log host : {} , logPath : {} , logServer port : {}", host, taskInstance.getLogPath(), Constants.RPC_PORT);
 
         String log = logClient.rollViewLog(host, Constants.RPC_PORT, taskInstance.getLogPath(), skipLineNum, limit);
-        result.setData(log);
-        return result;
+        return BusinessResult.success(log);
     }
 
 

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.Flag;
+import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.apache.dolphinscheduler.dao.entity.ExecuteStatusCount;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.ibatis.annotations.Param;
@@ -78,4 +79,6 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     Double runtimeTotalByDefinition(@Param("code")Long code, @Param("states") int[] stateArray);
 
     Long getCountByByDefinitionAndStates(@Param("code")Long code, @Param("states") int[] stateArray);
+
+    List<DispatchLogVO> queryTaskByProcessInstanceId(@Param("instanceId") String instanceId);
 }

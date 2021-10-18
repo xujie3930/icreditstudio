@@ -17,7 +17,7 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import org.apache.dolphinscheduler.api.utils.Result;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
 /**
  * logger service
@@ -32,7 +32,7 @@ public interface LoggerService {
      * @param limit       limit
      * @return log string data
      */
-    Result<String> queryLog(String taskInstId, int skipLineNum, int limit);
+    BusinessResult<String> queryLog(String taskInstId, int skipLineNum, int limit);
 
 
     /**
