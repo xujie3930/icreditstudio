@@ -188,12 +188,16 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
         Date startTime;
         Date endTime;
         //默认统计前七天的数据
-        if (Objects.isNull(request.getShcedulerStartTime()) && Objects.isNull(request.getShcedulerEndTime())){
-            startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -15));
+        if (Objects.isNull(request.getSchedulerStartTime()) && Objects.isNull(request.getSchedulerEndTime())){
+            startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -7));
             endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
         }else {
-            startTime = DateUtils.getStartOfDay(request.getShcedulerStartTime());
-            endTime = DateUtils.getEndOfDay(request.getShcedulerEndTime());
+            startTime = DateUtils.getStartOfDay(new Date(request.getSchedulerStartTime()));
+            endTime = DateUtils.getEndOfDay(new Date(request.getSchedulerEndTime()));
+            //间隔大于30天，则抛出异常
+            /*if (DateUtils.diffDay(startTime, endTime) > 30){
+                throw new AppException("90000001");
+            }*/
         }
 
         //TODO:数据量大后t_ds_task_definition表加覆盖索引

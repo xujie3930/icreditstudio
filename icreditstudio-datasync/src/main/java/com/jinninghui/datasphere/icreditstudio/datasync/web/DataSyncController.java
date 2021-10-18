@@ -180,7 +180,7 @@ public class DataSyncController {
     }
 
     @PostMapping("/dispatchPage")
-    public BusinessPageResult<DataSyncDispatchTaskPageResult> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
+    public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
         DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
         BeanCopyUtils.copyProperties(dispatchPageRequest, param);
         return syncTaskService.dispatchPage(param);
