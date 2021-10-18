@@ -22,5 +22,5 @@ public class SchedulerHomepageRequest extends BusinessBasePageForm {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date schedulerEndTime;//调度结束时间
 
-    private Integer scheduleType = 1;//0-数据同步，1-数据开发，2-数据治理
+    private Integer scheduleType = 0;//0-数据同步，1-数据开发，2-数据治理
 }
