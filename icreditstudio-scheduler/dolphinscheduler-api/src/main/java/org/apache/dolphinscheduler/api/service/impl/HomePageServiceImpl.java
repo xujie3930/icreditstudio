@@ -43,7 +43,7 @@ public class HomePageServiceImpl implements HomePageService {
     public BusinessResult<TaskRoughResult> rough(SchedulerHomepageRequest request) {
         TaskRoughResult taskRoughResult = new TaskRoughResult();
         //前三天0点
-        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -15));
+        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -3));
         //前一天24点
         Date endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
         //总调度任务数
@@ -58,7 +58,7 @@ public class HomePageServiceImpl implements HomePageService {
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String workspaceId) {
         Date date = new Date();
-        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1));
+        Date startTime = DateUtils.getStartOfDay(date);
         Date endTime = DateUtils.getEndOfDay((date));
         Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
         Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode()});
@@ -80,7 +80,7 @@ public class HomePageServiceImpl implements HomePageService {
         List<RuntimeRankResult> runtimeRankResultList = new ArrayList<>();
         Date date = new Date();
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
-                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -30)), DateUtils.getEndOfDay(date));
+                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(date));
         for (Map<String, Object> m : definitionList) {
             Long code = (Long) m.get("code");
             Double runtime = taskInstanceService.runtimeTotalByDefinition(code, new int[]{});

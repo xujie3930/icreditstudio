@@ -16,11 +16,9 @@ public class SchedulerHomepageRequest extends BusinessBasePageForm {
 
     private String workspaceId;//工作空间id
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date schedulerStartTime;//调度开始时间
+    private Long schedulerStartTime;//调度开始时间
 
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date schedulerEndTime;//调度结束时间
+    private Long schedulerEndTime;//调度结束时间
 
     private Integer scheduleType = 0;//0-数据同步，1-数据开发，2-数据治理
 }
