@@ -16,13 +16,13 @@ public class TaskCountResult {
     /**
      * 数量/天
      */
-    private Long count;
+    private Long value;
 
     public TaskCountResult() {
     }
 
-    public TaskCountResult(String date, Long count) {
+    public TaskCountResult(String date, Long value) {
         this.date = date;
-        this.count = count;
+        this.value = value;
     }
 }

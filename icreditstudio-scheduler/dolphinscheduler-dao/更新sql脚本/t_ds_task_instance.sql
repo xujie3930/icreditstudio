@@ -1,4 +1,5 @@
 -- auto-generated definition
+DROP TABLE IF EXISTS `t_ds_task_instance`;
 create table t_ds_task_instance
 (
     id                     varchar(30)            not null comment 'key'

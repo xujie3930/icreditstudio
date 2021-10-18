@@ -124,18 +124,18 @@ export default {
       lfTableLoading: false,
       rgTableLoading: false,
       scheduleSituation: [
-        { key: 'taskCount', value: 25, name: '总调度任务数', unit: '个' },
-        { key: 'failCount', value: 5, name: '执行失败实例', unit: '个' },
+        { key: 'taskCount', value: 0, name: '总调度任务数', unit: '个' },
+        { key: 'failCount', value: 0, name: '执行失败实例', unit: '个' },
         {
           key: 'newlyLine',
-          value: 15000,
+          value: 0,
           name: '新增数据量条数',
           unit: '万条'
         },
         { key: 'newlyDataSize', value: 0, name: '新增总数据量', unit: 'KB' },
         {
           key: 'currentSpeed',
-          value: 8,
+          value: 0,
           name: '实时任务记录速度',
           unit: 'RPS '
         }
@@ -147,7 +147,9 @@ export default {
         { label: '开发任务', name: 'dev' },
         { label: '治理任务', name: 'govern' }
       ],
-      yesterday: dayjs(new Date()).format('YYYY-MM-DD'),
+      yesterday: dayjs(new Date().getTime() - 24 * 60 * 60 * 1000).format(
+        'YYYY-MM-DD'
+      ),
       pickerOptions: {
         disabledDate: time => {
           const pickTimeStamp = time.getTime()
@@ -167,13 +169,10 @@ export default {
     }
   },
 
-  created() {
-    this.initPage()
-  },
-
   mounted() {
-    this.renderPieChart('pieChart')
+    // this.renderPieChart('pieChart')
     this.renderLineChart('lineChart')
+    this.initPage()
   },
 
   methods: {
@@ -184,10 +183,7 @@ export default {
       this.getHomeErrMonthData()
     },
 
-    renderPieChart(id) {
-      renderChart(id, optionsMapping[id])
-    },
-
+    // 调度任务数量情况-折线图
     renderLineChart(id) {
       renderChart(id, optionsMapping[id])
     },
@@ -221,13 +217,29 @@ export default {
     },
 
     // 获取当天运行情况数据
-    getHomeRuntimeData() {
+    getHomeRuntimeData(id = 'pieChart') {
       const { workspaceId } = this
+      const chartInstance = renderChart(id, optionsMapping[id])
+
       this.runtimeDataLoading = true
       API.dataScheduleHomeRuntime({ workspaceId })
         .then(({ success, data }) => {
           if (success) {
             console.log(data)
+            chartInstance.setOption({
+              // { value: 21, name: '运行失败   21' },
+              // { value: 15, name: '运行中      15' },
+              // { value: 10, name: '等待中      10' },
+              // { value: 30, name: '运行成功   30' }
+              series: [
+                {
+                  data: data.map(({ taskDesc, count }) => ({
+                    value: count,
+                    name: `${taskDesc}    ${count}`
+                  }))
+                }
+              ]
+            })
           }
         })
         .finally(() => {
@@ -235,6 +247,7 @@ export default {
         })
     },
 
+    // 调度任务数量情况
     getHomeCountData() {},
 
     // 获取近一天运行时长排行数据
@@ -434,7 +447,7 @@ export default {
   }
 
   &-footer {
-    @include flex(row, space-between);
+    @include flex(row, space-between, flex-start);
 
     &-left,
     &-right {
