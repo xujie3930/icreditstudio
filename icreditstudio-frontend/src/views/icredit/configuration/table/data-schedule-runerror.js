@@ -10,12 +10,13 @@ export default {
   isBorder: true,
   hasPage: false,
   isCustomEmpty: false,
-  maxHeight: 250,
+  maxHeight: 224,
   group: [
     {
       type: 'text',
       label: '任务id',
-      prop: 'id'
+      prop: 'id',
+      width: 80
     },
     {
       type: 'text',
@@ -25,13 +26,15 @@ export default {
     {
       type: 'text',
       label: '出错次数',
-      prop: 'errorNum'
+      prop: 'errorNum',
+      width: 120
     },
     {
       type: 'text',
       label: '任务类型',
       prop: 'scheduleType',
-      formatter: (row, col, val) => (val ? '数据开发' : '数据开发')
+      width: 120,
+      formatter: (row, col, val) => (val ? '数据开发' : '数据同步')
     }
   ]
 }

@@ -3,7 +3,7 @@
  * @Date: 2021-10-14
  */
 
-import { getAction, postAction } from '@/api'
+import { postAction } from '@/api'
 
 // 首页-近72小时内调度情况
 const dataScheduleHomeRough = params =>
@@ -15,7 +15,7 @@ const dataScheduleHomeRuntime = params =>
 
 // 首页-调度任务数量情况
 const dataScheduleHomeCount = params =>
-  getAction('/dolphinscheduler/homepage/situation', params)
+  postAction('/dolphinscheduler/homepage/taskCount', params)
 
 // 首页-近一天运行时长排行
 const dataScheduleHomeRunDay = params =>

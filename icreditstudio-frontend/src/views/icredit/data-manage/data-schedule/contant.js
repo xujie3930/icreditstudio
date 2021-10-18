@@ -4,7 +4,21 @@ import { echarts } from '@/utils/echarts'
 export const runtimeOptions = {
   color: ['#ff7a7b', '#6699ff', '#ffae31', '#52cca3'],
   textStyle: { color: '#fff' },
-  tooltip: { trigger: 'item' },
+  tooltip: {
+    trigger: 'item',
+    formatter(params) {
+      console.log(params)
+      const { marker, name, seriesName } = params
+      return `
+       <div>
+       <p> ${seriesName}</p>
+       <p>
+       ${marker} ${name}
+       </p>
+       </div>
+       `
+    }
+  },
   legend: {
     orient: 'vertical',
     top: '25%',
@@ -72,9 +86,9 @@ export const scheduleTaskOptions = {
     ])
   },
   grid: {
-    left: '2%',
-    right: '6%',
-    bottom: '9%',
+    left: 24,
+    right: 55,
+    bottom: 50,
     containLabel: true
   },
 
@@ -82,7 +96,7 @@ export const scheduleTaskOptions = {
     type: 'category',
     name: '2021',
     boundaryGap: false,
-    data: ['10/1', '10/2', '10/3', '10/4', '10/5', '10/6', '10/7'],
+    data: [],
     axisLabel: {
       formatter: val => val,
       fontWeight: 400,
@@ -101,21 +115,24 @@ export const scheduleTaskOptions = {
       fontFamily: 'SourceHanSansCN, SourceHanSansCN-Regular'
     }
   },
+  dataZoom: [
+    {
+      type: 'inside',
+      start: 2,
+      end: 20
+    },
+    {
+      start: 0,
+      end: 20
+    }
+  ],
   series: [
     {
-      name: '浏览次数',
+      name: '调度任务数量',
       type: 'line',
-      stack: '总量1',
+      // stack: '总量1',
       areaStyle: {},
-      data: [
-        '82230',
-        '120230',
-        '110230',
-        '120232',
-        '130230',
-        '70230',
-        '100230'
-      ],
+      data: [],
       itemStyle: { color: '#32A8FF' }
     }
   ]

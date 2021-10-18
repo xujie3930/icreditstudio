@@ -34,7 +34,7 @@
         <div id="pieChart" style="height:300px"></div>
       </div>
 
-      <div class="schedule-chart-right" v-loading="countDataLoading">
+      <div class="schedule-chart-right">
         <div class="title">
           <span class="left">调度任务数量情况</span>
           <el-date-picker
@@ -46,13 +46,15 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :picker-options="pickerOptions"
+            value-format="timestamp"
+            @change="handleChangeDate"
           >
           </el-date-picker>
           <div class="tab">
             <span
               :class="[
                 'tab-item',
-                item.name === activeName ? 'tab-item-active' : ''
+                item.name === scheduleType ? 'tab-item-active' : ''
               ]"
               v-for="item in tabItems"
               :key="item.name"
@@ -62,7 +64,7 @@
             </span>
           </div>
         </div>
-        <div class="right-wrap">
+        <div class="right-wrap" v-loading="countDataLoading">
           <div class="right-wrap-header"></div>
           <div id="lineChart" class="line-chart" style="height:250px"></div>
         </div>
@@ -73,7 +75,7 @@
       <div class="schedule-footer-left">
         <div class="title">
           <span class="left">近一天运行时长排行</span>
-          <span class="right">上次更新：{{ yesterday }}</span>
+          <span class="right">上次更新：{{ yesterdayLeft }}</span>
         </div>
         <div class="content">
           <j-table
@@ -88,7 +90,7 @@
       <div class="schedule-footer-right">
         <div class="title">
           <span class="left">近一月运行出错排行</span>
-          <span class="right">上次更新：{{ yesterday }}</span>
+          <span class="right">上次更新：{{ yesterdayRight }}</span>
         </div>
         <div class="content">
           <j-table
@@ -141,15 +143,14 @@ export default {
         }
       ],
       date: [],
-      activeName: 'sync',
+      scheduleType: '0',
       tabItems: [
-        { label: '同步任务', name: 'sync' },
-        { label: '开发任务', name: 'dev' },
-        { label: '治理任务', name: 'govern' }
+        { label: '同步任务', name: '0' },
+        { label: '开发任务', name: '1' },
+        { label: '治理任务', name: '2' }
       ],
-      yesterday: dayjs(new Date().getTime() - 24 * 60 * 60 * 1000).format(
-        'YYYY-MM-DD'
-      ),
+      yesterdayLeft: '',
+      yesterdayRight: '',
       pickerOptions: {
         disabledDate: time => {
           const pickTimeStamp = time.getTime()
@@ -170,26 +171,34 @@ export default {
   },
 
   mounted() {
-    // this.renderPieChart('pieChart')
-    this.renderLineChart('lineChart')
     this.initPage()
   },
 
   methods: {
     initPage() {
+      const curTime = new Date().getTime()
+      const oneDayTime = 3600 * 1000 * 24
+      this.date = [curTime - oneDayTime * 7, curTime - oneDayTime]
       this.getHomeRoughData()
       this.getHomeRuntimeData()
+      this.getHomeCountData()
       this.getHomeRunDayData()
       this.getHomeErrMonthData()
     },
 
-    // 调度任务数量情况-折线图
-    renderLineChart(id) {
-      renderChart(id, optionsMapping[id])
+    handleChangTabClick(name) {
+      this.scheduleType = name
+      this.getHomeCountData()
     },
 
-    handleChangTabClick(name) {
-      this.activeName = name
+    handleChangeDate(date) {
+      const [sTime, eTime] = date || []
+      if (eTime - sTime > 3600 * 1000 * 24 * 30) {
+        this.$message.error(
+          '起始时间与结束时间的跨度不能大于一个月，请重新选择！'
+        )
+        this.date = []
+      } else this.getHomeCountData()
     },
 
     // 获取近72小时内的调度情况数据
@@ -199,7 +208,6 @@ export default {
       API.dataScheduleHomeRough({ workspaceId })
         .then(({ success, data }) => {
           if (success) {
-            console.log('datalplp', data)
             this.scheduleSituation = scheduleSituation.map(
               ({ key, value, ...rest }) => {
                 return {
@@ -225,17 +233,15 @@ export default {
       API.dataScheduleHomeRuntime({ workspaceId })
         .then(({ success, data }) => {
           if (success) {
-            console.log(data)
+            this.yesterdayLeft = dayjs(
+              new Date().getTime() - 24 * 60 * 60 * 1000
+            ).format('YYYY-MM-DD')
             chartInstance.setOption({
-              // { value: 21, name: '运行失败   21' },
-              // { value: 15, name: '运行中      15' },
-              // { value: 10, name: '等待中      10' },
-              // { value: 30, name: '运行成功   30' }
               series: [
                 {
                   data: data.map(({ taskDesc, count }) => ({
                     value: count,
-                    name: `${taskDesc}    ${count}`
+                    name: taskDesc
                   }))
                 }
               ]
@@ -248,16 +254,47 @@ export default {
     },
 
     // 调度任务数量情况
-    getHomeCountData() {},
+    getHomeCountData(id = 'lineChart') {
+      const { workspaceId, date, scheduleType } = this
+      const [schedulerStartTime, schedulerEndTime] = date || []
+      const params = {
+        workspaceId,
+        scheduleType,
+        schedulerStartTime,
+        schedulerEndTime
+      }
+
+      const chartInstance = renderChart(id, optionsMapping[id])
+      this.countDataLoading = true
+      API.dataScheduleHomeCount(params)
+        .then(({ success, data }) => {
+          if (success && data?.length) {
+            this.yesterdayRight = dayjs(
+              new Date().getTime() - 24 * 60 * 60 * 1000
+            ).format('YYYY-MM-DD')
+            const name = dayjs(data[data.length - 1].date).format('YYYY')
+            chartInstance.setOption({
+              xAxis: {
+                name,
+                data: data.map(({ date: d }) => dayjs(d).format('YYYY.MM.DD'))
+              },
+              series: [{ data: data.map(({ value }) => value) }]
+            })
+          }
+        })
+        .finally(() => {
+          this.countDataLoading = false
+        })
+    },
 
     // 获取近一天运行时长排行数据
     getHomeRunDayData() {
       const { workspaceId } = this
       this.lfTableLoading = true
+      this.lfTableData = []
       API.dataScheduleHomeRunDay({ workspaceId })
         .then(({ success, data }) => {
           if (success) {
-            console.log(data)
             this.lfTableData = data
           }
         })
@@ -270,10 +307,10 @@ export default {
     getHomeErrMonthData() {
       const { workspaceId } = this
       this.rgTableLoading = true
+      this.rgTableData = []
       API.dataScheduleHomeErrMonth({ workspaceId })
         .then(({ success, data }) => {
           if (success) {
-            console.log(data)
             this.rgTableData = data
           }
         })
@@ -284,7 +321,7 @@ export default {
 
     mixinChangeWorkspaceId() {
       console.log('this.wokspaceId=', this.workspaceId)
-      // this.initPage()
+      this.initPage()
     }
   }
 }
