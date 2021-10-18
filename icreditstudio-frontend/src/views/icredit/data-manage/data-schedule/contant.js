@@ -30,10 +30,10 @@ export const runtimeOptions = {
       labelLine: { show: false, showAbove: false },
       radius: ['40%', '70%'],
       data: [
-        { value: 21, name: '运行失败   21' },
-        { value: 15, name: '运行中      15' },
-        { value: 10, name: '等待中      10' },
-        { value: 30, name: '运行成功   30' }
+        { value: 0, name: '运行失败' },
+        { value: 0, name: '运行中' },
+        { value: 0, name: '等待中' },
+        { value: 0, name: '运行成功' }
       ],
       emphasis: {
         itemStyle: {

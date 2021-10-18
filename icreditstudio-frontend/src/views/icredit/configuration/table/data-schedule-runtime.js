@@ -10,6 +10,7 @@ export default {
   isBorder: true,
   hasPage: false,
   isCustomEmpty: false,
+  maxHeight: 250,
   group: [
     {
       type: 'text',

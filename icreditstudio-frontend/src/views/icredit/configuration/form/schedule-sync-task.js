@@ -19,9 +19,9 @@ export default [
     isSearch: true,
     options: [
       { value: '', label: '全部' },
-      { value: '0', label: '成功' },
-      { value: '1', label: '失败' },
-      { value: '2', label: '执行中' }
+      { value: '0', label: '启用' },
+      { value: '1', label: '停用' },
+      { value: '2', label: '草稿' }
     ]
   },
   {
@@ -34,7 +34,7 @@ export default [
       { value: '', label: '全部' },
       { value: '0', label: '成功' },
       { value: '1', label: '失败' },
-      { value: '2', label: '草稿' }
+      { value: '2', label: '执行中' }
     ]
   },
   {
@@ -45,8 +45,8 @@ export default [
     isSearch: true,
     options: [
       { value: '', label: '全部' },
-      { value: 'N', label: '手动执行' },
-      { value: 'Y', label: '周期执行' }
+      { value: '0', label: '手动执行' },
+      { value: '1', label: '周期执行' }
     ]
   },
   {

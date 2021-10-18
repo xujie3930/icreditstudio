@@ -183,10 +183,14 @@ export default {
         ? scheduleTime[1] + 24 * 60 * 60 * 1000 - 1
         : ''
       return {
-        workspaceId: 887000733000470528,
+        workspaceId: '887000733000470528',
         dispatchStartTime,
         dispatchEndTime,
-        ...restParams
+        ...restParams,
+        taskName: '表175',
+        taskStatus: '0',
+        dispatchStatus: '0',
+        dispatchType: '1'
       }
     }
   }
