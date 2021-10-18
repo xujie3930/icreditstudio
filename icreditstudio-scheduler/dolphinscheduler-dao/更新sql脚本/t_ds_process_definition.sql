@@ -21,7 +21,9 @@ create table t_ds_process_definition
     tenant_code             varchar(50) default '-1' not null comment 'tenant id',
     update_time             datetime                 null comment 'update time',
     modify_by               varchar(36) default ''   null comment 'modify user',
-    resource_ids            varchar(255)             null comment 'resource ids'
+    resource_ids            varchar(255)             null comment 'resource ids',
+    workspace_id            varchar(32)              NOT NULL DEFAULT '0' COMMENT '工作空间id',
+    schedule_type           tinyint(4)               NOT NULL DEFAULT '1' COMMENT '0-周期实例，1-手动实例'
 )
     charset = utf8;
 
