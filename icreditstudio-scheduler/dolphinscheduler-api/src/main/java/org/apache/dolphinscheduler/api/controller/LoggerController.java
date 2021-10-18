@@ -75,11 +75,9 @@ public class LoggerController extends BaseController {
     @ResponseStatus(HttpStatus.OK)
     @ApiException(QUERY_TASK_INSTANCE_LOG_ERROR)
     @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result<String> queryLog(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                           @RequestParam(value = "taskInstanceId") String taskInstanceId,
-                           @RequestParam(value = "skipLineNum") int skipNum,
-                           @RequestParam(value = "limit") int limit) {
-        return loggerService.queryLog(taskInstanceId, skipNum, limit);
+    public Result<String> queryLog(@RequestParam(value = "taskInstanceId") String taskInstanceId) {
+        return loggerService.queryLog(taskInstanceId, 1, 1);
+//        return loggerService.queryLog(taskInstanceId, skipNum, limit);
     }
 
 

@@ -7,15 +7,19 @@ import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
+import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
 
@@ -26,6 +30,8 @@ public class DispatchServiceImpl implements DispatchService {
     private DataSyncDispatchTaskFeignClient dataSyncDispatchTaskFeignClient;
     @Autowired
     private ProcessService processService;
+    @Autowired
+    private TaskInstanceMapper taskInstanceMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -59,9 +65,9 @@ public class DispatchServiceImpl implements DispatchService {
         int result = 0;
         if("1".equals(execType)){
             if (processInstance.getState() == ExecutionStatus.READY_STOP) {
-                throw new AppException("该任务已经停止");
+                throw new AppException("该任务已经停止，无法再终止");
             } else {
-                result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.FAILURE);
+                result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
             }
         }else{
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
@@ -86,7 +92,7 @@ public class DispatchServiceImpl implements DispatchService {
         Command command = new Command();
         command.setCommandType(commandType);
         command.setProcessDefinitionId(processDefinitionId);
-        command.setCommandParam(String.format("{\"%s\":%d}",
+        command.setCommandParam(String.format("{\"%s\":%s}",
                 CMDPARAM_RECOVER_PROCESS_ID_STRING, instanceId));
 
         if (!processService.verifyIsNeedCreateCommand(command)) {
@@ -103,4 +109,13 @@ public class DispatchServiceImpl implements DispatchService {
         }
     }
 
+    @Override
+    public BusinessResult<List<DispatchLogVO>> logPage(String taskId) {
+        String instanceId = dataSyncDispatchTaskFeignClient.getProcessInstanceIdByTaskId(taskId);
+        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessInstanceId(instanceId);
+        for (DispatchLogVO dispatchLogVO : logVOList) {
+            dispatchLogVO.setTaskInstanceState(ExecutionStatus.of(Integer.valueOf(dispatchLogVO.getTaskInstanceState())).getDescp());
+        }
+        return BusinessResult.success(logVOList);
+    }
 }
