@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
-
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
@@ -17,6 +16,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * @author Peng
@@ -183,6 +183,12 @@ public class DataSyncController {
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
         DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
         BeanCopyUtils.copyProperties(dispatchPageRequest, param);
+        if(null != dispatchPageRequest.getDispatchStartTime()){
+            param.setDispatchStartTime(new Date(dispatchPageRequest.getDispatchStartTime()));
+        }
+        if(null != dispatchPageRequest.getDispatchEndTime()) {
+            param.setDispatchEndTime(new Date(dispatchPageRequest.getDispatchEndTime()));
+        }
         return syncTaskService.dispatchPage(param);
     }
 

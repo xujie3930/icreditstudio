@@ -18,7 +18,7 @@ public class DataSyncDispatchTaskPageResult implements Serializable {
     //任务版本
     private String taskVersion;
     //任务状态
-    private String taskStatus;
+    private Integer taskStatus;
     //创建时间
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
@@ -28,6 +28,6 @@ public class DataSyncDispatchTaskPageResult implements Serializable {
     //执行周期
     private String dispatchPeriod;
     //最近一次调度执行状态
-    private String dispatchStatus;
+    private Integer dispatchStatus;
 
 }
