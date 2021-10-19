@@ -2,13 +2,15 @@ package org.apache.dolphinscheduler.api.service.result;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author xujie
  * @description 近一月运行出错排行
  * @create 2021-10-11 17:41
  **/
 @Data
-public class RunErrorRankResult {
+public class RunErrorRankResult implements Serializable {
 
     private Integer id;
     private String name;
