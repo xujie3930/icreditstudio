@@ -41,13 +41,13 @@ export default {
       prop: 'dispatchPeriod'
     },
     {
-      type: 'date',
+      type: 'text',
       label: '任务创建时间',
       prop: 'createTime',
       width: 170
     },
     {
-      type: 'date',
+      type: 'text',
       label: '近一次调度时间',
       prop: 'lastDispatchTime',
       width: 170
