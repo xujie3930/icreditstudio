@@ -17,8 +17,8 @@ public class DataSyncDispatchTaskPageRequest extends BusinessBasePageForm {
     //调度类型
     private Integer dispatchType;
     //调度执行时间 -- 开始
-    private String dispatchStartTime;
+    private Long dispatchStartTime;
     //调度执行时间 -- 结束
-    private String dispatchEndTime;
+    private Long dispatchEndTime;
 
 }

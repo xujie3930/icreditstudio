@@ -14,7 +14,7 @@ public class DispatchTaskPageResult {
     //任务版本
     private String taskVersion;
     //任务状态
-    private String taskStatus;
+    private Integer taskStatus;
     //创建时间
     private String createTime;
     //最近一次调度时间
@@ -22,6 +22,6 @@ public class DispatchTaskPageResult {
     //执行周期
     private String dispatchPeriod;
     //最近一次调度执行状态
-    private String dispatchStatus;
+    private Integer dispatchStatus;
 
 }
