@@ -41,6 +41,39 @@
             <fileMode>0777</fileMode>
             <lineEnding>unix</lineEnding>
         </fileSet>
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/dolphinscheduler-common/src/main/resources/
+            </directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>common.properties</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/dolphinscheduler-dao/src/main/resources/
+            </directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>datasource.properties</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/dolphinscheduler-service/src/main/resources/
+            </directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>*.properties</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
 
     </fileSets>
 
