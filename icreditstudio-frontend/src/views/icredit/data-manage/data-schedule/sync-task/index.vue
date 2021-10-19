@@ -79,7 +79,7 @@
               重跑
             </el-button>
             <el-button type="text" @click="handleViewLog(row, 'historyLog')">
-              查看日志
+              历史日志
             </el-button>
           </template>
         </j-table>
@@ -100,11 +100,14 @@ import workspace from '@/mixins/workspace'
 import formOption from '@/views/icredit/configuration/form/schedule-sync-task'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-sync-task'
 
+import {
+  taskStatusMapping,
+  execStatusMapping
+} from '@/views/icredit/data-manage/data-sync/contant'
+
 export default {
   name: 'schedulePageList',
-
   mixins: [crud, workspace],
-
   components: { ViewLog, Message },
 
   data() {
@@ -130,7 +133,9 @@ export default {
           url: '/dolphinscheduler/dispatch/page',
           method: 'post'
         }
-      }
+      },
+      taskStatusMapping,
+      execStatusMapping
     }
   },
 
@@ -144,8 +149,8 @@ export default {
       this.$refs.message.close()
     },
 
+    // 历史日志
     handleViewLog(row) {
-      console.log('row', row, this.$refs)
       this.$refs.viewLog.open(row)
     },
 

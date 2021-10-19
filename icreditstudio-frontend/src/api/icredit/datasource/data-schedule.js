@@ -3,7 +3,7 @@
  * @Date: 2021-10-14
  */
 
-import { postAction } from '@/api'
+import { getAction, postAction } from '@/api'
 
 // 首页-近72小时内调度情况
 const dataScheduleHomeRough = params =>
@@ -29,6 +29,18 @@ const dataScheduleHomeErrMonth = params =>
 const dataScheduleSyncList = params =>
   postAction('/dolphinscheduler/dispatch/page', params)
 
+// 同步任务调度-重跑或终止
+const dataScheduleSyncOperate = params =>
+  getAction('/dolphinscheduler/dispatch/execInstance', params)
+
+// 同步任务调度-历史日志
+const dataScheduleSyncHistoryLog = params =>
+  getAction('/dolphinscheduler/dispatch/log/page', params)
+
+// 同步任务调度-日志详情
+const dataScheduleSyncLogDetail = params =>
+  getAction('/dolphinscheduler/log/detail', params)
+
 export default {
   dataScheduleHomeRough,
   dataScheduleHomeRuntime,
@@ -36,5 +48,8 @@ export default {
   dataScheduleHomeRunDay,
   dataScheduleHomeErrMonth,
 
-  dataScheduleSyncList
+  dataScheduleSyncList,
+  dataScheduleSyncOperate,
+  dataScheduleSyncLogDetail,
+  dataScheduleSyncHistoryLog
 }

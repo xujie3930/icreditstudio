@@ -28,8 +28,7 @@ export default {
       type: 'text',
       label: '任务状态',
       prop: 'taskStatus',
-      width: 80,
-      formatter: (row, col, val) => (val ? '启用' : '停用')
+      width: 80
     },
     {
       type: 'text',
