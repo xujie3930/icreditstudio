@@ -9,6 +9,7 @@
       width="160px"
     >
       <el-menu
+        router
         :default-active="defalutActived"
         :collapse="isCollapse"
         :background-color="getBaseConfig('menu-color-bg')"
@@ -18,7 +19,7 @@
           <el-submenu
             v-if="isExistChildren(item)"
             :key="item.name"
-            :index="item.name"
+            :index="item.url"
           >
             <template #title>
               <div class="menu-left-item">
@@ -26,7 +27,7 @@
                   class="j-svg"
                   v-if="customMenuIcon.includes(item.url)"
                   :name="
-                    item.name === defalutActived
+                    item.url === defalutActived
                       ? `${menuIconName(item)}-active`
                       : menuIconName(item)
                   "
@@ -38,8 +39,8 @@
             <el-menu-item-group>
               <el-menu-item
                 v-for="son in item.children.filter(e => e.isShow)"
-                :key="son.url"
-                :index="son.name"
+                :key="son.name"
+                :index="son.url"
                 @click="handleMenuSelected(son)"
               >
                 {{ son.name }}
@@ -51,7 +52,7 @@
           <el-menu-item
             v-else
             :key="item.name"
-            :index="item.name"
+            :index="item.url"
             class="menu-left-item"
             @click="handleMenuSelected(item)"
           >
@@ -59,7 +60,7 @@
               class="j-svg"
               v-if="customMenuIcon.includes(item.url)"
               :name="
-                item.name === defalutActived
+                item.url === defalutActived
                   ? `${menuIconName(item)}-active`
                   : menuIconName(item)
               "
@@ -119,9 +120,14 @@ export default {
   },
 
   created() {
-    this.defalutActived = this.menu.filter(
-      e => e.isShow && !e.deleteFlag
-    )[0]?.name
+    const isExitChild = this.isExistChildren(this.menu[0])
+    if (isExitChild) {
+      this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
+    } else {
+      this.defalutActived = this.menu.filter(
+        e => e.isShow && !e.deleteFlag
+      )[0]?.url
+    }
   },
 
   methods: {
@@ -137,9 +143,9 @@ export default {
     },
 
     handleMenuSelected(item) {
-      this.defalutActived = item.name
+      this.defalutActived = item.url
       this.menuIconName(item)
-      this.$router.push(item.url)
+      // this.$router.push(item.url)
       this.$emit('getChildMenus', item)
     },
 

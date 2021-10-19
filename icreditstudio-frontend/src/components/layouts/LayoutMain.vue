@@ -181,14 +181,14 @@ export default {
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
       // 自动加载三级菜单的一个菜单或四级菜单的第一个
-      if (showMenuArr.length) {
-        const { url, children = [] } = showMenuArr[0]
-        const fourthMenuArr = children.filter(
-          ({ isShow, filePath, url: path, deleteFlag }) =>
-            isShow && !deleteFlag && filePath && path
-        )
-        this.$router.push(fourthMenuArr.length ? fourthMenuArr[0].url : url)
-      }
+      // if (showMenuArr.length) {
+      //   const { url, children = [] } = showMenuArr[0]
+      //   const fourthMenuArr = children.filter(
+      //     ({ isShow, filePath, url: path, deleteFlag }) =>
+      //       isShow && !deleteFlag && filePath && path
+      //   )
+      //   this.$router.push(fourthMenuArr.length ? fourthMenuArr[0].url : url)
+      // }
     },
 
     // 三级菜单切换
