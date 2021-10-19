@@ -7,7 +7,6 @@ export const runtimeOptions = {
   tooltip: {
     trigger: 'item',
     formatter(params) {
-      console.log(params)
       const { marker, name, seriesName } = params
       return `
        <div>

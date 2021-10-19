@@ -241,7 +241,7 @@ export default {
                 {
                   data: data.map(({ taskDesc, count }) => ({
                     value: count,
-                    name: taskDesc
+                    name: `${taskDesc}   ${count}`
                   }))
                 }
               ]

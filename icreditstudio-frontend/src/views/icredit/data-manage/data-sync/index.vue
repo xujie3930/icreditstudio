@@ -141,6 +141,7 @@ import Message from '@/views/icredit/components/message'
 import Detail from './detail'
 // import Empty from '@/views/icredit/components/empty'
 import API from '@/api/icredit'
+import { taskStatusMapping, execStatusMapping } from './contant'
 
 export default {
   mixins: [crud, workspace, operate],
@@ -164,18 +165,10 @@ export default {
       fetchConfig: { retrieve: { url: '/datasync/syncTasks', method: 'post' } },
 
       // 任务状态值映射
-      taskStatusMapping: {
-        0: { label: '启用', color: '#52c41a' },
-        1: { label: '草稿', color: '#999' },
-        2: { label: '停用', color: '#ff4d4f' }
-      },
+      taskStatusMapping,
 
       // 执行状态值映射
-      execStatusMapping: {
-        0: { label: '成功', color: '#52c41a' },
-        1: { label: '失败', color: '#ff4d4f' },
-        2: { label: '执行中', color: '#faad14' }
-      }
+      execStatusMapping
     }
   },
 
