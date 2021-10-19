@@ -149,8 +149,8 @@ export default {
       this.$refs.message.close()
     },
 
+    // 历史日志
     handleViewLog(row) {
-      console.log('row', row, this.$refs)
       this.$refs.viewLog.open(row)
     },
 
