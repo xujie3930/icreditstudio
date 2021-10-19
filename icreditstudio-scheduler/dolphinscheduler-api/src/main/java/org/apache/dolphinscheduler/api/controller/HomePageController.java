@@ -1,13 +1,9 @@
 package org.apache.dolphinscheduler.api.controller;
 
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.HomePageService;
-import org.apache.dolphinscheduler.api.service.result.RunErrorRankResult;
-import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
-import org.apache.dolphinscheduler.api.service.result.TaskRoughResult;
-import org.apache.dolphinscheduler.api.service.result.TaskSituationResult;
+import org.apache.dolphinscheduler.api.service.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +30,7 @@ public class HomePageController {
         return homePageService.rough(request);
     }
 
-    @PostMapping(value = "/situation/today")
+    @PostMapping(value = "/situation")
     public BusinessResult<List<TaskSituationResult>> situation(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.situation(request.getWorkspaceId());
     }
@@ -45,7 +41,7 @@ public class HomePageController {
     }
 
     @PostMapping(value = "/runtimeRank")
-    public BusinessResult<BusinessPageResult> runtimeRank(@RequestBody SchedulerHomepageRequest request) {
+    public BusinessResult<List<RuntimeRankResult>> runtimeRank(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.runtimeRank(request);
     }
 

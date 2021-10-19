@@ -19,6 +19,19 @@ export default [
     isSearch: true,
     options: [
       { value: '', label: '全部' },
+      { value: '0', label: '启用' },
+      { value: '1', label: '停用' },
+      { value: '2', label: '草稿' }
+    ]
+  },
+  {
+    type: 'select',
+    label: '执行状态',
+    ruleProp: 'dispatchStatus',
+    model: '',
+    isSearch: true,
+    options: [
+      { value: '', label: '全部' },
       { value: '0', label: '成功' },
       { value: '1', label: '失败' },
       { value: '2', label: '执行中' }
@@ -26,27 +39,14 @@ export default [
   },
   {
     type: 'select',
-    label: '执行状态',
-    ruleProp: 'runStatus',
-    model: '',
-    isSearch: true,
-    options: [
-      { value: '', label: '全部' },
-      { value: '0', label: '成功' },
-      { value: '1', label: '失败' },
-      { value: '2', label: '草稿' }
-    ]
-  },
-  {
-    type: 'select',
     label: '调度类型',
-    ruleProp: 'taskType',
+    ruleProp: 'dispatchType',
     model: '',
     isSearch: true,
     options: [
       { value: '', label: '全部' },
-      { value: 'N', label: '手动执行' },
-      { value: 'Y', label: '周期执行' }
+      { value: '0', label: '手动执行' },
+      { value: '1', label: '周期执行' }
     ]
   },
   {
@@ -55,7 +55,7 @@ export default [
     startPlaceholder: '开始日期',
     endPlaceholder: '结束日期',
     model: '',
-    ruleProp: 'loginTime',
+    ruleProp: 'scheduleTime',
     isSearch: true,
     format: 'yyyy-MM-dd',
     valueFormat: 'timestamp'

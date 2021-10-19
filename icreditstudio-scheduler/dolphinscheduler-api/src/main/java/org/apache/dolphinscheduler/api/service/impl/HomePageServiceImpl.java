@@ -29,11 +29,21 @@ public class HomePageServiceImpl implements HomePageService {
     @Autowired
     private TaskInstanceService taskInstanceService;
 
+    static List<TaskSituationResult> situationZeroList = new ArrayList<>();
+
+    static {
+        situationZeroList.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), 0L, 0.00));
+        situationZeroList.add(new TaskSituationResult(TaskStatus.FAILURE.getDescp(), 0L, 0.00));
+        situationZeroList.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), 0L, 0.00));
+        situationZeroList.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), 0L, 0.00));
+    }
+
+
     @Override
     public BusinessResult<TaskRoughResult> rough(SchedulerHomepageRequest request) {
         TaskRoughResult taskRoughResult = new TaskRoughResult();
         //前三天0点
-        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -15));
+        Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -3));
         //前一天24点
         Date endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
         //总调度任务数
@@ -65,12 +75,12 @@ public class HomePageServiceImpl implements HomePageService {
     }
 
     @Override
-    public BusinessResult<BusinessPageResult> runtimeRank(SchedulerHomepageRequest request) {
+    public BusinessResult<List<RuntimeRankResult>> runtimeRank(SchedulerHomepageRequest request) {
         //TODO:runtimeRankList改为每日定时获取
         List<RuntimeRankResult> runtimeRankResultList = new ArrayList<>();
         Date date = new Date();
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
-                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -15)), DateUtils.getEndOfDay(date));
+                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(date));
         for (Map<String, Object> m : definitionList) {
             Long code = (Long) m.get("code");
             Double runtime = taskInstanceService.runtimeTotalByDefinition(code, new int[]{});
@@ -78,10 +88,10 @@ public class HomePageServiceImpl implements HomePageService {
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
-        int startIndex = (request.getPageNum() - 1) * request.getPageSize();
+        /*int startIndex = (request.getPageNum() - 1) * request.getPageSize();
         int endIndex = startIndex +  request.getPageSize();
-        BusinessPageResult businessPageResult = new BusinessPageResult(runtimeRankResultList.size(), request.getPageNum(), request.getPageSize(), runtimeRankResultList.subList(startIndex, endIndex));
-        return BusinessResult.success(businessPageResult);
+        BusinessPageResult businessPageResult = new BusinessPageResult(runtimeRankResultList.size(), request.getPageNum(), request.getPageSize(), runtimeRankResultList.subList(startIndex, endIndex));*/
+        return BusinessResult.success(runtimeRankResultList);
     }
 
     @Override
@@ -105,6 +115,9 @@ public class HomePageServiceImpl implements HomePageService {
         Long count = 0L;
         for (Long arg : args) {
             count += arg;
+        }
+        if (count == 0){
+            return situationZeroList;
         }
         List<TaskSituationResult> list = new ArrayList<>();
         list.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), args[0], (double)args[0] / count));

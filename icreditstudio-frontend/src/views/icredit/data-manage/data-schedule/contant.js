@@ -4,7 +4,21 @@ import { echarts } from '@/utils/echarts'
 export const runtimeOptions = {
   color: ['#ff7a7b', '#6699ff', '#ffae31', '#52cca3'],
   textStyle: { color: '#fff' },
-  tooltip: { trigger: 'item' },
+  tooltip: {
+    trigger: 'item',
+    formatter(params) {
+      console.log(params)
+      const { marker, name, seriesName } = params
+      return `
+       <div>
+       <p> ${seriesName}</p>
+       <p>
+       ${marker} ${name}
+       </p>
+       </div>
+       `
+    }
+  },
   legend: {
     orient: 'vertical',
     top: '25%',
@@ -30,10 +44,10 @@ export const runtimeOptions = {
       labelLine: { show: false, showAbove: false },
       radius: ['40%', '70%'],
       data: [
-        { value: 21, name: '运行失败   21' },
-        { value: 15, name: '运行中      15' },
-        { value: 10, name: '等待中      10' },
-        { value: 30, name: '运行成功   30' }
+        { value: 0, name: '运行失败' },
+        { value: 0, name: '运行中' },
+        { value: 0, name: '等待中' },
+        { value: 0, name: '运行成功' }
       ],
       emphasis: {
         itemStyle: {
@@ -72,38 +86,53 @@ export const scheduleTaskOptions = {
     ])
   },
   grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '9%',
+    left: 24,
+    right: 55,
+    bottom: 50,
     containLabel: true
   },
 
   xAxis: {
     type: 'category',
+    name: '2021',
     boundaryGap: false,
-    data: [
-      '11.07',
-      '11.08',
-      '11.09',
-      '11.10',
-      '11.11',
-      '11.12',
-      '11.13',
-      '11.14',
-      '11.15',
-      '11.16'
-    ]
+    data: [],
+    axisLabel: {
+      formatter: val => val,
+      fontWeight: 400,
+      fontSize: 12,
+      color: '#8c8c8c',
+      fontFamily: 'SourceHanSansCN, SourceHanSansCN-Regular'
+    }
   },
   yAxis: {
-    type: 'value'
+    type: 'value',
+    axisLabel: {
+      formatter: val => val,
+      fontWeight: 400,
+      fontSize: 12,
+      color: '#8c8c8c',
+      fontFamily: 'SourceHanSansCN, SourceHanSansCN-Regular'
+    }
   },
+  dataZoom: [
+    {
+      type: 'inside',
+      start: 2,
+      end: 20
+    },
+    {
+      start: 0,
+      end: 20
+    }
+  ],
   series: [
     {
-      name: '浏览次数',
+      name: '调度任务数量',
       type: 'line',
-      stack: '总量1',
+      // stack: '总量1',
       areaStyle: {},
-      data: ['10', '22', '10', '50', '13', '31', '15', '10', '22', '10'],
+      data: [],
       itemStyle: { color: '#32A8FF' }
     }
   ]

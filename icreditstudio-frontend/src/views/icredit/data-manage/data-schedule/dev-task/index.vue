@@ -4,7 +4,9 @@
 -->
 <template>
   <ScheduleList
+    ref="scheduleList"
     :form-option="formOption"
+    :fetch-configuration="fetchConfiguration"
     :table-configuration="tableConfiguration"
   />
 </template>
@@ -20,8 +22,22 @@ export default {
   data() {
     return {
       formOption,
-      tableConfiguration: tableConfiguration(this)
+      tableConfiguration: tableConfiguration(this),
+      fetchConfiguration: {
+        retrieve: {
+          url: '/dolphinscheduler/dispatch/page',
+          method: 'post'
+        }
+      }
     }
-  }
+  },
+
+  created() {
+    this.$nextTick(() => {
+      this.$refs.scheduleList.mixinRetrieveTableData()
+    })
+  },
+
+  methods: {}
 }
 </script>

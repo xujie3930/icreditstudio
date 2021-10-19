@@ -13,7 +13,8 @@ import {
   LegendComponent,
   ToolboxComponent,
   MarkLineComponent,
-  MarkPointComponent
+  MarkPointComponent,
+  DataZoomComponent
 } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
 
@@ -26,6 +27,7 @@ echart.use([
   ToolboxComponent,
   MarkLineComponent,
   MarkPointComponent,
+  DataZoomComponent,
   LineChart,
   PieChart,
   BarChart,

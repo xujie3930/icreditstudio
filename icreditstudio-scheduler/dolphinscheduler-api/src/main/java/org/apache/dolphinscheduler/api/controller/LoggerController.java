@@ -16,39 +16,20 @@
  */
 
 package org.apache.dolphinscheduler.api.controller;
-
-import static org.apache.dolphinscheduler.api.enums.Status.DOWNLOAD_TASK_INSTANCE_LOG_FILE_ERROR;
-import static org.apache.dolphinscheduler.api.enums.Status.QUERY_TASK_INSTANCE_LOG_ERROR;
-
-import org.apache.dolphinscheduler.api.aspect.AccessLogAnnotation;
-import org.apache.dolphinscheduler.api.exceptions.ApiException;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.service.LoggerService;
-import org.apache.dolphinscheduler.api.utils.Result;
-import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.dao.entity.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * logger controller
  */
-@Api(tags = "LOGGER_TAG")
 @RestController
 @RequestMapping("/log")
 public class LoggerController extends BaseController {
@@ -59,47 +40,24 @@ public class LoggerController extends BaseController {
     /**
      * query task log
      *
-     * @param loginUser      login user
      * @param taskInstanceId task instance id
-     * @param skipNum        skip number
-     * @param limit          limit
      * @return task log content
      */
-    @ApiOperation(value = "queryLog", notes = "QUERY_TASK_INSTANCE_LOG_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "taskInstanceId", value = "TASK_ID", required = true, dataType = "Int", example = "100"),
-            @ApiImplicitParam(name = "skipLineNum", value = "SKIP_LINE_NUM", required = true, dataType = "Int", example = "100"),
-            @ApiImplicitParam(name = "limit", value = "LIMIT", required = true, dataType = "Int", example = "100")
-    })
     @GetMapping(value = "/detail")
-    @ResponseStatus(HttpStatus.OK)
-    @ApiException(QUERY_TASK_INSTANCE_LOG_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result<String> queryLog(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                           @RequestParam(value = "taskInstanceId") String taskInstanceId,
-                           @RequestParam(value = "skipLineNum") int skipNum,
-                           @RequestParam(value = "limit") int limit) {
-        return loggerService.queryLog(taskInstanceId, skipNum, limit);
+    public BusinessResult<String> queryLog(@RequestParam(value = "taskInstanceId") String taskInstanceId) {
+        return loggerService.queryLog(taskInstanceId, 1, 1);
+//        return loggerService.queryLog(taskInstanceId, skipNum, limit);
     }
 
 
     /**
      * download log file
      *
-     * @param loginUser      login user
      * @param taskInstanceId task instance id
      * @return log file content
      */
-    @ApiOperation(value = "downloadTaskLog", notes = "DOWNLOAD_TASK_INSTANCE_LOG_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "taskInstanceId", value = "TASK_ID", required = true, dataType = "Int", example = "100")
-    })
     @GetMapping(value = "/download-log")
-    @ResponseBody
-    @ApiException(DOWNLOAD_TASK_INSTANCE_LOG_FILE_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public ResponseEntity downloadTaskLog(@ApiIgnore @RequestAttribute(value = Constants.SESSION_USER) User loginUser,
-                                          @RequestParam(value = "taskInstanceId") String taskInstanceId) {
+    public ResponseEntity downloadTaskLog(@RequestParam(value = "taskInstanceId") String taskInstanceId) {
         byte[] logBytes = loggerService.getLogBytes(taskInstanceId);
         return ResponseEntity
                 .ok()

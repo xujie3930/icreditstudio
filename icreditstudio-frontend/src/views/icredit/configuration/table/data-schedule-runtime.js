@@ -10,11 +10,13 @@ export default {
   isBorder: true,
   hasPage: false,
   isCustomEmpty: false,
+  maxHeight: 224,
   group: [
     {
       type: 'text',
       label: '任务id',
-      prop: 'id'
+      prop: 'id',
+      width: 80
     },
     {
       type: 'text',
@@ -24,13 +26,15 @@ export default {
     {
       type: 'text',
       label: '运行时长(分)',
-      prop: 'speedTime'
+      prop: 'speedTime',
+      width: 120
     },
     {
       type: 'text',
       label: '任务类型',
       prop: 'scheduleType',
-      formatter: (row, col, val) => (val ? '数据开发' : '数据开发')
+      width: 120,
+      formatter: (row, col, val) => (val ? '数据开发' : '数据同步')
     }
   ]
 }
