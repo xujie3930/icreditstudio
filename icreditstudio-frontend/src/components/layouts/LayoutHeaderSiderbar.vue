@@ -1,7 +1,11 @@
 <template>
   <div class="icredit-sidebar">
     <el-aside class="iframe-layout-aside header-sidebar" width="180px">
-      <el-menu :default-active="activeModuleId">
+      <el-menu
+        :default-active="activeModuleId"
+        active-text-color="#fff"
+        text-color="#fff"
+      >
         <template v-for="item in modules">
           <el-menu-item
             :key="item.id"
@@ -12,11 +16,7 @@
             <j-svg
               class="j-svg"
               v-if="customMenuIcon.includes(item.path)"
-              :name="
-                activeModuleId === item.id
-                  ? `${menuIconName(item)}-active`
-                  : menuIconName(item)
-              "
+              :name="menuIconName(item)"
             />
             <i v-else :class="[item.iconPath, 'menu-icon']" />
             <span slot="title">
@@ -24,6 +24,7 @@
               <i
                 v-if="item.label === '全部产品'"
                 class="el-icon-arrow-right"
+                style="color:#fff"
               ></i>
             </span>
           </el-menu-item>

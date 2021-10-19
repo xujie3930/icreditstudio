@@ -38,27 +38,6 @@ $--height-layout-header: 64px;
   }
 }
 
-.sidebar {
-  .el-menu-item {
-    @include flex(column, center, center);
-    line-height: unset;
-    border-left: 2px solid transparent;
-  }
-}
-
-.container-sidebar {
-  height: calc(100vh - 124px);
-}
-
-.header-sidebar {
-  background-color: #1c2c42;
-  height: calc(100vh - 64px);
-
-  .el-menu-item {
-    color: #fff;
-  }
-}
-
 .iframe-layout-main {
   display: flex;
   flex-direction: column;
