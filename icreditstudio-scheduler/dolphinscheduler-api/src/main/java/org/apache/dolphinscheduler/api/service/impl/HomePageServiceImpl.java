@@ -108,7 +108,7 @@ public class HomePageServiceImpl implements HomePageService {
         }
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
 
-        return BusinessResult.success(runErrorRankList.subList(0, 6));
+        return BusinessResult.success(runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6));
     }
 
     private List<TaskSituationResult> getTaskSituationList(Long...args) {
