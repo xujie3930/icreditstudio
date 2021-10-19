@@ -134,8 +134,8 @@ export default {
 
   methods: {
     initPage() {
-      this.curBreadcrumb.push(this.topModules[0])
-      this.curBreadcrumb.push(this.topModules[0].children[0])
+      this.curBreadcrumb.push(this.topModules[1])
+      this.curBreadcrumb.push(this.topModules[1].children[0])
       this.$router.push('/')
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')

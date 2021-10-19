@@ -1,28 +1,41 @@
 <template>
-  <el-aside class="iframe-layout-aside header-sidebar" width="180px">
-    <el-menu :default-active="activeModuleId">
-      <template v-for="item in modules">
-        <el-menu-item
-          :key="item.id"
-          :index="item.id"
-          class="menu-left-item"
-          @click="handleMenuSelected(item)"
-        >
-          <j-svg
-            class="j-svg"
-            v-if="customMenuIcon.includes(item.path)"
-            :name="
-              activeModuleId === item.id
-                ? `${menuIconName(item)}-active`
-                : menuIconName(item)
-            "
-          />
-          <i v-else :class="[item.iconPath, 'menu-icon']" />
-          <span slot="title">{{ item.label }}</span>
-        </el-menu-item>
-      </template>
-    </el-menu>
-  </el-aside>
+  <div class="icredit-sidebar">
+    <el-aside class="iframe-layout-aside header-sidebar" width="180px">
+      <el-menu :default-active="activeModuleId">
+        <template v-for="item in modules">
+          <el-menu-item
+            :key="item.id"
+            :index="item.id"
+            class="menu-left-item"
+            @click="handleMenuSelected(item)"
+          >
+            <j-svg
+              class="j-svg"
+              v-if="customMenuIcon.includes(item.path)"
+              :name="
+                activeModuleId === item.id
+                  ? `${menuIconName(item)}-active`
+                  : menuIconName(item)
+              "
+            />
+            <i v-else :class="[item.iconPath, 'menu-icon']" />
+            <span slot="title">
+              {{ item.label }}
+              <i
+                v-if="item.label === '全部产品'"
+                class="el-icon-arrow-right"
+              ></i>
+            </span>
+          </el-menu-item>
+        </template>
+      </el-menu>
+    </el-aside>
+
+    <div
+      v-if="activeModuleId === '900015186969272320'"
+      class="aside-product"
+    ></div>
+  </div>
 </template>
 
 <script>
@@ -77,6 +90,7 @@ export default {
 
     handleMenuSelected(item) {
       this.setActinveMenuId(item.id)
+      if (item.label === '全部产品') return
       this.toggleHeaderCollapseActions(false)
       this.$emit('onChange', item)
     },
@@ -134,9 +148,17 @@ export default {
   font-size: 24px;
 }
 
-.header-sidebar {
+.icredit-sidebar {
+  display: flex;
   position: fixed;
   left: 0;
   z-index: 9999;
+}
+
+.aside-product {
+  width: 500px;
+  min-height: 840px;
+  overflow: hidden;
+  background-color: #0072db;
 }
 </style>
