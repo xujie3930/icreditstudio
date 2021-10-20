@@ -16,7 +16,24 @@
         v-loading="tableLoading"
         :table-data="tableData"
         :table-configuration="tableConfiguration"
-      ></j-table>
+      >
+        <!-- 执行状态 -->
+        <template #taskInstanceStateColumn="{row: {taskInstanceState}}">
+          <span
+            :style="{
+              color: [0, 1, 2].includes(taskInstanceState)
+                ? execStatusMapping[taskInstanceState].color
+                : '#606266'
+            }"
+          >
+            {{
+              [0, 1, 2].includes(taskInstanceState)
+                ? execStatusMapping[taskInstanceState].label
+                : '-'
+            }}
+          </span>
+        </template>
+      </j-table>
     </BaseDialog>
 
     <BaseDialog ref="detailLogDialog" width="800px" hideFooter title="日志">
@@ -29,12 +46,14 @@
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-view-log'
 import API from '@/api/icredit'
+import { execStatusMapping } from '@/views/icredit/data-manage/data-sync/contant'
 
 export default {
   components: { BaseDialog },
 
   data() {
     return {
+      execStatusMapping,
       title: '历史执行情况',
       titleName: '',
       logDetail: 'sdddsds',
@@ -47,7 +66,7 @@ export default {
 
   methods: {
     open(row) {
-      this.titleName = row.syncTaskName
+      this.titleName = row.taskName
       this.getHistoryLogData(row.taskId)
       this.$refs.baseDialog.open()
     },

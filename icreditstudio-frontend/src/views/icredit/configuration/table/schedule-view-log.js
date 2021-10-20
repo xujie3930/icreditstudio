@@ -8,6 +8,7 @@ export default that => ({
   id: 'viewLog',
   isBorder: true,
   hasPage: false,
+  maxHeight: 350,
   group: [
     {
       type: 'text',
@@ -17,10 +18,11 @@ export default that => ({
     {
       type: 'text',
       label: '执行时间',
-      prop: 'taskInstanceExecTime'
+      prop: 'taskInstanceExecTime',
+      width: 200
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '执行状态',
       prop: 'taskInstanceState'
     },
@@ -43,7 +45,7 @@ export default that => ({
       type: 'operation',
       label: '操作',
       prop: 'operation',
-      width: '250px',
+      width: '120px',
       fixed: 'right',
       operationList: [
         {
