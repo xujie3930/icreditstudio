@@ -2,7 +2,8 @@ import {
   SET_ROUTERS,
   SET_TOP_MODULES,
   SET_MODULE_MENUS,
-  SET_ACTIVE_MODULE_ID
+  SET_ACTIVE_MODULE_ID,
+  SET_ACTIVE_MODULE_NAME
 } from '../mutation-types'
 import { asyncRouter, constantRouter } from '@/router/constant-route.js'
 
@@ -59,6 +60,7 @@ const states = () => ({
   addRouters: [],
   topModules: [],
   activeModuleId: '',
+  activeModuleName: '',
   moduleMenus: {}
 })
 
@@ -67,6 +69,7 @@ const getters = {
   routers: state => state.routers,
   topModules: state => state.topModules,
   activeModuleId: state => state.activeModuleId,
+  activeModuleName: state => state.activeModuleName,
   moduleMenus: state => state.moduleMenus
 }
 
@@ -82,8 +85,10 @@ const mutations = {
     state.moduleMenus = moduleMenus
   },
   [SET_ACTIVE_MODULE_ID](state, activeModuleId) {
-    console.log('activeModuleId', activeModuleId)
     state.activeModuleId = activeModuleId
+  },
+  [SET_ACTIVE_MODULE_NAME](state, activeModuleName) {
+    state.activeModuleName = activeModuleName
   }
 }
 

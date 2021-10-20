@@ -64,15 +64,45 @@ export const secondMenuMapping = {
   }
 }
 
-// 三级菜单
-export const thirdMenuArr = []
-
-// 四级菜单
-export const fourthMenuArr = []
+// 全部产品
+export const ALL_PRODUCT_NAME = '全部产品'
+export const allMenuNavMapping = [
+  {
+    name: '工作空间',
+    children: [
+      { icon: 'menu-summary-white', name: '概览' },
+      { icon: 'menu-workspace-white', name: '工作空间' },
+      { icon: 'menu-datasource-white', name: '数据源管理' },
+      { icon: 'menu-modeling-white', name: '数据建模' },
+      { icon: 'menu-member-white', name: '成员管理' },
+      { icon: 'menu-auth-white', name: '权限管理' },
+      { icon: 'menu-cluster-white', name: '集群管理' },
+      { icon: 'menu-node-white', name: '节点管理' }
+    ]
+  },
+  {
+    name: '数据管理',
+    children: [
+      { icon: 'menu-summary-white', name: '概览' },
+      { icon: 'menu-sync-white', name: '数据同步' },
+      { icon: 'menu-develop-white', name: '数据开发' },
+      { icon: 'menu-schedule-white', name: '调度管理' },
+      { icon: 'menu-dictionary-white', name: '字典表' }
+    ]
+  },
+  {
+    name: '数据治理',
+    children: [
+      { icon: 'menu-summary-white', name: '概览' },
+      { icon: 'menu-rule-white', name: '规则分类' },
+      { icon: 'menu-test-white', name: '质量检测' },
+      { icon: 'menu-quality-white', name: '质检结果' }
+    ]
+  }
+]
 
 export default {
   rootMenuMapping,
   secondMenuMapping,
-  thirdMenuArr,
-  fourthMenuArr
+  allMenuNavMapping
 }

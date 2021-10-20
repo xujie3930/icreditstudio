@@ -109,10 +109,14 @@ import { base64UrlFilter } from '@/utils/util'
 import { getSystemTheme } from '@/utils/theme'
 // import LayoutHeaderSlot from '@/components/layout/LayoutHeaderSlot'
 import { pollingUnreadInfos } from '@/api/message'
-import { mapGetters, mapActions } from 'vuex'
-import { SET_ACTIVE_MODULE_ID } from '@/store/mutation-types'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import {
+  SET_ACTIVE_MODULE_ID,
+  SET_ACTIVE_MODULE_NAME
+} from '@/store/mutation-types'
 import { DEFAULT_HEAD_IMG_URL } from '@/config/constant'
 import { settingUserShortMenuStatus } from '@/api/system'
+import { ALL_PRODUCT_NAME } from '@/config/menu'
 
 export default {
   name: 'LayoutHeader',
@@ -173,7 +177,8 @@ export default {
       isCollapse: 'common/isHeaderCollapse',
       messageNoticeInfo: 'user/messageNoticeInfo',
       systemSetting: 'user/systemSetting',
-      shortMenus: 'user/shortMenus'
+      shortMenus: 'user/shortMenus',
+      activeModuleName: 'permission/activeModuleName'
     }),
 
     title() {
@@ -183,7 +188,7 @@ export default {
 
   async created() {
     this.activeModule = this.activeModuleId
-    this.pollingUnreadInfos(60000)
+    // this.pollingUnreadInfos(60000)
     this.$once('hook:beforeDestroy', () => clearTimeout(this.timer))
   },
 
@@ -194,6 +199,10 @@ export default {
   },
 
   methods: {
+    ...mapMutations('permission', {
+      setActinveMenuId: SET_ACTIVE_MODULE_ID,
+      setActinveMenuName: SET_ACTIVE_MODULE_NAME
+    }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
     ...mapActions('user', [
       'logoutAction',
@@ -225,6 +234,11 @@ export default {
     },
 
     handleCollapse() {
+      if (this.activeModuleName === ALL_PRODUCT_NAME) {
+        const { id, label } = this.modules[1]
+        this.setActinveMenuId(id)
+        this.setActinveMenuName(label)
+      }
       this.toggleHeaderCollapseActions(!this.isCollapse)
     },
 
