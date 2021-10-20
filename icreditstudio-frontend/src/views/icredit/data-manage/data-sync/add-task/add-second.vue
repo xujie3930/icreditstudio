@@ -492,6 +492,19 @@ export default {
       }
     },
 
+    initParams() {
+      this.secondTaskForm.view = []
+      this.secondTaskForm.fieldInfos = []
+      this.secondTaskForm.sql = ''
+      this.secondTaskForm.wideTableName = ''
+      this.secondTaskForm.targetSource = ''
+      this.secondTaskForm.syncCondition = {
+        incrementalField: '',
+        partition: '',
+        n: undefined
+      }
+    },
+
     handleChangeTableName(name) {
       console.log(name)
     },
@@ -717,9 +730,10 @@ export default {
 
     // 保存设置
     handleSaveSetting() {
+      const params = this.handleTaskFormParams()
       if (this.handleVerifyTip()) return
       this.saveSettingLoading = true
-      API.dataSyncAdd(this.handleTaskFormParams())
+      API.dataSyncAdd(params)
         .then(({ success, data }) => {
           if (success && data) {
             this.secondTaskForm.taskId = data.taskId
@@ -740,7 +754,14 @@ export default {
 
     // 验证宽表信息以及宽表名称是否已填
     handleVerifyTip() {
-      const { targetSource, wideTableName, createMode } = this.secondTaskForm
+      const {
+        targetSource,
+        wideTableName,
+        createMode,
+        sourceTables,
+        view
+      } = this.secondTaskForm
+
       if (!targetSource) {
         this.$message.error('请先选择宽表信息！')
         return true
@@ -754,6 +775,9 @@ export default {
         this.$message.error(
           `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
         )
+        return true
+      } else if (sourceTables.length > 1 && !view.length) {
+        this.$message.error('表关联关系不能为空，请关联后再进行操作！')
         return true
       } else {
         return false
@@ -970,6 +994,7 @@ export default {
       const { length } = graphicData || []
       const {
         associatedType,
+        datasourceId,
         leftSource,
         leftSourceDatabase,
         rightSource,
@@ -980,7 +1005,7 @@ export default {
         type: 'tag',
         isChecked: true,
         isShowDot: false,
-        datasourceId: '', // 待后端返回
+        datasourceId, // 待后端返回
         name: leftSource,
         database: leftSourceDatabase
       }
@@ -1248,6 +1273,7 @@ export default {
             }
           }
         })
+        .catch(() => this.initParams())
         .finally(() => {
           this.detailLoading = false
         })

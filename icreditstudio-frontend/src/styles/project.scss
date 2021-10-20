@@ -20,12 +20,6 @@
   background-color: $--background-color-base !important;
 }
 
-.el-menu-item.is-active {
-  color: $--color-primary;
-  border-left: 5px solid $--color-primary !important;
-  background-color: $--color-aside-bg-active !important;
-}
-
 .el-table tr td,
 .el-table tr td:first-child {
   /* 980 高度下最佳边距 */
@@ -43,4 +37,37 @@
 .el-table th.is-center {
   text-align: center;
   padding: 8px 0;
+}
+
+.sidebar {
+  overflow: hidden !important;
+  .el-menu-item {
+    border-left: 2px solid transparent;
+  }
+
+  .el-menu-item.is-active {
+    color: $--color-primary;
+    border-left: 5px solid $--color-primary !important;
+    background-color: $--color-aside-bg-active !important;
+  }
+}
+
+.container-sidebar {
+  height: calc(100vh - 124px);
+}
+
+.header-sidebar {
+  background-color: #1c2c42;
+  height: calc(100vh - 64px);
+
+  .el-menu-item {
+    &:hover {
+      background-color: #0072db !important;
+    }
+  }
+
+  .el-menu-item.is-active {
+    background-color: #0072db !important;
+    border-left: 3px solid #fff !important;
+  }
 }

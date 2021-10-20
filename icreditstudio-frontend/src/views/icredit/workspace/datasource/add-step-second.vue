@@ -372,13 +372,13 @@ export default {
 
     // 测试链接
     handleTestLink() {
-      this.testBtnLoading = true
       const params = {
         type: databaseTypeMapping[this.databaseType],
         uri: this.completeUri()
       }
       this.$refs.dataSourceForm.validate(valid => {
         if (valid) {
+          this.testBtnLoading = true
           API.datasourceTestLink(params)
             .then(({ success, data }) => {
               if (success && data) {
@@ -391,8 +391,6 @@ export default {
             .finally(() => {
               this.testBtnLoading = false
             })
-        } else {
-          this.testBtnLoading = false
         }
       })
     },

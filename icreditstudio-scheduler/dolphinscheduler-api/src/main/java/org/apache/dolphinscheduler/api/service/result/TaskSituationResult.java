@@ -2,13 +2,15 @@ package org.apache.dolphinscheduler.api.service.result;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author xujie
  * @description 任务72小时概况
  * @create 2021-10-09 18:34
  **/
 @Data
-public class TaskSituationResult {
+public class TaskSituationResult implements Serializable {
     /**
      * 执行情况
      */

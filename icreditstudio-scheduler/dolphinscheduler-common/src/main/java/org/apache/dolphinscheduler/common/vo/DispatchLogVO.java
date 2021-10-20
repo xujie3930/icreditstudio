@@ -10,7 +10,7 @@ public class DispatchLogVO {
     //task任务实例名称
     private String taskInstanceName;
     //task任务实例状态
-    private String taskInstanceState;
+    private Integer taskInstanceState;
     //task任务执行时间
     private String taskInstanceExecTime;
     //task任务执行时长

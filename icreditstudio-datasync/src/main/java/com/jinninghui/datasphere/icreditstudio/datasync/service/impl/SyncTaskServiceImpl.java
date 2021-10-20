@@ -28,7 +28,6 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFie
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncDispatchTaskPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -41,7 +40,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -512,12 +510,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
             if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){//调度类型
                 dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
-            }
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchStatus())){//执行状态
-                dataSyncDispatchTaskPageResult.setDispatchStatus(ExecStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchStatus())).getDesc());
-            }
-            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getTaskStatus())) {//任务状态
-                dataSyncDispatchTaskPageResult.setTaskStatus(TaskStatusEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getTaskStatus())).getDesc());
             }
         }
         return BusinessResult.success(BusinessPageResult.build(dispatchList, param, dispatchCount));

@@ -2,6 +2,8 @@ package com.jinninghui.datasphere.icreditstudio.datasync.dto;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class DataSyncDispatchTaskPageDTO {
 
@@ -16,16 +18,12 @@ public class DataSyncDispatchTaskPageDTO {
     //调度类型
     private Integer dispatchType;
     //任务执行时间 -- 开始
-    private String dispatchStartTime;
+    private Date dispatchStartTime;
     //任务执行时间 -- 结束
-    private String dispatchEndTime;
+    private Date dispatchEndTime;
     //页数
-    private int pageNum = 1;
+    private int pageNum;
     //一页显示数量
-    private int pageSize = 10;
-    //用来排序的字段
-    private String orderBy;
-    //排序顺序 DESC & ASC
-    private String order;
+    private int pageSize;
 
 }

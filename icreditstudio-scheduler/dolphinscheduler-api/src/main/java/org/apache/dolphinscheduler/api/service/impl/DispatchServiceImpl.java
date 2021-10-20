@@ -113,9 +113,6 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<List<DispatchLogVO>> logPage(String taskId) {
         String instanceId = dataSyncDispatchTaskFeignClient.getProcessInstanceIdByTaskId(taskId);
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessInstanceId(instanceId);
-        for (DispatchLogVO dispatchLogVO : logVOList) {
-            dispatchLogVO.setTaskInstanceState(ExecutionStatus.of(Integer.valueOf(dispatchLogVO.getTaskInstanceState())).getDescp());
-        }
         return BusinessResult.success(logVOList);
     }
 }

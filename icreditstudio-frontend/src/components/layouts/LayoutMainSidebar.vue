@@ -6,18 +6,53 @@
         'iframe-layout-aside',
         'sidebar'
       ]"
-      width="100px"
+      width="160px"
     >
       <el-menu
+        router
         :default-active="defalutActived"
         :collapse="isCollapse"
         :background-color="getBaseConfig('menu-color-bg')"
         :active-text-color="getBaseConfig('menu-color-text-active')"
       >
-        <template v-for="item in menu.filter(e => e.isShow && !e.deleteFlag)">
-          <el-menu-item
+        <template v-for="item in menu">
+          <el-submenu
+            v-if="isExistChildren(item)"
             :key="item.name"
-            :index="item.name"
+            :index="item.url"
+          >
+            <template #title>
+              <div class="menu-left-item">
+                <j-svg
+                  class="j-svg"
+                  v-if="customMenuIcon.includes(item.url)"
+                  :name="
+                    item.url === defalutActived
+                      ? `${menuIconName(item)}-active`
+                      : menuIconName(item)
+                  "
+                />
+                <i v-else :class="[item.iconPath, 'menu-icon']" />
+                <span>{{ item.name }}</span>
+              </div>
+            </template>
+            <el-menu-item-group>
+              <el-menu-item
+                v-for="son in item.children.filter(e => e.isShow)"
+                :key="son.name"
+                :index="son.url"
+                @click="handleMenuSelected(son)"
+              >
+                {{ son.name }}
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
+
+          <!-- 无子级菜单 -->
+          <el-menu-item
+            v-else
+            :key="item.name"
+            :index="item.url"
             class="menu-left-item"
             @click="handleMenuSelected(item)"
           >
@@ -25,7 +60,7 @@
               class="j-svg"
               v-if="customMenuIcon.includes(item.url)"
               :name="
-                item.name === defalutActived
+                item.url === defalutActived
                   ? `${menuIconName(item)}-active`
                   : menuIconName(item)
               "
@@ -85,25 +120,33 @@ export default {
   },
 
   created() {
-    this.defalutActived = this.menu.filter(
-      e => e.isShow && !e.deleteFlag
-    )[0]?.name
+    const isExitChild = this.isExistChildren(this.menu[0])
+    if (isExitChild) {
+      this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
+    } else {
+      this.defalutActived = this.menu.filter(
+        e => e.isShow && !e.deleteFlag
+      )[0]?.url
+    }
   },
 
   methods: {
     ...mapActions('common', ['toggleCollapseActions']),
     ...mapActions('user', ['setWorkspaceId']),
 
+    isExistChildren(item) {
+      return (
+        item.children &&
+        item.children.length &&
+        item.children.map(child => child.isShow).filter(list => list).length
+      )
+    },
+
     handleMenuSelected(item) {
-      this.defalutActived = item.name
+      this.defalutActived = item.url
       this.menuIconName(item)
-      // if (this.changeWorkspaceMsg(item)) {
-      const showChildArr = item.children
-        ? item.children.filter(({ isShow }) => isShow)
-        : []
-      !showChildArr.length && this.$router.push(item.url)
+      // this.$router.push(item.url)
       this.$emit('getChildMenus', item)
-      // }
     },
 
     // 切换菜单前必须先切换工作空间（不能为 全部 选项）
@@ -122,21 +165,6 @@ export default {
     menuIconName({ url }) {
       const icon = secondMenuMapping[url]?.icon || 'menu-workspace'
       return icon
-    },
-
-    renderPath(item) {
-      let _path = item.url
-      if (item.component === 'main/LayoutIframe' && item.src) {
-        _path = _path.substring(0, _path.indexOf(':')) + item.src
-      }
-      return _path
-    },
-
-    // 点击一级菜单，如没有子菜单则跳转，有则展开/收缩菜单
-    handleLinkOrToggle({ children, url, redirectPath }, e) {
-      if (children && children?.length >= 1) return
-      e.stopPropagation()
-      this.$router.push({ path: redirectPath || url })
     },
 
     handleCollapse() {
@@ -167,20 +195,6 @@ export default {
   }
 }
 
-.menu-icon {
-  font-size: 24px;
-  margin-bottom: 11px;
-}
-
-.menu-left-item {
-  /deep/ .el-tooltip {
-    height: unset !important;
-    width: unset !important;
-    left: unset !important;
-    top: unset !important;
-  }
-}
-
 .iframe-layout-aside-wrap {
   @include flex(column, space-between);
   height: calc(100vh - 64px);
@@ -191,15 +205,13 @@ export default {
 
   .menu-left-item {
     .j-svg {
-      width: 24px;
-      height: 24px;
+      width: 18px;
+      height: 18px;
+      margin-right: 10px;
     }
-  }
 
-  ::v-deep {
-    .el-menu-item,
-    .el-submenu__title {
-      height: 80px;
+    .menu-icon {
+      font-size: 24px;
     }
   }
 }

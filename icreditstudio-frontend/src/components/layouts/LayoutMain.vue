@@ -9,11 +9,10 @@
       />
 
       <!-- 无侧边栏 -->
-      <div
+      <!-- <div
         class="container-wrap"
         v-if="$route.path === '/data-manage/data-schedule/dag'"
       >
-        <!-- 一级菜单 -->
         <LayoutHeaderSidebar
           v-if="isHeaderCollapse"
           :menu="moduleMenus[activeModuleId]"
@@ -22,23 +21,19 @@
           :active-module-id="activeModuleId"
           @onChange="changeMenu"
         />
-        <!-- 二级菜单 -->
-        <!-- <LayoutMainSidebar
+        <LayoutMainSidebar
           v-else
           :menu="moduleMenus[activeModuleId]"
           @getChildMenus="getChildMenus"
-        /> -->
+        />
         <LayoutBreadcrumd :curBreadcrumb="curBreadcrumb" />
         <keep-alive v-if="keepAlive">
           <router-view />
         </keep-alive>
         <router-view v-else />
-      </div>
+      </div> -->
 
-      <div
-        v-else
-        :class="['layout-container', isCollapse ? 'layout-collapse' : '']"
-      >
+      <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
         <!-- 一级菜单 -->
         <LayoutHeaderSidebar
           v-if="isHeaderCollapse"
@@ -59,12 +54,12 @@
           <LayoutBreadcrumd :curBreadcrumb="curBreadcrumb" />
           <main class="iframe-layout-main-container">
             <!-- 三级以及四级菜单 -->
-            <LayoutContainerSidebar
+            <!-- <LayoutContainerSidebar
               v-if="isExistThreeMenus"
               :menu="threeChildrenMenus"
               @threeMenuChange="threeMenuChange"
               @fourMenuChange="fourMenuChange"
-            />
+            /> -->
             <keep-alive>
               <router-view v-if="keepAlive" />
             </keep-alive>
@@ -86,7 +81,7 @@ import LayoutHeader from './LayoutMainHeader'
 import LayoutBreadcrumd from './LayoutBreadcrumd'
 import LayoutHeaderSidebar from './LayoutHeaderSiderbar'
 import LayoutMainSidebar from './LayoutMainSidebar'
-import LayoutContainerSidebar from './LayoutContainerSidebar'
+// import LayoutContainerSidebar from './LayoutContainerSidebar'
 import LayoutMainFooter from './LayoutMainFooter'
 import { mapGetters } from 'vuex'
 
@@ -96,7 +91,7 @@ export default {
     LayoutBreadcrumd,
     LayoutHeaderSidebar,
     LayoutMainSidebar,
-    LayoutContainerSidebar,
+    // LayoutContainerSidebar,
     LayoutMainFooter
   },
 
@@ -134,8 +129,8 @@ export default {
 
   methods: {
     initPage() {
-      this.curBreadcrumb.push(this.topModules[0])
-      this.curBreadcrumb.push(this.topModules[0].children[0])
+      this.curBreadcrumb.push(this.topModules[1])
+      this.curBreadcrumb.push(this.topModules[1].children[0])
       this.$router.push('/')
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
@@ -186,14 +181,14 @@ export default {
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
       // 自动加载三级菜单的一个菜单或四级菜单的第一个
-      if (showMenuArr.length) {
-        const { url, children = [] } = showMenuArr[0]
-        const fourthMenuArr = children.filter(
-          ({ isShow, filePath, url: path, deleteFlag }) =>
-            isShow && !deleteFlag && filePath && path
-        )
-        this.$router.push(fourthMenuArr.length ? fourthMenuArr[0].url : url)
-      }
+      // if (showMenuArr.length) {
+      //   const { url, children = [] } = showMenuArr[0]
+      //   const fourthMenuArr = children.filter(
+      //     ({ isShow, filePath, url: path, deleteFlag }) =>
+      //       isShow && !deleteFlag && filePath && path
+      //   )
+      //   this.$router.push(fourthMenuArr.length ? fourthMenuArr[0].url : url)
+      // }
     },
 
     // 三级菜单切换
@@ -216,7 +211,7 @@ export default {
   .layout-container {
     display: flex;
     margin-top: 64px;
-    margin-left: 100px;
+    margin-left: 160px;
     transition: all 0.5s;
   }
 

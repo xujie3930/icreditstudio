@@ -40,20 +40,20 @@
         SELECT count(1)
         FROM icredit_sync_task
         WHERE workspace_id = #{workspaceId} AND delete_flag = 0
-        <if test="taskStatus != null and taskStatus != ''">
+        <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
-        <if test="dispatchStatus != null and dispatchStatus != ''">
+        <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
         </if>
-        <if test="dispatchType != null and dispatchType != ''">
+        <if test="dispatchType != null">
             AND collect_mode = #{dispatchType}
         </if>
-        <if test="dispatchStartTime != null and dispatchStartTime != ''">
-            AND last_update_time &gt;= #{dispatchStartTime}
+        <if test="dispatchStartTime != null">
+            AND last_scheduling_time &gt;= #{dispatchStartTime}
         </if>
-        <if test="dispatchEndTime != null and dispatchEndTime != ''">
-            AND last_update_time &lt;= #{dispatchEndTime}
+        <if test="dispatchEndTime != null">
+            AND last_scheduling_time &lt;= #{dispatchEndTime}
         </if>
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
@@ -65,20 +65,20 @@
         collect_mode AS dispatchType,task_param_json AS dispatchPeriod,exec_status AS dispatchStatus
         FROM icredit_sync_task
         WHERE workspace_id = #{workspaceId} AND delete_flag = 0
-        <if test="taskStatus != null and taskStatus != ''">
+        <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
-        <if test="dispatchStatus != null and dispatchStatus != ''">
+        <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
         </if>
-        <if test="dispatchType != null and dispatchType != ''">
+        <if test="dispatchType != null">
             AND collect_mode = #{dispatchType}
         </if>
-        <if test="dispatchStartTime != null and dispatchStartTime != ''">
-            AND last_update_time &gt;= #{dispatchStartTime}
+        <if test="dispatchStartTime != null">
+            AND last_scheduling_time &gt;= #{dispatchStartTime}
         </if>
-        <if test="dispatchEndTime != null and dispatchEndTime != ''">
-            AND last_update_time &lt;= #{dispatchEndTime}
+        <if test="dispatchEndTime != null">
+            AND last_scheduling_time &lt;= #{dispatchEndTime}
         </if>
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
