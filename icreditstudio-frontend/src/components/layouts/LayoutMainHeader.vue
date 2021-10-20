@@ -235,9 +235,10 @@ export default {
 
     handleCollapse() {
       if (this.activeModuleName === ALL_PRODUCT_NAME) {
-        const { id, label } = this.modules[1]
+        const { id, label, path, redirectPath } = this.modules[1]
         this.setActinveMenuId(id)
         this.setActinveMenuName(label)
+        this.$router.push(path || redirectPath)
       }
       this.toggleHeaderCollapseActions(!this.isCollapse)
     },

@@ -12,7 +12,7 @@ export default {
       type: 'text',
       label: '任务ID',
       prop: 'taskId',
-      width: 150
+      width: 200
     },
     {
       type: 'text',
@@ -22,10 +22,11 @@ export default {
     {
       type: 'text',
       label: '任务版本',
-      prop: 'taskVersion'
+      prop: 'taskVersion',
+      width: 80
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '任务状态',
       prop: 'taskStatus',
       width: 80
@@ -53,7 +54,7 @@ export default {
       width: 170
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '近一次执行状态',
       prop: 'dispatchStatus',
       width: 150

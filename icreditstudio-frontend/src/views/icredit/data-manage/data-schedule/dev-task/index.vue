@@ -32,11 +32,11 @@ export default {
     }
   },
 
-  created() {
-    this.$nextTick(() => {
-      this.$refs.scheduleList.mixinRetrieveTableData()
-    })
-  },
+  // created() {
+  //   this.$nextTick(() => {
+  //     this.$refs.scheduleList.mixinRetrieveTableData()
+  //   })
+  // },
 
   methods: {}
 }
