@@ -12,27 +12,32 @@ export default that => ({
     {
       type: 'text',
       label: '任务名称',
-      prop: 'taskName'
+      prop: 'taskInstanceName'
     },
     {
       type: 'slot',
       label: '执行时间',
-      prop: 'runtime'
+      prop: 'taskInstanceExecTime'
     },
     {
       type: 'text',
       label: '执行状态',
-      prop: 'sourceTable'
+      prop: 'taskInstanceState'
     },
     {
-      type: 'slot',
+      type: 'text',
       label: '执行时长(秒)',
-      prop: 'fieldChineseName'
+      prop: 'taskInstanceExecDuration'
     },
     {
-      type: 'slot',
+      type: 'text',
       label: '同步数据量(条)',
-      prop: 'associateDict'
+      prop: 'totalSyncInstanceNum'
+    },
+    {
+      type: 'text',
+      label: '质检处理数据量',
+      prop: 'totalQualityCheckInstanceNum'
     },
     {
       type: 'operation',
