@@ -40,7 +40,7 @@ export default {
       logDetail: 'sdddsds',
       detailLoading: false,
       tableLoading: false,
-      tableData: [{ taskName: 'KPLKPL' }],
+      tableData: [],
       tableConfiguration: tableConfiguration(this)
     }
   },
@@ -58,12 +58,13 @@ export default {
       this.$refs.detailLogDialog.open()
     },
 
+    // 历史日志列表数据
     getHistoryLogData(taskId) {
       this.tableLoading = true
       API.dataScheduleSyncHistoryLog({ taskId })
         .then(({ success, data }) => {
           if (success && data) {
-            this.x = data
+            this.tableData = data
           }
         })
         .finally(() => {
@@ -71,6 +72,7 @@ export default {
         })
     },
 
+    // 某条历史日志详情数据
     getLogDetailData(taskInstanceId) {
       this.detailLoading = true
       API.dataScheduleSyncLogDetail({ taskInstanceId })
