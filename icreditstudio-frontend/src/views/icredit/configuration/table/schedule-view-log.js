@@ -15,7 +15,7 @@ export default that => ({
       prop: 'taskInstanceName'
     },
     {
-      type: 'slot',
+      type: 'text',
       label: '执行时间',
       prop: 'taskInstanceExecTime'
     },
