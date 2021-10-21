@@ -34,6 +34,7 @@ import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 import org.quartz.CronExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,41 +59,40 @@ public class ProcessService {
 //    @Autowired
 //    private UserMapper userMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ProcessDefinitionMapper processDefineMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ProcessInstanceMapper processInstanceMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private DataSourceMapper dataSourceMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ProcessInstanceMapMapper processInstanceMapMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private TaskInstanceMapper taskInstanceMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private CommandMapper commandMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ScheduleMapper scheduleMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private UdfFuncMapper udfFuncMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ResourceMapper resourceMapper;
 
-
-    @javax.annotation.Resource
+    @Autowired
     private ErrorCommandMapper errorCommandMapper;
 
 //    @Autowired
 //    private TenantMapper tenantMapper;
 
-    @javax.annotation.Resource
+    @Autowired
     private ProjectMapper projectMapper;
 
     /**
@@ -120,7 +120,7 @@ public class ProcessService {
         processInstance.setCommandType(command.getCommandType());
         processInstance.addHistoryCmd(command.getCommandType());
         saveProcessInstance(processInstance);
-        this.setSubProcessParam(processInstance);
+//        this.setSubProcessParam(processInstance);
         delCommandByid(command.getId());
         return processInstance;
     }
@@ -1241,7 +1241,7 @@ public class ProcessService {
             logger.error("save error, process instance is null!");
             return;
         }
-        if (!StringUtils.equalsIgnoreCase("0", processInstance.getId())) {
+        if (StringUtils.isNotBlank(processInstance.getId()) && !StringUtils.equalsIgnoreCase("0", processInstance.getId())) {
             processInstanceMapper.updateById(processInstance);
         } else {
             createProcessInstance(processInstance);

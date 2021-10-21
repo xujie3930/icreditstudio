@@ -1,10 +1,11 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.CreatePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.DeletePlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.param.ReleasePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.UpdatePlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
@@ -22,7 +23,10 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -30,9 +34,10 @@ import java.util.*;
 /**
  * @author Peng
  */
-@Slf4j
 @Service
 public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implements PlatformProcessDefinitionService {
+
+    private static final Logger logger = LoggerFactory.getLogger(PlatformProcessDefinitionServiceImpl.class);
 
     @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
@@ -42,6 +47,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     private PlatformSchedulerService schedulerService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
@@ -78,6 +84,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> release(ReleasePlatformProcessDefinitionParam param) {
         ReleaseState state = ReleaseState.getEnum(param.getReleaseState());
 
@@ -103,7 +110,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
                 );
 
                 for (Schedule schedule : scheduleList) {
-                    log.info("set schedule offline, project id: {}, schedule id: {}, process definition id: {}", param.getProjectCode(), schedule.getId(), param.getProcessDefinitionId());
+                    logger.info("set schedule offline, project id: {}, schedule id: {}, process definition id: {}", param.getProjectCode(), schedule.getId(), param.getProcessDefinitionId());
                     // set status
                     schedule.setReleaseState(ReleaseState.OFFLINE);
                     scheduleMapper.updateById(schedule);
@@ -114,6 +121,105 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
                 putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "releaseState");
                 return BusinessResult.fail("", (String) result.get(Constants.MSG));
         }
+        return BusinessResult.success(true);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BusinessResult<Boolean> delete(DeletePlatformProcessDefinitionParam param) {
+        Map<String, Object> result = new HashMap<>(5);
+        ProcessDefinition processDefinition = processDefinitionMapper.selectById(param.getProcessDefinitionId());
+
+        if (processDefinition == null) {
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, param.getProcessDefinitionId());
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+
+        // check process definition is already online
+        if (processDefinition.getReleaseState() == ReleaseState.ONLINE) {
+            putMsg(result, Status.PROCESS_DEFINE_STATE_ONLINE, param.getProcessDefinitionId());
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+
+        // get the timing according to the process definition
+        List<Schedule> schedules = scheduleMapper.queryByProcessDefinitionId(param.getProcessDefinitionId());
+        if (!schedules.isEmpty() && schedules.size() > 1) {
+            logger.warn("scheduler num is {},Greater than 1", schedules.size());
+            putMsg(result, Status.DELETE_PROCESS_DEFINE_BY_ID_ERROR);
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        } else if (schedules.size() == 1) {
+            Schedule schedule = schedules.get(0);
+            if (schedule.getReleaseState() == ReleaseState.OFFLINE) {
+                scheduleMapper.deleteById(schedule.getId());
+            } else if (schedule.getReleaseState() == ReleaseState.ONLINE) {
+                putMsg(result, Status.SCHEDULE_CRON_STATE_ONLINE, schedule.getId());
+                return BusinessResult.fail("", (String) result.get(Constants.MSG));
+            }
+        }
+
+        int delete = processDefinitionMapper.deleteById(param.getProcessDefinitionId());
+
+        if (delete > 0) {
+            putMsg(result, Status.SUCCESS);
+        } else {
+            putMsg(result, Status.DELETE_PROCESS_DEFINE_BY_ID_ERROR);
+        }
+        return BusinessResult.fail("", (String) result.get(Constants.MSG));
+    }
+
+    @Override
+    public BusinessResult<Boolean> update(UpdatePlatformProcessDefinitionParam param) {
+        Map<String, Object> result = new HashMap<>(5);
+
+        ProcessData processData = JSONUtils.parseObject(param.getProcessDefinitionJson(), ProcessData.class);
+        Map<String, Object> checkProcessJson = checkProcessNodeList(processData, param.getProcessDefinitionJson());
+        if ((checkProcessJson.get(Constants.STATUS) != Status.SUCCESS)) {
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+        ProcessDefinition processDefine = processDefinitionMapper.selectById(param.getProcessDefinitionId());
+        // check process definition exists
+        if (processDefine == null) {
+            putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, param.getProcessDefinitionId());
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+
+        if (processDefine.getReleaseState() == ReleaseState.ONLINE) {
+            // online can not permit edit
+            putMsg(result, Status.PROCESS_DEFINE_NOT_ALLOWED_EDIT, processDefine.getName());
+            return BusinessResult.fail("", (String) result.get(Constants.MSG));
+        }
+
+        if (!param.getName().equals(processDefine.getName())) {
+            // check whether the new process define name exist
+            ProcessDefinition definition = processDefinitionMapper.verifyByDefineName(param.getProjectCode(), param.getName());
+            if (definition != null) {
+                putMsg(result, Status.VERIFY_PROCESS_DEFINITION_NAME_UNIQUE_ERROR, param.getName());
+                return BusinessResult.fail("", (String) result.get(Constants.MSG));
+            }
+        }
+
+        Date now = new Date();
+
+        processDefine.setId(param.getProcessDefinitionId());
+        processDefine.setName(param.getName());
+        processDefine.setReleaseState(ReleaseState.OFFLINE);
+        processDefine.setProjectCode(param.getProjectCode());
+        processDefine.setProcessDefinitionJson(param.getProcessDefinitionJson());
+        processDefine.setDescription(param.getDesc());
+        processDefine.setTimeout(processData.getTimeout());
+        processDefine.setTenantCode(processData.getTenantCode());
+        processDefine.setModifyBy(param.getAccessUser().getUserName());
+
+        //custom global params
+        List<Property> globalParamsList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(processData.getGlobalParams())) {
+            Set<Property> userDefParamsSet = new HashSet<>(processData.getGlobalParams());
+            globalParamsList = new ArrayList<>(userDefParamsSet);
+        }
+        processDefine.setGlobalParamList(globalParamsList);
+        processDefine.setUpdateTime(now);
+        processDefine.setFlag(Flag.YES);
+        processDefinitionMapper.updateById(processDefine);
         return BusinessResult.success(true);
     }
 
@@ -129,7 +235,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         Map<String, Object> result = new HashMap<>(5);
         try {
             if (processData == null) {
-                log.error("process data is null");
+                logger.error("process data is null");
                 putMsg(result, Status.DATA_IS_NOT_VALID, processDefinitionJson);
                 return result;
             }
@@ -138,14 +244,14 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
             List<TaskNode> taskNodes = processData.getTasks();
 
             if (taskNodes == null) {
-                log.error("process node info is empty");
+                logger.error("process node info is empty");
                 putMsg(result, Status.DATA_IS_NULL, processDefinitionJson);
                 return result;
             }
 
             // check has cycle
             if (graphHasCycle(taskNodes)) {
-                log.error("process DAG has cycle");
+                logger.error("process DAG has cycle");
                 putMsg(result, Status.PROCESS_NODE_HAS_CYCLE);
                 return result;
             }
@@ -153,7 +259,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
             // check whether the process definition json is normal
             for (TaskNode taskNode : taskNodes) {
                 if (!CheckUtils.checkTaskNodeParameters(taskNode.getParams(), taskNode.getType())) {
-                    log.error("task node {} parameter invalid", taskNode.getName());
+                    logger.error("task node {} parameter invalid", taskNode.getName());
                     putMsg(result, Status.PROCESS_NODE_S_PARAMETER_INVALID, taskNode.getName());
                     return result;
                 }

@@ -57,11 +57,6 @@ public class ProcessDefinition {
 
     private Integer scheduleType;//0-周期实例，1-手动实例
 
-//    /**
-//     * code
-//     */
-//    private Long code;
-
     /**
      * 工作流名称
      */
@@ -76,13 +71,6 @@ public class ProcessDefinition {
      * release state : online/offline
      */
     private ReleaseState releaseState;
-
-//    /**
-//     * project id
-//     * TODO: delete
-//     */
-//    @TableField(exist = false)
-//    private String projectId;
 
     /**
      * project code
@@ -137,11 +125,6 @@ public class ProcessDefinition {
      * process user id
      */
     private String userId;
-
-    /**
-     * 用户码 //TODO ADD
-     */
-    private String userCode;
 
     /**
      * user name

@@ -23,6 +23,7 @@ import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.CommandType;
@@ -64,6 +65,7 @@ import java.util.Set;
 /**
  * DataX task
  */
+@Slf4j
 public class DataxTask extends AbstractTask {
 
     /**
@@ -142,7 +144,7 @@ public class DataxTask extends AbstractTask {
                     dataXParameters.getLocalParametersMap(),
                     CommandType.of(taskExecutionContext.getCmdTypeIfComplement()),
                     taskExecutionContext.getScheduleTime());
-
+            log.info("调度执行" + JSONObject.toJSONString(paramsMap));
             // run datax process
             String jsonFilePath = buildDataxJsonFile(paramsMap);
             String shellCommandFilePath = buildShellCommandFile(jsonFilePath, paramsMap);
