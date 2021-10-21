@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.CreatePlatformProcessDefinitionParam;
@@ -49,7 +50,8 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
-        ProcessDefinition processDefine = new ProcessDefinition();
+        System.out.println(JSONObject.toJSONString(param));
+        /*ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
         ProcessData processData = JSONUtils.parseObject(param.getProcessDefinitionJson(), ProcessData.class);
@@ -80,7 +82,8 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
-        return BusinessResult.success(result);
+        return BusinessResult.success(result);*/
+        return BusinessResult.success(null);
     }
 
     @Override
@@ -208,7 +211,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setDescription(param.getDesc());
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantCode(processData.getTenantCode());
-        processDefine.setModifyBy(param.getAccessUser().getUserName());
+        processDefine.setModifyBy(param.getAccessUser().getId());
 
         //custom global params
         List<Property> globalParamsList = new ArrayList<>();

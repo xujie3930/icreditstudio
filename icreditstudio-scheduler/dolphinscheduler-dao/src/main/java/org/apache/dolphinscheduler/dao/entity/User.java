@@ -31,27 +31,8 @@ public class User {
     private String id;
 
     /**
-     * user name
-     */
-    private String userName;
-
-    /**
-     * mail
-     */
-    private String email;
-
-    /**
-     * phone
-     */
-    private String phone;
-
-    /**
      * tenant code
      */
     private String tenantCode;
 
-    /**
-     * alert group
-     */
-    private String alertGroup;
 }
