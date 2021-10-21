@@ -50,17 +50,17 @@
           </template>
 
           <!-- 执行状态 -->
-          <template #execStatusColumn="{row: {execStatus}}">
+          <template #dispatchStatusColumn="{row: {dispatchStatus}}">
             <span
               :style="{
-                color: [0, 1, 2].includes(execStatus)
-                  ? execStatusMapping[execStatus].color
+                color: [0, 1, 2].includes(dispatchStatus)
+                  ? execStatusMapping[dispatchStatus].color
                   : '#606266'
               }"
             >
               {{
-                [0, 1, 2].includes(execStatus)
-                  ? execStatusMapping[execStatus].label
+                [0, 1, 2].includes(dispatchStatus)
+                  ? execStatusMapping[dispatchStatus].label
                   : '-'
               }}
             </span>
@@ -68,8 +68,11 @@
 
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
-            <!-- v-if="row.dispatchStatus === '执行中'" -->
-            <el-button type="text" @click="handleStopTask(row, 'stop')">
+            <el-button
+              v-if="row.dispatchStatus === 2"
+              type="text"
+              @click="handleStopTask(row, 'stop')"
+            >
               终止
             </el-button>
             <el-button
@@ -181,21 +184,17 @@ export default {
 
     // 表格请求接口参数拦截
     interceptorsRequestRetrieve(params) {
-      // const { workspaceId } = this
+      const { workspaceId } = this
       const { scheduleTime, ...restParams } = params
       const dispatchStartTime = scheduleTime?.length ? scheduleTime[0] : ''
       const dispatchEndTime = scheduleTime?.length
         ? scheduleTime[1] + 24 * 60 * 60 * 1000 - 1
         : ''
       return {
-        workspaceId: '887000733000470528',
+        workspaceId,
         dispatchStartTime,
         dispatchEndTime,
-        ...restParams,
-        taskName: '表175',
-        taskStatus: '0',
-        dispatchStatus: '0',
-        dispatchType: '1'
+        ...restParams
       }
     }
   }

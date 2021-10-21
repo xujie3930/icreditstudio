@@ -5,7 +5,7 @@
 export default [
   {
     type: 'text',
-    label: '任务姓名',
+    label: '任务名称',
     model: '',
     ruleProp: 'taskName',
     isSearch: true,
@@ -20,8 +20,8 @@ export default [
     options: [
       { value: '', label: '全部' },
       { value: '0', label: '启用' },
-      { value: '1', label: '停用' },
-      { value: '2', label: '草稿' }
+      { value: '2', label: '停用' },
+      { value: '1', label: '草稿' }
     ]
   },
   {

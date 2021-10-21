@@ -205,7 +205,7 @@ export default {
 
   .menu-left-item {
     .j-svg {
-      width: 18px;
+      width: 19px;
       height: 18px;
       margin-right: 10px;
     }

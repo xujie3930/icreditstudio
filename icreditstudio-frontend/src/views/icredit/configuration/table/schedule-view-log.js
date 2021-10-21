@@ -8,37 +8,44 @@ export default that => ({
   id: 'viewLog',
   isBorder: true,
   hasPage: false,
+  maxHeight: 350,
   group: [
     {
       type: 'text',
       label: '任务名称',
-      prop: 'taskName'
-    },
-    {
-      type: 'slot',
-      label: '执行时间',
-      prop: 'runtime'
+      prop: 'taskInstanceName'
     },
     {
       type: 'text',
+      label: '执行时间',
+      prop: 'taskInstanceExecTime',
+      width: 200
+    },
+    {
+      type: 'slot',
       label: '执行状态',
-      prop: 'sourceTable'
+      prop: 'taskInstanceState'
     },
     {
-      type: 'slot',
+      type: 'text',
       label: '执行时长(秒)',
-      prop: 'fieldChineseName'
+      prop: 'taskInstanceExecDuration'
     },
     {
-      type: 'slot',
+      type: 'text',
       label: '同步数据量(条)',
-      prop: 'associateDict'
+      prop: 'totalSyncInstanceNum'
+    },
+    {
+      type: 'text',
+      label: '质检处理数据量',
+      prop: 'totalQualityCheckInstanceNum'
     },
     {
       type: 'operation',
       label: '操作',
       prop: 'operation',
-      width: '250px',
+      width: '120px',
       fixed: 'right',
       operationList: [
         {

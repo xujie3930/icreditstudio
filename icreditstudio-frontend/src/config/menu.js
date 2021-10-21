@@ -6,7 +6,12 @@
 
 // 一级菜单
 export const rootMenuMapping = {
-  '/': { icon: 'menu-home', iconActive: 'menu-home-active', name: '首页' },
+  '/all': {
+    icon: 'menu-product-white',
+    iconActive: 'menu-product-white',
+    name: '全部产品'
+  },
+  '/index': { icon: 'menu-home', iconActive: 'menu-home-active', name: '首页' },
   '/workspace': {
     icon: 'menu-space',
     iconActive: 'menu-space-active',

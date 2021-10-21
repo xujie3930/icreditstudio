@@ -19,12 +19,11 @@
               :name="menuIconName(item)"
             />
             <i v-else :class="[item.iconPath, 'menu-icon']" />
-            <span slot="title">
+            <span class="label-wrap" slot="title">
               {{ item.label }}
               <i
                 v-if="item.label === ALL_PRODUCT_NAME"
-                class="el-icon-arrow-right"
-                style="color:#fff"
+                class="el-icon-arrow-right arrow-right"
               ></i>
             </span>
           </el-menu-item>
@@ -166,10 +165,22 @@ export default {
 }
 
 .menu-left-item {
+  position: relative;
+
   .j-svg {
     width: 20px;
     height: 20px;
     margin-right: 10px;
+  }
+
+  .label-wrap {
+    .arrow-right {
+      position: absolute;
+      right: 0;
+      top: 24px;
+      color: #fff;
+      font-size: 12px;
+    }
   }
 }
 
