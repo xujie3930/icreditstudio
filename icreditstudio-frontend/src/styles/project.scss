@@ -71,3 +71,8 @@
     border-left: 3px solid #fff !important;
   }
 }
+
+.is-disabled {
+  cursor: not-allowed !important;
+  background-image: none;
+}

@@ -10,7 +10,7 @@
           <el-menu-item
             :key="item.id"
             :index="item.id"
-            class="menu-left-item"
+            class="icredit-menu-item"
             @click="handleMenuSelected(item)"
           >
             <j-svg
@@ -31,27 +31,23 @@
       </el-menu>
     </el-aside>
 
+    <!-- 全部产品 -->
     <div v-if="activeModuleName === ALL_PRODUCT_NAME" class="aside-product">
       <div
         class="aside-product-item"
         v-for="item in allMenuNavMapping"
-        :key="item.name"
+        :key="item.label"
       >
-        <div class="header">{{ item.name }}</div>
+        <div class="header">{{ item.label }}</div>
         <div class="container">
           <div
-            class="container-item"
             v-for="(list, idx) in item.children"
             :key="idx"
+            :class="['container-item', list.path ? '' : 'is-disabled']"
+            @click.stop="handleJumpClick(item, list)"
           >
-            <!-- <j-svg
-            class="j-svg"
-            v-if="customMenuIcon.includes(item.path)"
-            :name="menuIconName(item)"
-          />
-            <i v-else :class="[item.iconPath, 'menu-icon']" /> -->
             <j-svg class="jsvg" :name="list.icon" />
-            <span class="text">{{ list.name }}</span>
+            <span class="text">{{ list.label }}</span>
           </div>
         </div>
         <div class="divider"></div>
@@ -123,18 +119,28 @@ export default {
     }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
 
-    handleMenuSelected(item) {
+    // 点击一级菜单
+    handleMenuSelected(item, child) {
       this.setActinveMenuId(item.id)
       this.setActinveMenuName(item.label)
       if (item.label === ALL_PRODUCT_NAME) return
       this.toggleHeaderCollapseActions(false)
-      this.$emit('onChange', item)
+      this.$emit('onChange', item, child)
+    },
+
+    // 点击全部产品下的菜单
+    handleJumpClick(parMenu, curMenu) {
+      const { label } = parMenu
+      const pMenu = this.modules.find(item => item.label === label)
+      const cMenu = pMenu?.children.find(item => item.name === curMenu.label)
+      this.handleMenuSelected(pMenu, cMenu)
     },
 
     getBaseConfig(key) {
       return variables[key]
     },
 
+    // 激活状态与默认状态的图标切换
     menuIconName(item) {
       const url = item.url || item.path
       const icon = rootMenuMapping[url]?.icon || 'menu-workspace'
@@ -164,7 +170,7 @@ export default {
   }
 }
 
-.menu-left-item {
+.icredit-menu-item {
   position: relative;
 
   .j-svg {
@@ -245,6 +251,10 @@ export default {
           text-align: left;
           color: #fff;
           margin-left: 6px;
+        }
+
+        &:hover {
+          opacity: 0.8;
         }
       }
     }

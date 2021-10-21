@@ -13,7 +13,11 @@
       v-else-if="curBreadcrumb.length"
       separator-class="el-icon-arrow-right"
     >
-      <el-breadcrumb-item :key="index" v-for="(item, index) in curBreadcrumb">
+      <el-breadcrumb-item
+        v-for="(item, index) in curBreadcrumb"
+        :key="index"
+        :to="{ path: item.redirect || item.path }"
+      >
         {{ item.label || item.name }}
       </el-breadcrumb-item>
     </el-breadcrumb>

@@ -120,14 +120,23 @@ export default {
     })
   },
 
-  created() {
-    const isExitChild = this.isExistChildren(this.menu[0])
-    if (isExitChild) {
-      this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
-    } else {
-      this.defalutActived = this.menu.filter(
-        e => e.isShow && !e.deleteFlag
-      )[0]?.url
+  // created() {
+  //   const isExitChild = this.isExistChildren(this.menu[0])
+  //   if (isExitChild) {
+  //     this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
+  //   } else {
+  //     this.defalutActived = this.menu.filter(
+  //       e => e.isShow && !e.deleteFlag
+  //     )[0]?.url
+  //   }
+  // },
+
+  watch: {
+    $route: {
+      immediate: true,
+      handler(nRoute) {
+        this.defalutActived = nRoute.path
+      }
     }
   },
 
