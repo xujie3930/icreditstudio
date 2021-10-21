@@ -47,7 +47,10 @@
             @click.stop="handleJumpClick(item, list)"
           >
             <j-svg class="jsvg" :name="list.icon" />
-            <span class="text">{{ list.label }}</span>
+            <span
+              :class="['text', list.path === $route.path ? 'menu-active' : '']"
+              >{{ list.label }}</span
+            >
           </div>
         </div>
         <div class="divider"></div>
@@ -251,6 +254,20 @@ export default {
           text-align: left;
           color: #fff;
           margin-left: 6px;
+        }
+
+        .menu-active {
+          position: relative;
+          &::after {
+            content: '';
+            position: absolute;
+            top: 7px;
+            right: -10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 25px;
+            background-color: #faad14;
+          }
         }
 
         &:hover {

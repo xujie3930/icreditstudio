@@ -131,8 +131,6 @@ export default {
           ? children[0].children.filter(item => item.isShow && !item.deleteFlag)
           : []
 
-        console.log('children[0].url', children[0].url)
-
         this.$router.push(
           exitShowChild.length ? exitShowChild[0].url : children[0].url
         )

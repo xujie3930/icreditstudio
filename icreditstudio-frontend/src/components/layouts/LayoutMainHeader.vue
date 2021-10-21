@@ -238,7 +238,7 @@ export default {
         const { id, label, path, redirectPath } = this.modules[1]
         this.setActinveMenuId(id)
         this.setActinveMenuName(label)
-        this.$router.push(path || redirectPath)
+        this.$router.push(redirectPath || path)
       }
       this.toggleHeaderCollapseActions(!this.isCollapse)
     },
