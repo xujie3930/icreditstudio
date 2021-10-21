@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class PlatformTaskOrdinaryParam {
 
+
+    private String name;
     /**
      * 所属项目码
      */
@@ -20,4 +22,8 @@ public class PlatformTaskOrdinaryParam {
      * 任务json
      */
     private String taskJson;
+    /**
+     * 超时时间
+     */
+    private int timeOut;
 }
