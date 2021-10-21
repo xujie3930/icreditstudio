@@ -33,7 +33,7 @@ export function font(val) {
       .el-button{font-size:${size}px!important}
       .el-submenu__title{font-size:${size}px!important}
       .el-submenu__title i{font-size:${size}px!important}
-      .el-menu-item{font-size:${size}px!important}
+      .el-menu-item{font-size:${size}px}
       .el-submenu [class^=el-icon-]{font-size:${size}px!important}
       .el-table{font-size:${size}px!important}
       .el-radio__label{font-size:${size}px!important}

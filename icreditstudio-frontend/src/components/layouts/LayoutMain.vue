@@ -34,15 +34,17 @@
       </div> -->
 
       <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
-        <!-- 一级菜单 -->
-        <LayoutHeaderSidebar
-          v-if="isHeaderCollapse"
-          :menu="moduleMenus[activeModuleId]"
-          :crumbs-list="breadCrumbItems"
-          :modules="topModules"
-          :active-module-id="activeModuleId"
-          @onChange="changeMenu"
-        />
+        <transition v-if="isHeaderCollapse" name="fade">
+          <!-- 一级菜单 -->
+          <LayoutHeaderSidebar
+            :menu="moduleMenus[activeModuleId]"
+            :crumbs-list="breadCrumbItems"
+            :modules="topModules"
+            :active-module-id="activeModuleId"
+            @onChange="changeMenu"
+          />
+        </transition>
+
         <!-- 二级菜单 -->
         <LayoutMainSidebar
           v-else
@@ -212,7 +214,11 @@ export default {
     display: flex;
     margin-top: 64px;
     margin-left: 160px;
-    transition: all 0.5s;
+    transition: all 0.5s ease 0s;
+  }
+
+  .layout-collapse {
+    margin-left: 64px;
   }
 
   .container-wrap {
@@ -226,8 +232,14 @@ export default {
     flex: 1;
   }
 
-  .layout-collapse {
-    margin-left: 64px;
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.5s;
+  }
+
+  .fade-enter,
+  .fade-leave-to {
+    opacity: 0;
   }
 }
 </style>

@@ -23,7 +23,7 @@ module.exports = {
   outputDir: 'dist',
   indexPath: 'index.html',
   filenameHashing: true,
-  runtimeCompiler: true,
+  // runtimeCompiler: true,
 
   // 配置scss全局变量
   css: {
