@@ -1,5 +1,4 @@
 /*
- * @Author: lizheng
  * @Description: 数据同步
  */
 
@@ -65,7 +64,7 @@ export default {
       label: '采集方式',
       prop: 'execMode',
       width: 120,
-      formatter: row => execModeMapping[row.syncMode]
+      formatter: row => execModeMapping[row.execMode]
     },
     {
       type: 'text',

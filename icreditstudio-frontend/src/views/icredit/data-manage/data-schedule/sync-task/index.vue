@@ -69,17 +69,18 @@
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
             <el-button
+              type="text"
+              v-if="row.dispatchStatus === 1"
+              @click="handleReRuningTask(row, 'rerunning')"
+            >
+              重跑
+            </el-button>
+            <el-button
               v-if="row.dispatchStatus === 2"
               type="text"
               @click="handleStopTask(row, 'stop')"
             >
               终止
-            </el-button>
-            <el-button
-              type="text"
-              @click="handleReRuningTask(row, 'rerunning')"
-            >
-              重跑
             </el-button>
             <el-button type="text" @click="handleViewLog(row, 'historyLog')">
               历史日志
@@ -115,11 +116,6 @@ export default {
 
   data() {
     return {
-      mixinTableData: [
-        { taskName: 'ss', taskStatus: 0 },
-        { taskName: 'sss', taskStatus: 1 }
-      ],
-
       formOption,
       tableConfiguration,
       searchFormConfig: {
