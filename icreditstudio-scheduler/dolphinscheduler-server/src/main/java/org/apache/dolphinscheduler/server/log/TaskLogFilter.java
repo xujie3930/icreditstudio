@@ -16,14 +16,13 @@
  */
 package org.apache.dolphinscheduler.server.log;
 
-import static org.apache.dolphinscheduler.common.utils.LoggerUtils.TASK_APPID_LOG_FORMAT;
-
-import org.apache.dolphinscheduler.common.utils.LoggerUtils;
-
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
+import org.apache.dolphinscheduler.common.utils.LoggerUtils;
+
+import static org.apache.dolphinscheduler.common.utils.LoggerUtils.TASK_APPID_LOG_FORMAT;
 
 /**
  *  task log filter
