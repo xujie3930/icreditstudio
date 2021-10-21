@@ -42,6 +42,9 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
 
     @Override
     public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException {
+        if (param.getTimeout() == null) {
+            param.setTimeout(Constants.MAX_TASK_TIMEOUT);
+        }
         Map<String, Object> result = new HashMap<>(5);
         // timeout is invalid
         if (param.getTimeout() <= 0 || param.getTimeout() > MAX_TASK_TIMEOUT) {

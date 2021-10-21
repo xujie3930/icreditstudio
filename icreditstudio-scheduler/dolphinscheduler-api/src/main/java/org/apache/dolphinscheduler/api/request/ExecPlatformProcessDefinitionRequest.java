@@ -20,24 +20,30 @@ public class ExecPlatformProcessDefinitionRequest {
     /**
      * 时间
      */
-    String cronTime;
+    String cronTime = "";
     /**
      * 指令类型
      */
-    CommandType commandType;
+    CommandType commandType = null;
     /**
      * 失败策略
      */
-    FailureStrategy failureStrategy;
+    FailureStrategy failureStrategy = FailureStrategy.CONTINUE;
     /**
-     * 节点
+     * 开始节点
      */
-    String startNodeList;
-    TaskDependType taskDependType;
-    WarningType warningType;
+    String startNodeList = "";
+    TaskDependType taskDependType = TaskDependType.TASK_POST;
+    WarningType warningType = WarningType.NONE;
+    /**
+     * 警告组
+     */
     String warningGroupId;
-    RunMode runMode;
-    Priority processInstancePriority;
+    RunMode runMode = RunMode.RUN_MODE_SERIAL;
+    Priority processInstancePriority = Priority.MEDIUM;
+    /**
+     * 工作组
+     */
     String workerGroup;
-    Integer timeout;
+    Integer timeout = null;
 }

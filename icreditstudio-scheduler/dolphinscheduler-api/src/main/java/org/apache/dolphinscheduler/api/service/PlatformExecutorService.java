@@ -17,6 +17,7 @@ public interface PlatformExecutorService {
      *
      * @param param
      * @return
+     * @throws ParseException
      */
     BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException;
 
@@ -24,7 +25,7 @@ public interface PlatformExecutorService {
      * check whether the process definition can be executed
      *
      * @param processDefinition process definition
-     * @param processDefineId process definition code
+     * @param processDefineId   process definition code
      * @return check result code
      */
     Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId);
