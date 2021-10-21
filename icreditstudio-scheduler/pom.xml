@@ -643,6 +643,7 @@
         <module>dolphinscheduler-service</module>
         <module>dolphinscheduler-master-server</module>
         <module>dolphinscheduler-worker-server</module>
+        <module>dolphinscheduler-log-server</module>
     </modules>
 
     <build>

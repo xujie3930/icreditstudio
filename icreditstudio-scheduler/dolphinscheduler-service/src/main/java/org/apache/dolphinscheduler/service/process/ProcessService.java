@@ -120,7 +120,7 @@ public class ProcessService {
         processInstance.setCommandType(command.getCommandType());
         processInstance.addHistoryCmd(command.getCommandType());
         saveProcessInstance(processInstance);
-//        this.setSubProcessParam(processInstance);
+        this.setSubProcessParam(processInstance);
         delCommandByid(command.getId());
         return processInstance;
     }
@@ -580,7 +580,7 @@ public class ProcessService {
         Map<String, String> cmdParam = JSONUtils.toMap(command.getCommandParam());
 
         ProcessDefinition processDefinition = null;
-        if (StringUtils.isNotBlank(command.getProcessDefinitionId()) || "0".equals(command.getProcessDefinitionId())) {
+        if (StringUtils.isNotBlank(command.getProcessDefinitionId())) {
             processDefinition = processDefineMapper.selectById(command.getProcessDefinitionId());
             if (processDefinition == null) {
                 logger.error("cannot find the work process define! define id : {}", command.getProcessDefinitionId());
@@ -1269,7 +1269,7 @@ public class ProcessService {
      * @return save task instance result
      */
     public boolean saveTaskInstance(TaskInstance taskInstance) {
-        if (!StringUtils.equalsIgnoreCase("0", taskInstance.getId())) {
+        if (StringUtils.isNotBlank(taskInstance.getId())) {
             return updateTaskInstance(taskInstance);
         } else {
             return createTaskInstance(taskInstance);
