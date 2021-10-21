@@ -1,0 +1,92 @@
+<assembly>
+    <id>dist</id>
+    <formats>
+        <format>tar.gz</format>
+        <format>dir</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}</directory>
+            <outputDirectory></outputDirectory>
+            <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.basedir}/bin/
+            </directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+<!--        <fileSet>-->
+<!--            <directory>-->
+<!--                ${project.basedir}/src/main/resources/-->
+<!--            </directory>-->
+<!--            <outputDirectory>conf</outputDirectory>-->
+<!--            <includes>-->
+<!--                <include>log.properties</include>-->
+<!--                <include>*.xml</include>-->
+<!--                <include>**/*.conf</include>-->
+<!--            </includes>-->
+<!--            <fileMode>0777</fileMode>-->
+<!--            <lineEnding>unix</lineEnding>-->
+<!--        </fileSet>-->
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/dolphinscheduler-common/src/main/resources/
+            </directory>
+            <outputDirectory>conf</outputDirectory>
+            <includes>
+                <include>common.properties</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+<!--        <fileSet>-->
+<!--            <directory>-->
+<!--                ${project.parent.basedir}/dolphinscheduler-dao/src/main/resources/-->
+<!--            </directory>-->
+<!--            <outputDirectory>conf</outputDirectory>-->
+<!--            <includes>-->
+<!--                <include>datasource.properties</include>-->
+<!--            </includes>-->
+<!--            <fileMode>0777</fileMode>-->
+<!--            <lineEnding>unix</lineEnding>-->
+<!--        </fileSet>-->
+<!--        <fileSet>-->
+<!--            <directory>-->
+<!--                ${project.parent.basedir}/dolphinscheduler-service/src/main/resources/-->
+<!--            </directory>-->
+<!--            <outputDirectory>conf</outputDirectory>-->
+<!--            <includes>-->
+<!--                <include>*.properties</include>-->
+<!--            </includes>-->
+<!--            <fileMode>0777</fileMode>-->
+<!--            <lineEnding>unix</lineEnding>-->
+<!--        </fileSet>-->
+
+    </fileSets>
+
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>lib</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <unpack>false</unpack>
+            <useStrictFiltering>true</useStrictFiltering>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>
