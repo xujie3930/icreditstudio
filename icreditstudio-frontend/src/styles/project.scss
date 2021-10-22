@@ -20,6 +20,15 @@
   background-color: $--background-color-base !important;
 }
 
+.iframe-layout-main-container {
+  .el-table {
+    color: #262626;
+    thead {
+      color: #262626;
+    }
+  }
+}
+
 .el-table tr td,
 .el-table tr td:first-child {
   /* 980 高度下最佳边距 */
@@ -36,7 +45,6 @@
 .el-table td.is-center,
 .el-table th.is-center {
   text-align: center;
-  padding: 8px 0;
 }
 
 .sidebar {
@@ -75,4 +83,10 @@
 .is-disabled {
   cursor: not-allowed !important;
   background-image: none;
+}
+
+.icredit-table-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
