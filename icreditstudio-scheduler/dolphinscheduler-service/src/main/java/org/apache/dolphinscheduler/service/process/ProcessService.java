@@ -1241,10 +1241,10 @@ public class ProcessService {
             logger.error("save error, process instance is null!");
             return;
         }
-        if (StringUtils.isNotBlank(processInstance.getId()) && !StringUtils.equalsIgnoreCase("0", processInstance.getId())) {
-            processInstanceMapper.updateById(processInstance);
-        } else {
+        if (StringUtils.isBlank(processInstance.getId())) {
             createProcessInstance(processInstance);
+        } else {
+            processInstanceMapper.updateById(processInstance);
         }
     }
 
@@ -1255,10 +1255,10 @@ public class ProcessService {
      * @return save command result
      */
     public int saveCommand(Command command) {
-        if (!StringUtils.equalsIgnoreCase("0", command.getId())) {
-            return commandMapper.updateById(command);
-        } else {
+        if (StringUtils.isEmpty(command.getId())) {
             return commandMapper.insert(command);
+        } else {
+            return commandMapper.updateById(command);
         }
     }
 
@@ -1269,10 +1269,10 @@ public class ProcessService {
      * @return save task instance result
      */
     public boolean saveTaskInstance(TaskInstance taskInstance) {
-        if (!StringUtils.equalsIgnoreCase("0", taskInstance.getId())) {
-            return updateTaskInstance(taskInstance);
-        } else {
+        if (StringUtils.isEmpty(taskInstance.getId())) {
             return createTaskInstance(taskInstance);
+        } else {
+            return updateTaskInstance(taskInstance);
         }
     }
 
@@ -1598,7 +1598,7 @@ public class ProcessService {
         //2 insert into recover command
         Command cmd = new Command();
         cmd.setProcessDefinitionId(processInstance.getProcessDefinitionId());
-        cmd.setCommandParam(String.format("{\"%s\":%d}", Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING, processInstance.getId()));
+        cmd.setCommandParam(String.format("{\"%s\":%s}", Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING, processInstance.getId()));
         cmd.setExecutorId(processInstance.getExecutorId());
         cmd.setCommandType(CommandType.RECOVER_TOLERANCE_FAULT_PROCESS);
         createCommand(cmd);

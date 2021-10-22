@@ -218,7 +218,14 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
             command.setCommandParam(JSONUtils.toJson(cmdParam));
             return processService.createCommand(command);
         }
-
         return 0;
     }
+
+    @Override
+    public void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException {
+        int create = this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
+                param.getTaskDependType(), param.getFailureStrategy(), param.getStartNodeList(), param.getCronTime(), param.getWarningType(),
+                "", param.getWarningGroupId(), param.getRunMode(), param.getProcessInstancePriority(), param.getWorkerGroup());
+    }
+
 }

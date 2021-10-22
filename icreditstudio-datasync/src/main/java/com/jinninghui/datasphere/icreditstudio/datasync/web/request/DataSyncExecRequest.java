@@ -8,4 +8,5 @@ import lombok.Data;
 @Data
 public class DataSyncExecRequest {
     private String taskId;
+    private int execType;
 }

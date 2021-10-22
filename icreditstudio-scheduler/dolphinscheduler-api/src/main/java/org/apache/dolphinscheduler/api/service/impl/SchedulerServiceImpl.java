@@ -534,4 +534,10 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         putMsg(result, Status.SUCCESS);
         return result;
     }
+
+    @Override
+    public void onlineByProcessDefinitionId(String processDefinitionId){
+        scheduleMapper.onlineByProcessDefinitionId(processDefinitionId);
+    }
+
 }

@@ -149,4 +149,6 @@ public interface SchedulerService {
      * @return the next five fire time
      */
     Map<String, Object> previewSchedule(User loginUser, String projectCode, String schedule);
+
+    void onlineByProcessDefinitionId(String processDefinitionId);
 }

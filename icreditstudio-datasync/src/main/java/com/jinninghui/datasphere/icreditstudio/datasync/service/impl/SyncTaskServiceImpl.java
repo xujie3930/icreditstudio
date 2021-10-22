@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
@@ -20,6 +21,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEnti
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignMetadataGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.StatementField;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
@@ -68,6 +70,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private MetadataFeign metadataFeign;
     @Resource
     private SyncTaskMapper syncTaskMapper;
+    @Resource
+    private SchedulerFeign schedulerFeign;
 
     @Override
     @BusinessParamsValidate
@@ -414,11 +418,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
+        if(StringUtils.isEmpty(param.getTaskId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
+        }
+        if(0 != param.getExecType() || 1 != param.getExecType()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
+        }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);
-        return BusinessResult.success(true);
+        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        Boolean execResult = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
+        return BusinessResult.success(execResult);
     }
 
     @Override

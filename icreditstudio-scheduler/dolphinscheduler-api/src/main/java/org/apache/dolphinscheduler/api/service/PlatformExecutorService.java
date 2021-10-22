@@ -29,4 +29,6 @@ public interface PlatformExecutorService {
      * @return check result code
      */
     Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId);
+
+    void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException;
 }

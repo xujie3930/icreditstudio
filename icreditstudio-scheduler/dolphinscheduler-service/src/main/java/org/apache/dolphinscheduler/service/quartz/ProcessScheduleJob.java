@@ -63,8 +63,8 @@ public class ProcessScheduleJob implements Job {
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        String projectId = dataMap.getString(Constants.PROJECT_ID);
-        String scheduleId = dataMap.getString(Constants.SCHEDULE_ID);
+        String projectId = String.valueOf(dataMap.get(Constants.PROJECT_ID));
+        String scheduleId = String.valueOf(dataMap.get(Constants.SCHEDULE_ID));
 
         Date scheduledFireTime = context.getScheduledFireTime();
 
