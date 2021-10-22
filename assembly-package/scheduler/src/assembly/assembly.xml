@@ -41,7 +41,7 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-master-server/target/jnh-datasphere-icreditstudio-scheduler-master-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-master-server/target/jnh-datasphere-icreditstudio-scheduler-master-server-${project.version}-dist
             </directory>
             <outputDirectory>scheduler/icreditstudio-scheduler-master-server</outputDirectory>
             <includes>
@@ -51,9 +51,19 @@
 
         <fileSet>
             <directory>
-                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-worker-server/target/jnh-datasphere-icreditstudio-scheduler-worker-${project.version}-dist
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-worker-server/target/jnh-datasphere-icreditstudio-scheduler-worker-server-${project.version}-dist
             </directory>
-            <outputDirectory>scheduler/icreditstudio-scheduler-worker-server</outputDirectory>
+            <outputDirectory>scheduler/worker/icreditstudio-scheduler-worker-server</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/../icreditstudio-scheduler/dolphinscheduler-log-server/target/jnh-datasphere-icreditstudio-scheduler-log-server-${project.version}-dist
+            </directory>
+            <outputDirectory>scheduler/worker/icreditstudio-scheduler-log-server</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>

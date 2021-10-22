@@ -1,11 +1,13 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.enums.Status;
-import org.apache.dolphinscheduler.api.param.CreatePlatformProcessDefinitionParam;
-import org.apache.dolphinscheduler.api.param.DeletePlatformProcessDefinitionParam;
-import org.apache.dolphinscheduler.api.param.ReleasePlatformProcessDefinitionParam;
-import org.apache.dolphinscheduler.api.param.UpdatePlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.*;
 import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
@@ -13,6 +15,7 @@ import org.apache.dolphinscheduler.api.utils.CheckUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
+import org.apache.dolphinscheduler.common.enums.TaskType;
 import org.apache.dolphinscheduler.common.graph.DAG;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.process.Property;
@@ -49,20 +52,19 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
+        System.out.println(JSONObject.toJSONString(param));
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
-        ProcessData processData = JSONUtils.parseObject(param.getProcessDefinitionJson(), ProcessData.class);
-        Map<String, Object> checkProcessJson = checkProcessNodeList(processData, param.getProcessDefinitionJson());
-        if (checkProcessJson.get(Constants.STATUS) != Status.SUCCESS) {
-            return BusinessResult.fail("", (String) checkProcessJson.get(Constants.MSG));
-        }
-        processDefine.setName(param.getName());
+        ProcessDefinitionJson definitionJson = buildProcessDefinitionJson(param);
+        ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
+
+        processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
+        processDefine.setName(param.getOrdinaryParam().getName());
         processDefine.setReleaseState(ReleaseState.OFFLINE);
-        processDefine.setProjectCode(param.getProjectCode());
+        processDefine.setProjectCode(param.getOrdinaryParam().getProjectCode());
         processDefine.setUserId(param.getAccessUser().getId());
-        processDefine.setProcessDefinitionJson(param.getProcessDefinitionJson());
-        processDefine.setDescription(param.getDesc());
+        processDefine.setProcessDefinitionJson(JSONObject.toJSONString(definitionJson));
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantCode(param.getAccessUser().getTenantCode());
         processDefine.setModifyBy(param.getAccessUser().getId());
@@ -81,6 +83,33 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
         return BusinessResult.success(result);
+    }
+
+    private ProcessDefinitionJson buildProcessDefinitionJson(CreatePlatformProcessDefinitionParam param) {
+        ProcessDefinitionJson definitionJson = new ProcessDefinitionJson();
+        definitionJson.setTimeout(param.getOrdinaryParam().getTimeOut());
+        definitionJson.setTenantCode(param.getAccessUser().getTenantCode());
+        definitionJson.setGlobalParams(Lists.newArrayList());
+        List<TaskNodeStruct> structs = Lists.newArrayList();
+        TaskNodeStruct struct = new TaskNodeStruct();
+        struct.setType(TaskType.DATAX.getDesc());
+        struct.setId(StrUtil.concat(true, "tasks-", RandomUtil.randomNumbers(5)));
+        struct.setName(param.getOrdinaryParam().getName());
+        struct.setParams(new NodeParam(1, param.getOrdinaryParam().getTaskJson(), Lists.newArrayList()));
+        struct.setDescription("");
+        struct.setTimeout(new TimeOutParam("", null, false));
+        struct.setRunFlag("NORMAL");
+        struct.setConditionResult(new ConditionResult(Lists.newArrayList(), Lists.newArrayList()));
+        struct.setDependence(Maps.newHashMap());
+        struct.setMaxRetryTimes("0");
+        struct.setRetryInterval("1");
+        struct.setTaskInstancePriority("MEDIUM");
+        struct.setWorkerGroup("default");
+        struct.setPreTasks(Lists.newArrayList());
+
+        structs.add(struct);
+        definitionJson.setTasks(structs);
+        return definitionJson;
     }
 
     @Override
@@ -208,7 +237,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setDescription(param.getDesc());
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantCode(processData.getTenantCode());
-        processDefine.setModifyBy(param.getAccessUser().getUserName());
+        processDefine.setModifyBy(param.getAccessUser().getId());
 
         //custom global params
         List<Property> globalParamsList = new ArrayList<>();

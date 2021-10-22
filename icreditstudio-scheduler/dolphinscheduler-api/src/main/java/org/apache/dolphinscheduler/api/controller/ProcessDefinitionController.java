@@ -338,7 +338,7 @@ public class ProcessDefinitionController extends BaseController {
                                            @RequestParam(value = "releaseState", required = true) int releaseState) {
 
         logger.info("login user {}, release process definition, project name: {}, release state: {}",
-                loginUser.getUserName(), projectName, releaseState);
+                loginUser.getTenantCode(), projectName, releaseState);
         Map<String, Object> result = processDefinitionService.releaseProcessDefinition(loginUser, projectName, processId, releaseState);
         return returnDataList(result);
     }
@@ -493,7 +493,7 @@ public class ProcessDefinitionController extends BaseController {
             @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
             @RequestParam("processDefinitionCode") Long processDefinitionCode) throws Exception {
         logger.info("query task node name list by definitionCode, login user:{}, project name:{}, code : {}",
-                loginUser.getUserName(), projectName, processDefinitionCode);
+                loginUser.getTenantCode(), projectName, processDefinitionCode);
         Map<String, Object> result = processDefinitionService.getTaskNodeListByDefinitionCode(processDefinitionCode);
         return returnDataList(result);
     }

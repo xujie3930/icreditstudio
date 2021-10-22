@@ -10,6 +10,7 @@ export default _this => {
     id: 'setting',
     isBorder: true,
     hasPage: true,
+    size: 'small',
     customBtnConfig: [
       {
         label: '新增工作空间',

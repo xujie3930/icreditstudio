@@ -24,6 +24,8 @@ import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignMetadataGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.StatementField;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;

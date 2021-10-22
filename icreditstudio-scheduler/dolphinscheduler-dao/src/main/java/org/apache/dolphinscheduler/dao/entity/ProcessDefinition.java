@@ -58,8 +58,10 @@ public class ProcessDefinition {
     private Integer scheduleType;//0-周期实例，1-手动实例
 
     /**
-     * 工作流名称
+     * 平台任务ID
      */
+    private String platformTaskId;
+
     private String name;
 
     /**

@@ -1,6 +1,9 @@
 package org.apache.dolphinscheduler.api.request;
 
 import lombok.Data;
+import org.apache.dolphinscheduler.api.param.ChannelControlParam;
+import org.apache.dolphinscheduler.api.param.PlatformTaskOrdinaryParam;
+import org.apache.dolphinscheduler.api.param.SchedulerParam;
 import org.apache.dolphinscheduler.dao.entity.User;
 
 /**
@@ -13,19 +16,15 @@ public class CreatePlatformProcessDefinitionRequest {
      */
     private User accessUser;
     /**
-     * 所属项目码
+     * 普通参数
      */
-    private String projectCode;
+    private PlatformTaskOrdinaryParam ordinaryParam;
     /**
-     * 流程定义名称
+     * 通道控制
      */
-    private String name;
+    private ChannelControlParam channelControl;
     /**
-     * 流程定义json参数
+     * 调度设置
      */
-    private String processDefinitionJson;
-    /**
-     * 流程定义描述
-     */
-    private String desc;
+    private SchedulerParam schedulerParam;
 }

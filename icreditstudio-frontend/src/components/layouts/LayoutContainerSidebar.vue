@@ -118,22 +118,6 @@ export default {
       return variables[key]
     },
 
-    renderPath(item) {
-      let _path = item.url
-      if (item.component === 'main/LayoutIframe' && item.src) {
-        _path = _path.substring(0, _path.indexOf(':')) + item.src
-      }
-      return _path
-    },
-
-    // 点击一级菜单，如没有子菜单则跳转，有则展开/收缩菜单
-    handleLinkOrToggle({ children, url, redirectPath }, e) {
-      console.log(url, children, e)
-      if (children?.length) return
-      e.stopPropagation()
-      this.$router.push({ path: redirectPath || url })
-    },
-
     handleCollapse() {
       this.toggleCollapseActions(!this.isCollapse)
     }

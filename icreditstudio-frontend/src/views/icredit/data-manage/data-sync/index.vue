@@ -8,7 +8,6 @@
     <crud-basic
       class="user-container"
       ref="crud"
-      title="数据同步列表"
       :form-items-search="mixinSearchFormItems"
       :form-func-search="mixinSearchFormFunc"
       :form-config-search="mixinSearchFormConfig"
@@ -97,8 +96,7 @@
               v-if="row.taskStatus === 0 && row.execStatus !== 2"
               @click="handleRunBtnClick(row, 'Run')"
             >
-              <!-- v-if="row.taskStatus === 0 && [0, 1].includes(row.execStatus)" -->
-              立即执行
+              {{ row.execMode ? '执行' : '立即执行' }}
             </el-button>
             <el-button
               type="text"

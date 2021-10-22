@@ -8,7 +8,6 @@
     <crud-basic
       class="user-container"
       ref="crud"
-      title="数据源列表"
       :form-items-search="mixinSearchFormItems"
       :form-func-search="mixinSearchFormFunc"
       :form-config-search="mixinSearchFormConfig"

@@ -117,7 +117,7 @@ public class AccessLogAspect {
         String userName = "NOT LOGIN";
         User loginUser = (User) (request.getAttribute(Constants.SESSION_USER));
         if (loginUser != null) {
-            userName = loginUser.getUserName();
+            userName = loginUser.getTenantCode();
         }
         return userName;
     }

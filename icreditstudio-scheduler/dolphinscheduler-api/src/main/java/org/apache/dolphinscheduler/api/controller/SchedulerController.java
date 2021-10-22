@@ -107,7 +107,7 @@ public class SchedulerController extends BaseController {
                                  @RequestParam(value = "processInstancePriority", required = false) Priority processInstancePriority) throws IOException {
         logger.info("login user {}, project name: {}, process name: {}, create schedule: {}, warning type: {}, warning group id: {}," +
                         "failure policy: {},receivers : {},receiversCc : {},processInstancePriority : {}, workGroupId:{}",
-                loginUser.getUserName(), projectName, processDefinitionId, schedule, warningType, warningGroupId,
+                loginUser.getTenantCode(), projectName, processDefinitionId, schedule, warningType, warningGroupId,
                 failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup);
         Map<String, Object> result = schedulerService.insertSchedule(loginUser, projectName, processDefinitionId, schedule,
                 warningType, warningGroupId, failureStrategy, receivers, receiversCc, processInstancePriority, workerGroup);
@@ -159,7 +159,7 @@ public class SchedulerController extends BaseController {
                                  @RequestParam(value = "processInstancePriority", required = false) Priority processInstancePriority) throws IOException {
         logger.info("login user {}, project name: {},id: {}, updateProcessInstance schedule: {}, notify type: {}, notify mails: {}, " +
                         "failure policy: {},receivers : {},receiversCc : {},processInstancePriority : {},workerGroupId:{}",
-                loginUser.getUserName(), projectName, id, schedule, warningType, warningGroupId, failureStrategy,
+                loginUser.getTenantCode(), projectName, id, schedule, warningType, warningGroupId, failureStrategy,
                 receivers, receiversCc, processInstancePriority, workerGroup);
 
         Map<String, Object> result = schedulerService.updateSchedule(loginUser, projectName, id, schedule,

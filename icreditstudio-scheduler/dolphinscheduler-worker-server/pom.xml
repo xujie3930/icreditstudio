@@ -128,7 +128,7 @@
 
                         <configuration>
                             <skipAssembly>false</skipAssembly>
-                            <finalName>jnh-datasphere-icreditstudio-scheduler-worker-${project.version}-dist</finalName>
+                            <finalName>jnh-datasphere-icreditstudio-scheduler-worker-server-${project.version}-dist</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <attach>false</attach>
                             <descriptors>

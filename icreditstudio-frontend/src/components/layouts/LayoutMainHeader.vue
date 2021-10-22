@@ -10,7 +10,7 @@
     <div class="header-text">
       <j-svg name="logo" class="logo" />
       <span class="system-name">iCredit可信数据中台</span>
-      <span class="split">|</span>
+      <span class="split"></span>
       <span class="menu">{{ workspace }}</span>
     </div>
 
@@ -238,7 +238,7 @@ export default {
         const { id, label, path, redirectPath } = this.modules[1]
         this.setActinveMenuId(id)
         this.setActinveMenuName(label)
-        this.$router.push(path || redirectPath)
+        this.$router.push(redirectPath || path)
       }
       this.toggleHeaderCollapseActions(!this.isCollapse)
     },
@@ -334,44 +334,53 @@ export default {
     width: 22px;
     height: 20px;
     cursor: pointer;
-    transition: $--all-transition;
+    transition: transform 0.3s ease 0s;
   }
 
   .fold {
-    transform: rotateY(0);
+    transform: rotate(0);
   }
 
   .unfold {
-    transform: rotateY(180deg);
+    transform: rotate(180deg);
   }
 }
 
 .header-text {
   @include flex;
   margin-left: 15px;
+  font-family: PingFangSC, PingFangSC-Semibold;
 
   .logo {
     width: 42px;
     height: 36px;
-    margin-right: 5px;
+    margin-right: 10px;
   }
 
   .system-name {
     font-size: 18px;
-    font-family: PingFangSC, PingFangSC-Semibold;
     font-weight: 600;
     color: #fff;
+    height: 25px;
+    line-height: 25px;
   }
 
   .split {
-    margin: 0 10px;
+    margin: 0 15px;
+    width: 2px;
+    height: 15px;
+    opacity: 0.3;
+    background: #fff;
+    border-radius: 1px;
+    margin-top: 2px;
   }
 
   .menu {
     font-size: 16px;
-    font-family: PingFangSC, PingFangSC-Semibold;
     font-weight: 600;
     color: #fff;
+    height: 25px;
+    line-height: 25px;
   }
 }
 

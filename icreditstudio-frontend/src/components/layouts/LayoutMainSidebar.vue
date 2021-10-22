@@ -22,7 +22,7 @@
             :index="item.url"
           >
             <template #title>
-              <div class="menu-left-item">
+              <div class="icredit-menu-item">
                 <j-svg
                   class="j-svg"
                   v-if="customMenuIcon.includes(item.url)"
@@ -41,6 +41,7 @@
                 v-for="son in item.children.filter(e => e.isShow)"
                 :key="son.name"
                 :index="son.url"
+                class="icredit-submenu-item"
                 @click="handleMenuSelected(son)"
               >
                 {{ son.name }}
@@ -53,7 +54,7 @@
             v-else
             :key="item.name"
             :index="item.url"
-            class="menu-left-item"
+            class="icredit-menu-item"
             @click="handleMenuSelected(item)"
           >
             <j-svg
@@ -119,14 +120,23 @@ export default {
     })
   },
 
-  created() {
-    const isExitChild = this.isExistChildren(this.menu[0])
-    if (isExitChild) {
-      this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
-    } else {
-      this.defalutActived = this.menu.filter(
-        e => e.isShow && !e.deleteFlag
-      )[0]?.url
+  // created() {
+  //   const isExitChild = this.isExistChildren(this.menu[0])
+  //   if (isExitChild) {
+  //     this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
+  //   } else {
+  //     this.defalutActived = this.menu.filter(
+  //       e => e.isShow && !e.deleteFlag
+  //     )[0]?.url
+  //   }
+  // },
+
+  watch: {
+    $route: {
+      immediate: true,
+      handler(nRoute) {
+        this.defalutActived = nRoute.path
+      }
     }
   },
 
@@ -203,7 +213,12 @@ export default {
   left: 0;
   z-index: 999;
 
-  .menu-left-item {
+  .icredit-menu-item {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+    color: #666;
+
     .j-svg {
       width: 19px;
       height: 18px;
@@ -213,6 +228,13 @@ export default {
     .menu-icon {
       font-size: 24px;
     }
+  }
+
+  .icredit-submenu-item {
+    font-size: 12px;
+    font-family: SourceHanSansCN, SourceHanSansCN-Regular;
+    font-weight: 400;
+    color: #888;
   }
 }
 
@@ -226,15 +248,16 @@ export default {
   .j-svg {
     width: 19px;
     height: 17px;
-    transition: $--all-transition;
   }
 
   .icon-fold {
-    transform: rotateY(0);
+    transform: rotate(0);
+    transition: transform 0.3s ease 0s;
   }
 
   .icon-unfold {
-    transform: rotateY(180deg);
+    transform: rotate(180deg);
+    transition: transform 0.3s ease 0s;
   }
 }
 </style>

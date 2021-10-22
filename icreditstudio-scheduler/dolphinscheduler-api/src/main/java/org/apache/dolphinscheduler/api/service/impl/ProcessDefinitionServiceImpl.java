@@ -116,7 +116,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         processDefine.setConnects(connects);
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantCode(loginUser.getTenantCode());
-        processDefine.setModifyBy(loginUser.getUserName());
+        processDefine.setModifyBy(loginUser.getTenantCode());
 //        processDefine.setResourceIds(getResourceIds(processData));
 
         //custom global params
@@ -208,7 +208,7 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         processDefine.setConnects(connects);
         processDefine.setTimeout(processData.getTimeout());
         processDefine.setTenantCode(loginUser.getTenantCode());
-        processDefine.setModifyBy(loginUser.getUserName());
+        processDefine.setModifyBy(loginUser.getTenantCode());
 
         //custom global params
         List<Property> globalParamsList = new ArrayList<>();
