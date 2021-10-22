@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.request.ExecPlatformProcessDefinitionRequest;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
-import org.apache.dolphinscheduler.api.service.SchedulerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +21,6 @@ public class PlatformExecutorController {
 
     @Autowired
     private PlatformExecutorService platformExecutorService;
-    @Autowired
-    private SchedulerService schedulerService;
 
     @PostMapping("/execProcessInstance")
     public BusinessResult<Boolean> execProcessInstance(@RequestBody ExecPlatformProcessDefinitionRequest request) throws ParseException {
@@ -34,16 +31,19 @@ public class PlatformExecutorController {
 
     @GetMapping("/execSyncTask")
     public Boolean execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType) throws ParseException {
-        if(0 == execType){//手动执行
-            ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
-            param.setWorkerGroup("default");
-            param.setTimeout(86400);
-            param.setProcessDefinitionId(processDefinitionId);
-            platformExecutorService.manualExecSyncTask(param);
-        }else{//周期执行
-            schedulerService.onlineByProcessDefinitionId(processDefinitionId);
-        }
+        platformExecutorService.execSyncTask(processDefinitionId, execType);
         return true;
+    }
+
+    @GetMapping("/stopSyncTask")
+    public Boolean stopSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
+        platformExecutorService.stopSyncTask(processDefinitionId);
+        return true;
+    }
+
+    @GetMapping("/deleteSyncTask")
+    public void deleteSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
+        platformExecutorService.deleteSyncTask(processDefinitionId);
     }
 
 }

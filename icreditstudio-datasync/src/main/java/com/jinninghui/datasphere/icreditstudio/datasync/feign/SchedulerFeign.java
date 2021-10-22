@@ -28,4 +28,9 @@ public interface SchedulerFeign {
     @GetMapping("/dolphinscheduler/platform/exec/execSyncTask")
     Boolean execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType);
 
+    @GetMapping("/dolphinscheduler/platform/exec/stopSyncTask")
+    Boolean stopSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
+
+    @GetMapping("/dolphinscheduler/platform/exec/deleteSyncTask")
+    Boolean deleteSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 }

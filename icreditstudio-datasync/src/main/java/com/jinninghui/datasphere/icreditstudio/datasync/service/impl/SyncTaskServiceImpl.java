@@ -398,13 +398,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> stop(DataSyncExecParam param) {
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
-        entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
-        updateById(entity);
-        return BusinessResult.success(true);
+        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        Boolean stopResult = schedulerFeign.stopSyncTask(processDefinitionId);
+        if(stopResult){
+            entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+            updateById(entity);
+        }
+        return BusinessResult.success(stopResult);
     }
 
     @Override
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
+        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        schedulerFeign.deleteSyncTask(processDefinitionId);
         removeById(param.getTaskId());
         return BusinessResult.success(true);
     }
@@ -428,10 +434,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
-        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
-        updateById(entity);
         String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
         Boolean execResult = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
+        if(execResult){//成功
+            entity.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
+        }else{
+            entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
+        }
+        updateById(entity);
         return BusinessResult.success(execResult);
     }
 

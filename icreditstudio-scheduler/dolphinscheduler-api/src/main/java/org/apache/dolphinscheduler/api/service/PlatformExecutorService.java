@@ -30,5 +30,9 @@ public interface PlatformExecutorService {
      */
     Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId);
 
-    void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException;
+    void execSyncTask(String processDefinitionId, int execType) throws ParseException;
+
+    void stopSyncTask(String processDefinitionId);
+
+    void deleteSyncTask(String processDefinitionId);
 }

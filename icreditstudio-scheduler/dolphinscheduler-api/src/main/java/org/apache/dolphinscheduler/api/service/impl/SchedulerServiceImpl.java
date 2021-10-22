@@ -536,8 +536,8 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     }
 
     @Override
-    public void onlineByProcessDefinitionId(String processDefinitionId){
-        scheduleMapper.onlineByProcessDefinitionId(processDefinitionId);
+    public void updateStatusByProcessDefinitionId(String processDefinitionId, int state){
+        scheduleMapper.updateStatusByProcessDefinitionId(processDefinitionId, state);
     }
 
 }

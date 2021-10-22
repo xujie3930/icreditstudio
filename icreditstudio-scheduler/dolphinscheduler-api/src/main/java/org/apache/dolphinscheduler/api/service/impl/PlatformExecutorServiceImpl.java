@@ -1,11 +1,13 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.service.MonitorService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
+import org.apache.dolphinscheduler.api.service.SchedulerService;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Server;
@@ -17,6 +19,8 @@ import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
+import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
+import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,12 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     private MonitorService monitorService;
     @Resource
     private ProcessService processService;
+    @Resource
+    private SchedulerService schedulerService;
+    @Resource
+    private ProcessInstanceMapper processInstanceMapper;
+    @Resource
+    private TaskInstanceMapper taskInstanceMapper;
 
     @Override
     public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException {
@@ -65,7 +75,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         /**
          * create command
          */
-        int create = this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
+        this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
                 param.getTaskDependType(), param.getFailureStrategy(), param.getStartNodeList(), param.getCronTime(), param.getWarningType(),
                 param.getAccessUser().getId(), param.getWarningGroupId(), param.getRunMode(), param.getProcessInstancePriority(), param.getWorkerGroup());
 
@@ -221,11 +231,39 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         return 0;
     }
 
-    @Override
-    public void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException {
-        int create = this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
+    private void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException {
+        this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
                 param.getTaskDependType(), param.getFailureStrategy(), param.getStartNodeList(), param.getCronTime(), param.getWarningType(),
                 "", param.getWarningGroupId(), param.getRunMode(), param.getProcessInstancePriority(), param.getWorkerGroup());
     }
 
+    @Override
+    public void execSyncTask(String processDefinitionId, int execType) throws ParseException {
+        if(0 == execType){//手动执行
+            ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
+            param.setWorkerGroup("default");
+            param.setTimeout(86400);
+            param.setProcessDefinitionId(processDefinitionId);
+            manualExecSyncTask(param);
+        }else{//周期执行
+            schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
+        }
+    }
+
+    @Override
+    public void stopSyncTask(String processDefinitionId) {
+        processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
+        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
+    }
+
+    @Override
+    public void deleteSyncTask(String processDefinitionId) {
+        String result = processInstanceMapper.isRunningForSyncTask(processDefinitionId);
+        if(StringUtils.isNotEmpty(result)){//流程正在执行，不能删除
+            throw new AppException("该任务正在执行中，不能删除");
+        }
+        taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
+        processInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
+        processDefinitionMapper.deleteById(processDefinitionId);
+    }
 }

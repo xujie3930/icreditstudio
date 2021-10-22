@@ -150,5 +150,5 @@ public interface SchedulerService {
      */
     Map<String, Object> previewSchedule(User loginUser, String projectCode, String schedule);
 
-    void onlineByProcessDefinitionId(String processDefinitionId);
+    void updateStatusByProcessDefinitionId(String processDefinitionId, int state);
 }
