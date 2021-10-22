@@ -1,5 +1,9 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.feign;
 
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignCreatePlatformProcessDefinitionRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignUpdatePlatformProcessDefinitionRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
@@ -22,6 +26,10 @@ public interface SchedulerFeign {
      */
     @PostMapping("/platform/task/create")
     BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
+
+    @GetMapping("/dolphinscheduler/platform/exec/execSyncTask")
+    Boolean execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType);
+
 
     /**
      * 更新任务工作流
