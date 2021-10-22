@@ -1,16 +1,14 @@
-package org.apache.dolphinscheduler.api.request;
+package com.jinninghui.datasphere.icreditstudio.datasync.feign.request;
 
+import lombok.Builder;
 import lombok.Data;
-import org.apache.dolphinscheduler.api.param.ChannelControlParam;
-import org.apache.dolphinscheduler.api.param.PlatformTaskOrdinaryParam;
-import org.apache.dolphinscheduler.api.param.SchedulerParam;
-import org.apache.dolphinscheduler.dao.entity.User;
 
 /**
  * @author Peng
  */
 @Data
-public class UpdatePlatformProcessDefinitionRequest {
+@Builder
+public class FeignUpdatePlatformProcessDefinitionRequest {
 
     /**
      * 工作流定义ID

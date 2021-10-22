@@ -95,13 +95,23 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
 //            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
-            FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
-                    .accessUser(new User())
-                    .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
-                    .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
-                    .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
-                    .build();
-            schedulerFeign.create(build);
+            if (StringUtils.isBlank(param.getTaskId())) {
+                FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
+                        .accessUser(new User())
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
+                        .build();
+                schedulerFeign.create(build);
+            } else {
+                FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
+                        .accessUser(new User())
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
+                        .build();
+                schedulerFeign.update(build);
+            }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
