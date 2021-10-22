@@ -1,5 +1,8 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import cn.hutool.core.date.CalendarUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -7,15 +10,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import org.apache.dolphinscheduler.api.dto.ScheduleParam;
+import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.*;
 import org.apache.dolphinscheduler.api.service.PlatformProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreatePlatformTaskResult;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.Flag;
-import org.apache.dolphinscheduler.common.enums.ReleaseState;
-import org.apache.dolphinscheduler.common.enums.TaskType;
+import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.process.Property;
 import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
@@ -50,7 +53,6 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
-        System.out.println(JSONObject.toJSONString(param));
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
@@ -77,6 +79,10 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setUpdateTime(now);
         processDefine.setFlag(Flag.YES);
         processDefinitionMapper.insert(processDefine);
+        if (param.getSchedulerParam().getSchedulerType() == ScheduleType.PERIOD) {
+            CreateSchedulerParam createSchedulerParam = buildCreateSchedulerParam(param, processDefine.getId());
+            schedulerService.createSchedule(createSchedulerParam);
+        }
 
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
@@ -110,12 +116,29 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         return definitionJson;
     }
 
+    private CreateSchedulerParam buildCreateSchedulerParam(CreatePlatformProcessDefinitionParam param, String processDefinitionId) {
+
+        Date startTime = new Date();
+        Date endTime = DateUtil.offset(startTime, DateField.YEAR, 10);
+        ScheduleParam scheduleParam = new ScheduleParam(startTime, endTime, CalendarUtil.calendar().getTimeZone().getID(), param.getSchedulerParam().getCron());
+        return CreateSchedulerParam.builder()
+                .accessUser(param.getAccessUser())
+                .processDefineId(processDefinitionId)
+                .schedule(scheduleParam)
+                .processInstancePriority(Priority.MEDIUM)
+                .projectCode(param.getOrdinaryParam().getProjectCode())
+                .failureStrategy(FailureStrategy.CONTINUE)
+                .warningType(WarningType.NONE)
+                .workerGroup("default")
+                .build();
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> release(ReleasePlatformProcessDefinitionParam param) {
         ReleaseState state = ReleaseState.getEnum(param.getReleaseState());
 
-        HashMap<String, Object> result = new HashMap<>();
+        HashMap<String, Object> result = new HashMap<>(5);
         // check state
         if (null == state) {
             putMsg(result, Status.REQUEST_PARAMS_NOT_VALID_ERROR, "releaseState");
