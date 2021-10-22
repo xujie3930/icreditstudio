@@ -146,18 +146,6 @@ export default {
       this.curBreadcrumb = [this.curBreadcrumb[0], rest]
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
-    },
-
-    // 三级菜单切换
-    threeMenuChange(curMenu) {
-      const [firstItem, secondItem] = this.curBreadcrumb
-      this.curBreadcrumb = [firstItem, secondItem, curMenu]
-    },
-
-    // 四级菜单切换
-    fourMenuChange(curMenu) {
-      const [firstItem, secondItem, thirdItem] = this.curBreadcrumb
-      this.curBreadcrumb = [firstItem, secondItem, thirdItem, curMenu]
     }
   }
 }

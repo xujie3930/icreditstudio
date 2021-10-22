@@ -165,6 +165,16 @@ export default {
   watch: {
     workspaceId(nVal) {
       this.wid = nVal
+    },
+
+    $route: {
+      immediate: true,
+      handler(nRoute) {
+        const { path } = nRoute
+        if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
+          this.setWorkspaceId(this.workspaceList[1].id)
+        }
+      }
     }
   },
 

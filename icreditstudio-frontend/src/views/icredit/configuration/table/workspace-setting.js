@@ -5,6 +5,7 @@
  */
 
 export default _this => {
+  const { workspaceCreateAuth, workspaceId } = _this
   return {
     refName: 'workspace-setting',
     id: 'setting',
@@ -16,7 +17,8 @@ export default _this => {
         label: '新增工作空间',
         type: 'primary',
         key: 'addWorkspace',
-        isHide: !_this.workspaceCreateAuth,
+        disabled: !workspaceCreateAuth || workspaceId !== 'all',
+        // isHide: !_this.workspaceCreateAuth,
         options: {
           eventType: 'click',
           eventName: 'handleAddWorkspace'

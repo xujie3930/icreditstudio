@@ -40,6 +40,7 @@
               v-for="(item, index) in authcustomBtnConfig"
               :key="index"
               :type="item.type || 'primary'"
+              :disabled="item.disabled"
               v-on:[item.options.eventType].native="handleCustomMenuEvent(item)"
               >{{ item.label }}</el-button
             >

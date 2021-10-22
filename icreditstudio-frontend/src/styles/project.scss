@@ -24,6 +24,7 @@
   .el-table {
     color: #262626;
     thead {
+      padding: 8px 0;
       color: #262626;
     }
   }
@@ -44,6 +45,7 @@
 
 .el-table td.is-center,
 .el-table th.is-center {
+  // padding: 8px 0;
   text-align: center;
 }
 
