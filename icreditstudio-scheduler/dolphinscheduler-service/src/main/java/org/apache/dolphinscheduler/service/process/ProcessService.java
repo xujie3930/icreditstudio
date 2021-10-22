@@ -823,10 +823,10 @@ public class ProcessService {
             logger.error("save error, process instance is null!");
             return;
         }
-        if (StringUtils.isNotBlank(processInstance.getId()) && !StringUtils.equalsIgnoreCase("0", processInstance.getId())) {
-            processInstanceMapper.updateById(processInstance);
-        } else {
+        if (StringUtils.isBlank(processInstance.getId())) {
             createProcessInstance(processInstance);
+        } else {
+            processInstanceMapper.updateById(processInstance);
         }
     }
 
@@ -837,10 +837,10 @@ public class ProcessService {
      * @return save command result
      */
     public int saveCommand(Command command) {
-        if (!StringUtils.equalsIgnoreCase("0", command.getId())) {
-            return commandMapper.updateById(command);
-        } else {
+        if (StringUtils.isEmpty(command.getId())) {
             return commandMapper.insert(command);
+        } else {
+            return commandMapper.updateById(command);
         }
     }
 
@@ -851,10 +851,10 @@ public class ProcessService {
      * @return save task instance result
      */
     public boolean saveTaskInstance(TaskInstance taskInstance) {
-        if (StringUtils.isNotBlank(taskInstance.getId())) {
-            return updateTaskInstance(taskInstance);
-        } else {
+        if (StringUtils.isEmpty(taskInstance.getId())) {
             return createTaskInstance(taskInstance);
+        } else {
+            return updateTaskInstance(taskInstance);
         }
     }
 

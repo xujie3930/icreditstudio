@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
@@ -20,6 +21,9 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEnti
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignMetadataGenerateWideTableRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.StatementField;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
@@ -95,13 +99,23 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
 //            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
-            FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
-                    .accessUser(new User())
-                    .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
-                    .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
-                    .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
-                    .build();
-            schedulerFeign.create(build);
+            if (StringUtils.isBlank(param.getTaskId())) {
+                FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
+                        .accessUser(new User())
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
+                        .build();
+                schedulerFeign.create(build);
+            } else {
+                FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
+                        .accessUser(new User())
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
+                        .build();
+                schedulerFeign.update(build);
+            }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
@@ -364,7 +378,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 //生成宽表数据列
                 try {
                     wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
-                } catch (Exception e) {
+                }catch (Exception e){
                     throw new AppException("60000027");
                 }
             }
@@ -423,11 +437,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
+        if(StringUtils.isEmpty(param.getTaskId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
+        }
+        if(0 != param.getExecType() || 1 != param.getExecType()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
+        }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);
-        return BusinessResult.success(true);
+        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        Boolean execResult = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
+        return BusinessResult.success(execResult);
     }
 
     @Override
@@ -513,11 +535,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
         List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
         for (DataSyncDispatchTaskPageResult dataSyncDispatchTaskPageResult : dispatchList) {
-            if (StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchPeriod())) {
-                JSONObject obj = (JSONObject) JSONObject.parse(dataSyncDispatchTaskPageResult.getDispatchPeriod());
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchPeriod())){
+                JSONObject obj = (JSONObject)JSONObject.parse(dataSyncDispatchTaskPageResult.getDispatchPeriod());
                 dataSyncDispatchTaskPageResult.setDispatchPeriod(obj.getString("cron"));//执行周期
             }
-            if (StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())) {//调度类型
+            if(StringUtils.isNotEmpty(dataSyncDispatchTaskPageResult.getDispatchType())){//调度类型
                 dataSyncDispatchTaskPageResult.setDispatchType(CollectModeEnum.find(Integer.valueOf(dataSyncDispatchTaskPageResult.getDispatchType())).getDesc());
             }
         }

@@ -16,12 +16,12 @@
  */
 package org.apache.dolphinscheduler.server.worker.task.datax;
 
-
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.expr.SQLIdentifierExpr;
 import com.alibaba.druid.sql.ast.expr.SQLPropertyExpr;
 import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -60,7 +60,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 
 /**
  * DataX task
@@ -192,18 +191,22 @@ public class DataxTask extends AbstractTask {
             return fileName;
         }
 
+        JSONObject job = new JSONObject();
         if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()) {
             json = dataXParameters.getJson().replaceAll("\\r\\n", "\n");
+            JSONArray contentArr = new JSONArray();
+            contentArr.add(JSONObject.parseObject(json));
+            job.put("content", contentArr);
         } else {
-            JSONObject job = new JSONObject();
             job.put("content", buildDataxJobContentJson());
-            job.put("setting", buildDataxJobSettingJson());
-
-            JSONObject root = new JSONObject();
-            root.put("job", job);
-            root.put("core", buildDataxCoreJson());
-            json = root.toString();
         }
+        job.put("setting", buildDataxJobSettingJson());
+
+        JSONObject root = new JSONObject();
+        root.put("job", job);
+        root.put("core", buildDataxCoreJson());
+        json = root.toString();
+        json = json.replace("\\\\", "");
 
         // replace placeholder
         json = ParameterUtils.convertParameterPlaceholders(json, ParamUtils.convert(paramsMap));

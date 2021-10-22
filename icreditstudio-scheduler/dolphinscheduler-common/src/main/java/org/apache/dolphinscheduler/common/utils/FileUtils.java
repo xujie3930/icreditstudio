@@ -101,7 +101,7 @@ public class FileUtils {
      * @return directory of process execution
      */
     public static String getProcessExecDir(String projectId, String processDefineId, String processInstanceId, String taskInstanceId) {
-        String fileName = String.format("%s/exec/process/%d/%d/%d/%d", DATA_BASEDIR,
+        String fileName = String.format("%s/exec/process/%s/%s/%s/%s", DATA_BASEDIR,
                 projectId, processDefineId, processInstanceId, taskInstanceId);
         File file = new File(fileName);
         if (!file.getParentFile().exists()) {
