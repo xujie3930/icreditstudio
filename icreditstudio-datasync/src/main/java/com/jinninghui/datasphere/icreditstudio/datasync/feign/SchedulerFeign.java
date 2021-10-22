@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignCreatePlatformProcessDefinitionRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignUpdatePlatformProcessDefinitionRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,12 +18,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface SchedulerFeign {
 
     /**
-     * 获取连接信息
+     * 创建任务工作流
      *
      * @param request
      * @return
      */
-    @PostMapping("/platform/task/create")
+    @PostMapping("/dolphinscheduler/platform/task/create")
     BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
 
     @GetMapping("/dolphinscheduler/platform/exec/execSyncTask")
@@ -33,4 +34,13 @@ public interface SchedulerFeign {
 
     @GetMapping("/dolphinscheduler/platform/exec/deleteSyncTask")
     Boolean deleteSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
+
+    /**
+     * 更新任务工作流
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/dolphinscheduler/platform/task/update")
+    BusinessResult<Boolean> update(@RequestBody FeignUpdatePlatformProcessDefinitionRequest request);
 }

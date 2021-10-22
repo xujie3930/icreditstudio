@@ -16,8 +16,9 @@
       <el-breadcrumb-item
         v-for="(item, index) in curBreadcrumb"
         :key="index"
-        :to="{ path: item.redirect || item.path }"
+        @click.native="handleCrumbJump(item)"
       >
+        <!-- :to="{ path: item.redirect || item.path }" -->
         {{ item.label || item.name }}
       </el-breadcrumb-item>
     </el-breadcrumb>
@@ -63,6 +64,11 @@ export default {
         this.$ls.remove('selectedTable')
         this.$router.push('/data-manage/data-sync')
       }
+    },
+
+    handleCrumbJump(toMenu) {
+      console.log(toMenu, 'koko')
+      this.$emit('jump', toMenu)
     }
   }
 }
@@ -78,5 +84,30 @@ export default {
   color: #8c8c8c;
   height: 20px;
   line-height: 20px;
+
+  ::v-deep {
+    .el-breadcrumb__item {
+      .el-breadcrumb__inner {
+        color: #8c8c8c;
+        font-weight: 400;
+        cursor: pointer;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      &:last-child {
+        .el-breadcrumb__inner {
+          color: #262626;
+          font-weight: 400;
+
+          &:hover {
+            color: #262626;
+          }
+        }
+      }
+    }
+  }
 }
 </style>

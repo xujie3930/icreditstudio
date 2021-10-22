@@ -42,7 +42,7 @@
                 :key="son.name"
                 :index="son.url"
                 class="icredit-submenu-item"
-                @click="handleMenuSelected(son)"
+                @click="handleMenuSelected(son, item)"
               >
                 {{ son.name }}
               </el-menu-item>
@@ -120,17 +120,6 @@ export default {
     })
   },
 
-  // created() {
-  //   const isExitChild = this.isExistChildren(this.menu[0])
-  //   if (isExitChild) {
-  //     this.defalutActived = this.menu[0].children.filter(e => e.isShow)[0]?.url
-  //   } else {
-  //     this.defalutActived = this.menu.filter(
-  //       e => e.isShow && !e.deleteFlag
-  //     )[0]?.url
-  //   }
-  // },
-
   watch: {
     $route: {
       immediate: true,
@@ -144,6 +133,7 @@ export default {
     ...mapActions('common', ['toggleCollapseActions']),
     ...mapActions('user', ['setWorkspaceId']),
 
+    // 判断是否存在展示子菜单
     isExistChildren(item) {
       return (
         item.children &&
@@ -152,20 +142,11 @@ export default {
       )
     },
 
-    handleMenuSelected(item) {
+    // 选中菜单
+    handleMenuSelected(item, parentMenu) {
       this.defalutActived = item.url
       this.menuIconName(item)
-      // this.$router.push(item.url)
-      this.$emit('getChildMenus', item)
-    },
-
-    // 切换菜单前必须先切换工作空间（不能为 全部 选项）
-    changeWorkspaceMsg(item) {
-      if (item.url === '/workspace/datasource' && this.workspaceId === 'all') {
-        this.setWorkspaceId(this.workspaceList[1].id)
-        return false
-      }
-      return true
+      this.$emit('getChildMenus', item, parentMenu)
     },
 
     getBaseConfig(key) {
