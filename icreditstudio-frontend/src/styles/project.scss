@@ -49,6 +49,10 @@
   text-align: center;
 }
 
+.el-table th.is-center {
+  padding: 8px 0;
+}
+
 .sidebar {
   overflow: hidden !important;
   .el-menu-item {
