@@ -23,7 +23,7 @@ public interface SchedulerFeign {
      * @param request
      * @return
      */
-    @PostMapping("/platform/task/create")
+    @PostMapping("/dolphinscheduler/platform/task/create")
     BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
 
     @GetMapping("/dolphinscheduler/platform/exec/execSyncTask")
@@ -36,5 +36,6 @@ public interface SchedulerFeign {
      * @param request
      * @return
      */
+    @PostMapping("/dolphinscheduler/platform/task/update")
     BusinessResult<Boolean> update(@RequestBody FeignUpdatePlatformProcessDefinitionRequest request);
 }
