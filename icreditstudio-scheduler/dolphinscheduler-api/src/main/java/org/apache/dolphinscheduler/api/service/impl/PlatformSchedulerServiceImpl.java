@@ -1,12 +1,10 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.exceptions.ServiceException;
 import org.apache.dolphinscheduler.api.param.CreateSchedulerParam;
-import org.apache.dolphinscheduler.api.service.ExecutorService;
 import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreateSchedulerResult;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
@@ -16,7 +14,6 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
-import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.QuartzExecutors;
 import org.springframework.stereotype.Service;
 
@@ -31,16 +28,12 @@ import java.util.Objects;
 @Service
 public class PlatformSchedulerServiceImpl extends BaseServiceImpl implements PlatformSchedulerService {
     @Resource
-    private ProcessService processService;
-    @Resource
-    private ExecutorService executorService;
-    @Resource
     private ScheduleMapper scheduleMapper;
     @Resource
     private ProcessDefinitionMapper processDefinitionMapper;
 
     @Override
-    public BusinessResult<CreateSchedulerResult> createSchedule(CreateSchedulerParam param) {
+    public CreateSchedulerResult createSchedule(CreateSchedulerParam param) {
         Date now = new Date();
         // check work flow define release state
         ProcessDefinition processDefinition = processDefinitionMapper.selectById(param.getProcessDefineId());
@@ -52,7 +45,7 @@ public class PlatformSchedulerServiceImpl extends BaseServiceImpl implements Pla
         scheduleObj.setProjectCode(param.getProjectCode());
         scheduleObj.setProcessDefinitionId(processDefinition.getId());
         scheduleObj.setProcessDefinitionName(processDefinition.getName());
-        ScheduleParam scheduleParam = JSONUtils.parseObject(param.getSchedule(), ScheduleParam.class);
+        ScheduleParam scheduleParam = param.getSchedule();
         //校验ScheduleParam
         checkScheduleParam(scheduleParam);
 
@@ -71,9 +64,7 @@ public class PlatformSchedulerServiceImpl extends BaseServiceImpl implements Pla
         scheduleObj.setWorkerGroup(param.getWorkerGroup());
         scheduleMapper.insert(scheduleObj);
 
-        CreateSchedulerResult result = new CreateSchedulerResult();
-        result.setSchedulerId(scheduleObj.getId());
-        return BusinessResult.success(result);
+        return new CreateSchedulerResult(scheduleObj.getId());
     }
 
     @Override

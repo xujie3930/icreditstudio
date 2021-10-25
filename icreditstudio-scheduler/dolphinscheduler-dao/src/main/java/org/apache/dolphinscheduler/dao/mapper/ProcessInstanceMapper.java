@@ -208,4 +208,8 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     ProcessInstance queryLastManualProcess(@Param("processDefinitionId") String definitionId,
                                            @Param("startTime") Date startTime,
                                            @Param("endTime") Date endTime);
+
+    String isRunningForSyncTask(@Param("processDefinitionId") String processDefinitionId);
+
+    void deleteByProcessDefinitionId(String processDefinitionId);
 }

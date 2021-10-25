@@ -61,7 +61,7 @@
         where process_definition_id =#{processDefinitionId} and release_state = 1
     </select>
 
-    <update id="onlineByProcessDefinitionId">
-        UPDATE t_ds_schedules SET release_state = 1 WHERE process_definition_id = #{processDefinitionId}
+    <update id="updateStatusByProcessDefinitionId">
+        UPDATE t_ds_schedules SET release_state = #{state} WHERE process_definition_id = #{processDefinitionId}
     </update>
 </mapper>

@@ -183,5 +183,11 @@
         order by end_time desc limit 1
     </select>
 
+    <select id="isRunningForSyncTask" resultType="java.lang.String">
+        SELECT id FROM t_ds_process_instance WHERE process_definition_id=#{processDefinitionId} AND state = 1 LIMIT 1
+    </select>
 
+    <delete id="deleteByProcessDefinitionId">
+        DELETE FROM t_ds_process_instance WHERE process_definition_id=#{processDefinitionId}
+    </delete>
 </mapper>

@@ -190,4 +190,8 @@
         FROM t_ds_task_instance
         WHERE process_instance_id = #{instanceId} AND state IN (1,6,7)
     </select>
+
+    <delete id="deleteByProcessDefinitionId">
+        DELETE FROM t_ds_task_instance WHERE process_definition_id = #{processDefinitionId}
+    </delete>
 </mapper>

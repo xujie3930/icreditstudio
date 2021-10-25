@@ -40,13 +40,13 @@ public enum ExecutionStatus {
      * 11 waiting depend node complete
      */
     SUBMITTED_SUCCESS(0, "submit success"),
-    RUNNING_EXECUTION(1, "执行中"),
+    RUNNING_EXECUTION(1, "running"),
     READY_PAUSE(2, "ready pause"),
     PAUSE(3, "pause"),
     READY_STOP(4, "ready stop"),
     STOP(5, "stop"),
-    FAILURE(6, "失败"),
-    SUCCESS(7, "成功"),
+    FAILURE(6, "failure"),
+    SUCCESS(7, "success"),
     NEED_FAULT_TOLERANCE(8, "need fault tolerance"),
     KILL(9, "kill"),
     WAITTING_THREAD(10, "waiting thread"),
