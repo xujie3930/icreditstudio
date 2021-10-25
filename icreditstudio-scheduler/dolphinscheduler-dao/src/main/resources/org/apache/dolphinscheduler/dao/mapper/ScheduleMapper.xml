@@ -64,4 +64,7 @@
     <update id="updateStatusByProcessDefinitionId">
         UPDATE t_ds_schedules SET release_state = #{state} WHERE process_definition_id = #{processDefinitionId}
     </update>
+    <delete id="deleteByProcessDefinitionId">
+        DELETE FROM t_ds_schedules WHERE process_definition_id = #{processDefinitionId}
+    </delete>
 </mapper>

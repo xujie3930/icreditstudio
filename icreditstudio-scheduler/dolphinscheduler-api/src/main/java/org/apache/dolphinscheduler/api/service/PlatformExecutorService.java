@@ -34,5 +34,5 @@ public interface PlatformExecutorService {
 
     void stopSyncTask(String processDefinitionId);
 
-    void deleteSyncTask(String processDefinitionId);
+    String deleteSyncTask(String processDefinitionId);
 }

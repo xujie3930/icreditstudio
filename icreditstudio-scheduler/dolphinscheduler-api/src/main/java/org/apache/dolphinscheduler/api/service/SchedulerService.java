@@ -151,4 +151,6 @@ public interface SchedulerService {
     Map<String, Object> previewSchedule(User loginUser, String projectCode, String schedule);
 
     void updateStatusByProcessDefinitionId(String processDefinitionId, int state);
+
+    void deleteByProcessDefinitionId(String processDefinitionId);
 }

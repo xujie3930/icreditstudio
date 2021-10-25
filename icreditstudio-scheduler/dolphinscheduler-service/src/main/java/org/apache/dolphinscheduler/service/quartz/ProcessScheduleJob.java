@@ -88,6 +88,12 @@ public class ProcessScheduleJob implements Job {
             return;
         }
 
+        releaseState = schedule.getReleaseState();
+        if(releaseState == ReleaseState.OFFLINE){
+            logger.warn("定时任务是下线状态，不能创建command, projectId:{}, processId:{}", projectId, scheduleId);
+            return;
+        }
+
         Command command = new Command();
         command.setCommandType(CommandType.SCHEDULER);
         command.setExecutorId(schedule.getUserId());

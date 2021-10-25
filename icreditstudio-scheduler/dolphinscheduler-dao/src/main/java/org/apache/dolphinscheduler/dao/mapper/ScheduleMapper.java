@@ -73,4 +73,6 @@ public interface ScheduleMapper extends BaseMapper<Schedule> {
     List<Schedule> queryReleaseSchedulerListByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
     void updateStatusByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("state") int state);
+
+    void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 }

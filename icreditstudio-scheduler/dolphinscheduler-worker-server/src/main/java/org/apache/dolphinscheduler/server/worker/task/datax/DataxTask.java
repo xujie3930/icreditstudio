@@ -152,6 +152,9 @@ public class DataxTask extends AbstractTask {
             setExitStatusCode(commandExecuteResult.getExitStatusCode());
             setAppIds(commandExecuteResult.getAppIds());
             setProcessId(commandExecuteResult.getProcessId());
+            if(0 == commandExecuteResult.getExitStatusCode()){//更新processInstance运行状态为成功
+                taskExecutionContext.getProcessInstanceId();
+            }
         } catch (Exception e) {
             logger.error("datax task failure", e);
             setExitStatusCode(Constants.EXIT_CODE_FAILURE);

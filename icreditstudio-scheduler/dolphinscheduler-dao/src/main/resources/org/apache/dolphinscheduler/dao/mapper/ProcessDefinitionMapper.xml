@@ -123,6 +123,6 @@
     </select>
 
     <update id="updateStatusById">
-        UPDATE t_ds_process_definition SET release_state = #{state} WHERE process_definition_id = #{processDefinitionId}
+        UPDATE t_ds_process_definition SET release_state = #{state} WHERE id = #{processDefinitionId}
     </update>
 </mapper>

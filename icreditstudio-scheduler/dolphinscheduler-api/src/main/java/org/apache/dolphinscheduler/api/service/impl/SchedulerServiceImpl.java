@@ -537,7 +537,15 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
     @Override
     public void updateStatusByProcessDefinitionId(String processDefinitionId, int state){
-        scheduleMapper.updateStatusByProcessDefinitionId(processDefinitionId, state);
+        try {
+            scheduleMapper.updateStatusByProcessDefinitionId(processDefinitionId, state);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
+    @Override
+    public void deleteByProcessDefinitionId(String processDefinitionId) {
+        scheduleMapper.deleteByProcessDefinitionId(processDefinitionId);
+    }
 }

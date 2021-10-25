@@ -420,18 +420,21 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
-        Boolean stopResult = schedulerFeign.stopSyncTask(processDefinitionId);
-        if(stopResult){
+        String result = schedulerFeign.stopSyncTask(processDefinitionId);
+        if("true".equals(result)){
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
             updateById(entity);
         }
-        return BusinessResult.success(stopResult);
+        return BusinessResult.success(true);
     }
 
     @Override
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
         String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
-        schedulerFeign.deleteSyncTask(processDefinitionId);
+        String result = schedulerFeign.deleteSyncTask(processDefinitionId);
+        if("1".equals(result)){
+            throw new AppException("该任务正在执行中，不能删除");
+        }
         removeById(param.getTaskId());
         return BusinessResult.success(true);
     }
@@ -450,20 +453,20 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (StringUtils.isEmpty(param.getTaskId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
         }
-        if (0 != param.getExecType() || 1 != param.getExecType()) {
+        if (0 != param.getExecType() && 1 != param.getExecType()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
-        Boolean execResult = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
-        if(execResult){//成功
+        String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
+        if("true".equals(result)){//成功
             entity.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
         }else{
             entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
         }
         updateById(entity);
-        return BusinessResult.success(execResult);
+        return BusinessResult.success(true);
     }
 
     @Override

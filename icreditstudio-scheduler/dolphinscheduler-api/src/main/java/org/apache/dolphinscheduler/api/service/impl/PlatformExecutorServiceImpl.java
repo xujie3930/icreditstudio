@@ -24,6 +24,7 @@ import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.text.ParseException;
@@ -238,32 +239,42 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     }
 
     @Override
-    public void execSyncTask(String processDefinitionId, int execType) throws ParseException {
-        if(0 == execType){//手动执行
-            ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
-            param.setWorkerGroup("default");
-            param.setTimeout(86400);
-            param.setProcessDefinitionId(processDefinitionId);
-            manualExecSyncTask(param);
-        }else{//周期执行
-            schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
+    @Transactional(rollbackFor = RuntimeException.class)
+    public void execSyncTask(String processDefinitionId, int execType) {
+        try{
+            if(0 == execType){//手动执行
+                ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
+                param.setWorkerGroup("default");
+                param.setTimeout(86400);
+                param.setProcessDefinitionId(processDefinitionId);
+                manualExecSyncTask(param);
+            }else{//周期执行
+                schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     public void stopSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
         schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
     }
 
     @Override
-    public void deleteSyncTask(String processDefinitionId) {
+    @Transactional(rollbackFor = RuntimeException.class)
+    public String deleteSyncTask(String processDefinitionId) {
         String result = processInstanceMapper.isRunningForSyncTask(processDefinitionId);
         if(StringUtils.isNotEmpty(result)){//流程正在执行，不能删除
-            throw new AppException("该任务正在执行中，不能删除");
+            return "1";
         }
         taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
         processInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
         processDefinitionMapper.deleteById(processDefinitionId);
+        schedulerService.deleteByProcessDefinitionId(processDefinitionId);
+        return "0";
     }
 }

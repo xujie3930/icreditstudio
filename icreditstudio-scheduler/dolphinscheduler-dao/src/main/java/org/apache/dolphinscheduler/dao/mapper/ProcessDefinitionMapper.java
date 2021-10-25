@@ -131,5 +131,5 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
 
     List<Map<String, Object>> selectByWorkspaceIdAndTime(@Param("workspaceId") String workspaceId, @Param("startTime") Date startOfDay, @Param("endTime") Date endOfDay);
 
-    void updateStatusById(@Param("processDefinitionId") String processDefinitionId, int state);
+    void updateStatusById(@Param("processDefinitionId") String processDefinitionId, @Param("state") int state);
 }
