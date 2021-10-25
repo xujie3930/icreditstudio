@@ -41,12 +41,13 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     public BusinessResult<Boolean> startOrStop(String taskId, String execType) {
-        String instanceId = dataSyncDispatchTaskFeignClient.getProcessInstanceIdByTaskId(taskId);
-        if(null == instanceId){
-            return BusinessResult.fail("", "无法找到对应的流程实例，任务执行失败");
+        String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
+        if(null == processDefinitionId){
+            return BusinessResult.fail("", "无法找到对应的流程定义，任务执行失败");
         }
-        //processInstanceId , ExecuteType executeType
-        int execStatus = this.executeInstance(instanceId, execType);
+        //todo
+        //processDefinitionId , ExecuteType executeType
+        int execStatus = this.executeInstance(processDefinitionId, execType);
         if(execStatus == 0){
             return BusinessResult.success(true);
         }
@@ -111,8 +112,8 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     public BusinessResult<List<DispatchLogVO>> logPage(String taskId) {
-        String instanceId = dataSyncDispatchTaskFeignClient.getProcessInstanceIdByTaskId(taskId);
-        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessInstanceId(instanceId);
+        String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
+        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId);
         return BusinessResult.success(logVOList);
     }
 }

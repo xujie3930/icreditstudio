@@ -80,7 +80,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
     Long getCountByByDefinitionAndStates(@Param("code")Long code, @Param("states") int[] stateArray);
 
-    List<DispatchLogVO> queryTaskByProcessInstanceId(@Param("instanceId") String instanceId);
+    List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
     void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 }
