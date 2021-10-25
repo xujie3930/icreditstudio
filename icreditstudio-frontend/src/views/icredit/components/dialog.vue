@@ -130,6 +130,7 @@ export default {
     padding-left: 20px;
     font-size: 16px;
     font-weight: 500;
+    font-family: PingFangSC, PingFangSC-Medium;
     text-align: left;
     color: rgba(0, 0, 0, 0.85);
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);

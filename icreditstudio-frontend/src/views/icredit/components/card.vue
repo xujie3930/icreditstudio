@@ -6,33 +6,29 @@
 <template>
   <el-card class="icredit-card">
     <header class="icredit-card-header">
-      <span>{{cardConfig.title}}</span>
-      <el-tooltip
-        effect="dark"
-        :content="cardConfig.tooltip"
-        placement="left"
-      >
-        <div></div><j-svg class="j-svg" name="icon-close"></j-svg></div>
+      <span>{{ cardConfig.title }}</span>
+      <el-tooltip effect="dark" :content="cardConfig.tooltip" placement="left">
+        <div><j-svg class="j-svg" name="icon-close"></j-svg></div>
       </el-tooltip>
     </header>
 
     <section class="icredit-card-section">
-      <span class="count">{{cardConfig.count}}</span>
-      <span class="unit">{{cardConfig.unit}}</span>
+      <span class="count">{{ cardConfig.count }}</span>
+      <span class="unit">{{ cardConfig.unit }}</span>
     </section>
 
     <footer class="icredit-card-footer">
-      <slot v-if="footer" name="footer"/>
+      <slot v-if="footer" name="footer" />
       <template>
         <div class="footer-item">
-          <span>{{cardConfig.leftLabel}}</span>
+          <span>{{ cardConfig.leftLabel }}</span>
           <j-svg class="j-svg" :name="cardConfig.leftIcon"></j-svg>
-          <span>{{cardConfig.leftValue}}</span>
+          <span>{{ cardConfig.leftValue }}</span>
         </div>
         <div class="footer-item">
-          <span>{{cardConfig.rightLabel}}</span>
+          <span>{{ cardConfig.rightLabel }}</span>
           <j-svg class="j-svg" :name="cardConfig.rightIcon"></j-svg>
-          <span>{{cardConfig.rightValue}}</span>
+          <span>{{ cardConfig.rightValue }}</span>
         </div>
       </template>
     </footer>
@@ -49,7 +45,7 @@ export default {
     },
 
     cardConfig: {
-      type: Array,
+      type: Object,
       default: () => ({})
     }
   }
@@ -88,7 +84,7 @@ export default {
       font-family: HelveticaNeue, HelveticaNeue-Regular;
       font-weight: 400;
       text-align: left;
-      color: rgba(0,0,0,0.85);
+      color: rgba(0, 0, 0, 0.85);
       line-height: 38px;
     }
 
