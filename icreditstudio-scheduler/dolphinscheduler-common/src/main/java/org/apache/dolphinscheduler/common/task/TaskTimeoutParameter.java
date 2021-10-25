@@ -35,6 +35,8 @@ public class TaskTimeoutParameter {
      */
     private int interval;
 
+    public TaskTimeoutParameter(){}
+
     public TaskTimeoutParameter(boolean enable) {
         this.enable = enable;
     }

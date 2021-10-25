@@ -33,6 +33,8 @@ public class DBTaskResponseCommand implements Serializable {
     private int status;
     private String taskInstanceId;
 
+    public DBTaskResponseCommand(){}
+
     /**
      * package response command
      *
