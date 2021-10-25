@@ -6,22 +6,11 @@
 
 // 一级菜单
 export const rootMenuMapping = {
-  '/all': {
-    icon: 'menu-product-white',
-    iconActive: 'menu-product-white',
-    name: '全部产品'
-  },
+  '/all': { icon: 'menu-product-white', name: '全部产品' },
   '/index': { icon: 'menu-home', iconActive: 'menu-home-active', name: '首页' },
-  '/workspace': {
-    icon: 'menu-space',
-    iconActive: 'menu-space-active',
-    name: '工作空间'
-  },
-  '/data-manage': {
-    icon: 'menu-data',
-    iconActive: 'menu-data-active',
-    name: '数据管理'
-  }
+  '/workspace': { icon: 'menu-space', name: '工作空间' },
+  '/data-manage': { icon: 'menu-data', name: '数据管理' },
+  '/data-quality': { icon: 'menu-govern-white', name: '数据治理' }
   // '/system': { icon: 'home', name: '系统管理' }
 }
 
@@ -66,6 +55,26 @@ export const secondMenuMapping = {
     name: '字典表',
     icon: 'menu-dictionary',
     iconActive: 'menu-dictionary-active'
+  },
+  '/data-quality/summary': {
+    name: '概览',
+    icon: 'menu-summary',
+    iconActive: 'menu-summary-active'
+  },
+  '/data-quality/rule-category': {
+    name: '规则分类',
+    icon: 'menu-rule',
+    iconActive: 'menu-rule-active'
+  },
+  '/data-quality/quality-testing': {
+    name: '质量检测',
+    icon: 'menu-quality-test',
+    iconActive: 'menu-quality-test-active'
+  },
+  '/data-quality/quality-result': {
+    name: '质量结果',
+    icon: 'menu-quality-result',
+    iconActive: 'menu-quality-result-active'
   }
 }
 

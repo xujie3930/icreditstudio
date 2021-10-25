@@ -1,8 +1,85 @@
 /** flex 布局 */
-@mixin flex($direction: row, $justifyContent: center, $alignItems: center, $flexWrap: nowrap){
+@mixin flex(
+  $direction: row,
+  $justifyContent: center,
+  $alignItems: center,
+  $flexWrap: nowrap
+) {
   display: flex;
   flex-direction: $direction;
   align-items: $alignItems;
   justify-content: $justifyContent;
   flex-wrap: $flexWrap;
+}
+
+@mixin card-header {
+  position: relative;
+  background: #fff;
+  padding: 14px 0;
+  margin-bottom: 12px;
+
+  .title {
+    @include flex(row, space-between, center);
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    text-align: left;
+    color: #262626;
+    margin: 0 16px;
+    height: 32px;
+    line-height: 32px;
+
+    .right {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .tab {
+      .tab-item {
+        position: relative;
+        width: 56px;
+        height: 20px;
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: left;
+        color: #333;
+        line-height: 20px;
+        margin-left: 14px;
+        cursor: pointer;
+
+        &:hover {
+          color: #1890ff;
+        }
+      }
+
+      .tab-item-active {
+        &::before {
+          position: absolute;
+          content: '';
+          bottom: -5px;
+          left: 13px;
+          width: 30px;
+          height: 2px;
+          background: #1890ff;
+          border-radius: 3px;
+        }
+      }
+    }
+  }
+
+  .content {
+    margin: 18px 16px;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 21px;
+    left: 0;
+    width: 4px;
+    height: 18px;
+    background: #1890ff;
+    border-radius: 0px 2px 2px 0px;
+  }
 }

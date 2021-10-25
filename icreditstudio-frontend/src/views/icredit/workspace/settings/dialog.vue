@@ -4,7 +4,12 @@
 -->
 
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="480px" top="25vh">
+  <el-dialog
+    :visible.sync="dialogVisible"
+    width="480px"
+    top="25vh"
+    class="dialog"
+  >
     <div class="dialog-title" slot="title">{{ title }}</div>
     <div class="content">
       {{ operateMsg }}
@@ -94,5 +99,11 @@ export default {
 
 .color-text {
   color: #1890ff;
+}
+
+.dialog {
+  /deep/ .el-dialog__header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
 }
 </style>
