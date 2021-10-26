@@ -71,14 +71,14 @@
             <el-button
               type="text"
               v-if="row.dispatchStatus === 1"
-              @click="handleReRuningTask(row, 'rerunning')"
+              @click="handleReRuningTask(row, '0')"
             >
               重跑
             </el-button>
             <el-button
               v-if="row.dispatchStatus === 2"
               type="text"
-              @click="handleStopTask(row, 'stop')"
+              @click="handleStopTask(row, '1')"
             >
               终止
             </el-button>
@@ -90,7 +90,7 @@
       </template>
     </crud-basic>
     <ViewLog ref="viewLog" />
-    <Message ref="message" @on-confirm="handleConfirm" />
+    <Message ref="message" @on-confirm="handleMessageCallback" />
   </div>
 </template>
 
@@ -108,6 +108,7 @@ import {
   taskStatusMapping,
   execStatusMapping
 } from '@/views/icredit/data-manage/data-sync/contant'
+import API from '@/api/icredit'
 
 export default {
   name: 'schedulePageList',
@@ -143,9 +144,19 @@ export default {
   },
 
   methods: {
-    handleConfirm(option) {
-      this.$emit('confirm', option)
-      this.$refs.message.close()
+    // 弹窗提示回调
+    handleMessageCallback(type, row) {
+      const params = { taskId: row.taskId, execType: 1 }
+      API.dataScheduleSyncOperate(params)
+        .then(({ success }) => {
+          if (success) {
+            this.$message.success('同步任务终止成功！')
+            this.$refs.message.close()
+          }
+        })
+        .finally(() => {
+          this.$refs.message.btnLoadingClose()
+        })
     },
 
     // 历史日志
@@ -153,27 +164,34 @@ export default {
       this.$refs.viewLog.open(row)
     },
 
-    handleReRuningTask(row) {
-      console.log(row)
-      this.$message.success({
-        duration: 5000,
-        center: true,
-        offset: 200,
-        message: '重跑任务已提交，稍后请在日志中查看执行结果!'
-      })
+    // 重跑
+    handleReRuningTask({ taskId }, execType) {
+      const params = { taskId, execType }
+      API.dataScheduleSyncOperate(params)
+        .then(({ success, data }) => {
+          if (success && data) {
+            this.$message.success({
+              duration: 5000,
+              center: true,
+              offset: 200,
+              message: '重跑任务已提交，稍后请在日志中查看执行结果!'
+            })
+          }
+        })
+        .finally(() => {})
     },
 
+    // 终止
     handleStopTask(row) {
-      console.log(row, 'row')
       const options = {
         row,
-        name: row.syncTaskName,
-        opType: 'Delete',
+        name: row.taskName,
+        opType: 'Stop',
         title: '终止同步任务',
-        afterTitleName: row.syncTaskName,
+        afterTitleName: row.taskName,
         beforeOperateMsg: '终止同步任务',
         afterOperateMsg:
-          '后，当前同步任务将杀掉进程且宣告任务失败，确认要终止吗'
+          '后，当前同步任务将杀掉进程且宣告任务失败，确认要终止吗？'
       }
       this.$refs.message.open(options)
     },
