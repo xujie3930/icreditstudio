@@ -9,7 +9,6 @@ import org.apache.dolphinscheduler.api.service.PlatformSchedulerService;
 import org.apache.dolphinscheduler.api.service.result.CreateSchedulerResult;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
@@ -85,10 +84,10 @@ public class PlatformSchedulerServiceImpl extends BaseServiceImpl implements Pla
             log.error(String.format("工作流定义%s不存在", processDefinitionId));
             throw new AppException("60000000");
         }
-        if (processDefinition.getReleaseState() != ReleaseState.ONLINE) {
+        /*if (processDefinition.getReleaseState() != ReleaseState.ONLINE) {
             log.error(String.format("工作流定义%s不是上线状态", processDefinitionId));
             throw new AppException("60000001");
-        }
+        }*/
     }
 
     private void checkScheduleParam(ScheduleParam scheduleParam) {
