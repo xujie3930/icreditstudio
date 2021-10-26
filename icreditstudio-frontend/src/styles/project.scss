@@ -97,3 +97,18 @@
   align-items: center;
   margin-top: 20px;
 }
+
+.icredit-form {
+  ::v-deep {
+    .el-form-item {
+      margin-bottom: 20px;
+      .el-form-item__label {
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: right;
+        color: #262626;
+      }
+    }
+  }
+}

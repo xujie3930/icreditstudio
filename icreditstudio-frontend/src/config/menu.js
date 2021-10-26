@@ -4,6 +4,16 @@
  * @Date: 2021-08-27
  */
 
+// 需要返回的页面
+export const canBackPages = [
+  '/workspace/data-model/add',
+  '/data-manage/add-task',
+  '/data-manage/add-build',
+  '/data-manage/add-transfer',
+  '/data-manage/data-schedule/dag',
+  '/data-quality/rule-category/add-rules'
+]
+
 // 一级菜单
 export const rootMenuMapping = {
   '/all': { icon: 'menu-product-white', name: '全部产品' },
@@ -144,6 +154,7 @@ export const allMenuNavMapping = [
 ]
 
 export default {
+  canBackPages,
   rootMenuMapping,
   secondMenuMapping,
   allMenuNavMapping
