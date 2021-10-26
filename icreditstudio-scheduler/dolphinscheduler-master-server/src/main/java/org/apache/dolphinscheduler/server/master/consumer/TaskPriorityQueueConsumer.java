@@ -205,7 +205,7 @@ public class TaskPriorityQueueConsumer extends Thread {
 //        taskInstance.getProcessInstance().setQueue(StringUtils.isEmpty(userQueue) ? tenant.getQueue() : userQueue);
         //TODO 租户编码如何确认
 //        taskInstance.getProcessInstance().setTenantCode(tenant.getTenantCode());
-        taskInstance.setResources(getResourceFullNames(taskNode));
+//        taskInstance.setResources(getResourceFullNames(taskNode));
 
 
 //        SQLTaskExecutionContext sqlTaskExecutionContext = new SQLTaskExecutionContext();
@@ -222,7 +222,7 @@ public class TaskPriorityQueueConsumer extends Thread {
 
         // DATAX task
         if (taskType == TaskType.DATAX) {
-            setDataxTaskRelation(dataxTaskExecutionContext, taskNode);
+//            setDataxTaskRelation(dataxTaskExecutionContext, taskNode);
         }
 
 
@@ -260,31 +260,31 @@ public class TaskPriorityQueueConsumer extends Thread {
 //        procedureTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
 //    }
 
-    /**
-     * set datax task relation
-     *
-     * @param dataxTaskExecutionContext dataxTaskExecutionContext
-     * @param taskNode                  taskNode
-     */
-    protected void setDataxTaskRelation(DataxTaskExecutionContext dataxTaskExecutionContext, TaskNode taskNode) {
-        DataxParameters dataxParameters = JSONUtils.parseObject(taskNode.getParams(), DataxParameters.class);
-
-        DataSource dataSource = processService.findDataSourceById(dataxParameters.getDataSource());
-        DataSource dataTarget = processService.findDataSourceById(dataxParameters.getDataTarget());
-
-
-        if (dataSource != null) {
-            dataxTaskExecutionContext.setDataSourceId(dataxParameters.getDataSource());
-            dataxTaskExecutionContext.setSourcetype(dataSource.getType().getCode());
-            dataxTaskExecutionContext.setSourceConnectionParams(dataSource.getConnectionParams());
-        }
-
-        if (dataTarget != null) {
-            dataxTaskExecutionContext.setDataTargetId(dataxParameters.getDataTarget());
-            dataxTaskExecutionContext.setTargetType(dataTarget.getType().getCode());
-            dataxTaskExecutionContext.setTargetConnectionParams(dataTarget.getConnectionParams());
-        }
-    }
+//    /**
+//     * set datax task relation
+//     *
+//     * @param dataxTaskExecutionContext dataxTaskExecutionContext
+//     * @param taskNode                  taskNode
+//     */
+//    protected void setDataxTaskRelation(DataxTaskExecutionContext dataxTaskExecutionContext, TaskNode taskNode) {
+//        DataxParameters dataxParameters = JSONUtils.parseObject(taskNode.getParams(), DataxParameters.class);
+//
+//        DataSource dataSource = processService.findDataSourceById(dataxParameters.getDataSource());
+//        DataSource dataTarget = processService.findDataSourceById(dataxParameters.getDataTarget());
+//
+//
+//        if (dataSource != null) {
+//            dataxTaskExecutionContext.setDataSourceId(dataxParameters.getDataSource());
+//            dataxTaskExecutionContext.setSourcetype(dataSource.getType().getCode());
+//            dataxTaskExecutionContext.setSourceConnectionParams(dataSource.getConnectionParams());
+//        }
+//
+//        if (dataTarget != null) {
+//            dataxTaskExecutionContext.setDataTargetId(dataxParameters.getDataTarget());
+//            dataxTaskExecutionContext.setTargetType(dataTarget.getType().getCode());
+//            dataxTaskExecutionContext.setTargetConnectionParams(dataTarget.getConnectionParams());
+//        }
+//    }
 
 
 //    /**
@@ -371,49 +371,49 @@ public class TaskPriorityQueueConsumer extends Thread {
 //        return false;
 //    }
 
-    /**
-     * get resource map key is full name and value is tenantCode
-     */
-    protected Map<String, String> getResourceFullNames(TaskNode taskNode) {
-        Map<String, String> resourceMap = new HashMap<>();
-        AbstractParameters baseParam = TaskParametersUtils.getParameters(taskNode.getType(), taskNode.getParams());
-
-        if (baseParam != null) {
-            List<ResourceInfo> projectResourceFiles = baseParam.getResourceFilesList();
-            if (CollectionUtils.isNotEmpty(projectResourceFiles)) {
-
-                // filter the resources that the resource id equals 0
-                Set<ResourceInfo> oldVersionResources = projectResourceFiles.stream().filter(t -> StringUtils.equalsIgnoreCase("0", t.getId())).collect(Collectors.toSet());
-                if (CollectionUtils.isNotEmpty(oldVersionResources)) {
-
-                    oldVersionResources.forEach(
-                            (t) -> {
-                                //TODO 租户编码
-                                String tenantCode = null;
-                                resourceMap.put(t.getRes(), tenantCode/*processService.queryTenantCodeByResName(t.getRes(), ResourceType.FILE)*/);
-                            }
-                    );
-                }
-
-                // get the resource id in order to get the resource names in batch
-                Stream<String> resourceIdStream = projectResourceFiles.stream().map(resourceInfo -> resourceInfo.getId());
-                Set<String> resourceIdsSet = resourceIdStream.filter(resId -> !StringUtils.equalsIgnoreCase("0", resId)).collect(Collectors.toSet());
-
-                if (CollectionUtils.isNotEmpty(resourceIdsSet)) {
-                    String[] resourceIds = resourceIdsSet.toArray(new String[resourceIdsSet.size()]);
-
-                    List<Resource> resources = processService.listResourceByIds(resourceIds);
-                    resources.forEach(
-                            (t) -> {
-                                //TODO 租户编码
-                                String tenantCode = null;
-                                resourceMap.put(t.getFullName(), tenantCode/*processService.queryTenantCodeByResName(t.getFullName(), ResourceType.FILE)*/);
-                            }
-                    );
-                }
-            }
-        }
-
-        return resourceMap;
-    }
+//    /**
+//     * get resource map key is full name and value is tenantCode
+//     */
+//    protected Map<String, String> getResourceFullNames(TaskNode taskNode) {
+//        Map<String, String> resourceMap = new HashMap<>();
+//        AbstractParameters baseParam = TaskParametersUtils.getParameters(taskNode.getType(), taskNode.getParams());
+//
+//        if (baseParam != null) {
+//            List<ResourceInfo> projectResourceFiles = baseParam.getResourceFilesList();
+//            if (CollectionUtils.isNotEmpty(projectResourceFiles)) {
+//
+//                // filter the resources that the resource id equals 0
+//                Set<ResourceInfo> oldVersionResources = projectResourceFiles.stream().filter(t -> StringUtils.equalsIgnoreCase("0", t.getId())).collect(Collectors.toSet());
+//                if (CollectionUtils.isNotEmpty(oldVersionResources)) {
+//
+//                    oldVersionResources.forEach(
+//                            (t) -> {
+//                                //TODO 租户编码
+//                                String tenantCode = null;
+//                                resourceMap.put(t.getRes(), tenantCode/*processService.queryTenantCodeByResName(t.getRes(), ResourceType.FILE)*/);
+//                            }
+//                    );
+//                }
+//
+//                // get the resource id in order to get the resource names in batch
+//                Stream<String> resourceIdStream = projectResourceFiles.stream().map(resourceInfo -> resourceInfo.getId());
+//                Set<String> resourceIdsSet = resourceIdStream.filter(resId -> !StringUtils.equalsIgnoreCase("0", resId)).collect(Collectors.toSet());
+//
+//                if (CollectionUtils.isNotEmpty(resourceIdsSet)) {
+//                    String[] resourceIds = resourceIdsSet.toArray(new String[resourceIdsSet.size()]);
+//
+//                    List<Resource> resources = processService.listResourceByIds(resourceIds);
+//                    resources.forEach(
+//                            (t) -> {
+//                                //TODO 租户编码
+//                                String tenantCode = null;
+//                                resourceMap.put(t.getFullName(), tenantCode/*processService.queryTenantCodeByResName(t.getFullName(), ResourceType.FILE)*/);
+//                            }
+//                    );
+//                }
+//            }
+//        }
+//
+//        return resourceMap;
+//    }
 }
