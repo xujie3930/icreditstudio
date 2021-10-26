@@ -40,20 +40,20 @@
         <span class="left">数据质检明细</span>
       </div>
       <div class="content">
-        <j-table
-          ref="leftTable"
-          v-loading="lfTableLoading"
-          :table-configuration="lfTableConfiguration"
+        <ScrollTable
+          ref="table"
           :table-data="lfTableData"
-        ></j-table>
+          :table-configuration="lfTableConfiguration"
+        ></ScrollTable>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import ScrollTable from '@/components/scroll-table'
 import CountAnimation from '@/views/icredit/components/count-animation'
-import lfTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runtime'
+import lfTableConfiguration from '@/views/icredit/configuration/table/govern-quality-overview'
 import rgTableConfiguration from '@/views/icredit/configuration/table/data-schedule-runerror'
 import { renderChart } from '@/utils/echarts'
 import { optionsMapping } from './contant'
@@ -64,7 +64,7 @@ import dayjs from 'dayjs'
 export default {
   mixins: [workspace],
 
-  components: { CountAnimation },
+  components: { ScrollTable, CountAnimation },
 
   data() {
     return {
@@ -115,14 +115,14 @@ export default {
 
   methods: {
     initPage() {
-      const curTime = new Date().getTime()
-      const oneDayTime = 3600 * 1000 * 24
-      this.date = [curTime - oneDayTime * 7, curTime - oneDayTime]
-      this.getHomeRoughData()
-      this.getHomeRuntimeData()
-      this.getHomeCountData()
-      this.getHomeRunDayData()
-      this.getHomeErrMonthData()
+      // const curTime = new Date().getTime()
+      // const oneDayTime = 3600 * 1000 * 24
+      // this.date = [curTime - oneDayTime * 7, curTime - oneDayTime]
+      // this.getHomeRoughData()
+      // this.getHomeRuntimeData()
+      // this.getHomeCountData()
+      // this.getHomeRunDayData()
+      // this.getHomeErrMonthData()
     },
 
     handleChangTabClick(name) {

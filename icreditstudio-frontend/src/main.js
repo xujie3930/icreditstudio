@@ -26,6 +26,7 @@ import '@/styles/public/index.scss'
 import '@/styles/project.scss'
 
 import '@/directive/auth'
+import '@/directive/table-scroll'
 
 import LayoutMainBasicContainer from 'components/layouts/LayoutMainBasicContainer'
 import CrudBasic from '@/components/crud/index'
