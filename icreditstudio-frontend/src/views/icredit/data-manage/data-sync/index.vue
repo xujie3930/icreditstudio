@@ -194,7 +194,6 @@ export default {
 
     // 查看操作
     handleViewBtnClick(row, opType) {
-      console.log('row', row)
       this.$refs.dataDetail.open({ row, opType })
     },
 
