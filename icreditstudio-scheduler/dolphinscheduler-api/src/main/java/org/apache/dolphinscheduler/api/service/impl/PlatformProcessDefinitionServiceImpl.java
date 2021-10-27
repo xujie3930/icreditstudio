@@ -48,7 +48,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param) {
+    public CreatePlatformTaskResult create(CreatePlatformProcessDefinitionParam param) {
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
@@ -82,7 +82,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
         CreatePlatformTaskResult result = new CreatePlatformTaskResult();
         result.setProcessDefinitionId(processDefine.getId());
-        return BusinessResult.success(result);
+        return result;
     }
 
 

@@ -32,10 +32,10 @@ public class PlatformTaskController {
     private PlatformProcessDefinitionService platformProcessDefinitionService;
 
     @PostMapping("/create")
-    public BusinessResult<CreatePlatformTaskResult> create(@RequestBody CreatePlatformProcessDefinitionRequest request) {
+    public String create(@RequestBody CreatePlatformProcessDefinitionRequest request) {
         CreatePlatformProcessDefinitionParam param = new CreatePlatformProcessDefinitionParam();
         BeanCopyUtils.copyProperties(request, param);
-        return platformProcessDefinitionService.create(param);
+        return platformProcessDefinitionService.create(param).getProcessDefinitionId();
     }
 
     @PostMapping("/release")

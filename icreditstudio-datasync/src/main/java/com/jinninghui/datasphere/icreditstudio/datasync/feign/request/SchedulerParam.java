@@ -13,7 +13,7 @@ public class SchedulerParam {
     /**
      * 调度类型
      */
-    private CollectModeEnum schedulerType;
+    private Integer schedulerType;
     /**
      * 定时表达试
      */
