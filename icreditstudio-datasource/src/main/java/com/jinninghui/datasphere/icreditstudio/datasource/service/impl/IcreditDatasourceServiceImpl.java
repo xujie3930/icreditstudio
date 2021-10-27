@@ -160,22 +160,18 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
             ddlEntity.setId(sequenceService.nextValueString());
             ddlEntity.setUpdateTime(date);
+            ddlEntity.setCreateTime(new Date());
             //建立外键关联
             ddlEntity.setDatasourceId(dataEntity.getId());
             //TODO:这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
-                ddlEntity.setCreateTime(new Date());
-                String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
-                ddlEntity.setColumnsInfo(hdfsPath);
-                ddlSyncMapper.insert(ddlEntity);
+                extracted(map, key, ddlEntity);
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
-                    String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
-                    ddlEntity.setColumnsInfo(hdfsPath);
-                    ddlSyncMapper.insert(ddlEntity);
+                    extracted(map, key, ddlEntity);
                 }
             }
         } catch (Exception e) {
@@ -186,6 +182,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
         datasourceMapper.updateById(dataEntity);
         return BusinessResult.success(map.get("tablesCount"));
+    }
+
+    private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
+        String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
+        ddlEntity.setColumnsInfo(hdfsPath);
+        ddlSyncMapper.insert(ddlEntity);
     }
 
     @Override
