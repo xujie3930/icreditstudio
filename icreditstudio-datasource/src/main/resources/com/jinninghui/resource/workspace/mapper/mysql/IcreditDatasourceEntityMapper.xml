@@ -29,4 +29,11 @@
         </where>
         limit 1
     </select>
+
+    <select id="selectAll"
+            resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
+        select *
+        from icredit_datasource
+        where del_flag = 'N'
+    </select>
 </mapper>

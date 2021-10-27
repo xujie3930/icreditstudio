@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * Mapper 接口
@@ -20,4 +22,6 @@ public interface IcreditDatasourceMapper extends BaseMapper<IcreditDatasourceEnt
     IcreditDatasourceEntity selectById(@Param("id") String id);
 
     Boolean hasExit(DataSourceHasExistRequest request);
+
+    List<IcreditDatasourceEntity> selectAll();
 }
