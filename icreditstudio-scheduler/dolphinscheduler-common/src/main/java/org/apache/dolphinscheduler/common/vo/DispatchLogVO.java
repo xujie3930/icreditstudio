@@ -2,6 +2,8 @@ package org.apache.dolphinscheduler.common.vo;
 
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class DispatchLogVO {
 
@@ -19,5 +21,9 @@ public class DispatchLogVO {
     private Long totalSyncInstanceNum;
     //task任务执行 质检数据量
     private Long totalQualityCheckInstanceNum;
+    //task任务执行 开始时间
+    private Date startTime;
+    //task任务执行 结束时间
+    private Date endTime;
 
 }

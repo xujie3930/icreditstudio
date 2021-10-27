@@ -8,6 +8,7 @@ import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
@@ -129,13 +130,14 @@ public class DispatchServiceImpl implements DispatchService {
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId);
         for (DispatchLogVO dispatchLogVO : logVOList) {
-            if(7 == dispatchLogVO.getTaskInstanceState()){//成功
+            if(7 == dispatchLogVO.getTaskInstanceState() || 8 == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(0);
-            }else if(6 == dispatchLogVO.getTaskInstanceState() || 9 == dispatchLogVO.getTaskInstanceState()){//失败
-                dispatchLogVO.setTaskInstanceState(1);
-            }else{//执行中
+            }else if(0 == dispatchLogVO.getTaskInstanceState() || 1 == dispatchLogVO.getTaskInstanceState() || 10 == dispatchLogVO.getTaskInstanceState()){//执行中
                 dispatchLogVO.setTaskInstanceState(2);
+            }else{//失败
+                dispatchLogVO.setTaskInstanceState(1);
             }
+            dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
         return BusinessResult.success(logVOList);
     }
