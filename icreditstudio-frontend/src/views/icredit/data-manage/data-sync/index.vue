@@ -218,9 +218,10 @@ export default {
     },
 
     // 执行
-    handleRunBtnClick(row, opType) {
-      console.log(row, opType)
-      API.dataSyncRun({ taskId: row.taskId }).then(({ success, data }) => {
+    handleRunBtnClick(row) {
+      const { taskId, execMode } = row
+      const params = { taskId, exexType: execMode }
+      API.dataSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({
             title: '操作结果',
