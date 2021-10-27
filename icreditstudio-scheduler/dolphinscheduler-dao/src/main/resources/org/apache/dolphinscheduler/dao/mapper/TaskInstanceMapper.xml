@@ -188,7 +188,7 @@
         SELECT id AS taskInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
                 0 AS taskInstanceExecDuration,0 AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum
         FROM t_ds_task_instance
-        WHERE process_definition_id = #{processDefinitionId} AND state IN (1,6,7)
+        WHERE process_definition_id = #{processDefinitionId}
     </select>
 
     <delete id="deleteByProcessDefinitionId">

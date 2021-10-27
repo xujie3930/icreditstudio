@@ -26,6 +26,6 @@ public interface DataSyncDispatchTaskFeignClient {
     /**
      * 获取任务中的 流程定义ID
      */
-    @GetMapping("/datasync/getProcessInstanceId")
+    @GetMapping("/datasync/getProcessDefinitionId")
     String getProcessDefinitionIdByTaskId(@RequestParam("taskId") String taskId);
 }

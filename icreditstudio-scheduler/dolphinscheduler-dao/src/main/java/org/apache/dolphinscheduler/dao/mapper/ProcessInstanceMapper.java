@@ -212,4 +212,6 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     String isRunningForSyncTask(@Param("processDefinitionId") String processDefinitionId);
 
     void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
+
+    String getIdByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 }

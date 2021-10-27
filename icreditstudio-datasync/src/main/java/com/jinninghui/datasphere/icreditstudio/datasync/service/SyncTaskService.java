@@ -129,5 +129,5 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @param id
      * @return
      */
-    String getProcessInstanceIdById(String id);
+    String getProcessDefinitionIdById(String id);
 }

@@ -419,7 +419,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> stop(DataSyncExecParam param) {
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
-        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.stopSyncTask(processDefinitionId);
         if("true".equals(result)){
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
@@ -430,7 +430,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
     @Override
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
-        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.deleteSyncTask(processDefinitionId);
         if("1".equals(result)){
             throw new AppException("该任务正在执行中，不能删除");
@@ -458,7 +458,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
-        String processDefinitionId = getProcessInstanceIdById(param.getTaskId());
+        String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
         if("true".equals(result)){//成功
             entity.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
@@ -564,7 +564,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
-    public String getProcessInstanceIdById(String id) {
+    public String getProcessDefinitionIdById(String id) {
         SyncTaskEntity syncTask = syncTaskMapper.selectById(id);
         return syncTask == null ? null : syncTask.getScheduleId();
     }

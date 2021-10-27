@@ -6,7 +6,7 @@ import lombok.Data;
 public class DispatchLogVO {
 
     //task任务实例ID
-    private Integer taskInstanceId;
+    private String taskInstanceId;
     //task任务实例名称
     private String taskInstanceName;
     //task任务实例状态

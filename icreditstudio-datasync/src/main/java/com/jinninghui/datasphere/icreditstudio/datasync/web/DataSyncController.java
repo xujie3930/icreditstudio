@@ -192,9 +192,9 @@ public class DataSyncController {
         return syncTaskService.dispatchPage(param);
     }
 
-    @GetMapping("/getProcessInstanceId")
-    public String getProcessInstanceIdById(@RequestParam("taskId") String taskId){
-        return syncTaskService.getProcessInstanceIdById(taskId);
+    @GetMapping("/getProcessDefinitionId")
+    public String getProcessDefinitionIdById(@RequestParam("taskId") String taskId){
+        return syncTaskService.getProcessDefinitionIdById(taskId);
     }
 
 }

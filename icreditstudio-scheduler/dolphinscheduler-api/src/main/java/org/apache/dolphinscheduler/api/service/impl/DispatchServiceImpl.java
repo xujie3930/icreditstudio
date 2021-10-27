@@ -3,16 +3,19 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import org.apache.dolphinscheduler.api.common.ResourceCodeBean;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
+import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,8 @@ public class DispatchServiceImpl implements DispatchService {
     private ProcessService processService;
     @Autowired
     private TaskInstanceMapper taskInstanceMapper;
+    @Autowired
+    private ProcessInstanceMapper processInstanceMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -41,13 +46,19 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     public BusinessResult<Boolean> startOrStop(String taskId, String execType) {
+        if(StringUtils.isEmpty(taskId)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.message);
+        }
+        if(StringUtils.isEmpty(execType)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.message);
+        }
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         if(null == processDefinitionId){
             return BusinessResult.fail("", "无法找到对应的流程定义，任务执行失败");
         }
-        //todo
-        //processDefinitionId , ExecuteType executeType
-        int execStatus = this.executeInstance(processDefinitionId, execType);
+        String processInstanceId = processInstanceMapper.getIdByProcessDefinitionId(processDefinitionId);
+        //processInstanceId , ExecuteType executeType
+        int execStatus = this.executeInstance(processInstanceId, execType);
         if(execStatus == 0){
             return BusinessResult.success(true);
         }
@@ -114,6 +125,15 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<List<DispatchLogVO>> logPage(String taskId) {
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId);
+        for (DispatchLogVO dispatchLogVO : logVOList) {
+            if(7 == dispatchLogVO.getTaskInstanceState()){//成功
+                dispatchLogVO.setTaskInstanceState(0);
+            }else if(6 == dispatchLogVO.getTaskInstanceState() || 9 == dispatchLogVO.getTaskInstanceState()){//失败
+                dispatchLogVO.setTaskInstanceState(1);
+            }else{//执行中
+                dispatchLogVO.setTaskInstanceState(2);
+            }
+        }
         return BusinessResult.success(logVOList);
     }
 }
