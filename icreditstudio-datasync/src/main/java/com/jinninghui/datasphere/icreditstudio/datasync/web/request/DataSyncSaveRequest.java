@@ -99,18 +99,54 @@ public class DataSyncSaveRequest {
      * 最大并发数
      */
     private Integer maxThread;
+
+    public Integer getMaxThread() {
+        if (maxThread == null) {
+            return 1;
+        }
+        return maxThread;
+    }
+
     /**
      * 同步速率【0：限流，1：不限流】
      */
     private Integer syncRate;
+
+    public Integer getSyncRate() {
+        if (syncRate == null) {
+            return 1;
+        }
+        return syncRate;
+    }
+
+    public boolean isLimit() {
+        return getSyncRate().equals(0);
+    }
+
     /**
      * 限流速率 XXX条/s
      */
     private Integer limitRate;
+
+    public Integer getLimitRate() {
+        if (limitRate == null) {
+            return 100;
+        }
+        return limitRate;
+    }
+
     /**
      * 调度类型【0：周期，1：手动】
      */
     private Integer scheduleType;
+
+    public Integer getScheduleType() {
+        if (scheduleType == null) {
+            return 1;
+        }
+        return scheduleType;
+    }
+
     /**
      * cron表达式
      */

@@ -18,7 +18,7 @@ public interface PlatformProcessDefinitionService {
      * @param param
      * @return
      */
-    BusinessResult<CreatePlatformTaskResult> create(CreatePlatformProcessDefinitionParam param);
+    CreatePlatformTaskResult create(CreatePlatformProcessDefinitionParam param);
 
     /**
      * 上线工作流定义

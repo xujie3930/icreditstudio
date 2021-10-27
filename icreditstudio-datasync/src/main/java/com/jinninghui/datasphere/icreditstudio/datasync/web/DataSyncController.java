@@ -126,6 +126,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/stop")
     public BusinessResult<Boolean> stop(@RequestBody DataSyncExecRequest request) {
         DataSyncExecParam param = new DataSyncExecParam();
@@ -138,6 +139,7 @@ public class DataSyncController {
      *
      * @return
      */
+    @Logable
     @PostMapping("/remove")
     public BusinessResult<Boolean> remove(@RequestBody DataSyncExecRequest request) {
         DataSyncExecParam param = new DataSyncExecParam();
@@ -157,6 +159,7 @@ public class DataSyncController {
         return syncTaskService.enable(param);
     }
 
+    @Logable
     @PostMapping("/run")
     public BusinessResult<Boolean> run(@RequestBody DataSyncExecRequest request) {
         DataSyncExecParam param = new DataSyncExecParam();

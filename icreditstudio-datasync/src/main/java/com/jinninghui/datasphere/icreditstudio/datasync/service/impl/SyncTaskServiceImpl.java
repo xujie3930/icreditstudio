@@ -23,7 +23,6 @@ import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
@@ -91,35 +90,34 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             taskId = threeStepSave(param);
         }
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
-            CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
-            //创建宽表
-            createWideTable(wideTableParam);
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
 //            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
             if (StringUtils.isBlank(param.getTaskId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(new User())
-                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
-                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
                         .build();
-                BusinessResult<CreatePlatformTaskResult> createResult = schedulerFeign.create(build);
-                if (createResult.isSuccess()) {
-                    SyncTaskEntity updateEntity = new SyncTaskEntity();
-                    updateEntity.setId(taskId);
-                    updateEntity.setScheduleId(createResult.getData().getProcessDefinitionId());
-                    syncTaskMapper.updateById(updateEntity);
-                }
+                String processDefinitionId = schedulerFeign.create(build);
+                SyncTaskEntity updateEntity = new SyncTaskEntity();
+                updateEntity.setId(taskId);
+                updateEntity.setScheduleId(processDefinitionId);
+                syncTaskMapper.updateById(updateEntity);
             } else {
                 FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
                         .accessUser(new User())
-                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.getSyncRate() == 0, param.getLimitRate()))
-                        .schedulerParam(new SchedulerParam(CollectModeEnum.find(param.getScheduleType()), param.getCron()))
+                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                        .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
                         .build();
                 schedulerFeign.update(build);
             }
+
+            CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+            //创建宽表
+            createWideTable(wideTableParam);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
@@ -421,7 +419,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setId(param.getTaskId());
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.stopSyncTask(processDefinitionId);
-        if("true".equals(result)){
+        if ("true".equals(result)) {
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
             updateById(entity);
         }
@@ -432,7 +430,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.deleteSyncTask(processDefinitionId);
-        if("1".equals(result)){
+        if ("1".equals(result)) {
             throw new AppException("该任务正在执行中，不能删除");
         }
         removeById(param.getTaskId());
@@ -458,11 +456,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
+        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
+        updateById(entity);//执行中
+
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
-        if("true".equals(result)){//成功
+        if ("true".equals(result)) {//成功
             entity.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
-        }else{
+        } else {
             entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
         }
         updateById(entity);

@@ -4,6 +4,8 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncE
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * Mapper 接口
@@ -15,4 +17,8 @@ import org.apache.ibatis.annotations.Param;
 public interface IcreditDdlSyncMapper extends BaseMapper<IcreditDdlSyncEntity> {
 
     IcreditDdlSyncEntity selectMaxVersionByDatasourceId(@Param("id") String id);
+
+    List<IcreditDdlSyncEntity> selectByDatasourceId(String id);
+
+    void updateStatusById(@Param("id") String id);
 }

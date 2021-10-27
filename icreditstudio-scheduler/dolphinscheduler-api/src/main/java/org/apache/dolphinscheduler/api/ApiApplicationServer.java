@@ -25,11 +25,14 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+@EnableTransactionManagement
 @EnableDiscoveryClient
 @SpringBootApplication
 @ServletComponentScan
 @EnableFeignClients
+@ComponentScan("com.jinninghui")
 @ComponentScan(value = "org.apache.dolphinscheduler",
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.apache.dolphinscheduler.server.*"))
 public class ApiApplicationServer extends SpringBootServletInitializer {

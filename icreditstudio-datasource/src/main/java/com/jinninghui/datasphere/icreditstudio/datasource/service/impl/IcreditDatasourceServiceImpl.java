@@ -95,6 +95,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
         datasourceMapper.updateStatusById(param.getId());
+        //1.删除同步记录，2:把hdfs上关联数据也删除
+        List<IcreditDdlSyncEntity> delList = ddlSyncMapper.selectByDatasourceId(param.getId());
+        for (IcreditDdlSyncEntity del : delList) {
+            ddlSyncMapper.updateStatusById(del.getId());
+            HDFSUtils.delFileFromHDFS(del.getColumnsInfo());
+        }
         return BusinessResult.success(true);
     }
 
@@ -150,24 +156,25 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
             String key = sequenceService.nextValueString();
             map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
-            String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
             IcreditDdlSyncEntity ddlEntity = new IcreditDdlSyncEntity();
             BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
             ddlEntity.setId(sequenceService.nextValueString());
             ddlEntity.setUpdateTime(date);
             //建立外键关联
             ddlEntity.setDatasourceId(dataEntity.getId());
-            //这里改为存储hdfs的路径
-            ddlEntity.setColumnsInfo(hdfsPath);
-            //TODO：这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
+            //TODO:这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
                 ddlEntity.setCreateTime(new Date());
+                String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
+                ddlEntity.setColumnsInfo(hdfsPath);
                 ddlSyncMapper.insert(ddlEntity);
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
+                    String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
+                    ddlEntity.setColumnsInfo(hdfsPath);
                     ddlSyncMapper.insert(ddlEntity);
                 }
             }
@@ -377,6 +384,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, entity);
         return BusinessResult.success(updateById(entity));
+    }
+
+    @Override
+    public List<IcreditDatasourceEntity> findAllDatasoure() {
+        return datasourceMapper.selectAll();
     }
 
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {
