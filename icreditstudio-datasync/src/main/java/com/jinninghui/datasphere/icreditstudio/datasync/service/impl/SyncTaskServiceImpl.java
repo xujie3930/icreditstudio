@@ -458,11 +458,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
+        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
+        updateById(entity);//执行中
+
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
         if("true".equals(result)){//成功
             entity.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
-        }else{
+        }else{//失败
             entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
         }
         updateById(entity);
