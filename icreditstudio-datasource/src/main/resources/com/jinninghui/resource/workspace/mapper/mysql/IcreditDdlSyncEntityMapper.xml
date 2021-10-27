@@ -10,4 +10,17 @@
         order by version desc
         limit 1
     </select>
+
+    <select id="selectByDatasourceId" parameterType="java.lang.String"
+            resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity">
+        select *
+        from icredit_ddl_sync
+        where datasource_id = #{id}
+    </select>
+
+    <update id="updateStatusById" parameterType="java.lang.String">
+        UPDATE icredit_ddl_sync
+        SET del_flag = 'Y'
+        WHERE ID = #{id}
+    </update>
 </mapper>

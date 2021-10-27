@@ -35,11 +35,8 @@ public class DatasourceClearTask {
                 IcreditDatasourceTestConnectRequest request = new IcreditDatasourceTestConnectRequest(
                         datasourceEntity.getType(), datasourceEntity.getUri());
                 String datasourceId = datasourceEntity.getId();
-                //不成功则删除数据源
+                //不成功则跳过
                 if (!datasourceService.testConn(request).isSuccess()){
-                    IcreditDatasourceDelParam param = new IcreditDatasourceDelParam();
-                    param.setId(datasourceId);
-                    datasourceService.deleteById(param);
                     continue;
                 }
                 datasourceService.syncById(datasourceId);

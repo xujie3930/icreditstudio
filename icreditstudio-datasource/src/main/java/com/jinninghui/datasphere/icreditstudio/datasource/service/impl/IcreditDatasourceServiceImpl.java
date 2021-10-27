@@ -95,6 +95,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
         datasourceMapper.updateStatusById(param.getId());
+        //1.删除同步记录，2:把hdfs上关联数据也删除
+        List<IcreditDdlSyncEntity> delList = ddlSyncMapper.selectByDatasourceId(param.getId());
+        for (IcreditDdlSyncEntity del : delList) {
+            ddlSyncMapper.updateStatusById(del.getId());
+            HDFSUtils.delFileFromHDFS(del.getColumnsInfo());
+        }
         return BusinessResult.success(true);
     }
 
