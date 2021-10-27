@@ -194,7 +194,7 @@
     <select id="getIdByProcessDefinitionId" resultType="java.lang.String">
         SELECT id
         FROM t_ds_process_instance
-        WHERE process_definition_id = #{processDefinitionId} AND state = 7
+        WHERE process_definition_id = #{processDefinitionId} AND state = 1
         ORDER BY command_start_time DESC
         LIMIT 1
     </select>

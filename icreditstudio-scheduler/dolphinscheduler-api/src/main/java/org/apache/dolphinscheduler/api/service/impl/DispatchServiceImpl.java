@@ -57,6 +57,9 @@ public class DispatchServiceImpl implements DispatchService {
             return BusinessResult.fail("", "无法找到对应的流程定义，任务执行失败");
         }
         String processInstanceId = processInstanceMapper.getIdByProcessDefinitionId(processDefinitionId);
+        if(StringUtils.isEmpty(processInstanceId)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.message);
+        }
         //processInstanceId , ExecuteType executeType
         int execStatus = this.executeInstance(processInstanceId, execType);
         if(execStatus == 0){

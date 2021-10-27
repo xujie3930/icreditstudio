@@ -30,6 +30,8 @@ import java.util.Date;
 @Data
 public class TaskExecuteResponseCommand implements Serializable {
 
+    public TaskExecuteResponseCommand(){}
+
     public TaskExecuteResponseCommand(String taskInstanceId) {
         this.taskInstanceId = taskInstanceId;
     }
