@@ -1,6 +1,6 @@
 <!--
  * @Author: lizheng
- * @Description: 质量规则
+ * @Description: 规则分类-质量规则
  * @Date: 2021-10-25
 -->
 <template>
@@ -58,7 +58,7 @@
 
 <script>
 import Message from '@/views/icredit/components/message'
-import ViewRules from './view'
+import ViewRules from './view-rules'
 
 import crud from '@/mixins/crud'
 import workspace from '@/mixins/workspace'
@@ -111,7 +111,9 @@ export default {
     },
 
     // 新增自定义规则
-    handleAddCustomRules() {},
+    handleAddCustomRules() {
+      this.$router.push('/data-quality/rule-category/add-rules')
+    },
 
     // 查看
     handleViewClick(row) {

@@ -13,7 +13,12 @@
     </header>
 
     <section class="icredit-card-section">
-      <span class="count">{{ cardConfig.count }}</span>
+      <!-- <span class="count">{{ cardConfig.count }}</span> -->
+      <CountAnimation
+        class="count"
+        :id="cardConfig.cardId"
+        :count="cardConfig.count"
+      />
       <span class="unit">{{ cardConfig.unit }}</span>
     </section>
 
@@ -36,8 +41,11 @@
 </template>
 
 <script>
+import CountAnimation from './count-animation'
+
 export default {
-  data() {},
+  components: { CountAnimation },
+
   props: {
     footer: {
       type: Boolean,
@@ -79,6 +87,7 @@ export default {
     margin: 16px 0;
 
     .count {
+      display: inline-block;
       height: 38px;
       font-size: 30px;
       font-family: HelveticaNeue, HelveticaNeue-Regular;

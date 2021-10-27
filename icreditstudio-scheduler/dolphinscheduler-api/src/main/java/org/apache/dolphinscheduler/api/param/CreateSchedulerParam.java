@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.common.enums.FailureStrategy;
 import org.apache.dolphinscheduler.common.enums.Priority;
+import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.dao.entity.User;
 
@@ -30,8 +31,17 @@ public class CreateSchedulerParam {
      * 流程定义ID
      */
     private String processDefineId;
+    /**
+     * 调度参数
+     */
     private ScheduleParam schedule;
+    /**
+     * 警告类型
+     */
     private WarningType warningType;
+    /**
+     * 警告组ID
+     */
     private String warningGroupId;
     /**
      * 失败策略

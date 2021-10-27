@@ -1,6 +1,5 @@
 <!--
- * @Author: lizheng
- * @Description: 新增同步任务 - 步骤条
+ * @Description: 步骤条
  * @Date: 2021-08-31
 -->
 

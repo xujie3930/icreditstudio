@@ -3,11 +3,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
@@ -56,12 +52,12 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
-        ProcessDefinitionJson definitionJson = buildProcessDefinitionJson(param);
+        ProcessDefinitionJson definitionJson = param.buildProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
 
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
         processDefine.setName(param.getOrdinaryParam().getName());
-        processDefine.setReleaseState(ReleaseState.OFFLINE);
+        processDefine.setReleaseState(param.getOrdinaryParam().getReleaseState());
         processDefine.setProjectCode(param.getOrdinaryParam().getProjectCode());
         processDefine.setUserId(param.getAccessUser().getId());
         processDefine.setProcessDefinitionJson(JSONObject.toJSONString(definitionJson));
@@ -89,32 +85,6 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         return BusinessResult.success(result);
     }
 
-    private ProcessDefinitionJson buildProcessDefinitionJson(CreatePlatformProcessDefinitionParam param) {
-        ProcessDefinitionJson definitionJson = new ProcessDefinitionJson();
-        definitionJson.setTimeout(param.getOrdinaryParam().getTimeOut());
-        definitionJson.setTenantCode(param.getAccessUser().getTenantCode());
-        definitionJson.setGlobalParams(Lists.newArrayList());
-        List<TaskNodeStruct> structs = Lists.newArrayList();
-        TaskNodeStruct struct = new TaskNodeStruct();
-        struct.setType(TaskType.DATAX.getDesc());
-        struct.setId(StrUtil.concat(true, "tasks-", RandomUtil.randomNumbers(5)));
-        struct.setName(param.getOrdinaryParam().getName());
-        struct.setParams(new NodeParam(1, param.getOrdinaryParam().getTaskJson(), Lists.newArrayList()));
-        struct.setDescription("");
-        struct.setTimeout(new TimeOutParam("", null, false));
-        struct.setRunFlag("NORMAL");
-        struct.setConditionResult(new ConditionResult(Lists.newArrayList(), Lists.newArrayList()));
-        struct.setDependence(Maps.newHashMap());
-        struct.setMaxRetryTimes("0");
-        struct.setRetryInterval("1");
-        struct.setTaskInstancePriority("MEDIUM");
-        struct.setWorkerGroup("default");
-        struct.setPreTasks(Lists.newArrayList());
-
-        structs.add(struct);
-        definitionJson.setTasks(structs);
-        return definitionJson;
-    }
 
     private CreateSchedulerParam buildCreateSchedulerParam(CreatePlatformProcessDefinitionParam param, String processDefinitionId) {
 
@@ -244,7 +214,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         }
 
         CreatePlatformProcessDefinitionParam definitionParam = BeanCopyUtils.copyProperties(param, CreatePlatformProcessDefinitionParam.class);
-        ProcessDefinitionJson definitionJson = buildProcessDefinitionJson(definitionParam);
+        ProcessDefinitionJson definitionJson = param.buildProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
         Date now = new Date();
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());

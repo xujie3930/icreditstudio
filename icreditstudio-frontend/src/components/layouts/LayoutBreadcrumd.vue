@@ -27,6 +27,7 @@
 
 <script>
 import Back from '@/components/back'
+import { canBackPages } from '@/config/menu'
 
 export default {
   components: { Back },
@@ -34,13 +35,7 @@ export default {
   data() {
     return {
       // 需要返回的页面
-      canBackPages: [
-        '/workspace/data-model/add',
-        '/data-manage/add-task',
-        '/data-manage/add-build',
-        '/data-manage/add-transfer',
-        '/data-manage/data-schedule/dag'
-      ]
+      canBackPages
     }
   },
 
@@ -59,6 +54,8 @@ export default {
         this.$router.replace('/data-shcedule/cycle-task')
       } else if (path === '/workspace/data-model/add') {
         this.$router.replace('/workspace/data-model')
+      } else if (path === '/data-quality/rule-category/add-rules') {
+        this.$router.replace('/data-quality/rule-category/quality-rules')
       } else {
         this.$ls.remove('taskForm')
         this.$ls.remove('selectedTable')
