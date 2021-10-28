@@ -6,12 +6,10 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.web.request.MetadataGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.metadata.web.request.MetadataQueryTargetSourceRequest;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -50,5 +48,15 @@ public class MetadataController {
         MetadataGenerateWideTableParam param = new MetadataGenerateWideTableParam();
         BeanCopyUtils.copyProperties(request, param);
         return metadataService.generateWideTable(param);
+    }
+
+    /**
+     * 数据仓库配置信息
+     *
+     * @return
+     */
+    @GetMapping("/getWarehouseInfo")
+    public BusinessResult<WarehouseInfo> getWarehouseInfo() {
+        return metadataService.getWarehouseInfo();
     }
 }

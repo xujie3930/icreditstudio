@@ -11,7 +11,12 @@ public class SchedulerParam {
     /**
      * 调度类型
      */
-    private ScheduleType schedulerType;
+    private Integer schedulerType;
+
+    public ScheduleType getSchedulerType() {
+        return ScheduleType.find(schedulerType);
+    }
+
     /**
      * 定时表达试
      */

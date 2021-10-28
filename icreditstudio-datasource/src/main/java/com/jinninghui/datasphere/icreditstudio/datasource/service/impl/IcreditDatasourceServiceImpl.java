@@ -22,6 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.Dataso
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -95,6 +96,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
         datasourceMapper.updateStatusById(param.getId());
+        //1.删除同步记录，2:把hdfs上关联数据也删除
+        List<IcreditDdlSyncEntity> delList = ddlSyncMapper.selectByDatasourceId(param.getId());
+        for (IcreditDdlSyncEntity del : delList) {
+            ddlSyncMapper.updateStatusById(del.getId());
+            HDFSUtils.delFileFromHDFS(del.getColumnsInfo());
+        }
         return BusinessResult.success(true);
     }
 
@@ -154,22 +161,18 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
             ddlEntity.setId(sequenceService.nextValueString());
             ddlEntity.setUpdateTime(date);
+            ddlEntity.setCreateTime(new Date());
             //建立外键关联
             ddlEntity.setDatasourceId(dataEntity.getId());
             //TODO:这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
-                ddlEntity.setCreateTime(new Date());
-                String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
-                ddlEntity.setColumnsInfo(hdfsPath);
-                ddlSyncMapper.insert(ddlEntity);
+                extracted(map, key, ddlEntity);
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
-                    String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
-                    ddlEntity.setColumnsInfo(hdfsPath);
-                    ddlSyncMapper.insert(ddlEntity);
+                    extracted(map, key, ddlEntity);
                 }
             }
         } catch (Exception e) {
@@ -180,6 +183,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
         datasourceMapper.updateById(dataEntity);
         return BusinessResult.success(map.get("tablesCount"));
+    }
+
+    private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
+        String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
+        ddlEntity.setColumnsInfo(hdfsPath);
+        ddlSyncMapper.insert(ddlEntity);
     }
 
     @Override
@@ -383,6 +392,26 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public List<IcreditDatasourceEntity> findAllDatasoure() {
         return datasourceMapper.selectAll();
+    }
+
+    @Override
+    public BusinessResult<DatasourceResult> getDatasourceJdbcInfo(String id) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .datasourceId(id)
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+
+        DatasourceResult result = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+            IcreditDatasourceEntity entity = list.get(0);
+            String uri = entity.getUri();
+            result = new DatasourceResult();
+            result.setJdbcUrl(DatasourceSync.getConnUrl(uri));
+            result.setUsername(DatasourceSync.getUsername(uri));
+            result.setPassword(DatasourceSync.getPassword(uri));
+        }
+        return BusinessResult.success(result);
     }
 
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {

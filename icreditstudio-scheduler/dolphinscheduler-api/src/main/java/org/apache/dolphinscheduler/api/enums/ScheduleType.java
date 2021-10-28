@@ -17,13 +17,15 @@
 
 package org.apache.dolphinscheduler.api.enums;
 
+import java.util.Objects;
+
 /**
  * ScheduleType，区分周期实例和手动实例
  */
 public enum ScheduleType {
 
     PERIOD(0, "周期实例"),
-    INSTANCE(1,"手动实例");
+    INSTANCE(1, "手动实例");
 
 
     private final int code;
@@ -32,6 +34,18 @@ public enum ScheduleType {
     ScheduleType(int code, String msg) {
         this.code = code;
         this.msg = msg;
+    }
+
+    public static ScheduleType find(Integer code) {
+        if (Objects.isNull(code)) {
+            return ScheduleType.INSTANCE;
+        }
+        for (ScheduleType value : ScheduleType.values()) {
+            if (value.code == code) {
+                return value;
+            }
+        }
+        return ScheduleType.INSTANCE;
     }
 
     public int getCode() {

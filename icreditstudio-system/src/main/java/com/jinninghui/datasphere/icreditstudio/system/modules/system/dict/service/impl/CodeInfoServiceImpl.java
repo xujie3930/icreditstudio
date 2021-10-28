@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servi
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -17,15 +18,14 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servic
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.AssociatedDictInfo;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.DictInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -133,6 +133,29 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
         return BusinessResult.success(collect);
     }
 
+
+    @Override
+    public BusinessResult<List<DictInfo>> getDictInfos(Collection<String> types) {
+        CodeInfoQueryConditionParam build = CodeInfoQueryConditionParam.builder()
+                .types(types)
+                .build();
+        QueryWrapper<CodeInfoEntity> wrapper = queryWrapper(build);
+        List<CodeInfoEntity> list = list(wrapper);
+
+        List<DictInfo> results;
+        results = Optional.ofNullable(list).orElse(Lists.newArrayList())
+                .parallelStream()
+                .filter(Objects::nonNull)
+                .map(entity -> {
+                    DictInfo info = new DictInfo();
+                    info.setName(entity.getCodeName());
+                    info.setType(entity.getCodeType());
+                    info.setValue(entity.getCodeValue());
+                    return info;
+                }).collect(Collectors.toList());
+        return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
+    }
+
     private QueryWrapper<CodeInfoEntity> queryWrapper(CodeInfoQueryConditionParam param) {
         QueryWrapper<CodeInfoEntity> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(param.getCodeName())) {
@@ -140,6 +163,9 @@ public class CodeInfoServiceImpl extends ServiceImpl<CodeInfoMapper, CodeInfoEnt
         }
         if (param.isGroupBy()) {
             wrapper.groupBy(param.getGroupByField());
+        }
+        if (CollectionUtils.isNotEmpty(param.getTypes())) {
+            wrapper.in(CodeInfoEntity.CODE_TYPE, param.getTypes());
         }
         return wrapper;
     }

@@ -13,6 +13,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servic
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.AssociatedDictInfo;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoEntityResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.CodeInfoResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result.DictInfo;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -146,5 +148,11 @@ public class CodeInfoController extends BaseController<CodeInfoEntity, CodeInfoS
         CodeInfoAssociatedDictParam param = new CodeInfoAssociatedDictParam();
         BeanCopyUtils.copyProperties(request, param);
         return codeInfoService.associatedDict(param);
+    }
+
+
+    @GetMapping("/getDictInfos")
+    public BusinessResult<List<DictInfo>> getDictInfos(@RequestParam Collection<String> types) {
+        return codeInfoService.getDictInfos(types);
     }
 }

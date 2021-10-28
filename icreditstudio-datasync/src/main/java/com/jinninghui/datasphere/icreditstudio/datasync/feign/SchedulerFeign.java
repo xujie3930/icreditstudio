@@ -22,7 +22,7 @@ public interface SchedulerFeign {
      * @return
      */
     @PostMapping("/dolphinscheduler/platform/task/create")
-    BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
+    String create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
 
     /**
      * 执行任务
