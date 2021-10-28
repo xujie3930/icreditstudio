@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasou
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
@@ -176,6 +177,17 @@ public class IcreditDatasourceController {
         DataSourcesQueryParam param = new DataSourcesQueryParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.getDataSources(param);
+    }
+
+    /**
+     * 根据ID获取数据源连接信息
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/getDatasourceJdbcInfo")
+    public BusinessResult<DatasourceResult> getDatasourceJdbcInfo(@RequestParam("id") String id) {
+        return datasourceService.getDatasourceJdbcInfo(id);
     }
 }
 

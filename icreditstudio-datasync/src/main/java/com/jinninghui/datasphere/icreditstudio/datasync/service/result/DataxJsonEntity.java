@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxReader;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxWriter;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -13,15 +14,20 @@ import java.util.Map;
  * @author Peng
  */
 @Data
+@Builder
 public final class DataxJsonEntity {
 
-    public static Map<String, Object> buildDataxJson(DataxReader reader, DataxWriter writer, Map<String, Object> setting) {
-        Map<String, Object> dataxMap = new HashMap<>();
-        Map<String, Object> job = new HashMap<>();
+    private DataxReader reader;
+    private DataxWriter writer;
+    private Map<String, Object> setting;
+
+    public Map<String, Object> buildDataxJson() {
+        Map<String, Object> dataxMap = new HashMap<>(1);
+        Map<String, Object> job = new HashMap<>(2);
         List<Map<String, Object>> contents = new ArrayList<>();
         Map<String, Object> content = new HashMap<>();
-        content.put("reader", reader);
-        content.put("writer", writer);
+        content.put("reader", reader.getReaderEntity());
+        content.put("writer", writer.getWriterEntity());
         contents.add(content);
         job.put("content", contents);
         job.put("setting", setting);

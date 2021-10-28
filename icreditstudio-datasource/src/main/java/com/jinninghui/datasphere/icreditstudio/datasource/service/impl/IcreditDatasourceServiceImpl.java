@@ -22,6 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.Dataso
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -391,6 +392,26 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public List<IcreditDatasourceEntity> findAllDatasoure() {
         return datasourceMapper.selectAll();
+    }
+
+    @Override
+    public BusinessResult<DatasourceResult> getDatasourceJdbcInfo(String id) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .datasourceId(id)
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+
+        DatasourceResult result = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+            IcreditDatasourceEntity entity = list.get(0);
+            String uri = entity.getUri();
+            result = new DatasourceResult();
+            result.setJdbcUrl(DatasourceSync.getConnUrl(uri));
+            result.setUsername(DatasourceSync.getUsername(uri));
+            result.setPassword(DatasourceSync.getPassword(uri));
+        }
+        return BusinessResult.success(result);
     }
 
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {

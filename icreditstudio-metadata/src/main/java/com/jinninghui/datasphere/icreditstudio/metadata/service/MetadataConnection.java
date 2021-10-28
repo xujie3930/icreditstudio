@@ -19,4 +19,11 @@ public interface MetadataConnection {
      * @return
      */
     String getIpPort();
+
+    /**
+     * hive连接地址
+     *
+     * @return
+     */
+    String getUrl();
 }

@@ -5,6 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -35,4 +36,6 @@ public interface MetadataService {
      * @return
      */
     BusinessResult<Boolean> generateWideTable(@RequestBody MetadataGenerateWideTableParam param);
+
+    BusinessResult<WarehouseInfo> getWarehouseInfo();
 }

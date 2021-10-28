@@ -17,4 +17,18 @@ public abstract class AbstractClusterHiveConnectionSource implements ConnectionS
      * @return
      */
     public abstract Set<String> getIpPorts();
+
+    /**
+     * hdfs访问地址
+     *
+     * @return
+     */
+    public abstract String getDefaultFS();
+
+    /**
+     * 数据存放地址
+     *
+     * @return
+     */
+    public abstract String getWareHouse();
 }
