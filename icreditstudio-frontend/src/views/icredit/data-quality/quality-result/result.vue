@@ -33,6 +33,7 @@
     >
     </crud-basic>
 
+    <Report ref="historyReport" />
     <!-- <ViewRules ref="viewRules" /> -->
     <!-- <Message ref="message" @on-confirm="handleConfirm" /> -->
   </div>
@@ -41,6 +42,7 @@
 <script>
 // import Message from '@/views/icredit/components/message'
 // import ViewRules from './view-rules'
+import Report from './result-report'
 
 import crud from '@/mixins/crud'
 import workspace from '@/mixins/workspace'
@@ -56,12 +58,12 @@ import {
 export default {
   name: 'schedulePageList',
   mixins: [crud, workspace],
-  // components: { ViewRules, Message },
+  components: { Report },
 
   data() {
     return {
       formOption,
-      tableConfiguration,
+      tableConfiguration: tableConfiguration(this),
       searchFormConfig: {
         models: {
           taskName: '',
@@ -90,6 +92,10 @@ export default {
     handleConfirm(option) {
       this.$emit('confirm', option)
       this.$refs.message.close()
+    },
+
+    handleViewResport({ row }) {
+      this.$refs.historyReport.open(row)
     },
 
     // 新增自定义规则
