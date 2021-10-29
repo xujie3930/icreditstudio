@@ -30,11 +30,16 @@ import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,6 +57,27 @@ public class ProcessService {
             ExecutionStatus.RUNNING_EXECUTION.ordinal(),
             ExecutionStatus.READY_PAUSE.ordinal(),
             ExecutionStatus.READY_STOP.ordinal()};
+
+    private Connection con;
+    private String sql;
+
+    {
+        Properties properties = new Properties();
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
+        try {
+            properties.load(in);
+            Class.forName(properties.getProperty("task.datasource.driver-class-name"));
+            this.con = DriverManager.getConnection(properties.getProperty("task.datasource.url"),
+                    properties.getProperty("task.datasource.username"), properties.getProperty("task.datasource.password"));
+            this.sql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Resource
     private ProcessDefinitionMapper processDefineMapper;
@@ -1152,4 +1178,18 @@ public class ProcessService {
         return Constants.DEFAULT_WORKER_GROUP;
     }
 
+    public void updateTaskByScheduleId(String processDefinitionId, int state, Date nowDate) {
+        try {
+            PreparedStatement pstmt = this.con.prepareStatement(this.sql) ;
+            pstmt.setInt(1, 7 == state ? 0 : 1);
+            pstmt.setDate(2, new java.sql.Date(nowDate.getTime()));
+            pstmt.setString(3, processDefinitionId);
+            pstmt.execute();
+            if(null != con){
+                con.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }
