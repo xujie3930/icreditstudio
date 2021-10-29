@@ -58,6 +58,15 @@ public class HdfsWriterConfigParam {
         return writeMode;
     }
 
+    public String getDefaultFs() {
+        if (StringUtils.isNotBlank(defaultFs) && !defaultFs.startsWith("hdfs://")) {
+            StringBuilder sb = new StringBuilder("hdfs://");
+            sb.append(defaultFs);
+            return sb.toString();
+        }
+        return defaultFs;
+    }
+
     public String getThriftUrl() {
         if (StringUtils.isNotBlank(thriftUrl) && thriftUrl.endsWith("default")) {
             return StringUtils.replace(thriftUrl, "default", "");
