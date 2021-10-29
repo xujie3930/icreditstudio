@@ -202,6 +202,8 @@ public class TaskInstance implements Serializable {
      */
     private String executorId;
 
+    private String totalRecords;
+
     /**
      * executor name
      */
