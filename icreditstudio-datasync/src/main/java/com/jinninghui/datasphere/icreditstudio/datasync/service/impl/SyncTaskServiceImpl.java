@@ -235,7 +235,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 SyncCondition parse = syncConditionParser.parse(syncCondition);
                 TimeInterval interval = new TimeInterval();
                 SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(parse, n -> true);
-                param.setPath(getDataxSyncPath(data.getWarehouse(), wideTableField.getTargetSource(), syncTimeInterval.getTimeFormat()));
+                param.setPath(getDataxSyncPath(data.getWarehouse(), wideTableField.getName(), wideTableField.getTargetSource(), syncTimeInterval.getTimeFormat()));
                 partition = parse.getPartition();
             }
             param.setPartition(partition);
@@ -245,7 +245,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return param;
     }
 
-    private String getDataxSyncPath(String basePath, String database, String partitionDir) {
+    private String getDataxSyncPath(String basePath, String wideTableName, String database, String partitionDir) {
         StringBuilder sb = new StringBuilder();
         sb.append(basePath);
         if (basePath.endsWith("/")) {
@@ -255,6 +255,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             sb.append(database);
         }
         sb.append(".db/");
+        sb.append(wideTableName);
+        sb.append("/");
         sb.append(partitionDir);
         return sb.toString();
     }
@@ -662,9 +664,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
-        if("true".equals(result)){//成功
+        if ("true".equals(result)) {//成功
             return BusinessResult.success(true);
-        }else{//失败
+        } else {//失败
             return BusinessResult.fail("", "执行失败");
         }
     }
@@ -700,7 +702,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         feignRequest.setWideTableName(wideTableName);
         feignRequest.setPartition(param.getPartition());
         feignRequest.setDatabaseName(targetSource);
-        feignRequest.setDelimiter(DefaultDelimiterEnum.TABS.getSymbol());
+        feignRequest.setDelimiter(DefaultDelimiterEnum.COMMA.getSymbol());
 
         Set<String> checkDuplicate = new HashSet<>();
         List<StatementField> statementFields = fieldInfos.stream()

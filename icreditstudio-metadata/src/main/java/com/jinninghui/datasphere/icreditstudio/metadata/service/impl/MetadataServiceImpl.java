@@ -81,6 +81,7 @@ public class MetadataServiceImpl implements MetadataService {
     @Override
     public BusinessResult<Boolean> generateWideTable(MetadataGenerateWideTableParam param) {
         String statementSql = generateWideTableStatement(param);
+        log.info("生成的hive建表语句:" + statementSql);
         Connection connection = this.connection.getConnection();
         Boolean aBoolean = smartCloseConn(connection, statementSql, (conn, sql) -> {
             String useSql = "use " + param.getDatabaseName();

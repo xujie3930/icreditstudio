@@ -50,4 +50,18 @@ public class HdfsWriterConfigParam {
         }
         return compress;
     }
+
+    public String getWriteMode() {
+        if (StringUtils.isBlank(writeMode)) {
+            return "append";
+        }
+        return writeMode;
+    }
+
+    public String getThriftUrl() {
+        if (StringUtils.isNotBlank(thriftUrl) && thriftUrl.endsWith("default")) {
+            return StringUtils.replace(thriftUrl, "default", "");
+        }
+        return thriftUrl;
+    }
 }
