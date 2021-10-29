@@ -130,6 +130,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
 
             CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+            if (Objects.nonNull(param.getSyncCondition())) {
+                wideTableParam.setPartition(param.getSyncCondition().getPartition());
+            }
             //创建宽表
             createWideTable(wideTableParam);
         }

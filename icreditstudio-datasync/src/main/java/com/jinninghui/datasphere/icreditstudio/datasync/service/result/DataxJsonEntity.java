@@ -22,7 +22,6 @@ public final class DataxJsonEntity {
     private Map<String, Object> setting;
 
     public Map<String, Object> buildDataxJson() {
-        Map<String, Object> dataxMap = new HashMap<>(1);
         Map<String, Object> job = new HashMap<>(2);
         List<Map<String, Object>> contents = new ArrayList<>();
         Map<String, Object> content = new HashMap<>();
@@ -31,7 +30,6 @@ public final class DataxJsonEntity {
         contents.add(content);
         job.put("content", contents);
         job.put("setting", setting);
-        dataxMap.put("job", job);
-        return dataxMap;
+        return job;
     }
 }
