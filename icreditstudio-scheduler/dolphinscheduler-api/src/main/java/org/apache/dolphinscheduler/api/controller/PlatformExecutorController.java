@@ -32,23 +32,27 @@ public class PlatformExecutorController {
 
     @GetMapping(value = "/execSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     public String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType) {
-        try {
-            platformExecutorService.execSyncTask(processDefinitionId, execType);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        return "true";
+        return platformExecutorService.execSyncTask(processDefinitionId, execType);
     }
 
     @GetMapping(value = "/stopSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     public String stopSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
-        platformExecutorService.stopSyncTask(processDefinitionId);
-        return "true";
+        return platformExecutorService.stopSyncTask(processDefinitionId);
     }
 
     @GetMapping(value = "/deleteSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     public String deleteSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
         return platformExecutorService.deleteSyncTask(processDefinitionId);
+    }
+
+    @GetMapping(value = "/enableSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
+    public String enableSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
+        return platformExecutorService.enableSyncTask(processDefinitionId);
+    }
+
+    @GetMapping(value = "/ceaseSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
+    public String ceaseSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
+        return platformExecutorService.ceaseSyncTask(processDefinitionId);
     }
 
 }

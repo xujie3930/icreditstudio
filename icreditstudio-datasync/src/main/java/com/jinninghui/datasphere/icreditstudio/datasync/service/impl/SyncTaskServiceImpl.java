@@ -620,7 +620,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> stop(DataSyncExecParam param) {
+        checkTaskId(param.getTaskId());
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
@@ -633,32 +635,43 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
+        checkTaskId(param.getTaskId());
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String result = schedulerFeign.deleteSyncTask(processDefinitionId);
         if ("1".equals(result)) {
-            throw new AppException("该任务正在执行中，不能删除");
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.message);
         }
         removeById(param.getTaskId());
         return BusinessResult.success(true);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> enable(DataSyncExecParam param) {
-        SyncTaskEntity entity = new SyncTaskEntity();
-        entity.setId(param.getTaskId());
-        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
-        updateById(entity);
+        checkTaskId(param.getTaskId());
+        String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
+        String enableResult = schedulerFeign.enableSyncTask(processDefinitionId);
+        if ("true".equals(enableResult)){
+            SyncTaskEntity entity = new SyncTaskEntity();
+            entity.setId(param.getTaskId());
+            entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+            updateById(entity);
+        }
         return BusinessResult.success(true);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
-        if (StringUtils.isEmpty(param.getTaskId())) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
-        }
+        checkTaskId(param.getTaskId());
         if (0 != param.getExecType() && 1 != param.getExecType()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
+        }
+        SyncTaskEntity syncTask = syncTaskMapper.selectById(param.getTaskId());
+        if(ExecStatusEnum.EXEC.getCode() == syncTask.getExecStatus()){//“执行中” 状态
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
         }
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
@@ -675,12 +688,28 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> cease(DataSyncExecParam param) {
-        SyncTaskEntity entity = new SyncTaskEntity();
-        entity.setId(param.getTaskId());
-        entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
-        updateById(entity);
+        checkTaskId(param.getTaskId());
+        SyncTaskEntity syncTask = syncTaskMapper.selectById(param.getTaskId());
+        if(ExecStatusEnum.EXEC.getCode() != syncTask.getExecStatus()){//不是 “执行中” 状态
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000034.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000034.message);
+        }
+        String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
+        String ceaseResult = schedulerFeign.ceaseSyncTask(processDefinitionId);
+        if("true".equals(ceaseResult)){
+            SyncTaskEntity entity = new SyncTaskEntity();
+            entity.setId(param.getTaskId());
+            entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
+            updateById(entity);
+        }
         return BusinessResult.success(true);
+    }
+
+    private void checkTaskId(String taskId){
+        if(StringUtils.isEmpty(taskId)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
+        }
     }
 
     /**

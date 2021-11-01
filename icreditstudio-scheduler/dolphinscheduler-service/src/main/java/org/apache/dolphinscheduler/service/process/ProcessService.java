@@ -36,11 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import static org.apache.dolphinscheduler.common.Constants.*;
@@ -1182,7 +1180,7 @@ public class ProcessService {
         try {
             PreparedStatement pstmt = this.con.prepareStatement(this.sql) ;
             pstmt.setInt(1, 7 == state ? 0 : 1);
-            pstmt.setDate(2, new java.sql.Date(nowDate.getTime()));
+            pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
             pstmt.execute();
             if(null != con){

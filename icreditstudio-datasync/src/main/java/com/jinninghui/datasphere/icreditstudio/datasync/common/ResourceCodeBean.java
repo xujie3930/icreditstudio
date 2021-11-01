@@ -48,6 +48,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000031("60000031", "hive配置信息获取失败"),
         RESOURCE_CODE_60000032("60000032", "未获取到宽表信息"),
         RESOURCE_CODE_60000033("60000033", "通过sql未识别数据库信息"),
+        RESOURCE_CODE_60000034("60000034", "该任务非【执行中】状态，不能【停止执行】"),
+        RESOURCE_CODE_60000035("60000035", "该任务正在【执行中】，不能删除"),
+        RESOURCE_CODE_60000036("60000036", "该任务已经在【执行中】"),
         ;
 
         public final String code;
