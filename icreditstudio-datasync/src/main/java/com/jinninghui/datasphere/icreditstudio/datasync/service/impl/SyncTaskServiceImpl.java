@@ -27,6 +27,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.SystemFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
@@ -114,17 +115,22 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                         .build();
-                String processDefinitionId = schedulerFeign.create(build);
-                SyncTaskEntity updateEntity = new SyncTaskEntity();
-                updateEntity.setId(taskId);
-                updateEntity.setScheduleId(processDefinitionId);
-                syncTaskMapper.updateById(updateEntity);
+                BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(build);
+                if (businessResult.isSuccess() && businessResult.getData() != null) {
+                    CreatePlatformTaskResult data = businessResult.getData();
+                    SyncTaskEntity updateEntity = new SyncTaskEntity();
+                    updateEntity.setId(taskId);
+                    updateEntity.setScheduleId(data.getProcessDefinitionId());
+                    syncTaskMapper.updateById(updateEntity);
+                } else {
+                    throw new AppException("60000037");
+                }
             } else {
                 FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
                         .accessUser(new User())
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, "{}", 0))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                         .build();
                 schedulerFeign.update(build);
             }
@@ -653,7 +659,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         checkTaskId(param.getTaskId());
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String enableResult = schedulerFeign.enableSyncTask(processDefinitionId);
-        if ("true".equals(enableResult)){
+        if ("true".equals(enableResult)) {
             SyncTaskEntity entity = new SyncTaskEntity();
             entity.setId(param.getTaskId());
             entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
@@ -670,7 +676,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
         }
         SyncTaskEntity syncTask = syncTaskMapper.selectById(param.getTaskId());
-        if(ExecStatusEnum.EXEC.getCode() == syncTask.getExecStatus()){//“执行中” 状态
+        if (ExecStatusEnum.EXEC.getCode() == syncTask.getExecStatus()) {//“执行中” 状态
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
         }
         SyncTaskEntity entity = new SyncTaskEntity();
@@ -692,12 +698,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> cease(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity syncTask = syncTaskMapper.selectById(param.getTaskId());
-        if(ExecStatusEnum.EXEC.getCode() != syncTask.getExecStatus()){//不是 “执行中” 状态
+        if (ExecStatusEnum.EXEC.getCode() != syncTask.getExecStatus()) {//不是 “执行中” 状态
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000034.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000034.message);
         }
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
         String ceaseResult = schedulerFeign.ceaseSyncTask(processDefinitionId);
-        if("true".equals(ceaseResult)){
+        if ("true".equals(ceaseResult)) {
             SyncTaskEntity entity = new SyncTaskEntity();
             entity.setId(param.getTaskId());
             entity.setExecStatus(ExecStatusEnum.FAILURE.getCode());
@@ -706,8 +712,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return BusinessResult.success(true);
     }
 
-    private void checkTaskId(String taskId){
-        if(StringUtils.isEmpty(taskId)){
+    private void checkTaskId(String taskId) {
+        if (StringUtils.isEmpty(taskId)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
         }
     }
