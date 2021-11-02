@@ -198,10 +198,7 @@ public class DataxTask extends AbstractTask {
         JSONObject root = new JSONObject();
         if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()) {
             json = dataXParameters.getJson().replaceAll("\\r\\n", "\n");
-//            JSONArray contentArr = new JSONArray();
-//            contentArr.add(JSONObject.parseObject(json));
-//            job.put("content", contentArr);
-            root.put("job", json);
+            root.put("job", JSONObject.parseObject(json));
         } else {
             job.put("content", buildDataxJobContentJson());
             job.put("setting", buildDataxJobSettingJson());
