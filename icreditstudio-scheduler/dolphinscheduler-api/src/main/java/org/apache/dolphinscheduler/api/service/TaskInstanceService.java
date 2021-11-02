@@ -82,4 +82,8 @@ public interface TaskInstanceService {
     Double runtimeTotalByDefinition(Long code, int[] statusArray);
 
     Long getCountByByDefinitionAndStates(Long code, int[] statusArray);
+
+    Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
+
+    Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
 }

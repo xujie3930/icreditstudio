@@ -83,4 +83,8 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
     void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
+
+    Long totalRecordsByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
+
+    Long totalBytesByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 }
