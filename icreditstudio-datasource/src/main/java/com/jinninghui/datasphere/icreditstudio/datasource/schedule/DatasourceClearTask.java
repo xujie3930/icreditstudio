@@ -1,11 +1,9 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.schedule;
 
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceStatusEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
-import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasourceService;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDatasourceDelParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -36,9 +34,10 @@ public class DatasourceClearTask {
                 IcreditDatasourceTestConnectRequest request = new IcreditDatasourceTestConnectRequest(
                         datasourceEntity.getType(), datasourceEntity.getUri());
                 String datasourceId = datasourceEntity.getId();
-                //不成功则跳过
+                //不成功则停用
                 if (!datasourceService.testConn(request).isSuccess()){
-                    continue;
+                    datasourceEntity.setStatus(DatasourceStatusEnum.DISABLE.getCode());
+                    datasourceService.updateById(datasourceEntity);
                 }
                 datasourceService.syncById(datasourceId);
             } catch (Exception e) {
