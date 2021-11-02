@@ -27,7 +27,8 @@ public class MysqlDatasource implements DatasourceSync {
             return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();
-        ResultSet tableResultSet = metaData.getTables(null, null, null, new String[]{"TABLE"});
+        ResultSet tableResultSet = metaData.getTables(null, null, null,
+                new String[]{"TABLE", "SYSTEM TABLE", "VIEW", "GLOBAL TEMPORARY", "LOCAL TEMPORARY", "ALIAS", "SYNONYM"});
         List<TableSyncInfo> tableList = new ArrayList<>();
         Integer tablesCount = 0;
         while (tableResultSet.next()) {
