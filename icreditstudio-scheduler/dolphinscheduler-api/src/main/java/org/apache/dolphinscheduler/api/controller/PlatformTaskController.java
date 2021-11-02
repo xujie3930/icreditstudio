@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.api.controller;
 
+import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +32,15 @@ public class PlatformTaskController {
     @Resource
     private PlatformProcessDefinitionService platformProcessDefinitionService;
 
-    @PostMapping("/create")
-    public String create(@RequestBody CreatePlatformProcessDefinitionRequest request) {
+    @Logable
+    @PostMapping(value = "/create", produces = "application/json;charset=UTF-8")
+    public BusinessResult<CreatePlatformTaskResult> create(@RequestBody CreatePlatformProcessDefinitionRequest request) {
         CreatePlatformProcessDefinitionParam param = new CreatePlatformProcessDefinitionParam();
         BeanCopyUtils.copyProperties(request, param);
-        return platformProcessDefinitionService.create(param).getProcessDefinitionId();
+        return BusinessResult.success(platformProcessDefinitionService.create(param));
     }
 
+    @Logable
     @PostMapping("/release")
     public BusinessResult<Boolean> release(@RequestBody ReleasePlatformProcessDefinitionRequest request) {
         ReleasePlatformProcessDefinitionParam param = new ReleasePlatformProcessDefinitionParam();
@@ -45,6 +48,7 @@ public class PlatformTaskController {
         return platformProcessDefinitionService.release(param);
     }
 
+    @Logable
     @PostMapping("/delete")
     public BusinessResult<Boolean> delete(@RequestBody DeletePlatformProcessDefinitionRequest request) {
         DeletePlatformProcessDefinitionParam param = new DeletePlatformProcessDefinitionParam();
@@ -52,6 +56,7 @@ public class PlatformTaskController {
         return platformProcessDefinitionService.delete(param);
     }
 
+    @Logable
     @PostMapping("/update")
     public BusinessResult<Boolean> update(@RequestBody UpdatePlatformProcessDefinitionRequest request) {
         UpdatePlatformProcessDefinitionParam param = new UpdatePlatformProcessDefinitionParam();
