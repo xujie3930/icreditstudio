@@ -55,7 +55,7 @@ public class IcreditDatasourceController {
 
         IcreditDatasourceSaveParam param = new IcreditDatasourceSaveParam();
         BeanCopyUtils.copyProperties(request, param);
-        return datasourceService.saveDef(param);
+        return datasourceService.saveDef(userId, param);
     }
 
     /**
@@ -63,11 +63,11 @@ public class IcreditDatasourceController {
      */
     @PostMapping("/update")
     @Logable
-    public BusinessResult<Boolean> update(@RequestBody IcreditDatasourceUpdateRequest request) {
+    public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditDatasourceUpdateRequest request) {
 
         IcreditDatasourceUpdateParam param = new IcreditDatasourceUpdateParam();
         BeanCopyUtils.copyProperties(request, param);
-        return datasourceService.updateDef(param);
+        return datasourceService.updateDef(userId, param);
     }
 
     /**

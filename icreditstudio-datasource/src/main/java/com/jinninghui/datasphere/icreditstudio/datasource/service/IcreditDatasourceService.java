@@ -28,7 +28,7 @@ import java.util.List;
  */
 public interface IcreditDatasourceService extends IService<IcreditDatasourceEntity> {
 
-    BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param);
+    BusinessResult<Boolean> saveDef(String userId, IcreditDatasourceSaveParam param);
 
     BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param);
 
@@ -82,7 +82,7 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      */
     BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param);
 
-    BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param);
+    BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param);
 
     List<IcreditDatasourceEntity> findAllDatasoure();
 
