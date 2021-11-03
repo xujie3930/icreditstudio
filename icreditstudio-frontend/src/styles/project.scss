@@ -50,7 +50,7 @@
 }
 
 .el-table th.is-center {
-  padding: 8px 0;
+  padding: 10px 0;
 }
 
 .sidebar {
@@ -91,24 +91,16 @@
   background-image: none;
 }
 
-// .icredit-table-empty {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   margin-top: 20px;
+// .icredit-form {
+//   ::v-deep {
+//     .el-form-item {
+//       .el-form-item__label {
+//         font-size: 14px;
+//         font-family: PingFangSC, PingFangSC-Regular;
+//         font-weight: 400;
+//         text-align: right;
+//         color: #262626;
+//       }
+//     }
+//   }
 // }
-
-.icredit-form {
-  ::v-deep {
-    .el-form-item {
-      margin-bottom: 20px;
-      .el-form-item__label {
-        font-size: 14px;
-        font-family: PingFangSC, PingFangSC-Regular;
-        font-weight: 400;
-        text-align: right;
-        color: #262626;
-      }
-    }
-  }
-}

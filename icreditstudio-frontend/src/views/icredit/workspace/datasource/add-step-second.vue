@@ -19,6 +19,7 @@
       :rules="rules"
       ref="dataSourceForm"
       label-width="100px"
+      class="icredit-form"
       v-loading="detailLoading"
     >
       <el-form-item label="数据源名称" prop="name">
@@ -445,6 +446,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.icredit-form {
+  @include icredit-form;
+}
+
 .upload-file {
   @include flex;
   overflow: hidden;

@@ -9,12 +9,13 @@
       <j-svg name="back" />
     </div>
     <el-form
-      v-loading="detailLoading"
-      :model="detailForm"
-      :rules="detailRules"
+      class="icredit-form"
       ref="detailForm"
       label-width="125px"
+      :model="detailForm"
+      :rules="detailRules"
       :disabled="opType === 'view'"
+      v-loading="detailLoading"
     >
       <el-form-item class="info-title">
         <div class="text" slot="label">基础信息</div>
@@ -67,7 +68,7 @@
         </el-col>
       </el-row>
 
-      <div class="form-divider" />
+      <div class="form-divider" style="margin-top:30px" />
 
       <el-form-item class="info-title">
         <div class="text" slot="label">用户角色信息</div>
@@ -114,6 +115,7 @@
         <el-col :span="20">
           <el-form-item label="成员信息" prop="desc">
             <j-table
+              class="icredit-table"
               ref="table"
               v-loading="tableLoading"
               :table-data="detailForm.memberList"
@@ -123,7 +125,7 @@
         </el-col>
       </el-row>
 
-      <div class="form-divider" />
+      <div class="form-divider" style="margin-top: 30px;" />
     </el-form>
 
     <div v-if="opType !== 'view'" class="footer-btn">
@@ -513,7 +515,7 @@ export default {
 
   .footer-btn {
     text-align: center;
-    margin: 20px 0;
+    margin: 30px 0;
 
     .btn {
       width: 150px;
@@ -521,6 +523,14 @@ export default {
       background: #1890ff;
       border-radius: 4px;
     }
+  }
+
+  .icredit-form {
+    @include icredit-form;
+  }
+
+  .icredit-table {
+    @include icredit-table;
   }
 }
 </style>

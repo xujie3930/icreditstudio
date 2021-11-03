@@ -34,7 +34,7 @@
       </el-select>
 
       <!-- 快捷菜单 -->
-      <i
+      <!-- <i
         @click="handleShowShortMenu"
         :class="[
           'el-icon-s-operation',
@@ -42,12 +42,12 @@
           isShowQuickMenu === 'Y' ? 'shortmenu-open' : 'shortmenu-close'
         ]"
         :style="{ color: '#fff' }"
-      />
+      /> -->
       <!-- color: shortMenus.length
             ? getSystemTheme(systemSetting.cssId)
             : 'unset' -->
 
-      <el-popover
+      <!-- <el-popover
         style="margin-right: 30px;cursor: pointer"
         placement="bottom"
         width="400"
@@ -75,7 +75,7 @@
         >
           <i class="el-icon-message-solid" style="font-size: 22px"></i>
         </el-badge>
-      </el-popover>
+      </el-popover> -->
       <el-dropdown @command="handleCommand">
         <p>
           <el-avatar
@@ -397,6 +397,7 @@ export default {
 .iframe-layout-main-header-user {
   .workspace-select {
     width: 150px;
+    margin: 0 24px;
 
     ::v-deep {
       .el-input__inner {

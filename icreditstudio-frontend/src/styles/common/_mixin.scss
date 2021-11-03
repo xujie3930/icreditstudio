@@ -83,3 +83,32 @@
     border-radius: 0px 2px 2px 0px;
   }
 }
+
+// iCredit系统样式调整
+@mixin icredit-form {
+  ::v-deep {
+    .el-form-item {
+      .el-form-item__label {
+        font-size: 14px;
+        font-family: PingFangSC, PingFangSC-Regular;
+        font-weight: 400;
+        text-align: right;
+        color: #262626;
+      }
+    }
+  }
+}
+
+@mixin icredit-table {
+  color: #262626;
+  ::v-deep {
+    th.is-center {
+      padding: 5px 0;
+      color: #262626;
+    }
+
+    tr td {
+      padding: 10px 0 !important;
+    }
+  }
+}

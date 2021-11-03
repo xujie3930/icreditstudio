@@ -18,7 +18,7 @@
       :rules="rules"
       ref="detailData"
       label-width="100px"
-      :class="[opType === 'View' ? 'form-detail' : '']"
+      :class="['icredit-form', opType === 'View' ? 'form-detail' : '']"
     >
       <template>
         <el-form-item label="数据源名称" :rules="[{ required: true }]">
@@ -132,12 +132,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.icredit-form {
+  @include icredit-form;
+}
+
 .form-detail {
   .label-text {
     font-family: PingFangSC, PingFangSC-Regular;
     font-weight: 400;
     text-align: left;
-    color: #262626;
+    // color: #262626;
   }
 }
 </style>
