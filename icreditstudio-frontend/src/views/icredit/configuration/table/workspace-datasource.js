@@ -9,7 +9,7 @@ const dataType = {
   8: 'MongoDB'
 }
 
-export default {
+export default that => ({
   refName: 'workspace-datascource',
   id: '',
   isBorder: true,
@@ -19,6 +19,7 @@ export default {
       label: '新增数据源',
       type: 'primary',
       key: 'addDataSource',
+      disabled: that.workspaceId === 'all',
       options: {
         eventType: 'click',
         eventName: 'handleAddDataSource'
@@ -55,14 +56,15 @@ export default {
       type: 'text',
       label: '是否启用',
       prop: 'status',
-      formatter: row => (row.status ? '否' : '是'),
-      width: 80
+      width: 80,
+      formatter: row => (row.status ? '否' : '是')
     },
     {
       type: 'text',
       label: '最近一次同步时间',
       prop: 'lastSyncTime',
-      width: 170
+      width: 170,
+      formatter: row => row.lastSyncTime || '-'
     },
     {
       type: 'slot',
@@ -83,4 +85,4 @@ export default {
       fixed: 'right'
     }
   ]
-}
+})

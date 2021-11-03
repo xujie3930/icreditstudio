@@ -24,7 +24,7 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: '3', label: '全部' },
+      { value: '', label: '全部' },
       { value: '0', label: '启用' },
       { value: '1', label: '草稿' },
       { value: '2', label: '停用' }
@@ -37,7 +37,7 @@ export default [
     model: '',
     isSearch: true,
     options: [
-      { value: '3', label: '全部' },
+      { value: '', label: '全部' },
       { value: '0', label: '成功' },
       { value: '1', label: '失败' },
       { value: '2', label: '执行中' }
