@@ -17,20 +17,8 @@
 
 package org.apache.dolphinscheduler.server.master.consumer;
 
-import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.Constants;
-import org.apache.dolphinscheduler.common.enums.TaskType;
-import org.apache.dolphinscheduler.common.model.TaskNode;
-import org.apache.dolphinscheduler.common.process.ResourceInfo;
-import org.apache.dolphinscheduler.common.task.AbstractParameters;
-import org.apache.dolphinscheduler.common.task.datax.DataxParameters;
 import org.apache.dolphinscheduler.common.thread.Stopper;
-import org.apache.dolphinscheduler.common.utils.CollectionUtils;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.common.utils.TaskParametersUtils;
-import org.apache.dolphinscheduler.dao.entity.DataSource;
-import org.apache.dolphinscheduler.dao.entity.Resource;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.server.builder.TaskExecutionContextBuilder;
 import org.apache.dolphinscheduler.server.entity.DataxTaskExecutionContext;
@@ -49,10 +37,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * TaskUpdateQueue consumer
@@ -178,242 +165,13 @@ public class TaskPriorityQueueConsumer extends Thread {
      */
     protected TaskExecutionContext getTaskExecutionContext(String taskInstanceId) {
         TaskInstance taskInstance = processService.getTaskInstanceDetailByTaskId(taskInstanceId);
-
-        // task type
-        TaskType taskType = TaskType.valueOf(taskInstance.getTaskType());
-
-        // task node
-        TaskNode taskNode = JSONObject.parseObject(taskInstance.getTaskJson(), TaskNode.class);
-
-//        String userId = taskInstance.getProcessDefine() == null ? "0" : taskInstance.getProcessDefine().getUserId();
-//        Tenant tenant = processService.getTenantForProcess(taskInstance.getProcessInstance().getTenantId(), userId);
-
-        //TODO 如何校验租户
-        // verify tenant is null
-//        if (verifyTenantIsNull(tenant, taskInstance)) {
-//            processService.changeTaskState(ExecutionStatus.FAILURE,
-//                    taskInstance.getStartTime(),
-//                    taskInstance.getHost(),
-//                    null,
-//                    null,
-//                    taskInstance.getId());
-//            return null;
-//        }
-        // set queue for process instance, user-specified queue takes precedence over tenant queue
-//        String userQueue = processService.queryUserQueueByProcessInstanceId(taskInstance.getProcessInstanceId());
-        //TODO 确认用户队列是否必须
-//        taskInstance.getProcessInstance().setQueue(StringUtils.isEmpty(userQueue) ? tenant.getQueue() : userQueue);
-        //TODO 租户编码如何确认
-//        taskInstance.getProcessInstance().setTenantCode(tenant.getTenantCode());
-//        taskInstance.setResources(getResourceFullNames(taskNode));
-
-
-//        SQLTaskExecutionContext sqlTaskExecutionContext = new SQLTaskExecutionContext();
         DataxTaskExecutionContext dataxTaskExecutionContext = new DataxTaskExecutionContext();
-//        ProcedureTaskExecutionContext procedureTaskExecutionContext = new ProcedureTaskExecutionContext();
-//        SqoopTaskExecutionContext sqoopTaskExecutionContext = new SqoopTaskExecutionContext();
-
-
-//        // SQL task
-//        if (taskType == TaskType.SQL) {
-//            setSQLTaskRelation(sqlTaskExecutionContext, taskNode);
-//
-//        }
-
-        // DATAX task
-        if (taskType == TaskType.DATAX) {
-//            setDataxTaskRelation(dataxTaskExecutionContext, taskNode);
-        }
-
-
-        // procedure task
-//        if (taskType == TaskType.PROCEDURE) {
-//            setProcedureTaskRelation(procedureTaskExecutionContext, taskNode);
-//        }
-//
-//        if (taskType == TaskType.SQOOP) {
-//            setSqoopTaskRelation(sqoopTaskExecutionContext, taskNode);
-//        }
-
 
         return TaskExecutionContextBuilder.get()
                 .buildTaskInstanceRelatedInfo(taskInstance)
                 .buildProcessInstanceRelatedInfo(taskInstance.getProcessInstance())
                 .buildProcessDefinitionRelatedInfo(taskInstance.getProcessDefine())
-//                .buildSQLTaskRelatedInfo(sqlTaskExecutionContext)
                 .buildDataxTaskRelatedInfo(dataxTaskExecutionContext)
-//                .buildProcedureTaskRelatedInfo(procedureTaskExecutionContext)
-//                .buildSqoopTaskRelatedInfo(sqoopTaskExecutionContext)
                 .create();
     }
-
-//    /**
-//     * set procedure task relation
-//     *
-//     * @param procedureTaskExecutionContext procedureTaskExecutionContext
-//     * @param taskNode                      taskNode
-//     */
-//    private void setProcedureTaskRelation(ProcedureTaskExecutionContext procedureTaskExecutionContext, TaskNode taskNode) {
-//        ProcedureParameters procedureParameters = JSONObject.parseObject(taskNode.getParams(), ProcedureParameters.class);
-//        String datasourceId = procedureParameters.getDatasource();
-//        DataSource datasource = processService.findDataSourceById(datasourceId);
-//        procedureTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
-//    }
-
-//    /**
-//     * set datax task relation
-//     *
-//     * @param dataxTaskExecutionContext dataxTaskExecutionContext
-//     * @param taskNode                  taskNode
-//     */
-//    protected void setDataxTaskRelation(DataxTaskExecutionContext dataxTaskExecutionContext, TaskNode taskNode) {
-//        DataxParameters dataxParameters = JSONUtils.parseObject(taskNode.getParams(), DataxParameters.class);
-//
-//        DataSource dataSource = processService.findDataSourceById(dataxParameters.getDataSource());
-//        DataSource dataTarget = processService.findDataSourceById(dataxParameters.getDataTarget());
-//
-//
-//        if (dataSource != null) {
-//            dataxTaskExecutionContext.setDataSourceId(dataxParameters.getDataSource());
-//            dataxTaskExecutionContext.setSourcetype(dataSource.getType().getCode());
-//            dataxTaskExecutionContext.setSourceConnectionParams(dataSource.getConnectionParams());
-//        }
-//
-//        if (dataTarget != null) {
-//            dataxTaskExecutionContext.setDataTargetId(dataxParameters.getDataTarget());
-//            dataxTaskExecutionContext.setTargetType(dataTarget.getType().getCode());
-//            dataxTaskExecutionContext.setTargetConnectionParams(dataTarget.getConnectionParams());
-//        }
-//    }
-
-
-//    /**
-//     * set sqoop task relation
-//     *
-//     * @param sqoopTaskExecutionContext sqoopTaskExecutionContext
-//     * @param taskNode                  taskNode
-//     */
-//    private void setSqoopTaskRelation(SqoopTaskExecutionContext sqoopTaskExecutionContext, TaskNode taskNode) {
-//        SqoopParameters sqoopParameters = JSONObject.parseObject(taskNode.getParams(), SqoopParameters.class);
-//
-//        // sqoop job type is template set task relation
-//        if (sqoopParameters.getJobType().equals(SqoopJobType.TEMPLATE.getDescp())) {
-//            SourceMysqlParameter sourceMysqlParameter = JSONUtils.parseObject(sqoopParameters.getSourceParams(), SourceMysqlParameter.class);
-//            TargetMysqlParameter targetMysqlParameter = JSONUtils.parseObject(sqoopParameters.getTargetParams(), TargetMysqlParameter.class);
-//
-//            DataSource dataSource = processService.findDataSourceById(sourceMysqlParameter.getSrcDatasource());
-//            DataSource dataTarget = processService.findDataSourceById(targetMysqlParameter.getTargetDatasource());
-//
-//            if (dataSource != null) {
-//                sqoopTaskExecutionContext.setDataSourceId(dataSource.getId());
-//                sqoopTaskExecutionContext.setSourcetype(dataSource.getType().getCode());
-//                sqoopTaskExecutionContext.setSourceConnectionParams(dataSource.getConnectionParams());
-//            }
-//
-//            if (dataTarget != null) {
-//                sqoopTaskExecutionContext.setDataTargetId(dataTarget.getId());
-//                sqoopTaskExecutionContext.setTargetType(dataTarget.getType().getCode());
-//                sqoopTaskExecutionContext.setTargetConnectionParams(dataTarget.getConnectionParams());
-//            }
-//        }
-//    }
-
-//    /**
-//     * set SQL task relation
-//     *
-//     * @param sqlTaskExecutionContext sqlTaskExecutionContext
-//     * @param taskNode                taskNode
-//     */
-//    private void setSQLTaskRelation(SQLTaskExecutionContext sqlTaskExecutionContext, TaskNode taskNode) {
-//        SqlParameters sqlParameters = JSONObject.parseObject(taskNode.getParams(), SqlParameters.class);
-//        String datasourceId = sqlParameters.getDatasource();
-//        DataSource datasource = processService.findDataSourceById(datasourceId);
-//        sqlTaskExecutionContext.setConnectionParams(datasource.getConnectionParams());
-//
-//        // whether udf type
-//        boolean udfTypeFlag = EnumUtils.isValidEnum(UdfType.class, sqlParameters.getType())
-//                && StringUtils.isNotEmpty(sqlParameters.getUdfs());
-//
-//        if (udfTypeFlag) {
-//            String[] udfFunIds = sqlParameters.getUdfs().split(",");
-//            String[] udfFunIdsArray = new String[udfFunIds.length];
-//            for (int i = 0; i < udfFunIds.length; i++) {
-//                udfFunIdsArray[i] = udfFunIds[i];
-//            }
-//
-//            List<UdfFunc> udfFuncList = processService.queryUdfFunListByids(udfFunIdsArray);
-//            Map<UdfFunc, String> udfFuncMap = new HashMap<>();
-//            for (UdfFunc udfFunc : udfFuncList) {
-////                String tenantCode = processService.queryTenantCodeByResName(udfFunc.getResourceName(), ResourceType.UDF);
-//                //TODO 租户编码
-//                String tenantCode = null;
-//                udfFuncMap.put(udfFunc, tenantCode);
-//            }
-//
-//            sqlTaskExecutionContext.setUdfFuncTenantCodeMap(udfFuncMap);
-//        }
-//    }
-
-//    /**
-//     * whehter tenant is null
-//     *
-//     * @param tenant       tenant
-//     * @param taskInstance taskInstance
-//     * @return result
-//     */
-//    private boolean verifyTenantIsNull(Tenant tenant, TaskInstance taskInstance) {
-//        if (tenant == null) {
-//            logger.error("tenant not exists,process instance id : {},task instance id : {}",
-//                    taskInstance.getProcessInstance().getId(),
-//                    taskInstance.getId());
-//            return true;
-//        }
-//        return false;
-//    }
-
-//    /**
-//     * get resource map key is full name and value is tenantCode
-//     */
-//    protected Map<String, String> getResourceFullNames(TaskNode taskNode) {
-//        Map<String, String> resourceMap = new HashMap<>();
-//        AbstractParameters baseParam = TaskParametersUtils.getParameters(taskNode.getType(), taskNode.getParams());
-//
-//        if (baseParam != null) {
-//            List<ResourceInfo> projectResourceFiles = baseParam.getResourceFilesList();
-//            if (CollectionUtils.isNotEmpty(projectResourceFiles)) {
-//
-//                // filter the resources that the resource id equals 0
-//                Set<ResourceInfo> oldVersionResources = projectResourceFiles.stream().filter(t -> StringUtils.equalsIgnoreCase("0", t.getId())).collect(Collectors.toSet());
-//                if (CollectionUtils.isNotEmpty(oldVersionResources)) {
-//
-//                    oldVersionResources.forEach(
-//                            (t) -> {
-//                                //TODO 租户编码
-//                                String tenantCode = null;
-//                                resourceMap.put(t.getRes(), tenantCode/*processService.queryTenantCodeByResName(t.getRes(), ResourceType.FILE)*/);
-//                            }
-//                    );
-//                }
-//
-//                // get the resource id in order to get the resource names in batch
-//                Stream<String> resourceIdStream = projectResourceFiles.stream().map(resourceInfo -> resourceInfo.getId());
-//                Set<String> resourceIdsSet = resourceIdStream.filter(resId -> !StringUtils.equalsIgnoreCase("0", resId)).collect(Collectors.toSet());
-//
-//                if (CollectionUtils.isNotEmpty(resourceIdsSet)) {
-//                    String[] resourceIds = resourceIdsSet.toArray(new String[resourceIdsSet.size()]);
-//
-//                    List<Resource> resources = processService.listResourceByIds(resourceIds);
-//                    resources.forEach(
-//                            (t) -> {
-//                                //TODO 租户编码
-//                                String tenantCode = null;
-//                                resourceMap.put(t.getFullName(), tenantCode/*processService.queryTenantCodeByResName(t.getFullName(), ResourceType.FILE)*/);
-//                            }
-//                    );
-//                }
-//            }
-//        }
-//
-//        return resourceMap;
-//    }
 }

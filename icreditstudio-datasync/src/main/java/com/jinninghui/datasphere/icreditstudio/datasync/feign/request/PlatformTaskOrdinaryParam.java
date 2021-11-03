@@ -10,6 +10,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlatformTaskOrdinaryParam {
 
+    /**
+     * 启用/停用
+     */
+    private Integer enable;
 
     private String name;
     /**
