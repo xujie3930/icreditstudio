@@ -286,6 +286,7 @@
                     <excludes>
                         <exclude>*.xml</exclude>
                         <exclude>application.properties</exclude>
+                        <exclude>*.yml</exclude>
                     </excludes>
                 </configuration>
             </plugin>
