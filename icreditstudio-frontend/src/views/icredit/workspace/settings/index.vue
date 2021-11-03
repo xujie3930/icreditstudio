@@ -83,7 +83,7 @@
       </template>
     </crud-basic>
 
-    <Dialog ref="tipDialog" @onConfirm="handleOperate" />
+    <Dialog ref="tipDialog" @on-confirm="handleOperate" />
   </div>
 </template>
 
@@ -93,7 +93,7 @@ import workspace from '@/mixins/workspace'
 import operate from '@/mixins/operate'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting'
 import formOption from '@/views/icredit/configuration/form/workspace-setting'
-import Dialog from './dialog'
+import Dialog from '@/views/icredit/components/message'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -147,6 +147,7 @@ export default {
     },
 
     handleOperateClick(row, opType) {
+      let options
       const { id, status } = row
       const params = { id, status: status ? 0 : 1 }
       switch (opType) {
@@ -161,6 +162,30 @@ export default {
           break
         case 'Edit':
           this.$router.push({ path: '/workspace/detail', query: { id } })
+          break
+
+        case 'Delete':
+          options = {
+            row,
+            opType,
+            title: '工作空间删除',
+            afterOperateMsg: '吗？',
+            beforeOperateMsg:
+              '删除工作空间后，工作空间内的项目和工作流都将删除，请谨慎操作。确认要删除'
+          }
+          this.$refs.tipDialog.open(options)
+          break
+
+        case 'Disabled':
+          options = {
+            opType,
+            row,
+            title: '工作空间停用',
+            afterOperateMsg: '吗？',
+            beforeOperateMsg:
+              '停用工作空间后，工作空间中的项目和工作流都不再进行调度，请谨慎操作。确认要停用'
+          }
+          this.$refs.tipDialog.open(options)
           break
 
         default:

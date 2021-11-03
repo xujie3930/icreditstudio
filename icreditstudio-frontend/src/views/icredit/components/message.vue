@@ -8,6 +8,7 @@
   <BaseDialog
     ref="baseDialog"
     width="480px"
+    icon
     :title="title"
     :after-title-name="afterTitleName"
     @on-confirm="confirm"

@@ -20,7 +20,17 @@
           {{ afterTitleName }}
         </span>
       </div>
-      <div class="icredit-dialog-content">
+      <div
+        :class="[
+          'icredit-dialog-content',
+          icon ? 'icredit-dialog-content-icon' : ''
+        ]"
+      >
+        <i
+          v-if="icon"
+          :class="[iconName, 'icon']"
+          :style="{ color: iconColor }"
+        ></i>
         <slot />
       </div>
 
@@ -86,6 +96,21 @@ export default {
     hideFooter: {
       type: Boolean,
       default: false
+    },
+
+    icon: {
+      type: Boolean,
+      default: false
+    },
+
+    iconName: {
+      type: String,
+      default: 'el-icon-question'
+    },
+
+    iconColor: {
+      type: String,
+      default: '#e6a23c'
     }
   },
 
@@ -138,6 +163,15 @@ export default {
 
   &-content {
     margin-top: -26px;
+  }
+
+  &-content-icon {
+    @include flex(row, center, flex-start);
+    .icon {
+      color: #e6a23c;
+      font-size: 25px;
+      margin-right: 10px;
+    }
   }
 }
 </style>
