@@ -111,7 +111,9 @@ export default {
     ...mapGetters({
       isHeaderCollapse: 'common/isHeaderCollapse',
       systemSetting: 'user/systemSetting',
-      activeModuleName: 'permission/activeModuleName'
+      activeModuleName: 'permission/activeModuleName',
+      workspaceId: 'user/workspaceId',
+      workspaceList: 'user/workspaceList'
     })
   },
 
@@ -121,11 +123,21 @@ export default {
       setActinveMenuName: SET_ACTIVE_MODULE_NAME
     }),
     ...mapActions('common', ['toggleHeaderCollapseActions']),
+    ...mapActions('user', ['setWorkspaceId']),
+
+    // 非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
+    autoSelectWorkspaceId() {
+      const { path } = this.$route
+      if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
+        this.setWorkspaceId(this.workspaceList[1].id)
+      }
+    },
 
     // 点击一级菜单
     handleMenuSelected(item, child) {
       this.setActinveMenuId(item.id)
       this.setActinveMenuName(item.label)
+      this.autoSelectWorkspaceId()
       if (item.label === ALL_PRODUCT_NAME) return
       this.toggleHeaderCollapseActions(false)
       this.$emit('onChange', item, child)
@@ -137,6 +149,7 @@ export default {
       const pMenu = this.modules.find(item => item.label === label)
       const cMenu = pMenu?.children.find(item => item.name === curMenu.label)
       this.handleMenuSelected(pMenu, cMenu)
+      this.autoSelectWorkspaceId()
     },
 
     getBaseConfig(key) {

@@ -5,9 +5,9 @@
 -->
 <template>
   <div class="workspace-setting">
-    <div title="返回" class="back-icon" @click="handleBackClick">
+    <!-- <div title="返回" class="back-icon" @click="handleBackClick">
       <j-svg name="back" />
-    </div>
+    </div> -->
     <el-form
       class="icredit-form"
       ref="detailForm"
@@ -125,7 +125,11 @@
         </el-col>
       </el-row>
 
-      <div class="form-divider" style="margin-top: 30px;" />
+      <div
+        v-if="opType !== 'view'"
+        class="form-divider"
+        style="margin-top: 30px;"
+      />
     </el-form>
 
     <div v-if="opType !== 'view'" class="footer-btn">
@@ -492,7 +496,7 @@ export default {
       content: '';
       position: absolute;
       left: 0;
-      bottom: 12px;
+      bottom: 7px;
       width: 4px;
       height: 18px;
       opacity: 1;

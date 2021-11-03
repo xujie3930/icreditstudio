@@ -49,8 +49,25 @@ export default {
   methods: {
     // 返回
     handleBackClick() {
-      const { path } = this.$route
-      if (path === '/data-manage/data-schedule/dag') {
+      const { path, query } = this.$route
+      if (path === '/workspace/detail') {
+        if (query.id || query.opType === 'view') {
+          this.$router.replace('/workspace/space-setting')
+        } else {
+          this.$confirm('该工作空间内容尚未提交，请确认是否返回?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          })
+            .then(() => {
+              this.$router.replace('/workspace/space-setting')
+            })
+            .catch(err => {
+              console.log(err, 'err')
+            })
+            .finally(() => {})
+        }
+      } else if (path === '/data-manage/data-schedule/dag') {
         this.$router.replace('/data-shcedule/cycle-task')
       } else if (path === '/workspace/data-model/add') {
         this.$router.replace('/workspace/data-model')

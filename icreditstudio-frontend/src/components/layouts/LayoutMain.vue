@@ -55,7 +55,7 @@ import LayoutBreadcrumd from './LayoutBreadcrumd'
 import LayoutHeaderSidebar from './LayoutHeaderSiderbar'
 import LayoutMainSidebar from './LayoutMainSidebar'
 import LayoutMainFooter from './LayoutMainFooter'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   components: {
@@ -81,7 +81,9 @@ export default {
       moduleMenus: 'permission/moduleMenus',
       activeModuleId: 'permission/activeModuleId',
       isHeaderCollapse: 'common/isHeaderCollapse',
-      isCollapse: 'common/isCollapse'
+      isCollapse: 'common/isCollapse',
+      workspaceId: 'user/workspaceId',
+      workspaceList: 'user/workspaceList'
     }),
 
     keepAlive() {
@@ -95,6 +97,8 @@ export default {
   },
 
   methods: {
+    ...mapActions('user', ['setWorkspaceId']),
+
     initPage() {
       this.curBreadcrumb.push(this.topModules[1])
       this.curBreadcrumb.push(this.topModules[1].children[0])
@@ -118,20 +122,29 @@ export default {
       this.curBreadcrumb.push(breadCrumbItem[0])
     },
 
+    // 非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
+    autoSelectWorkspaceId() {
+      const { path } = this.$route
+      if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
+        this.setWorkspaceId(this.workspaceList[1].id)
+      }
+    },
+
     // 面包屑导航栏跳转
     handleCrumbJump(toMenu) {
       const { path, redirectPath } = toMenu
       this.$router.push(redirectPath || path)
+      this.autoSelectWorkspaceId()
     },
 
     // 一级菜单
     changeMenu(curMenu, childMenu) {
-      console.log('cuName', curMenu, childMenu)
       const { children = [], label } = curMenu
       this.curBreadcrumb = [curMenu]
       this.workspace = label
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
+      // this.autoSelectWorkspaceId()
       // 自动加载二级菜单的第一个菜单
       if (children.length && !childMenu) {
         this.getChildMenus(children[0])
@@ -157,6 +170,7 @@ export default {
         : [this.curBreadcrumb[0], rest]
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
+      this.autoSelectWorkspaceId()
     }
   }
 }

@@ -6,6 +6,7 @@
 
 // 需要返回的页面
 export const canBackPages = [
+  '/workspace/detail',
   '/workspace/data-model/add',
   '/data-manage/add-task',
   '/data-manage/add-build',
