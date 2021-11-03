@@ -10,6 +10,7 @@ import lombok.Getter;
 @Getter
 public enum DefaultDelimiterEnum {
     TABS("\t", "制表符"),
+    COMMA(",", "逗号"),
     ;
     private String symbol;
     private String name;

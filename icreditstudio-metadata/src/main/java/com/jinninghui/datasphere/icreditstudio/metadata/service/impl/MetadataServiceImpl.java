@@ -5,15 +5,18 @@ import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.AbstractClusterHiveConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataConnection;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,6 +37,8 @@ import java.util.stream.Collectors;
 public class MetadataServiceImpl implements MetadataService {
     @Resource
     private MetadataConnection connection;
+    @Autowired
+    private AbstractClusterHiveConnectionSource connectionSource;
 
     @Override
     public List<Database> getDatabases() {
@@ -76,6 +81,7 @@ public class MetadataServiceImpl implements MetadataService {
     @Override
     public BusinessResult<Boolean> generateWideTable(MetadataGenerateWideTableParam param) {
         String statementSql = generateWideTableStatement(param);
+        log.info("生成的hive建表语句:" + statementSql);
         Connection connection = this.connection.getConnection();
         Boolean aBoolean = smartCloseConn(connection, statementSql, (conn, sql) -> {
             String useSql = "use " + param.getDatabaseName();
@@ -91,6 +97,25 @@ public class MetadataServiceImpl implements MetadataService {
             return true;
         });
         return BusinessResult.success(aBoolean);
+    }
+
+    @Override
+    public BusinessResult<WarehouseInfo> getWarehouseInfo() {
+        WarehouseInfo info = new WarehouseInfo();
+
+        String defaultFS = connectionSource.getDefaultFS();
+        String password = connectionSource.getPassword();
+        String username = connectionSource.getUsername();
+        String wareHouse = connectionSource.getWareHouse();
+        String url = connection.getUrl();
+
+        info.setDefaultFS(defaultFS);
+        info.setUser(username);
+        info.setPassWord(password);
+        info.setThriftUrl(url);
+        info.setWarehouse(wareHouse);
+
+        return BusinessResult.success(info);
     }
 
     /**

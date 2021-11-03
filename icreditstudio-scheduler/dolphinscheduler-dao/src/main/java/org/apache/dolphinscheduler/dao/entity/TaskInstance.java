@@ -201,6 +201,10 @@ public class TaskInstance implements Serializable {
      * executor id
      */
     private String executorId;
+    //每次同步总记录数
+    private String totalRecords;
+    //每次同步总字节数
+    private String totalBytes;
 
     /**
      * executor name

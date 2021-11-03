@@ -20,7 +20,10 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000003("60000003", "请求参数无效"),
         RESOURCE_CODE_60000004("60000004", "任务ID不能为空"),
         RESOURCE_CODE_60000005("60000005", "任务执行类型必须为【0：重跑，1：终止】"),
-        RESOURCE_CODE_60000006("60000006", "没有正在重跑的任务"),
+        RESOURCE_CODE_60000006("60000006", "该任务下没有实例"),
+        RESOURCE_CODE_60000007("60000007", "无法找到对应的流程定义，任务执行失败"),
+        RESOURCE_CODE_60000008("60000008", "该任务不在【执行中】，无法终止"),
+        RESOURCE_CODE_60000009("60000009", "该任务已在 【执行中】，不能重跑，请等待执行完再重跑"),
         ;
 
         public final String code;

@@ -3,6 +3,8 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.servi
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Collection;
+
 /**
  * @author Peng
  */
@@ -12,4 +14,6 @@ public class CodeInfoQueryConditionParam {
     private String codeName;
     private boolean groupBy;
     private String groupByField;
+
+    private Collection<String> types;
 }

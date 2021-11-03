@@ -55,7 +55,7 @@ public class DispatchServiceImpl implements DispatchService {
         }
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         if(null == processDefinitionId){
-            return BusinessResult.fail("", "无法找到对应的流程定义，任务执行失败");
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.message);
         }
         String processInstanceId = processInstanceMapper.getIdByProcessDefinitionId(processDefinitionId);
         if(StringUtils.isEmpty(processInstanceId)){
@@ -80,12 +80,14 @@ public class DispatchServiceImpl implements DispatchService {
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
         if("1".equals(execType)){
-            if (processInstance.getState() == ExecutionStatus.READY_STOP) {
-                throw new AppException("该任务已经停止，无法再终止");
-            } else {
-                result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
+            if (processInstance.getState() != ExecutionStatus.RUNNING_EXECUTION) {//该任务不在 【执行中】，不能终止
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.message);
             }
+            result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
         }else{
+            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {//该任务已在 【执行中】，不能重跑
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
+            }
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
         }
         return result;
@@ -112,7 +114,6 @@ public class DispatchServiceImpl implements DispatchService {
                 CMDPARAM_RECOVER_PROCESS_ID_STRING, instanceId));
 
         if (!processService.verifyIsNeedCreateCommand(command)) {
-//            putMsg(result, Status.PROCESS_INSTANCE_EXECUTING_COMMAND, processDefinitionId);
             throw new AppException("工作流实例[{0}]正在执行命令，请稍等...", processDefinitionId);
         }
 

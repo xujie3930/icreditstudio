@@ -13,6 +13,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HiveProperties {
+    private String warehouse;
+    private String defaultFS;
     private String driverClass;
     private String username;
     private String password;

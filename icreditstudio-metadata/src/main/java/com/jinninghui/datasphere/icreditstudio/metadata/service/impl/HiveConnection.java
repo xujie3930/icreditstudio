@@ -60,6 +60,17 @@ public class HiveConnection implements MetadataConnection {
         return ipPort;
     }
 
+    @Override
+    public String getUrl() {
+        Set<String> ipPorts = connectionSource.getIpPorts();
+        if (CollectionUtils.isNotEmpty(ipPorts)) {
+            for (String ipPort : ipPorts) {
+                return joiningHiveUrl(ipPort);
+            }
+        }
+        return null;
+    }
+
     /**
      * 拼接hive连接信息
      *

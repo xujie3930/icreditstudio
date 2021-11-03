@@ -43,6 +43,15 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000026("60000026", "未找到合适的格式化器"),
         RESOURCE_CODE_60000027("60000027", "sql语法有误,请检查"),
         RESOURCE_CODE_60000028("60000028", "任务调度类型只能为0、1"),
+        RESOURCE_CODE_60000029("60000029", "获取字典列表失败"),
+        RESOURCE_CODE_60000030("60000030", "未找到款表信息"),
+        RESOURCE_CODE_60000031("60000031", "hive配置信息获取失败"),
+        RESOURCE_CODE_60000032("60000032", "未获取到宽表信息"),
+        RESOURCE_CODE_60000033("60000033", "通过sql未识别数据库信息"),
+        RESOURCE_CODE_60000034("60000034", "该任务非【执行中】状态，不能【停止执行】"),
+        RESOURCE_CODE_60000035("60000035", "该任务正在【执行中】，不能删除"),
+        RESOURCE_CODE_60000036("60000036", "该任务已经在【执行中】"),
+        RESOURCE_CODE_60000037("60000037", "任务创建失败"),
         ;
 
         public final String code;

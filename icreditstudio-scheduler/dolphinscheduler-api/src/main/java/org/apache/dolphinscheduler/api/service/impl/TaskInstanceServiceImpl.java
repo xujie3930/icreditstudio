@@ -214,4 +214,14 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     public Long getCountByByDefinitionAndStates(Long code, int[] statusArray) {
         return taskInstanceMapper.getCountByByDefinitionAndStates(code, statusArray);
     }
+
+    @Override
+    public Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime) {
+        return taskInstanceMapper.totalRecordsByWorkspaceIdAndTime(workspaceId, startTime, endTime);
+    }
+
+    @Override
+    public Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime) {
+        return taskInstanceMapper.totalBytesByWorkspaceIdAndTime(workspaceId, startTime, endTime);
+    }
 }

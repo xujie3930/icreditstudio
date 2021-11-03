@@ -22,6 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.Dataso
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -81,19 +82,23 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param) {
+    public BusinessResult<Boolean> saveDef(String userId, IcreditDatasourceSaveParam param) {
         IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
         checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         defEntity.setId(sequenceService.nextValueString());
         defEntity.setCreateTime(new Date());
+        defEntity.setCreateBy(userId);
         return BusinessResult.success(save(defEntity));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
+        if (DatasourceStatusEnum.ENABLE.getCode().equals(getById(param.getId()).getStatus())){
+            throw new AppException("70000009");
+        }
         datasourceMapper.updateStatusById(param.getId());
         //1.删除同步记录，2:把hdfs上关联数据也删除
         List<IcreditDdlSyncEntity> delList = ddlSyncMapper.selectByDatasourceId(param.getId());
@@ -105,6 +110,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    @BusinessParamsValidate
     public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
         //不管是否管理员，都只能查询未删除的数据
@@ -121,7 +127,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (Objects.nonNull(pageRequest.getStatus())) {
             wrapper.eq(IcreditDatasourceEntity.STATUS, pageRequest.getStatus());
         }
-        wrapper.orderByDesc(IcreditDatasourceEntity.CREATE_TIME);
+        wrapper.orderByAsc(IcreditDatasourceEntity.STATUS);
+        wrapper.orderByDesc(IcreditDatasourceEntity.LAST_SYNC_TIME);
         IPage<IcreditDatasourceEntity> page = this.page(
                 new Query<IcreditDatasourceEntity>().getPage(pageRequest),
                 wrapper
@@ -139,6 +146,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
+        if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())){
+            throw new AppException("70000010");
+        }
         Date date = new Date();
         //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
         IcreditDatasourceEntity dataEntity;
@@ -376,7 +386,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
-    public BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param) {
+    public BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param) {
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         //若数据源发生改动，则需要判断uri是否正确
         if (StringUtils.isNotBlank(param.getUri())) {
@@ -385,12 +395,34 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, entity);
+        entity.setUpdateBy(userId);
+        entity.setUpdateTime(new Date());
         return BusinessResult.success(updateById(entity));
     }
 
     @Override
     public List<IcreditDatasourceEntity> findAllDatasoure() {
         return datasourceMapper.selectAll();
+    }
+
+    @Override
+    public BusinessResult<DatasourceResult> getDatasourceJdbcInfo(String id) {
+        IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .datasourceId(id)
+                .build();
+        QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
+        List<IcreditDatasourceEntity> list = list(wrapper);
+
+        DatasourceResult result = null;
+        if (CollectionUtils.isNotEmpty(list)) {
+            IcreditDatasourceEntity entity = list.get(0);
+            String uri = entity.getUri();
+            result = new DatasourceResult();
+            result.setJdbcUrl(DatasourceSync.getConnUrl(uri));
+            result.setUsername(DatasourceSync.getUsername(uri));
+            result.setPassword(DatasourceSync.getPassword(uri));
+        }
+        return BusinessResult.success(result);
     }
 
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {

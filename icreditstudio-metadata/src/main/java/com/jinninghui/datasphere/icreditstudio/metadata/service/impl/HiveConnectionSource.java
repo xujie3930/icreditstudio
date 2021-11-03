@@ -85,6 +85,16 @@ public class HiveConnectionSource extends AbstractClusterHiveConnectionSource {
     }
 
     @Override
+    public String getDefaultFS() {
+        return hiveProperties.getDefaultFS();
+    }
+
+    @Override
+    public String getWareHouse() {
+        return hiveProperties.getWarehouse();
+    }
+
+    @Override
     public Set<String> getIpPorts() {
         String nodes = hiveProperties.getNodes();
         if (StringUtils.isBlank(nodes)) {

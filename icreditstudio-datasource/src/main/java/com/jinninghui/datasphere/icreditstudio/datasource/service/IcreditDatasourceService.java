@@ -5,6 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasour
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -13,6 +14,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceD
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.SourceTableInfo;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ import java.util.List;
  */
 public interface IcreditDatasourceService extends IService<IcreditDatasourceEntity> {
 
-    BusinessResult<Boolean> saveDef(IcreditDatasourceSaveParam param);
+    BusinessResult<Boolean> saveDef(String userId, IcreditDatasourceSaveParam param);
 
     BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param);
 
@@ -80,7 +82,9 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
      */
     BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param);
 
-    BusinessResult<Boolean> updateDef(IcreditDatasourceUpdateParam param);
+    BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param);
 
     List<IcreditDatasourceEntity> findAllDatasoure();
+
+    BusinessResult<DatasourceResult> getDatasourceJdbcInfo(String id);
 }

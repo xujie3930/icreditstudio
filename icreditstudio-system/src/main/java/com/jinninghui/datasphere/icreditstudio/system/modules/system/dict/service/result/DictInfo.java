@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
+package com.jinninghui.datasphere.icreditstudio.system.modules.system.dict.service.result;
 
 import lombok.Data;
 

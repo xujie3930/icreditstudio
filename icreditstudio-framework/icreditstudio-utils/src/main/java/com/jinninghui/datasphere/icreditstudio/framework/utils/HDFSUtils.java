@@ -6,6 +6,7 @@ package com.jinninghui.datasphere.icreditstudio.framework.utils;
  * @create 2021-08-27 14:13
  **/
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -15,7 +16,7 @@ import org.apache.hadoop.io.IOUtils;
 import java.io.*;
 import java.net.URI;
 
-
+@Slf4j
 public class HDFSUtils {
     //TODO:这里改为配置文件配置，，同时引入hadoop-hdfs的pom版本得和hadoop安装的版本一致
     public static String HDFS_URL = "hdfs://192.168.0.174:8020";
@@ -53,10 +54,20 @@ public class HDFSUtils {
         return stringBuffer.toString();
     }
 
+    public static void delFileFromHDFS(String delPath){
+        try {
+            fs.delete(new Path(delPath),true);
+        } catch (IOException e) {
+            log.error("文件:{}删除失败", delPath);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        String stringFromHDFS = getStringFromHDFS("/datasource/891684917153370112.txt");
+        /*String stringFromHDFS = getStringFromHDFS("/datasource/891684917153370112.txt");
         System.out.println(stringFromHDFS.length());
-        System.out.println(stringFromHDFS);
+        System.out.println(stringFromHDFS);*/
+        delFileFromHDFS("/datasource/891684917153370112.txt");
+        String stringFromHDFS = getStringFromHDFS("/datasource/891684917153370112.txt");
     }
 
 }

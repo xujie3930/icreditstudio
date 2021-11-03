@@ -18,6 +18,7 @@ package org.apache.dolphinscheduler.dao.entity;
 
 
 import lombok.Data;
+import org.apache.dolphinscheduler.common.utils.StringUtils;
 
 /**
  * user
@@ -35,4 +36,10 @@ public class User {
      */
     private String tenantCode;
 
+    public String getId() {
+        if (StringUtils.isBlank(id)) {
+            return "";
+        }
+        return id;
+    }
 }

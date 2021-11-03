@@ -34,6 +34,6 @@
             resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
         select *
         from icredit_datasource
-        where del_flag = 'N'
+        where del_flag = 'N' and STATUS = '0'
     </select>
 </mapper>

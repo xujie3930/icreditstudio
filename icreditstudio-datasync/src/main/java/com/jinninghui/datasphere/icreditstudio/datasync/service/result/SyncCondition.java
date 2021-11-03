@@ -19,4 +19,11 @@ public class SyncCondition {
      * 时间T+n
      */
     private Integer n;
+
+    public Integer getN() {
+        if (n == null) {
+            return 0;
+        }
+        return n;
+    }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.dolphinscheduler.server.worker.processor;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.sift.SiftingAppender;
 import com.alibaba.fastjson.JSONObject;
 import io.netty.channel.Channel;
 import org.apache.dolphinscheduler.common.Constants;
@@ -37,7 +35,6 @@ import org.apache.dolphinscheduler.remote.command.TaskExecuteRequestCommand;
 import org.apache.dolphinscheduler.remote.processor.NettyRequestProcessor;
 import org.apache.dolphinscheduler.remote.utils.FastJsonSerializer;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
-import org.apache.dolphinscheduler.server.log.TaskLogDiscriminator;
 import org.apache.dolphinscheduler.server.worker.cache.ResponceCache;
 import org.apache.dolphinscheduler.server.worker.cache.TaskExecutionContextCacheManager;
 import org.apache.dolphinscheduler.server.worker.cache.impl.TaskExecutionContextCacheManagerImpl;
@@ -167,18 +164,8 @@ public class TaskExecuteProcessor implements NettyRequestProcessor {
      * @return log path
      */
     private String getTaskLogPath(TaskExecutionContext taskExecutionContext) {
-        String baseLog = ((TaskLogDiscriminator) ((SiftingAppender) ((LoggerContext) LoggerFactory.getILoggerFactory())
-                .getLogger("ROOT")
-                .getAppender("TASKLOGFILE"))
-                .getDiscriminator()).getLogBase();
-        if (baseLog.startsWith(Constants.SINGLE_SLASH)) {
-            return baseLog + Constants.SINGLE_SLASH +
-                    taskExecutionContext.getProcessDefineId() + Constants.SINGLE_SLASH +
-                    taskExecutionContext.getProcessInstanceId() + Constants.SINGLE_SLASH +
-                    taskExecutionContext.getTaskInstanceId() + ".log";
-        }
         return System.getProperty("user.dir") + Constants.SINGLE_SLASH +
-                baseLog + Constants.SINGLE_SLASH +
+                "logs" + Constants.SINGLE_SLASH +
                 taskExecutionContext.getProcessDefineId() + Constants.SINGLE_SLASH +
                 taskExecutionContext.getProcessInstanceId() + Constants.SINGLE_SLASH +
                 taskExecutionContext.getTaskInstanceId() + ".log";

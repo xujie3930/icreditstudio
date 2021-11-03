@@ -159,6 +159,11 @@ public class DataSyncController {
         return syncTaskService.enable(param);
     }
 
+    /**
+     * 任务执行
+     * @param request
+     * @return
+     */
     @Logable
     @PostMapping("/run")
     public BusinessResult<Boolean> run(@RequestBody DataSyncExecRequest request) {
@@ -167,6 +172,11 @@ public class DataSyncController {
         return syncTaskService.run(param);
     }
 
+    /**
+     * 任务停止执行
+     * @param request
+     * @return
+     */
     @PostMapping("/cease")
     public BusinessResult<Boolean> cease(@RequestBody DataSyncExecRequest request) {
         DataSyncExecParam param = new DataSyncExecParam();
