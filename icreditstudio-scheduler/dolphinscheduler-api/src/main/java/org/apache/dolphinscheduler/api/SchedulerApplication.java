@@ -35,10 +35,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan("com.jinninghui")
 @ComponentScan(value = "org.apache.dolphinscheduler",
         excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "org.apache.dolphinscheduler.server.*"))
-public class ApiApplicationServer extends SpringBootServletInitializer {
+public class SchedulerApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
-        SpringApplication.run(ApiApplicationServer.class, args);
+        SpringApplication.run(SchedulerApplication.class, args);
     }
 
 }

@@ -227,6 +227,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         BusinessResult<WarehouseInfo> warehouseInfo = metadataFeign.getWarehouseInfo();
         SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId, null);
         if (Objects.isNull(wideTableField)) {
+            log.error("未找到宽表信息" + taskId);
             throw new AppException("60000032");
         }
         if (warehouseInfo.isSuccess()) {
