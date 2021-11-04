@@ -585,6 +585,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
+
+        log.info("生成宽表请求参数:" + JSONObject.toJSONString(param));
         //根据参数确定源库类型
         GenerateWideTable generateWideTable = GenerateWideTableContainer.find(param);
         if (Objects.isNull(generateWideTable)) {
