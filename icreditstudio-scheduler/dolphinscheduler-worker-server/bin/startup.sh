@@ -13,7 +13,7 @@ fi
 
 if test -z "$SERVER_JAVA_OPTS"
 then
-  export SERVER_JAVA_OPTS=" -Xmx$SERVER_HEAP_SIZE -XX:+UseG1GC"
+  export SERVER_JAVA_OPTS=" -Xmx$SERVER_HEAP_SIZE -XX:+UseG1GC -Dlogging.config=classpath:logback-worker.xml -Ddruid.mysql.usePingMethod=false"
 fi
 
 export SERVER_PID=$HOME/bin/icreditstudio-scheduler-worker.pid
