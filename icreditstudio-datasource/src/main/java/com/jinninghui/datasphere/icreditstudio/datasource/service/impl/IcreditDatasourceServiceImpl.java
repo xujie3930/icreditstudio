@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 
 import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -96,7 +97,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
-        if (DatasourceStatusEnum.ENABLE.getCode().equals(getById(param.getId()).getStatus())){
+        if (DatasourceStatusEnum.ENABLE.getCode().equals(getById(param.getId()).getStatus())) {
             throw new AppException("70000009");
         }
         datasourceMapper.updateStatusById(param.getId());
@@ -146,7 +147,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
-        if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())){
+        if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())) {
             throw new AppException("70000010");
         }
         Date date = new Date();
@@ -202,6 +203,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<List<DataSourceBaseInfo>> datasourceSearch(DataSyncQueryDataSourceSearchParam param) {
+        log.info("数据源搜索参数:" + JSONObject.toJSONString(param));
         List<DataSourceBaseInfo> results = Lists.newArrayList();
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .category(Sets.newHashSet(param.getSourceType()))
@@ -223,7 +225,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                             String columnsInfo = ddlSyncEntity.getColumnsInfo();
                             if (StringUtils.isNotBlank(columnsInfo)) {
                                 List<String> tableName = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
-                                results.addAll(Optional.ofNullable(tableName).orElse(Lists.newArrayList())
+                                List<DataSourceBaseInfo> collect = Optional.ofNullable(tableName).orElse(Lists.newArrayList())
                                         .parallelStream()
                                         .filter(StringUtils::isNotBlank)
                                         .map(n -> {
@@ -232,7 +234,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                                             info.setTableName(n);
                                             return info;
                                         })
-                                        .filter(info -> StringUtils.isBlank(param.getTableName()) || info.getTableName().contains(param.getTableName())).collect(Collectors.toList()));
+                                        .filter(info -> StringUtils.isBlank(param.getTableName()) || info.getTableName().contains(param.getTableName())).collect(Collectors.toList());
+                                results.addAll(collect);
                             }
                         }
                     }
@@ -428,7 +431,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessResult<Boolean> delDatasourceFromWorkspace(String spaceId) {
         Boolean hasExit = BooleanUtils.isTrue(datasourceMapper.selectByWorkspaceIdHasExit(spaceId));
-        if (hasExit){
+        if (hasExit) {
             throw new AppException("70000011");
         }
 
