@@ -82,7 +82,7 @@ public class HomePageServiceImpl implements HomePageService {
         taskRoughResult.setNewlyLine(newlyLine);
         //新增数据量
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyDataSize((double) newlyDataSize / 1024);
+        taskRoughResult.setNewlyDataSize((double) newlyDataSize);
         RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
@@ -128,9 +128,9 @@ public class HomePageServiceImpl implements HomePageService {
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
                 DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(date));
         for (Map<String, Object> m : definitionList) {
-            Long code = (Long) m.get("code");
-            Double runtime = taskInstanceService.runtimeTotalByDefinition(code, new int[]{});
-            runtimeRankResultList.add(new RuntimeRankResult((Integer)m.get("id"), (String)m.get("name"), runtime, (Integer)m.get("scheduleType")));
+            String definitionId = (String) m.get("id");
+            Double runtime = taskInstanceService.runtimeTotalByDefinition(definitionId, new int[]{});
+            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("id"), (String)m.get("name"), runtime, (Integer)m.get("scheduleType")));
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
@@ -150,9 +150,9 @@ public class HomePageServiceImpl implements HomePageService {
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
                 DateUtils.getStartOfDay(DateUtils.getSomeMonth(date, -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(date, -1)));
         for (Map<String, Object> m : definitionList) {
-            Long code = (Long) m.get("code");
-            Long errorNum = taskInstanceService.getCountByByDefinitionAndStates(code, new int[]{ExecutionStatus.FAILURE.getCode()});
-            runErrorRankList.add(new RunErrorRankResult((Integer)m.get("id"), (String)m.get("name"), errorNum, (Integer)m.get("scheduleType")));
+            String definitionId = (String) m.get("id");
+            Long errorNum = taskInstanceService.getCountByByDefinitionAndStates(definitionId, new int[]{ExecutionStatus.FAILURE.getCode()});
+            runErrorRankList.add(new RunErrorRankResult((String)m.get("id"), (String)m.get("name"), errorNum, (Integer)m.get("scheduleType")));
         }
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
         runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);

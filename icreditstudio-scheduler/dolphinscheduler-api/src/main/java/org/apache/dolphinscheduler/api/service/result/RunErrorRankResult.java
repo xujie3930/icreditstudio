@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 public class RunErrorRankResult implements Serializable {
 
-    private Integer id;
+    private String id;
     private String name;
     private Long errorNum;
     private Integer scheduleType;
@@ -20,7 +20,7 @@ public class RunErrorRankResult implements Serializable {
     public RunErrorRankResult() {
     }
 
-    public RunErrorRankResult(Integer id, String name, Long errorNum, Integer scheduleType) {
+    public RunErrorRankResult(String id, String name, Long errorNum, Integer scheduleType) {
         this.id = id;
         this.name = name;
         this.errorNum = errorNum;
