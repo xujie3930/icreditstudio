@@ -120,7 +120,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                         .build();
                 BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(build);
                 if (businessResult.isSuccess() && businessResult.getData() != null) {
@@ -147,7 +147,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                             .accessUser(user)
                             .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                             .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                            .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                            .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                             .build();
                     schedulerFeign.update(build);
                 }

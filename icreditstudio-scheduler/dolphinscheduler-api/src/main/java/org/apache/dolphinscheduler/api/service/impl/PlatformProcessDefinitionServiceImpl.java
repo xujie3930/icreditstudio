@@ -55,6 +55,8 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         ProcessDefinitionJson definitionJson = param.buildProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
 
+        processDefine.setWorkspaceId(param.getOrdinaryParam().getWorkspaceId());
+        processDefine.setScheduleType(0);
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
         processDefine.setName(param.getOrdinaryParam().getName());
         processDefine.setReleaseState(param.getOrdinaryParam().getReleaseState());
