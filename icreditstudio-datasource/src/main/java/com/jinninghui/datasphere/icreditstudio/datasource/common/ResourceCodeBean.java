@@ -25,6 +25,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000008("70000008", "保存失败，请检查连接信息"),
         RESOURCE_CODE_70000009("70000009", "该数据源为启用状态,不能执行删除操作"),
         RESOURCE_CODE_70000010("70000010", "该数据源为禁用状态,不能执行同步操作"),
+        RESOURCE_CODE_70000011("70000011", "该工作空间有启用的数据源,请停用后再进行此操作"),
         ;
 
         public final String code;

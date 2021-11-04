@@ -113,7 +113,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         .accessUser(new User())
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                         .build();
                 BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(build);
                 if (businessResult.isSuccess() && businessResult.getData() != null) {
@@ -130,7 +130,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         .accessUser(new User())
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                         .build();
                 schedulerFeign.update(build);
             }
@@ -781,7 +781,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             wrapper.eq(SyncTaskEntity.EXEC_STATUS, param.getExecStatus().getCode());
         }
         wrapper.orderByAsc(SyncTaskEntity.TASK_STATUS);
-        wrapper.orderByDesc(SyncTaskEntity.LAST_SCHEDULING_TIME);
+        wrapper.orderByDesc(SyncTaskEntity.CREATE_TIME);
         return wrapper;
     }
 

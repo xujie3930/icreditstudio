@@ -222,7 +222,7 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
             wideTable.setSql(sql);
             wideTable.setIncrementalFields(fieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
             wideTable.setFields(fieldInfos);
-            wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), e.getName())).collect(Collectors.toList()));
+            wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), new StringJoiner("_").add(e.getName()).toString())).collect(Collectors.toList()));
             return wideTable;
         });
     }

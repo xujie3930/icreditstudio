@@ -3,8 +3,11 @@ package com.jinninghui.datasphere.icreditstudio.workspace.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import com.jinninghui.datasphere.icreditstudio.workspace.common.enums.WorkspaceStatusEnum;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
+import com.jinninghui.datasphere.icreditstudio.workspace.feign.DatasourceFeignClient;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreditstudio.workspace.service.IcreditWorkspaceService;
@@ -56,6 +59,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     private SequenceService sequenceService;
     @Autowired
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private DatasourceFeignClient datasourceFeignClient;
 
     @Override
     @BusinessParamsValidate
@@ -101,6 +106,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BusinessResult<Boolean> deleteById(IcreditWorkspaceDelParam param) {
+        if (WorkspaceStatusEnum.ON.getCode().equals(getById(param.getId()).getStatus())){
+            throw new AppException("80000001");
+        }
+        //软删除该工作空间下的所有数据源及同步记录（暂且把数据源部分操作放在前面,保证事务性）
+        BusinessResult<Boolean> result = datasourceFeignClient.delDatasourceFromWorkspace(param.getId());
+        if (!result.isSuccess()){
+            throw new AppException(result.getReturnCode());
+        }
         workspaceMapper.updateStatusById(param.getId());
         return BusinessResult.success(true);
     }

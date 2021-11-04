@@ -24,8 +24,8 @@ import java.util.Objects;
  */
 public enum ScheduleType {
 
-    PERIOD(0, "周期实例"),
-    INSTANCE(1, "手动实例");
+    PERIOD(1, "周期实例"),
+    INSTANCE(0, "手动实例");
 
 
     private final int code;

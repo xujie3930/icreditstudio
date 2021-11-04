@@ -39,6 +39,14 @@ public class DataSyncSaveRequest {
     @Range(max = 1, message = "")
     @NotNull(message = "60000010")
     private Integer enable;
+
+    public Integer getEnable() {
+        if (enable == null) {
+            return 1;
+        }
+        return enable;
+    }
+
     /**
      * 【0：可视化，1：sql】
      */
