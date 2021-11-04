@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class DataSyncQueryDataSourceSearchRequest {
 
+    private String workspaceId;
+
     private String tableName;
 
     private Integer sourceType;

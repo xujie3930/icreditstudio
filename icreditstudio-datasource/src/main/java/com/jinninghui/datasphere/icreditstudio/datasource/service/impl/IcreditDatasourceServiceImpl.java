@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
@@ -206,6 +205,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         log.info("数据源搜索参数:" + JSONObject.toJSONString(param));
         List<DataSourceBaseInfo> results = Lists.newArrayList();
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .workspaceId(param.getWorkspaceId())
                 .category(SourceTypeTransferEnum.getCatalogue((param.getSourceType())))
                 .status(DatasourceStatusEnum.ENABLE.getCode())
                 .build();
