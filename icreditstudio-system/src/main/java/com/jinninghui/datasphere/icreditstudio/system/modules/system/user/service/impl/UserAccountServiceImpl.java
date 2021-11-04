@@ -4,22 +4,29 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.common.code.ResourceCodeBean;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserAccountEntity;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserAccountDao;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserAccountService;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountEntityPageRequest;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountRequestParams;
-import com.jinninghui.datasphere.icreditstudio.system.modules.uaa.service.SessionService;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.sm4.SM4Utils;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.common.code.ResourceCodeBean;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserAccountEntity;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.mapper.UserAccountDao;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserAccountService;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.param.UserAccountQueryConditionParam;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountEntityPageRequest;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountRequestParams;
+import com.jinninghui.datasphere.icreditstudio.system.modules.uaa.service.SessionService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -88,4 +95,30 @@ public class UserAccountServiceImpl extends ServiceImpl<UserAccountDao, UserAcco
         return false;
     }
 
+    @Override
+    public BusinessResult<Map<String, String>> getUserExecCode(String userId) {
+        UserAccountQueryConditionParam build = UserAccountQueryConditionParam.builder()
+                .userId(userId)
+                .build();
+        QueryWrapper<UserAccountEntity> wrapper = queryWrapper(build);
+        List<UserAccountEntity> userAccountEntities = userAccountDao.selectList(wrapper);
+
+        Map<String, String> results = new HashMap<>(2);
+        results.put("id", userId);
+        if (CollectionUtils.isNotEmpty(userAccountEntities)) {
+            UserAccountEntity userAccountEntity = userAccountEntities.get(0);
+            results.put("tenantCode", userAccountEntity.getAccountIdentifier());
+        } else {
+            throw new AppException("50009384");
+        }
+        return BusinessResult.success(results);
+    }
+
+    private QueryWrapper<UserAccountEntity> queryWrapper(UserAccountQueryConditionParam param) {
+        QueryWrapper<UserAccountEntity> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(param.getUserId())) {
+            wrapper.eq(UserAccountEntity.USER_ID, param.getUserId());
+        }
+        return wrapper;
+    }
 }

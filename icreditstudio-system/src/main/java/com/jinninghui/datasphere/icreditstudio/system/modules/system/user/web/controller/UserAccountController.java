@@ -1,5 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.controller;
 
+import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import com.jinninghui.datasphere.icreditstudio.system.common.log.Log;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserAccountEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserAccountService;
@@ -7,11 +13,6 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.re
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountEntityRequest;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountRequestParams;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountResetParams;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BaseController;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -148,4 +150,9 @@ public class UserAccountController extends BaseController<UserAccountEntity, Use
     }
 
 
+    @Logable
+    @GetMapping("/getUserExecCode")
+    public BusinessResult<Map<String, String>> getUserExecCode(@RequestParam("userId") String userId) {
+        return userAccountService.getUserExecCode(userId);
+    }
 }

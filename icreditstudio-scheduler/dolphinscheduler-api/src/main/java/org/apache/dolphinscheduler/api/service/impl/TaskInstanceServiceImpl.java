@@ -206,13 +206,13 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     }
 
     @Override
-    public Double runtimeTotalByDefinition(Long code, int[] statusArray) {
-        return taskInstanceMapper.runtimeTotalByDefinition(code, statusArray);
+    public Double runtimeTotalByDefinition(String definitionId, int[] statusArray) {
+        return taskInstanceMapper.runtimeTotalByDefinition(definitionId, statusArray);
     }
 
     @Override
-    public Long getCountByByDefinitionAndStates(Long code, int[] statusArray) {
-        return taskInstanceMapper.getCountByByDefinitionAndStates(code, statusArray);
+    public Long getCountByByDefinitionAndStates(String definitionId, int[] statusArray) {
+        return taskInstanceMapper.getCountByByDefinitionAndStates(definitionId, statusArray);
     }
 
     @Override

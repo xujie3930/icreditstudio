@@ -111,13 +111,9 @@
 
     <select id="selectByWorkspaceIdAndTime" resultType="map">
         select d.id as id,
-               t.post_task_code as code,
                d.name as name,
                d.schedule_type as scheduleType
         from t_ds_process_definition d
-                 left join
-             t_ds_process_task_relation t
-        on d.code = t.process_definition_code
         where d.workspace_id = #{workspaceId}
           and d.update_time > #{startTime} and d.update_time <![CDATA[<]]> #{endTime}
     </select>

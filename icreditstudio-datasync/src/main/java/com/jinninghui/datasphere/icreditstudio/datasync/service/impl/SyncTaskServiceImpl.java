@@ -106,11 +106,18 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
-//            param.setExecStatus(ExecStatusEnum.SUCCESS.getCode());
             taskId = threeStepSave(param);
+
+            User user = null;
+            BusinessResult<User> userAccountInfo = systemFeign.getUserAccountInfo(param.getUserId());
+            if (userAccountInfo.isSuccess() && userAccountInfo.getData() != null) {
+                user = userAccountInfo.getData();
+            } else {
+                throw new AppException("60000038");
+            }
             if (StringUtils.isBlank(param.getTaskId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
-                        .accessUser(new User())
+                        .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
@@ -126,13 +133,24 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     throw new AppException("60000037");
                 }
             } else {
-                FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
-                        .accessUser(new User())
-                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
-                        .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
-                        .build();
-                schedulerFeign.update(build);
+                String taskIdR = param.getTaskId();
+                SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
+                if (Objects.isNull(entity)) {
+                    throw new AppException("60000039");
+                }
+                if (!TaskStatusEnum.DRAFT.getCode().equals(param.getTaskStatus())) {
+                    if (StringUtils.isBlank(entity.getScheduleId())) {
+                        throw new AppException("60000040");
+                    }
+                    FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
+                            .processDefinitionId(entity.getScheduleId())
+                            .accessUser(user)
+                            .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                            .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
+                            .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                            .build();
+                    schedulerFeign.update(build);
+                }
             }
 
             CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
@@ -567,6 +585,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
+
+        log.info("生成宽表请求参数:" + JSONObject.toJSONString(param));
         //根据参数确定源库类型
         GenerateWideTable generateWideTable = GenerateWideTableContainer.find(param);
         if (Objects.isNull(generateWideTable)) {

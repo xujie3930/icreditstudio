@@ -131,9 +131,7 @@
     <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
         select count(t.id)
         from t_ds_task_instance t
-        left join  t_ds_task_definition d
-        on d.code=t.task_code
-        where d.workspace_id = #{workspaceId} and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
+        where t.workspace_id = #{workspaceId} and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
         <if test="states != null and states.length != 0">
             and t.state in
             <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
@@ -145,9 +143,9 @@
         select DATE_FORMAT(t.start_time,'%Y-%m-%d') AS date,
         IFNULL(COUNT(t.id),0) AS count
         from t_ds_task_instance t
-        left join  t_ds_task_definition d
-        on d.code=t.task_code
-        where d.workspace_id = #{workspaceId} and d.scheduleType = #{scheduleType}
+        left join  t_ds_process_definition d
+        on d.id=t.process_definition_id
+        where d.workspace_id = #{workspaceId} and d.schedule_type = #{scheduleType}
         and t.start_time > #{startTime} and t.end_time <![CDATA[<]]>  #{endTime}
         <if test="states != null and states.length != 0">
             and t.state in
@@ -160,9 +158,7 @@
     <select id="runtimeTotalByDefinition" resultType="java.lang.Double">
         select ifnull(SUM((unix_timestamp(i.end_time)-unix_timestamp(i.start_time)))/60, 0)
         from t_ds_task_instance i
-        right join
-        t_ds_process_task_relation r
-        on i.task_code = r.post_task_code and r.post_task_code = #{code}
+        where i.process_definition_id = #{definitionId}
         <if test="states != null and states.length != 0">
             and i.state in
             <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
@@ -173,9 +169,7 @@
     <select id="getCountByByDefinitionAndStates" resultType="java.lang.Long">
     select ifnull(COUNT(i.id), 0)
     from t_ds_task_instance i
-    right join
-    t_ds_process_task_relation r
-    on i.task_code = r.post_task_code and r.post_task_code = #{code}
+    where i.process_definition_id = #{definitionId}
     <if test="states != null and states.length != 0">
         and i.state in
         <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
@@ -202,7 +196,7 @@
     </select>
 
     <select id="totalBytesByWorkspaceIdAndTime" resultType="java.lang.Long">
-        SELECT count(total_bytes)
+        SELECT ifnull(SUM(total_bytes), 0)
         FROM t_ds_task_instance
         WHERE workspace_id = #{workspaceId} and start_time > #{startTime} and end_time <![CDATA[<]]>  #{endTime}
     </select>
