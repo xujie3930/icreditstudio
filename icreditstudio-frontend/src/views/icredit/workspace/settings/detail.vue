@@ -104,7 +104,11 @@
       </el-row>
 
       <el-form-item v-if="opType !== 'view'">
-        <el-button type="primary" @click="handleUserSelect">
+        <el-button
+          type="primary"
+          :disabled="!detailForm.director"
+          @click="handleUserSelect"
+        >
           {{
             id && detailForm.director ? '点击修改成员信息' : '点击添加成员信息'
           }}
@@ -152,7 +156,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-setting-detail'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
@@ -222,6 +226,8 @@ export default {
   },
 
   methods: {
+    ...mapActions('user', ['getPermissionListAction']),
+
     initPage() {
       const { query } = this.$route
       const {
@@ -401,6 +407,7 @@ export default {
                   title: '操作提示',
                   message: `工作空间${this.id ? '编辑' : '新增'}成功！`
                 })
+                this.getPermissionListAction()
                 this.$router.push('/workspace/space-setting')
               }
             })

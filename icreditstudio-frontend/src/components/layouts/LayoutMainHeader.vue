@@ -17,10 +17,10 @@
     <div class="iframe-layout-main-header-user">
       <!-- 工作空间 -->
       <el-select
-        v-if="workspaceCreateAuth"
         class="workspace-select"
         size="mini"
         placeholder="请选择"
+        filterable
         v-model="wid"
         @change="workspaceIdChange"
       >
