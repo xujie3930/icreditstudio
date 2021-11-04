@@ -40,5 +40,5 @@ hive:
   username: root
   password: bd@0414
   nodes: 192.168.0.174:10000
-  warehouse: /usr/hive/warehouse/
+  warehouse: /user/hive/warehouse/
   defaultFS: 192.168.0.174:8020
