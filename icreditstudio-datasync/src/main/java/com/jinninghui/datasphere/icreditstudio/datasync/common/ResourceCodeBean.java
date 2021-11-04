@@ -52,6 +52,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000035("60000035", "该任务正在【执行中】，不能删除"),
         RESOURCE_CODE_60000036("60000036", "该任务已经在【执行中】"),
         RESOURCE_CODE_60000037("60000037", "任务创建失败"),
+        RESOURCE_CODE_60000038("60000038", "获取用户信息失败"),
         ;
 
         public final String code;

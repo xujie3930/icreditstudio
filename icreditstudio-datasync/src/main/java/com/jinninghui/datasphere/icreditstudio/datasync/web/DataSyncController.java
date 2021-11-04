@@ -36,9 +36,10 @@ public class DataSyncController {
      */
     @Logable
     @PostMapping("/save")
-    public BusinessResult<ImmutablePair<String, String>> save(@RequestBody DataSyncSaveRequest request) {
+    public BusinessResult<ImmutablePair<String, String>> save(@RequestHeader(value = "x-userid") String userId, @RequestBody DataSyncSaveRequest request) {
         DataSyncSaveParam param = new DataSyncSaveParam();
         BeanCopyUtils.copyProperties(request, param);
+        param.setUserId(userId);
         return syncTaskService.save(param);
     }
 
@@ -161,6 +162,7 @@ public class DataSyncController {
 
     /**
      * 任务执行
+     *
      * @param request
      * @return
      */
@@ -174,6 +176,7 @@ public class DataSyncController {
 
     /**
      * 任务停止执行
+     *
      * @param request
      * @return
      */
@@ -193,20 +196,20 @@ public class DataSyncController {
     }
 
     @PostMapping("/dispatchPage")
-    public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest){
+    public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(@RequestBody DataSyncDispatchTaskPageRequest dispatchPageRequest) {
         DataSyncDispatchTaskPageParam param = new DataSyncDispatchTaskPageParam();
         BeanCopyUtils.copyProperties(dispatchPageRequest, param);
-        if(null != dispatchPageRequest.getDispatchStartTime()){
+        if (null != dispatchPageRequest.getDispatchStartTime()) {
             param.setDispatchStartTime(new Date(dispatchPageRequest.getDispatchStartTime()));
         }
-        if(null != dispatchPageRequest.getDispatchEndTime()) {
+        if (null != dispatchPageRequest.getDispatchEndTime()) {
             param.setDispatchEndTime(new Date(dispatchPageRequest.getDispatchEndTime()));
         }
         return syncTaskService.dispatchPage(param);
     }
 
     @GetMapping("/getProcessDefinitionId")
-    public String getProcessDefinitionIdById(@RequestParam("taskId") String taskId){
+    public String getProcessDefinitionIdById(@RequestParam("taskId") String taskId) {
         return syncTaskService.getProcessDefinitionIdById(taskId);
     }
 
