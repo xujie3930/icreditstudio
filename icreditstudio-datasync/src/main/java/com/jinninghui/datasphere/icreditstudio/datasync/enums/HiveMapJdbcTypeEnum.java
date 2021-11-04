@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum HiveMapJdbcTypeEnum {
-    VARCHAR("VARCHAR", "VARCHAR", HiveFieldCategoryEnum.CHARACTER),
+    VARCHAR("VARCHAR", "STRING", HiveFieldCategoryEnum.CHARACTER),
     CHAR("CHAR", "STRING", HiveFieldCategoryEnum.CHARACTER),
     CLOB("CLOB", "STRING", HiveFieldCategoryEnum.CHARACTER),
 
