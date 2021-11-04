@@ -76,9 +76,9 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
     List<Map<String, Object>> countByDay(@Param("workspaceId")String workspaceId, @Param("scheduleType")Integer scheduleType, @Param("startTime")Date startTime, @Param("endTime")Date endTime,@Param("states") int[] statusArray);
 
-    Double runtimeTotalByDefinition(@Param("code")Long code, @Param("states") int[] stateArray);
+    Double runtimeTotalByDefinition(@Param("definitionId")String definitionId, @Param("states") int[] stateArray);
 
-    Long getCountByByDefinitionAndStates(@Param("code")Long code, @Param("states") int[] stateArray);
+    Long getCountByByDefinitionAndStates(@Param("definitionId")String definitionId, @Param("states") int[] stateArray);
 
     List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
