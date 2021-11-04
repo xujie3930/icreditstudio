@@ -207,6 +207,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         List<DataSourceBaseInfo> results = Lists.newArrayList();
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .category(SourceTypeTransferEnum.getCatalogue((param.getSourceType())))
+                .status(DatasourceStatusEnum.ENABLE.getCode())
                 .build();
         List<IcreditDatasourceEntity> list = list(queryWrapper(build));
         log.info("数据源列表:" + JSONObject.toJSONString(list));

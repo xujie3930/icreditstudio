@@ -132,6 +132,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 } else {
                     throw new AppException("60000037");
                 }
+                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+                if (Objects.nonNull(param.getSyncCondition())) {
+                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
+                }
+                //创建宽表
+                createWideTable(wideTableParam);
             } else {
                 String taskIdR = param.getTaskId();
                 SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
@@ -152,13 +158,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     schedulerFeign.update(build);
                 }
             }
-
-            CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
-            if (Objects.nonNull(param.getSyncCondition())) {
-                wideTableParam.setPartition(param.getSyncCondition().getPartition());
-            }
-            //创建宽表
-            createWideTable(wideTableParam);
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
@@ -263,8 +262,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 SyncCondition parse = syncConditionParser.parse(syncCondition);
                 TimeInterval interval = new TimeInterval();
                 SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(parse, n -> true);
-                param.setPath(getDataxSyncPath(data.getWarehouse(), wideTableField.getName(), wideTableField.getTargetSource(), syncTimeInterval.getTimeFormat()));
                 partition = parse.getPartition();
+
+                String partitionDir = "";
+                if (StringUtils.isNotBlank(partition)) {
+                    partitionDir = syncTimeInterval.getTimeFormat();
+                }
+                param.setPath(getDataxSyncPath(data.getWarehouse(), wideTableField.getName(), wideTableField.getTargetSource(), partitionDir));
+
             }
             param.setPartition(partition);
         } else {
