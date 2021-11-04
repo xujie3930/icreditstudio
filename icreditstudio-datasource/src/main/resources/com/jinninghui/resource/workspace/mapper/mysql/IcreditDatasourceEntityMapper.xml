@@ -4,7 +4,7 @@
 
     <update id="updateStatusById" parameterType="java.lang.String">
         UPDATE icredit_datasource
-        SET del_flag = 'Y'
+        SET del_flag = 'Y' , status = '1'
         WHERE ID = #{id}
     </update>
 
@@ -34,6 +34,22 @@
             resultType="com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity">
         select *
         from icredit_datasource
-        where del_flag = 'N' and STATUS = '0'
+        <where>
+            <if test="spaceId != null and spaceId != '' ">
+                AND space_id = #{spaceId}
+            </if>
+            <if test="status != null">
+                AND status = #{status}
+            </if>
+            and del_flag = 'N'
+        </where>
+    </select>
+
+    <select id="selectByWorkspaceIdHasExit"
+            resultType="java.lang.Boolean">
+        select 1
+        from icredit_datasource
+        where space_id = #{spaceId} and STATUS = '0' and del_flag = 'N'
+        limit 1
     </select>
 </mapper>

@@ -8,13 +8,13 @@ import lombok.Getter;
 public enum WorkspaceStatusEnum {
     ON(0, "启用"),
     OFF(1, "停用");
-    private int code;
+    private Integer code;
     private String desc;
 
-    public static WorkspaceStatusEnum find(int code) {
+    public static WorkspaceStatusEnum find(Integer code) {
         WorkspaceStatusEnum result = null;
         for (WorkspaceStatusEnum value : WorkspaceStatusEnum.values()) {
-            if (value.code == code) {
+            if (value.code.equals(code)) {
                 result = value;
                 break;
             }

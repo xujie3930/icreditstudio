@@ -402,7 +402,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public List<IcreditDatasourceEntity> findAllDatasoure() {
-        return datasourceMapper.selectAll();
+        return datasourceMapper.selectAll(null, DatasourceStatusEnum.ENABLE.getCode());
     }
 
     @Override
@@ -423,6 +423,22 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             result.setPassword(DatasourceSync.getPassword(uri));
         }
         return BusinessResult.success(result);
+    }
+
+    @Override
+    public BusinessResult<Boolean> delDatasourceFromWorkspace(String spaceId) {
+        Boolean hasExit = BooleanUtils.isTrue(datasourceMapper.selectByWorkspaceIdHasExit(spaceId));
+        if (hasExit){
+            throw new AppException("70000011");
+        }
+
+        List<IcreditDatasourceEntity> entities = datasourceMapper.selectAll(spaceId, DatasourceStatusEnum.DISABLE.getCode());
+        for (IcreditDatasourceEntity entity : entities) {
+            IcreditDatasourceDelParam param = new IcreditDatasourceDelParam();
+            param.setId(entity.getId());
+            deleteById(param);
+        }
+        return BusinessResult.success(true);
     }
 
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {

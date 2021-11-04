@@ -46,6 +46,11 @@ public class TaskInstance implements Serializable {
     private String id;
 
     /**
+     * taskCode
+     */
+    private long taskCode;
+
+    /**
      * task name
      */
     private String name;
