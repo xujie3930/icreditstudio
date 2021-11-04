@@ -56,23 +56,22 @@ public class ProcessService {
             ExecutionStatus.READY_PAUSE.ordinal(),
             ExecutionStatus.READY_STOP.ordinal()};
 
-    private Connection con;
-    private String sql;
+    private String driverStr;
+    private String mysqlUrl;
+    private String pwd;
+    private String userName;
+    private String sql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
 
     {
-        Properties properties = new Properties();
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
         try {
+            Properties properties = new Properties();
             properties.load(in);
-            Class.forName(properties.getProperty("task.datasource.driver-class-name"));
-            this.con = DriverManager.getConnection(properties.getProperty("task.datasource.url"),
-                    properties.getProperty("task.datasource.username"), properties.getProperty("task.datasource.password"));
-            this.sql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
+            this.driverStr = properties.getProperty("task.datasource.driver-class-name");
+            this.mysqlUrl = properties.getProperty("task.datasource.url");
+            this.pwd = properties.getProperty("task.datasource.password");
+            this.userName = properties.getProperty("task.datasource.username");
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -1178,7 +1177,10 @@ public class ProcessService {
 
     public void updateTaskByScheduleId(String processDefinitionId, int state, Date nowDate) {
         try {
-            PreparedStatement pstmt = this.con.prepareStatement(this.sql) ;
+            Class.forName(this.driverStr);
+            Connection con = DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
+
+            PreparedStatement pstmt = con.prepareStatement(this.sql) ;
             pstmt.setInt(1, 7 == state ? 0 : 1);
             pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
@@ -1187,6 +1189,8 @@ public class ProcessService {
                 con.close();
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
