@@ -209,11 +209,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 .category(Sets.newHashSet(param.getSourceType()))
                 .build();
         List<IcreditDatasourceEntity> list = list(queryWrapper(build));
+        log.info("数据源列表:" + JSONObject.toJSONString(list));
         if (CollectionUtils.isNotEmpty(list)) {
             Set<String> dataSourceIds = list.parallelStream()
                     .filter(Objects::nonNull)
                     .map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
             Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(dataSourceIds);
+            log.info("数据源ddl信息:" + JSONObject.toJSONString(stringOptionalMap));
             if (MapUtils.isNotEmpty(stringOptionalMap)) {
                 stringOptionalMap.forEach((k, v) -> {
                     Optional<IcreditDatasourceEntity> first = list.parallelStream().filter(Objects::nonNull).filter(entity -> StringUtils.equals(entity.getId(), k)).findFirst();

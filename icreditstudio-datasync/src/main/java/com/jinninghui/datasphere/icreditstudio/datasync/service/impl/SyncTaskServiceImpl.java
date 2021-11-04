@@ -133,13 +133,24 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     throw new AppException("60000037");
                 }
             } else {
-                FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
-                        .accessUser(user)
-                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
-                        .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
-                        .build();
-                schedulerFeign.update(build);
+                String taskIdR = param.getTaskId();
+                SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
+                if (Objects.isNull(entity)) {
+                    throw new AppException("60000039");
+                }
+                if (!TaskStatusEnum.DRAFT.getCode().equals(param.getTaskStatus())) {
+                    if (StringUtils.isBlank(entity.getScheduleId())) {
+                        throw new AppException("60000040");
+                    }
+                    FeignUpdatePlatformProcessDefinitionRequest build = FeignUpdatePlatformProcessDefinitionRequest.builder()
+                            .processDefinitionId(entity.getScheduleId())
+                            .accessUser(user)
+                            .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                            .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
+                            .ordinaryParam(new PlatformTaskOrdinaryParam(param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                            .build();
+                    schedulerFeign.update(build);
+                }
             }
 
             CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);

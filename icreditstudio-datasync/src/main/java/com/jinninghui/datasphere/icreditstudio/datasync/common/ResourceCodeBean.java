@@ -53,6 +53,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000036("60000036", "该任务已经在【执行中】"),
         RESOURCE_CODE_60000037("60000037", "任务创建失败"),
         RESOURCE_CODE_60000038("60000038", "获取用户信息失败"),
+        RESOURCE_CODE_60000039("60000039", "获取任务信息失败"),
+        RESOURCE_CODE_60000040("60000040", "获取流程定义失败"),
         ;
 
         public final String code;
