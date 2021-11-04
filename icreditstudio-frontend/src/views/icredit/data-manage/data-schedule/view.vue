@@ -37,7 +37,10 @@
     </BaseDialog>
 
     <BaseDialog ref="detailLogDialog" width="800px" hideFooter title="日志">
-      <div class="log-detail" v-loading="detailLoading">{{ logDetail }}</div>
+      <div class="log-detail" v-if="logDetail" v-loading="detailLoading">
+        {{ logDetail }}
+      </div>
+      <div>暂无数据</div>
     </BaseDialog>
   </div>
 </template>
@@ -56,7 +59,7 @@ export default {
       execStatusMapping,
       title: '历史执行情况',
       titleName: '',
-      logDetail: 'sdddsds',
+      logDetail: '',
       detailLoading: false,
       tableLoading: false,
       tableData: [],
@@ -71,8 +74,7 @@ export default {
       this.$refs.baseDialog.open()
     },
 
-    handleViewLogDetail(row) {
-      console.log('detail', row)
+    handleViewLogDetail({ row }) {
       this.getLogDetailData(row.taskInstanceId)
       this.$refs.detailLogDialog.open()
     },
@@ -97,7 +99,7 @@ export default {
       API.dataScheduleSyncLogDetail({ taskInstanceId })
         .then(({ success, data }) => {
           if (success && data) {
-            // this.logDetail = data
+            this.logDetail = data
           }
         })
         .finally(() => {
