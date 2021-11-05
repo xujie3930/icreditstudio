@@ -76,6 +76,7 @@ export default {
 
     handleConfirm() {
       this.$refs.baseDialog.close()
+      this.$refs.editTable.$refs.dataSyncEditTable.clearSelection()
       this.$emit('on-confirm', this.tableData)
     }
   }

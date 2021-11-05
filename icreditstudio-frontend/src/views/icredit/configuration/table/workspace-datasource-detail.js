@@ -31,18 +31,13 @@ export default {
     },
     {
       type: 'text',
-      label: '来源表',
+      label: '表名称',
       prop: 'sourceTable'
     },
     {
       type: 'text',
       label: '字段中文名称',
       prop: 'fieldChineseName'
-    },
-    {
-      type: 'text',
-      label: '关联字典表',
-      prop: 'associateDict'
     },
     {
       type: 'text',

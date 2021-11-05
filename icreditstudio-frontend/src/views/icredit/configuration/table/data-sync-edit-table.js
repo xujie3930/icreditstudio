@@ -14,7 +14,7 @@ export default that => ({
   group: [
     {
       type: 'selection',
-      width: 40
+      width: 60
     },
     {
       type: 'text',
