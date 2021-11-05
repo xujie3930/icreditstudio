@@ -60,6 +60,11 @@
         from t_ds_schedules
         where process_definition_id =#{processDefinitionId} and release_state = 1
     </select>
+    <select id="getScheduleByDefinitionIdAndStatus" resultType="org.apache.dolphinscheduler.dao.entity.Schedule">
+        select *
+        from t_ds_schedules
+        where process_definition_id =#{processDefinitionId} and release_state = #{state}
+    </select>
 
     <update id="updateStatusByProcessDefinitionId">
         UPDATE t_ds_schedules SET release_state = #{state} WHERE process_definition_id = #{processDefinitionId}

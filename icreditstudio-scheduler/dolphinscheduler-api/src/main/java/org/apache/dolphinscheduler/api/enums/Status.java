@@ -50,6 +50,7 @@ public enum Status {
     TASK_INSTANCE_NOT_EXISTS(10020, "task instance {0} does not exist", "任务实例[{0}]不存在"),
     TASK_INSTANCE_NOT_SUB_WORKFLOW_INSTANCE(10021, "task instance {0} is not sub process instance", "任务实例[{0}]不是子流程实例"),
     SCHEDULE_CRON_NOT_EXISTS(10022, "scheduler crontab {0} does not exist", "调度配置定时表达式[{0}]不存在"),
+    DEFINITION_SCHEDULE_NOT_EXISTS(10022, "The task schedule associated with the workflow definition {0} does not exist", "工作流定义[{0}]关联的任务调度不存在"),
     SCHEDULE_CRON_ONLINE_FORBID_UPDATE(10023, "online status does not allow update operations", "调度配置上线状态不允许修改"),
     SCHEDULE_CRON_CHECK_FAILED(10024, "scheduler crontab expression validation failure: {0}", "调度配置定时表达式验证失败: {0}"),
     MASTER_NOT_EXISTS(10025, "master does not exist", "无可用master节点"),

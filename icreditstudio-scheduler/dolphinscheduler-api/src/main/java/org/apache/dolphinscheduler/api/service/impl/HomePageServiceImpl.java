@@ -41,14 +41,15 @@ public class HomePageServiceImpl implements HomePageService {
     }
 
 
-    private static final String PREROUGH= "rough";
-    private static final String PRESITUATION= "todaySituation";
-    private static final String PRETASKCOUNT= "taskCount";
-    private static final String PRERUNTIMERANK= "runtimeRank";
-    private static final String PRERUNERRORRANK= "runErrorRank";
+    private static final String SCHEDULER= "scheduler-api";
+    private static final String PREROUGH= SCHEDULER + "rough";
+    private static final String PRESITUATION= SCHEDULER + "todaySituation";
+    private static final String PRETASKCOUNT= SCHEDULER + "taskCount";
+    private static final String PRERUNTIMERANK= SCHEDULER + "runtimeRank";
+    private static final String PRERUNERRORRANK= SCHEDULER + "runErrorRank";
 
-    private static final long FIVE_MINUTE_TIME = 5 * 60L;
-    private static final long ONE_DAY_TIME = 24 * 60 * 60L;
+    private static final long FIVE_MINUTE_TIME = 1 * 60L;
+    private static final long ONE_DAY_TIME = 1 * 60L;
 
     static List<TaskSituationResult> situationZeroList = new ArrayList<>();
 
@@ -79,10 +80,10 @@ public class HomePageServiceImpl implements HomePageService {
         taskRoughResult.setFailCount(failCount);
         //新增数据量条数
         Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyLine(newlyLine);
+        taskRoughResult.setNewlyLine(((double)newlyLine) / 10000);
         //新增数据量
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyDataSize((double) newlyDataSize);
+        taskRoughResult.setNewlyDataSize(((double) newlyDataSize) / 1024);
         RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
