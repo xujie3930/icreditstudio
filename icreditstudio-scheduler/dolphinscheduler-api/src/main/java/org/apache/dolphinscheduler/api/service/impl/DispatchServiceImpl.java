@@ -85,7 +85,7 @@ public class DispatchServiceImpl implements DispatchService {
             }
             result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
         }else{
-            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {//该任务已在 【执行中】，不能重跑
+            if (processInstance.getState() != ExecutionStatus.FAILURE) {//该任务不是 【失败】状态，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);

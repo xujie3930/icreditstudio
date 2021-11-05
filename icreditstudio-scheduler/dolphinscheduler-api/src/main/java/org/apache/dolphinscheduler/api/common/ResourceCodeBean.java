@@ -23,7 +23,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000006("60000006", "该任务下没有实例"),
         RESOURCE_CODE_60000007("60000007", "无法找到对应的流程定义，任务执行失败"),
         RESOURCE_CODE_60000008("60000008", "该任务不在【执行中】，无法终止"),
-        RESOURCE_CODE_60000009("60000009", "该任务已在 【执行中】，不能重跑，请等待执行完再重跑"),
+        RESOURCE_CODE_60000009("60000009", "该任务已在【执行中】或已执行【成功】，不能进行重跑"),
         ;
 
         public final String code;
