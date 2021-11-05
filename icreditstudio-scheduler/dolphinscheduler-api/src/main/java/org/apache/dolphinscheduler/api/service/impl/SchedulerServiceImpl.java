@@ -19,6 +19,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ServiceException;
@@ -269,25 +270,23 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
     /**
      * set schedule online or offline
      *
-     * @param loginUser      login user
-     * @param projectCode    project code
-     * @param id             scheduler id
+     * @param definitionId   processDefinition id
      * @param scheduleStatus schedule status
      * @return publish result code
      */
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public Map<String, Object> setScheduleState(User loginUser,
-                                                String projectCode,
-                                                String id,
+    public Map<String, Object> setScheduleState(String definitionId,
                                                 ReleaseState scheduleStatus) {
-        Map<String, Object> result = new HashMap<String, Object>(5);
+        Map<String, Object> result = new HashMap<>(8);
 
+        ProcessDefinition definition = processDefinitionMapper.selectById(definitionId);
+        String projectCode = definition.getProjectCode();
+        Schedule scheduleObj = scheduleMapper.getScheduleByDefinitionIdAndStatus(definitionId, scheduleStatus.getCode());
         // check schedule exists
-        Schedule scheduleObj = scheduleMapper.selectById(id);
 
         if (scheduleObj == null) {
-            putMsg(result, Status.SCHEDULE_CRON_NOT_EXISTS, id);
+            putMsg(result, Status.DEFINITION_SCHEDULE_NOT_EXISTS, definitionId);
             return result;
         }
         // check schedule release state
@@ -306,7 +305,6 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
         if (scheduleStatus == ReleaseState.ONLINE) {
             // check process definition release state
             if (processDefinition.getReleaseState() != ReleaseState.ONLINE) {
-                ProcessDefinition definition = processDefinitionMapper.selectById(scheduleObj.getProcessDefinitionId());
                 logger.info("not release process definition id: {} , name : {}",
                         processDefinition.getId(), processDefinition.getName());
                 putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, definition.getName());
@@ -331,12 +329,12 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
             switch (scheduleStatus) {
                 case ONLINE: {
                     logger.info("Call master client set schedule online, project id: {}, flow id: {},host: {}", projectCode, processDefinition.getId(), masterServers);
-                    setSchedule(projectCode, id);
+                    setSchedule(projectCode, scheduleObj.getId());
                     break;
                 }
                 case OFFLINE: {
                     logger.info("Call master client set schedule offline, project id: {}, flow id: {},host: {}", projectCode, processDefinition.getId(), masterServers);
-                    deleteSchedule(projectCode, id);
+                    deleteSchedule(projectCode, scheduleObj.getId());
                     break;
                 }
                 default: {

@@ -88,15 +88,11 @@ public interface SchedulerService {
     /**
      * set schedule online or offline
      *
-     * @param loginUser      login user
-     * @param projectName    project name
      * @param id             scheduler id
      * @param scheduleStatus schedule status
      * @return publish result code
      */
-    Map<String, Object> setScheduleState(User loginUser,
-                                         String projectName,
-                                         String id,
+    Map<String, Object> setScheduleState(String id,
                                          ReleaseState scheduleStatus);
 
     /**

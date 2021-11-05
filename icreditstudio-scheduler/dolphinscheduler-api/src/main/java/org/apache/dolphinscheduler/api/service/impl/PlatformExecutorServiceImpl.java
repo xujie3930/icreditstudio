@@ -249,7 +249,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
                 param.setProcessDefinitionId(processDefinitionId);
                 manualExecSyncTask(param);
             }else{//周期执行
-                schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
+                schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
+//                schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -261,7 +262,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Transactional(rollbackFor = RuntimeException.class)
     public String stopSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
-        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
+        schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
+//        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
         return "true";
     }
 
@@ -287,7 +289,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
 
     @Override
     public String ceaseSyncTask(String processDefinitionId) {
-        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
+        schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
+//        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
         return "true";
     }
 }

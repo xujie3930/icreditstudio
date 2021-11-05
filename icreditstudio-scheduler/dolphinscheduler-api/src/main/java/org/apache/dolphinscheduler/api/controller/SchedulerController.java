@@ -175,19 +175,19 @@ public class SchedulerController extends BaseController {
      * @param id          scheduler id
      * @return publish result code
      */
-    @ApiOperation(value = "online", notes = "ONLINE_SCHEDULE_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
-    })
-    @PostMapping("/online")
-    @ApiException(PUBLISH_SCHEDULE_ONLINE_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result online(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
-                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                         @RequestParam("id") String id) {
-        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.ONLINE);
-        return returnDataList(result);
-    }
+//    @ApiOperation(value = "online", notes = "ONLINE_SCHEDULE_NOTES")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
+//    })
+//    @PostMapping("/online")
+//    @ApiException(PUBLISH_SCHEDULE_ONLINE_ERROR)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result online(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
+//                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
+//                         @RequestParam("id") String id) {
+//        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.ONLINE);
+//        return returnDataList(result);
+//    }
 
     /**
      * offline schedule
@@ -197,20 +197,20 @@ public class SchedulerController extends BaseController {
      * @param id          schedule id
      * @return operation result code
      */
-    @ApiOperation(value = "offline", notes = "OFFLINE_SCHEDULE_NOTES")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
-    })
-    @PostMapping("/offline")
-    @ApiException(OFFLINE_SCHEDULE_ERROR)
-    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-    public Result offline(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
-                          @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-                          @RequestParam("id") String id) {
-
-        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.OFFLINE);
-        return returnDataList(result);
-    }
+//    @ApiOperation(value = "offline", notes = "OFFLINE_SCHEDULE_NOTES")
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
+//    })
+//    @PostMapping("/offline")
+//    @ApiException(OFFLINE_SCHEDULE_ERROR)
+//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
+//    public Result offline(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
+//                          @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
+//                          @RequestParam("id") String id) {
+//
+//        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.OFFLINE);
+//        return returnDataList(result);
+//    }
 
     /**
      * query schedule list paging
