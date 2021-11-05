@@ -26,7 +26,6 @@ import org.apache.dolphinscheduler.api.utils.Result;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.FailureStrategy;
 import org.apache.dolphinscheduler.common.enums.Priority;
-import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.enums.WarningType;
 import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.dao.entity.User;
@@ -166,51 +165,6 @@ public class SchedulerController extends BaseController {
                 warningType, warningGroupId, failureStrategy, receivers, receiversCc, null, processInstancePriority, workerGroup);
         return returnDataList(result);
     }
-
-    /**
-     * publish schedule setScheduleState
-     *
-     * @param loginUser   login user
-     * @param projectName project name
-     * @param id          scheduler id
-     * @return publish result code
-     */
-//    @ApiOperation(value = "online", notes = "ONLINE_SCHEDULE_NOTES")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
-//    })
-//    @PostMapping("/online")
-//    @ApiException(PUBLISH_SCHEDULE_ONLINE_ERROR)
-//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-//    public Result online(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
-//                         @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-//                         @RequestParam("id") String id) {
-//        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.ONLINE);
-//        return returnDataList(result);
-//    }
-
-    /**
-     * offline schedule
-     *
-     * @param loginUser   login user
-     * @param projectName project name
-     * @param id          schedule id
-     * @return operation result code
-     */
-//    @ApiOperation(value = "offline", notes = "OFFLINE_SCHEDULE_NOTES")
-//    @ApiImplicitParams({
-//            @ApiImplicitParam(name = "id", value = "SCHEDULE_ID", required = true, dataType = "Int", example = "100")
-//    })
-//    @PostMapping("/offline")
-//    @ApiException(OFFLINE_SCHEDULE_ERROR)
-//    @AccessLogAnnotation(ignoreRequestArgs = "loginUser")
-//    public Result offline(@ApiIgnore @RequestAttribute(value = SESSION_USER) User loginUser,
-//                          @ApiParam(name = "projectName", value = "PROJECT_NAME", required = true) @PathVariable String projectName,
-//                          @RequestParam("id") String id) {
-//
-//        Map<String, Object> result = schedulerService.setScheduleState(loginUser, projectName, id, ReleaseState.OFFLINE);
-//        return returnDataList(result);
-//    }
 
     /**
      * query schedule list paging

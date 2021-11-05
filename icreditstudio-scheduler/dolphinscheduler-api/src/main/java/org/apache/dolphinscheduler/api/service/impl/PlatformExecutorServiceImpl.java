@@ -1,6 +1,5 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
@@ -250,7 +249,6 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
                 manualExecSyncTask(param);
             }else{//周期执行
                 schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
-//                schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.ONLINE.getCode());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -263,7 +261,6 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     public String stopSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
         schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
-//        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
         return "true";
     }
 
@@ -290,7 +287,6 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     public String ceaseSyncTask(String processDefinitionId) {
         schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
-//        schedulerService.updateStatusByProcessDefinitionId(processDefinitionId, ReleaseState.OFFLINE.getCode());//scheduler下线
         return "true";
     }
 }

@@ -19,7 +19,6 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.exceptions.ServiceException;
@@ -282,7 +281,12 @@ public class SchedulerServiceImpl extends BaseServiceImpl implements SchedulerSe
 
         ProcessDefinition definition = processDefinitionMapper.selectById(definitionId);
         String projectCode = definition.getProjectCode();
-        Schedule scheduleObj = scheduleMapper.getScheduleByDefinitionIdAndStatus(definitionId, scheduleStatus.getCode());
+        Schedule scheduleObj = null;
+        if(ReleaseState.ONLINE == scheduleStatus){//上线操作
+            scheduleObj = scheduleMapper.getScheduleByDefinitionIdAndStatus(definitionId, ReleaseState.OFFLINE.getCode());
+        }else{//下线操作
+            scheduleObj = scheduleMapper.getScheduleByDefinitionIdAndStatus(definitionId, ReleaseState.ONLINE.getCode());
+        }
         // check schedule exists
 
         if (scheduleObj == null) {
