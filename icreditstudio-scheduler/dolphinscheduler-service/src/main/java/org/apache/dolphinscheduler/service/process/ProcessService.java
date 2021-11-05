@@ -389,6 +389,7 @@ public class ProcessService {
         processInstance.setProcessInstancePriority(command.getProcessInstancePriority());
         String workerGroup = StringUtils.isBlank(command.getWorkerGroup()) ? Constants.DEFAULT_WORKER_GROUP : command.getWorkerGroup();
         processInstance.setWorkerGroup(workerGroup);
+        processInstance.setWorkspaceId(processDefinition.getWorkspaceId());
         processInstance.setTimeout(processDefinition.getTimeout());
         processInstance.setTenantCode(processDefinition.getTenantCode());
         return processInstance;

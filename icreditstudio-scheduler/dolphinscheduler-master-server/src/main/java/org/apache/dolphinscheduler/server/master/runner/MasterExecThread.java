@@ -445,6 +445,7 @@ public class MasterExecThread implements Runnable {
             taskInstance.setState(ExecutionStatus.SUBMITTED_SUCCESS);
             // process instance id
             taskInstance.setProcessInstanceId(processInstance.getId());
+            taskInstance.setWorkspaceId(processInstance.getWorkspaceId());
             // task instance node json
             taskInstance.setTaskJson(JSON.toJSONString(taskNode));
             // task instance type
