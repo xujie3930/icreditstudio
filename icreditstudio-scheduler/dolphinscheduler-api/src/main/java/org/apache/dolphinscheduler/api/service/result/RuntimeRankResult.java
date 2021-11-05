@@ -12,7 +12,7 @@ import java.io.Serializable;
 @Data
 public class RuntimeRankResult implements Serializable {
 
-    private Integer id;
+    private String id;
     private String name;
     private Double speedTime;
     private Integer scheduleType;
@@ -20,7 +20,7 @@ public class RuntimeRankResult implements Serializable {
     public RuntimeRankResult() {
     }
 
-    public RuntimeRankResult(Integer id, String name, Double speedTime, Integer scheduleType) {
+    public RuntimeRankResult(String id, String name, Double speedTime, Integer scheduleType) {
         this.id = id;
         this.name = name;
         this.speedTime = speedTime;

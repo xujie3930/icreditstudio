@@ -10,6 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlatformTaskOrdinaryParam {
 
+    private String workspaceId;
     /**
      * 启用/停用
      */

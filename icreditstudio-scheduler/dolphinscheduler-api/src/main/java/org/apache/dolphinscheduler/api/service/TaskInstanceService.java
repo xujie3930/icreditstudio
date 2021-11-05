@@ -79,9 +79,9 @@ public interface TaskInstanceService {
      */
     List<TaskCountResult> countByDay(SchedulerHomepageRequest request);
 
-    Double runtimeTotalByDefinition(Long code, int[] statusArray);
+    Double runtimeTotalByDefinition(String definitionId, int[] statusArray);
 
-    Long getCountByByDefinitionAndStates(Long code, int[] statusArray);
+    Long getCountByByDefinitionAndStates(String definitionId, int[] statusArray);
 
     Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
 

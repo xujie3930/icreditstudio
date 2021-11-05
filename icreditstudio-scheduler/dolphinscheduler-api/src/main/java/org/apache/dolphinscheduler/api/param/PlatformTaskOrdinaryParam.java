@@ -8,6 +8,8 @@ import org.apache.dolphinscheduler.common.enums.ReleaseState;
  */
 @Data
 public class PlatformTaskOrdinaryParam {
+
+    private String workspaceId;
     /**
      * 启用/停用
      */

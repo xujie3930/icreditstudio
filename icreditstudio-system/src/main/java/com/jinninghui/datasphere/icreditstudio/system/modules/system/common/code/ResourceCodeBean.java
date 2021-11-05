@@ -380,6 +380,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_50009381("50009381", "控件标识已存在"),
         RESOURCE_CODE_50009382("50009382", "表单名称不超过50字符"),
         RESOURCE_CODE_50009383("50009383", "表单描述不超过200字符"),
+        RESOURCE_CODE_50009384("50009384", "未找到账户信息"),
         ;
 
         public final String code;

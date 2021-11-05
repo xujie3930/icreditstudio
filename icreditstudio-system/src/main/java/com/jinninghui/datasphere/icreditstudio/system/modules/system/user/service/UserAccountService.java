@@ -7,6 +7,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.request.UserAccountRequestParams;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -29,5 +30,6 @@ public interface UserAccountService extends IService<UserAccountEntity> {
 
     boolean isFirstLogin(String userId);
 
+    BusinessResult<Map<String,String>> getUserExecCode(String userId);
 }
 

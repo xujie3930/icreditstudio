@@ -117,6 +117,7 @@ public class IcreditDatasourceController {
         return datasourceService.syncById(id);
     }
 
+    @Logable
     @PostMapping("/datasourceSearch")
     public BusinessResult<List<DataSourceBaseInfo>> datasourceSearch(@RequestBody DataSyncQueryDataSourceSearchRequest request) {
         DataSyncQueryDataSourceSearchParam param = new DataSyncQueryDataSourceSearchParam();
