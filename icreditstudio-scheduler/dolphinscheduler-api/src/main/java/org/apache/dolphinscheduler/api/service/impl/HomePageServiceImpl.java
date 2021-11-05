@@ -41,14 +41,15 @@ public class HomePageServiceImpl implements HomePageService {
     }
 
 
-    private static final String PREROUGH= "rough";
-    private static final String PRESITUATION= "todaySituation";
-    private static final String PRETASKCOUNT= "taskCount";
-    private static final String PRERUNTIMERANK= "runtimeRank";
-    private static final String PRERUNERRORRANK= "runErrorRank";
+    private static final String SCHEDULER= "scheduler-api";
+    private static final String PREROUGH= SCHEDULER + "rough";
+    private static final String PRESITUATION= SCHEDULER + "todaySituation";
+    private static final String PRETASKCOUNT= SCHEDULER + "taskCount";
+    private static final String PRERUNTIMERANK= SCHEDULER + "runtimeRank";
+    private static final String PRERUNERRORRANK= SCHEDULER + "runErrorRank";
 
-    private static final long FIVE_MINUTE_TIME = 5 * 60L;
-    private static final long ONE_DAY_TIME = 24 * 60 * 60L;
+    private static final long FIVE_MINUTE_TIME = 1 * 60L;
+    private static final long ONE_DAY_TIME = 1 * 60L;
 
     static List<TaskSituationResult> situationZeroList = new ArrayList<>();
 
