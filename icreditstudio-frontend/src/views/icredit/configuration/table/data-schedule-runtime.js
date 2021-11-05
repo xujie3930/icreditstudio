@@ -16,7 +16,7 @@ export default {
       type: 'text',
       label: '任务id',
       prop: 'id',
-      width: 80
+      width: 200
     },
     {
       type: 'text',

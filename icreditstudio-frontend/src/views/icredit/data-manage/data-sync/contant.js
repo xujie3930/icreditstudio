@@ -81,6 +81,17 @@ export const fieldTypeOptions = [
   }
 ]
 
+const tableFieldTypeMapping = () => {
+  const typeMapping = {}
+  fieldTypeOptions.forEach(({ label, value }) => {
+    typeMapping[value] = label
+  })
+  console.log('typeMapping', typeMapping)
+  return typeMapping
+}
+
+export const fieldTypeMapping = tableFieldTypeMapping()
+
 // 关联类型icon名称映射
 export const iconMapping = {
   0: { icon: 'left-link', name: '左关联' },

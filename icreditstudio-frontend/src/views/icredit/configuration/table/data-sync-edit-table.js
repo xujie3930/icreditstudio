@@ -1,22 +1,20 @@
 /*
- * @Author: lizheng
- * @Description: 数据源详情
- * @Date: 2021-08-24
+ * @Description: 编辑表结构
+ * @Date: 2021-11-05
  */
 
 import { fieldTypeMapping } from '../../data-manage/data-sync/contant'
 
-export default {
-  refName: 'data-manage-detial',
-  id: '',
+export default that => ({
+  refName: 'dataSyncEditTable',
+  id: 'dataSyncEditTable',
   isBorder: true,
   hasPage: false,
-  maxHeight: 350,
+  maxHeight: 370,
   group: [
     {
-      type: 'index',
-      label: '序号',
-      width: '100px'
+      type: 'selection',
+      width: 60
     },
     {
       type: 'text',
@@ -35,19 +33,23 @@ export default {
       prop: 'sourceTable'
     },
     {
-      type: 'text',
-      label: '字段中文名称',
-      prop: 'fieldChineseName'
-    },
-    {
-      type: 'text',
-      label: '关联字典表',
-      prop: 'associateDict'
-    },
-    {
-      type: 'text',
+      type: 'slot',
       label: '备注',
       prop: 'remark'
+    },
+    {
+      type: 'operation',
+      label: '操作',
+      prop: 'operation',
+      width: '100px',
+      fixed: 'right',
+      operationList: [
+        {
+          func: that.handleDelete,
+          label: '删除',
+          key: 'view'
+        }
+      ]
     }
   ]
-}
+})
