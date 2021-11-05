@@ -40,7 +40,7 @@
       <div class="log-detail" v-if="logDetail" v-loading="detailLoading">
         {{ logDetail }}
       </div>
-      <div>暂无数据</div>
+      <div v-else>暂无数据</div>
     </BaseDialog>
   </div>
 </template>
@@ -70,6 +70,7 @@ export default {
   methods: {
     open(row) {
       this.titleName = row.taskName
+      this.logDetail = ''
       this.getHistoryLogData(row.taskId)
       this.$refs.baseDialog.open()
     },
@@ -98,7 +99,7 @@ export default {
       this.detailLoading = true
       API.dataScheduleSyncLogDetail({ taskInstanceId })
         .then(({ success, data }) => {
-          if (success && data) {
+          if (success) {
             this.logDetail = data
           }
         })
