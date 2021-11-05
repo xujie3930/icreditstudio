@@ -345,6 +345,13 @@
     <!-- 设置关联关系 -->
     <Affiliations ref="linkDialog" @on-confirm="handleVisualConfirm" />
 
+    <!-- 编辑表结构 -->
+    <EditTable
+      ref="editTable"
+      @on-confirm="data => (secondTaskForm.fieldInfos = data)"
+    />
+
+    <!-- 数据库同名选择对应IP下的table -->
     <Dialog
       width="600px"
       title="提示"
@@ -388,6 +395,7 @@ import {
 import { randomNum, deepClone, uriSplit } from '@/utils/util'
 import { validStrZh, validStrSpecial } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
+import EditTable from './edit-table'
 
 const viewDefaultData = {
   associatedType: undefined,
@@ -395,7 +403,7 @@ const viewDefaultData = {
 }
 
 export default {
-  components: { HeaderStepBar, Affiliations, Dialog },
+  components: { HeaderStepBar, Affiliations, EditTable, Dialog },
   mixins: [crud],
 
   data() {
@@ -930,6 +938,9 @@ export default {
               this.sameNameDataBase = data.sameNameDataBase || []
               data.sameNameDataBase.length && this.$refs.baseDialog.open()
             }
+
+            // 编辑表结构
+            this.$refs.editTable.open(deepClone(this.secondTaskForm.fieldInfos))
           }
         })
         .finally(() => {
@@ -1199,9 +1210,10 @@ export default {
 
     // 数据源表模糊搜索
     getFluzzyTableName(tableName) {
+      const { workspaceId } = this
       const { sourceType } = this.secondTaskForm
       this.searchLoading = true
-      API.dataSyncFluzzySearch({ tableName, sourceType })
+      API.dataSyncFluzzySearch({ tableName, sourceType, workspaceId })
         .then(({ success, data }) => {
           if (success && data) {
             this.tableNameOptions = data

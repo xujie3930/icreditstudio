@@ -219,7 +219,7 @@ export default {
     // 执行
     handleRunBtnClick(row) {
       const { taskId, execMode } = row
-      const params = { taskId, exexType: execMode }
+      const params = { taskId, execType: execMode }
       API.dataSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({
