@@ -105,7 +105,7 @@ export default {
 
     iconName: {
       type: String,
-      default: 'el-icon-question'
+      default: 'el-icon-warning'
     },
 
     iconColor: {

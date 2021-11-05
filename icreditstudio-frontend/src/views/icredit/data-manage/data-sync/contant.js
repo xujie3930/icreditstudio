@@ -75,8 +75,8 @@ export const fieldTypeOptions = [
     value: 2,
     label: '字符串类',
     children: [
-      { label: 'STRING', value: 'STRING' },
-      { label: 'VARCHAR', value: 'VARCHAR' }
+      { label: 'STRING', value: 'STRING' }
+      // { label: 'VARCHAR', value: 'VARCHAR' }
     ]
   }
 ]

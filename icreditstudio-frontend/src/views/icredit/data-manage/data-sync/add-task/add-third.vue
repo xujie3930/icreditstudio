@@ -5,7 +5,7 @@
 -->
 <template>
   <div class="add-task-page">
-    <div class="add-task">
+    <div :class="['add-task', showCorn ? 'add-task-show' : '']">
       <HeaderStepBar :cur-step="3" />
 
       <el-form
@@ -82,7 +82,7 @@
           label="Cron"
           prop="cron"
         >
-          <el-input
+          <!-- <el-input
             style="width: 500px"
             placeholder="请输入或选择cron表达式"
             v-model="taskForm.cron"
@@ -92,7 +92,14 @@
               icon="el-icon-open"
               @click="handleOpenCron"
             ></el-button>
-          </el-input>
+          </el-input> -->
+          <CronSelect
+            style="width:600px"
+            v-model="taskForm.cron"
+            @open="open => (showCorn = open)"
+            @reset="cron => (taskForm.cron = cron)"
+            @change="cron => (taskForm.cron = cron)"
+          ></CronSelect>
         </el-form-item>
       </el-form>
 
@@ -123,24 +130,24 @@
       </footer>
     </div>
 
-    <Cron
+    <!-- <Cron
       ref="cron"
       :value="taskForm.cron"
       @on-close="taskForm.cron = ''"
       @on-confirm="value => (taskForm.cron = value)"
-    />
+    /> -->
   </div>
 </template>
 
 <script>
 import HeaderStepBar from './header-step-bar'
-import Cron from '@/components/cron'
+import CronSelect from '@/views/icredit/components/cron-select'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
 
 export default {
-  components: { HeaderStepBar, Cron },
+  components: { HeaderStepBar, CronSelect },
 
   data() {
     const verifyLimitRate = (rule, value, cb) => {
@@ -150,6 +157,7 @@ export default {
     }
 
     return {
+      showCorn: false,
       opType: '',
       detailLoading: false,
       settingBtnLoading: false,
@@ -267,6 +275,10 @@ export default {
 
 .add-task {
   margin-top: 30px;
+}
+
+.add-task-show .footer-btn-wrap {
+  position: relative;
 }
 
 .add-task-content {
