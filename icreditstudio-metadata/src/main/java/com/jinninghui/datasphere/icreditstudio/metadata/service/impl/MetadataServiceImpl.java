@@ -178,6 +178,7 @@ public class MetadataServiceImpl implements MetadataService {
             if (StringUtils.isNotEmpty(param.getDelimiter())) {
                 statement.add(delimiterCondition);
             }
+            statement.add("stored as  orc");
         }
         return statement.toString();
     }
