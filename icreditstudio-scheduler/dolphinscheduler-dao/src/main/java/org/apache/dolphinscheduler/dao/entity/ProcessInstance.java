@@ -142,6 +142,8 @@ public class ProcessInstance {
      */
     private String executorId;
 
+    private String workspaceId;
+
     /**
      * executor name
      */

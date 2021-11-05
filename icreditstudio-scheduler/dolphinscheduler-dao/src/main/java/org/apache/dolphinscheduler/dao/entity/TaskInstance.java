@@ -201,6 +201,7 @@ public class TaskInstance implements Serializable {
      */
     private String workerGroup;
 
+    private String workspaceId;;
 
     /**
      * executor id
