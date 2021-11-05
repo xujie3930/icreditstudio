@@ -430,7 +430,7 @@ export default {
 
       fieldTypeOptions,
       radioBtnOption,
-      tableConfiguration,
+      tableConfiguration: tableConfiguration(this),
       treeData: [],
       zoningOptions: [],
       increFieldsOptions: [],
@@ -515,6 +515,20 @@ export default {
 
     handleChangeTableName(name) {
       console.log(name)
+    },
+
+    // 删除表格的某一行
+    handleDateleRow(options) {
+      console.log(options, 'lplp')
+      this.$confirm('请确认是否删除该表字段?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.secondTaskForm.fieldInfos.splice(options.$index, 1)
+        })
+        .catch(() => {})
     },
 
     // sql语句更改重置数据
@@ -940,7 +954,7 @@ export default {
             }
 
             // 编辑表结构
-            this.$refs.editTable.open(deepClone(this.secondTaskForm.fieldInfos))
+            // this.$refs.editTable.open(deepClone(this.secondTaskForm.fieldInfos))
           }
         })
         .finally(() => {
@@ -1562,6 +1576,12 @@ export default {
 
       .table {
         padding: 0 10px;
+
+        ::v-deep {
+          .el-input__inner {
+            border: none;
+          }
+        }
       }
 
       .label-wrap {
