@@ -20,9 +20,9 @@ public class TaskRoughResult implements Serializable {
      */
     private Long failCount;
     /**
-     * 新增数据量条数
+     * 新增数据量条数,单位万
      */
-    private Long newlyLine = 0L;
+    private Double newlyLine;
     /**
      * 新增总数据量，单位KB
      */

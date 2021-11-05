@@ -24,6 +24,7 @@ public class IcreditDdlSyncEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     public static final String DATASOURCE_ID = "datasource_id";
+    public static final String VERSION = "version";
     /**
      * 主键id
      */

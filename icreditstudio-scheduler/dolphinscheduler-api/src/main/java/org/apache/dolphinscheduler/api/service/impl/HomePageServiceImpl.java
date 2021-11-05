@@ -79,10 +79,10 @@ public class HomePageServiceImpl implements HomePageService {
         taskRoughResult.setFailCount(failCount);
         //新增数据量条数
         Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyLine(newlyLine);
+        taskRoughResult.setNewlyLine(((double)newlyLine) / 10000);
         //新增数据量
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyDataSize((double) newlyDataSize);
+        taskRoughResult.setNewlyDataSize(((double) newlyDataSize) / 1024);
         RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
