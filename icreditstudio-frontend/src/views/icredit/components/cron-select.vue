@@ -23,7 +23,7 @@
         @change="handleChange"
         @reset="handleReset"
         @fill="handleConfirm"
-        @hide="showCorn = false"
+        @hide="handleClose"
       />
     </div>
   </div>
