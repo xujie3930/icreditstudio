@@ -6,7 +6,6 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -15,7 +14,6 @@ import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceD
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.SourceTableInfo;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -33,7 +31,7 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
 
     BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param);
 
-    BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest);
+    BusinessPageResult queryPage(String userId, IcreditDatasourceEntityPageRequest pageRequest);
 
     BusinessResult<String> testConn(IcreditDatasourceTestConnectRequest request);
 
