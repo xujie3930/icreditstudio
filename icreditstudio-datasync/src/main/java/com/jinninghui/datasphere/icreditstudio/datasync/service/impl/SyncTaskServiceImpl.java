@@ -570,6 +570,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, version);
             if (Objects.nonNull(wideTable)) {
                 info = new TaskBuildInfo();
+                info.setDatasourceId(wideTable.getDatasourceId());
                 info.setWideTableName(wideTable.getName());
                 info.setSourceType(wideTable.getSourceType());
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
@@ -583,8 +584,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     data.setLeftSourceDatabase(tableInfo.getDatabase());
                     data.setLeftSource(tableInfo.getTableName());
                     info.setView(Lists.newArrayList(data));
+                    info.setDatasourceId(tableInfo.getDatasourceId());
                 } else {
                     info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+                }
+                if (CollectionUtils.isNotEmpty(tableInfos)) {
+                    TableInfo tableInfo = tableInfos.get(0);
+                    info.setDatasourceId(tableInfo.getDatasourceId());
                 }
                 List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTable.getId());
                 info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
