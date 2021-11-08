@@ -20,4 +20,6 @@ public interface IcreditWorkspaceUserMapper extends BaseMapper<IcreditWorkspaceU
     List<Map<String, String>> getWorkspaceByUserId(@Param("id") String id);
 
     List<IcreditWorkspaceUserEntity> getUserListById(String id);
+
+    List<String> getWorkSpaceIdsByUserId(@Param("userId") String userId);
 }

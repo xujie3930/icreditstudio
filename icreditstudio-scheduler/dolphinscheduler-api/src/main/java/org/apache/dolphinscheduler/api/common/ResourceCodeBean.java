@@ -24,6 +24,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000007("60000007", "无法找到对应的流程定义，任务执行失败"),
         RESOURCE_CODE_60000008("60000008", "该任务不在【执行中】，无法终止"),
         RESOURCE_CODE_60000009("60000009", "该任务已在【执行中】或已执行【成功】，不能进行重跑"),
+        RESOURCE_CODE_60000010("60000010", "工作空间ID不能为空"),
+        RESOURCE_CODE_60000011("60000011", "当前登陆用户ID不能为空"),
         ;
 
         public final String code;

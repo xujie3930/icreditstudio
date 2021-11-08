@@ -145,7 +145,7 @@ $--layout-tab-height: 36px;
 }
 
 .h100 {
-  height: 100%;
+  height: calc(100vh - 126px);
   // min-height: calc(100% - 124px);
 }
 

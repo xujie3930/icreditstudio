@@ -4,7 +4,7 @@
     <div class="login-text-box">
       <div class="system">
         <img class="logo" src="@/assets/svg/login/logo.svg" />
-        <h3 class="system-name">iCredit可信数据中台</h3>
+        <h3 class="system-name">{{ SYSTEM_NAME }}</h3>
       </div>
       <img class="icon" src="@/assets/svg/login/icon.svg" />
     </div>
@@ -81,6 +81,7 @@ import _ from 'lodash'
 import dayjs from 'dayjs'
 import { mapActions } from 'vuex'
 import { sm4Config } from '@/config/index'
+import { SYSTEM_NAME } from '@/config/constant'
 
 const ICONS = ['el-icon-s-custom', 'el-icon-s-comment', 'el-icon-s-help']
 export default {
@@ -92,6 +93,7 @@ export default {
     }
 
     return {
+      SYSTEM_NAME,
       btnLoading: false,
       time: dayjs().format('HH:mm:ss'),
       isShowIcon: false, // icon

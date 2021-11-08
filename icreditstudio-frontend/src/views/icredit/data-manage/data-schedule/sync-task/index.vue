@@ -95,20 +95,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import ViewLog from '../view'
 import Message from '@/views/icredit/components/message'
-
 import crud from '@/mixins/crud'
 import workspace from '@/mixins/workspace'
-
 import formOption from '@/views/icredit/configuration/form/schedule-sync-task'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-sync-task'
-
+import API from '@/api/icredit'
 import {
   taskStatusMapping,
   execStatusMapping
 } from '@/views/icredit/data-manage/data-sync/contant'
-import API from '@/api/icredit'
 
 export default {
   name: 'schedulePageList',
@@ -137,6 +135,10 @@ export default {
       taskStatusMapping,
       execStatusMapping
     }
+  },
+
+  computed: {
+    ...mapGetters('user', ['userInfo'])
   },
 
   created() {
@@ -198,6 +200,7 @@ export default {
 
     // 表格请求接口参数拦截
     interceptorsRequestRetrieve(params) {
+      const { id: currLoginUserId } = this.userInfo
       const { workspaceId } = this
       const { scheduleTime, ...restParams } = params
       const dispatchStartTime = scheduleTime?.length ? scheduleTime[0] : ''
@@ -206,6 +209,7 @@ export default {
         : ''
       return {
         workspaceId,
+        currLoginUserId,
         dispatchStartTime,
         dispatchEndTime,
         ...restParams

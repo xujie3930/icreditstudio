@@ -1,5 +1,5 @@
 <template>
-  <div class="home iframe-flex-row-center-center">
+  <div class="home iframe-flex-row-center-center h100">
     iCredit
   </div>
 </template>

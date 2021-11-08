@@ -54,4 +54,9 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
     public List<IcreditWorkspaceUserEntity> queryMemberListByWorkspaceId(String id) {
         return workspaceUserMapper.getUserListById(id);
     }
+
+    @Override
+    public List<String> getWorkSpaceIdsByUserId(String userId) {
+        return workspaceUserMapper.getWorkSpaceIdsByUserId(userId);
+    }
 }

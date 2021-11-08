@@ -22,10 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.SystemFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
@@ -86,6 +83,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private SystemFeign systemFeign;
     @Resource
     private DatasourceFeign datasourceFeign;
+    @Resource
+    private WorkSpaceFeign workSpaceFeign;
 
     @Override
     @BusinessParamsValidate
@@ -395,6 +394,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         saveParam.setTaskId(taskId);
         saveParam.setWideTableSql(param.getSql());
         saveParam.setSourceType(param.getSourceType());
+        saveParam.setDialect(param.getDialect());
         syncTaskBuildSave(saveParam);
         return taskId;
     }
@@ -442,6 +442,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setVersion(param.getVersion());
         entity.setSourceType(param.getSourceType());
         entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
+        entity.setDialect(param.getDialect());
+
+        List<TableInfo> sourceTables = param.getSourceTables();
+        if (CollectionUtils.isNotEmpty(sourceTables)) {
+            TableInfo tableInfo = sourceTables.get(0);
+            entity.setDatasourceId(tableInfo.getDatasourceId());
+        }
         if (StringUtils.isNotBlank(param.getTaskId())) {
             Map<String, Object> columnMap = Maps.newHashMap();
             columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
@@ -576,6 +583,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
                 info.setTargetSource(wideTable.getTargetSource());
                 info.setSql(wideTable.getSqlStr());
+
+                info.setDialect(wideTable.getDialect());
 
                 List<TableInfo> tableInfos = JSONArray.parseArray(wideTable.getSourceTables(), TableInfo.class);
                 if (CollectionUtils.size(tableInfos) == 1) {
@@ -863,6 +872,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
+        List<String> workspaceIdList = new ArrayList<>();
+        if ("all".equals(param.getWorkspaceId())) {
+            workspaceIdList = workSpaceFeign.getWorkSpaceIdsByUserId(dispatchPageDTO.getCurrLoginUserId());
+        } else {
+            workspaceIdList.add(param.getWorkspaceId());
+        }
+        dispatchPageDTO.setWorkspaceIds(workspaceIdList);
         dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
         long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
         List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);
