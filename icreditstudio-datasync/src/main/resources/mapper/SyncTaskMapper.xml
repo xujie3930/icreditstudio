@@ -43,6 +43,9 @@
         <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
+        <if test="taskStatus == null">
+            AND task_status IN(0,2)
+        </if>
         <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
         </if>
@@ -58,7 +61,6 @@
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
         </if>
-        --         AND version is not null
     </select>
     <select id="dispatchList" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.DataSyncDispatchTaskPageResult">
         SELECT id AS taskId,task_name AS taskName,task_status AS taskStatus,last_update_time AS createTime,last_scheduling_time AS lastDispatchTime,version AS taskVersion,
@@ -68,6 +70,9 @@
         <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
+        <if test="taskStatus == null">
+            AND task_status IN(0,2)
+        </if>
         <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
         </if>
@@ -83,7 +88,6 @@
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
         </if>
-        --         AND version is not null
         ORDER BY last_update_time DESC
         limit #{pageNum},#{pageSize}
     </select>

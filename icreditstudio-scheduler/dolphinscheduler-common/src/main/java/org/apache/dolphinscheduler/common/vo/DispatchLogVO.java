@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.common.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,7 +15,8 @@ public class DispatchLogVO {
     //task任务实例状态
     private Integer taskInstanceState;
     //task任务执行时间
-    private String taskInstanceExecTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date taskInstanceExecTime;
     //task任务执行时长
     private Long taskInstanceExecDuration;
     //task任务执行 同步数据量
