@@ -68,6 +68,9 @@
         <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
+        <if test="taskStatus == null">
+            AND task_status IN(0,2)
+        </if>
         <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
         </if>
@@ -83,7 +86,6 @@
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
         </if>
-        --         AND version is not null
         ORDER BY last_update_time DESC
         limit #{pageNum},#{pageSize}
     </select>
