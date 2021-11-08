@@ -10,6 +10,8 @@ public class DataSyncDispatchTaskPageParam extends BusinessBasePageForm {
 
     //工作空间id
     private String workspaceId;
+    //当前登陆人ID
+    private String currLoginUserId;
     //任务名称
     private String taskName;
     //任务状态
