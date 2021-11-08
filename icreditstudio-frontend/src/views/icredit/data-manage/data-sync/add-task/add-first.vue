@@ -62,13 +62,13 @@
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button
+        <!-- <el-button
           class="btn"
           :loading="saveSettingLoading"
           @click="saveSetting('taskForm')"
         >
           保存设置
-        </el-button>
+        </el-button> -->
         <el-button class="btn" type="primary" @click="nextStep('taskForm')">
           下一步
         </el-button>
@@ -175,33 +175,31 @@ export default {
     },
 
     // 保存设置
-    saveSetting(name) {
-      this.$refs[name].validate(valid => {
-        if (valid) {
-          const params = {
-            workspaceId: this.workspaceId,
-            callStep: 1,
-            ...this.taskForm
+    saveSetting() {
+      const params = {
+        workspaceId: this.workspaceId,
+        callStep: 1,
+        ...this.taskForm
+      }
+      this.saveSettingLoading = true
+      API.dataSyncAdd(params)
+        .then(({ success, data }) => {
+          if (success && data) {
+            this.taskForm.taskId = data.taskId
+            this.$ls.set('taskForm', this.taskForm)
+            this.$notify.success({ title: '操作结果', message: '保存成功' })
           }
-          this.saveSettingLoading = true
-          API.dataSyncAdd(params)
-            .then(({ success, data }) => {
-              if (success && data) {
-                this.taskForm.taskId = data.taskId
-                this.$notify.success({ title: '操作结果', message: '保存成功' })
-              }
-            })
-            .finally(() => {
-              this.saveSettingLoading = false
-            })
-        }
-      })
+        })
+        .finally(() => {
+          this.saveSettingLoading = false
+        })
     },
 
     // 下一步
     nextStep(name) {
       this.$refs[name].validate(valid => {
         if (valid) {
+          this.saveSetting()
           const { createMode } = this.taskForm
           this.$ls.set('taskForm', this.taskForm)
           this.$router.push({

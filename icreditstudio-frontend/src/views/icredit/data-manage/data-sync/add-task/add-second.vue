@@ -324,13 +324,13 @@
         >
           上一步
         </el-button>
-        <el-button
+        <!-- <el-button
           class="btn"
           :disabled="!secondTaskForm.sql && isCanSaveSetting"
           :loading="saveSettingLoading"
           @click="handleSaveSetting"
           >保存设置</el-button
-        >
+        > -->
         <el-button
           class="btn"
           type="primary"
@@ -753,7 +753,6 @@ export default {
     // 保存设置
     handleSaveSetting() {
       const params = this.handleTaskFormParams()
-      if (this.handleVerifyTip()) return
       this.saveSettingLoading = true
       API.dataSyncAdd(params)
         .then(({ success, data }) => {
@@ -770,6 +769,7 @@ export default {
     // 下一步
     handleStepClick() {
       if (this.handleVerifyTip()) return
+      this.handleSaveSetting()
       this.handleTaskFormParams()
       this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
     },

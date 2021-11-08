@@ -82,17 +82,6 @@
           label="Cron"
           prop="cron"
         >
-          <!-- <el-input
-            style="width: 500px"
-            placeholder="请输入或选择cron表达式"
-            v-model="taskForm.cron"
-          >
-            <el-button
-              slot="append"
-              icon="el-icon-open"
-              @click="handleOpenCron"
-            ></el-button>
-          </el-input> -->
           <CronSelect
             style="width:600px"
             v-model="taskForm.cron"
@@ -129,13 +118,6 @@
         </el-button>
       </footer>
     </div>
-
-    <!-- <Cron
-      ref="cron"
-      :value="taskForm.cron"
-      @on-close="taskForm.cron = ''"
-      @on-confirm="value => (taskForm.cron = value)"
-    /> -->
   </div>
 </template>
 
