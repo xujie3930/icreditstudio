@@ -551,7 +551,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             info = new TaskDefineInfo();
             BeanCopyUtils.copyProperties(byId, info);
-            info.setEnable(TaskStatusEnum.find(byId.getTaskStatus()).getStatusEnum().getCode());
+            info.setEnable(byId.getTaskStatus());
             info.setTaskId(byId.getId());
             info.setTaskDescribe(byId.getTaskDescribe());
             info.setCreateMode(byId.getCreateMode());
