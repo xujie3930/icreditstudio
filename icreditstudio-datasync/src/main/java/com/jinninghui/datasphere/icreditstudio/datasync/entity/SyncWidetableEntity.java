@@ -40,6 +40,10 @@ public class SyncWidetableEntity extends SyncBaseEntity implements Serializable 
      * 关联关系json
      */
     private String viewJson;
+    /**
+     * 数据库方言
+     */
+    private String dialect;
 
     /**
      * 数据源ID

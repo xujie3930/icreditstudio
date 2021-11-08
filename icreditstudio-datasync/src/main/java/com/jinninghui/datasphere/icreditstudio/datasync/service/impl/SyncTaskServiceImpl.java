@@ -394,6 +394,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         saveParam.setTaskId(taskId);
         saveParam.setWideTableSql(param.getSql());
         saveParam.setSourceType(param.getSourceType());
+        saveParam.setDialect(param.getDialect());
         syncTaskBuildSave(saveParam);
         return taskId;
     }
@@ -441,6 +442,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setVersion(param.getVersion());
         entity.setSourceType(param.getSourceType());
         entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
+        entity.setDialect(param.getDialect());
+
+        List<TableInfo> sourceTables = param.getSourceTables();
+        if (CollectionUtils.isNotEmpty(sourceTables)) {
+            TableInfo tableInfo = sourceTables.get(0);
+            entity.setDatasourceId(tableInfo.getDatasourceId());
+        }
         if (StringUtils.isNotBlank(param.getTaskId())) {
             Map<String, Object> columnMap = Maps.newHashMap();
             columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
@@ -575,6 +583,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
                 info.setTargetSource(wideTable.getTargetSource());
                 info.setSql(wideTable.getSqlStr());
+
+                info.setDialect(wideTable.getDialect());
 
                 List<TableInfo> tableInfos = JSONArray.parseArray(wideTable.getSourceTables(), TableInfo.class);
                 if (CollectionUtils.size(tableInfos) == 1) {
@@ -863,9 +873,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
         List<String> workspaceIdList = new ArrayList<>();
-        if("all".equals(param.getWorkspaceId())){
+        if ("all".equals(param.getWorkspaceId())) {
             workspaceIdList = workSpaceFeign.getWorkSpaceIdsByUserId(dispatchPageDTO.getCurrLoginUserId());
-        }else{
+        } else {
             workspaceIdList.add(param.getWorkspaceId());
         }
         dispatchPageDTO.setWorkspaceIds(workspaceIdList);
