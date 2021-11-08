@@ -138,6 +138,7 @@
             </div>
             <div v-if="buildDetailInfo.syncRate" class="content-item">
               <div class="label">
+                <span class="required-icon">*</span>
                 <span>限流速率</span>
               </div>
               <div>{{ buildDetailInfo.limitRate }} 条/s</div>
