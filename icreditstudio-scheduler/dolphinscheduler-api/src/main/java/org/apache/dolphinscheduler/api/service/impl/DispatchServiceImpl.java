@@ -42,6 +42,12 @@ public class DispatchServiceImpl implements DispatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<BusinessPageResult<DispatchTaskPageResult>> dispatchPage(DispatchTaskPageParam param) {
+        if(StringUtils.isEmpty(param.getCurrLoginUserId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.message);
+        }
+        if(StringUtils.isEmpty(param.getWorkspaceId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000010.message);
+        }
         return dataSyncDispatchTaskFeignClient.dispatchPage(param);
     }
 
