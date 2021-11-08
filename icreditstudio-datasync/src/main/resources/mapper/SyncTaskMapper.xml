@@ -39,7 +39,10 @@
     <select id="countDispatch" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO" resultType="java.lang.Long">
         SELECT count(1)
         FROM icredit_sync_task
-        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        WHERE delete_flag = 0 AND workspace_id IN
+        <foreach collection="workspaceIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
         <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>
@@ -66,7 +69,10 @@
         SELECT id AS taskId,task_name AS taskName,task_status AS taskStatus,last_update_time AS createTime,last_scheduling_time AS lastDispatchTime,version AS taskVersion,
         collect_mode AS dispatchType,task_param_json AS dispatchPeriod,exec_status AS dispatchStatus
         FROM icredit_sync_task
-        WHERE workspace_id = #{workspaceId} AND delete_flag = 0
+        WHERE delete_flag = 0 AND workspace_id IN
+        <foreach collection="workspaceIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
         <if test="taskStatus != null">
             AND task_status = #{taskStatus}
         </if>

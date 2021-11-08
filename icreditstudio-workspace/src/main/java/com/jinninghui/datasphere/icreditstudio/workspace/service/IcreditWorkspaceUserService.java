@@ -21,4 +21,6 @@ public interface IcreditWorkspaceUserService extends IService<IcreditWorkspaceUs
     BusinessPageResult queryPage(IcreditWorkspaceUserEntityPageRequest pageRequest);
 
     List<Map<String, String>> getWorkspaceByUserId(String id);
+
+    List<String> getWorkSpaceIdsByUserId(String userId);
 }

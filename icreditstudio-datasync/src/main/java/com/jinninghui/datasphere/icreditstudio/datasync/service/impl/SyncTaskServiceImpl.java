@@ -22,10 +22,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.SystemFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
@@ -86,6 +83,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private SystemFeign systemFeign;
     @Resource
     private DatasourceFeign datasourceFeign;
+    @Resource
+    private WorkSpaceFeign workSpaceFeign;
 
     @Override
     @BusinessParamsValidate
@@ -107,15 +106,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
             taskId = threeStepSave(param);
-
-            User user = null;
-            BusinessResult<User> userAccountInfo = systemFeign.getUserAccountInfo(param.getUserId());
-            if (userAccountInfo.isSuccess() && userAccountInfo.getData() != null) {
-                user = userAccountInfo.getData();
-            } else {
-                throw new AppException("60000038");
-            }
-            if (StringUtils.isBlank(param.getTaskId())) {
+            //查询访问用户信息
+            User user = getSystemUserByUserId(param.getUserId());
+            //执行发布任务时，taskId一定不为空，查询
+            SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(param.getTaskId());
+            if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
@@ -160,6 +155,34 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
+    }
+
+    private User getSystemUserByUserId(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            log.error("查询系统用户,传递参数userId为空");
+            throw new AppException("60000046");
+        }
+        User user = null;
+        BusinessResult<User> userAccountInfo = systemFeign.getUserAccountInfo(userId);
+        if (userAccountInfo.isSuccess() && Objects.nonNull(userAccountInfo.getData())) {
+            user = userAccountInfo.getData();
+        } else {
+            throw new AppException("60000038");
+        }
+        return user;
+    }
+
+    private SyncTaskEntity getSyncTaskEntityById(String taskId) {
+        if (StringUtils.isBlank(taskId)) {
+            log.error("根据同步任务ID查询信息，参数任务ID为空");
+            throw new AppException("60000016");
+        }
+        SyncTaskEntity byId = getById(taskId);
+        if (Objects.isNull(byId)) {
+            log.error("根据同步任务ID查询信息失败，taskId:" + taskId);
+            throw new AppException("60000039");
+        }
+        return byId;
     }
 
     /**
@@ -527,7 +550,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             info = new TaskDefineInfo();
             BeanCopyUtils.copyProperties(byId, info);
-            info.setEnable(TaskStatusEnum.find(byId.getTaskStatus()).getStatusEnum().getCode());
+            info.setEnable(byId.getTaskStatus());
             info.setTaskId(byId.getId());
             info.setTaskDescribe(byId.getTaskDescribe());
             info.setCreateMode(byId.getCreateMode());
@@ -546,6 +569,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, version);
             if (Objects.nonNull(wideTable)) {
                 info = new TaskBuildInfo();
+                info.setDatasourceId(wideTable.getDatasourceId());
                 info.setWideTableName(wideTable.getName());
                 info.setSourceType(wideTable.getSourceType());
                 info.setSyncCondition(syncConditionParser.parse(wideTable.getSyncCondition()));
@@ -559,8 +583,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     data.setLeftSourceDatabase(tableInfo.getDatabase());
                     data.setLeftSource(tableInfo.getTableName());
                     info.setView(Lists.newArrayList(data));
+                    info.setDatasourceId(tableInfo.getDatasourceId());
                 } else {
                     info.setView(fileAssociatedParser.parse(wideTable.getViewJson()));
+                }
+                if (CollectionUtils.isNotEmpty(tableInfos)) {
+                    TableInfo tableInfo = tableInfos.get(0);
+                    info.setDatasourceId(tableInfo.getDatasourceId());
                 }
                 List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTable.getId());
                 info.setFieldInfos(transferToWideTableFieldInfo(wideTableFields));
@@ -656,7 +685,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> stop(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.message);
         }
         entity = new SyncTaskEntity();
@@ -675,10 +704,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() == entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() == entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000042.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000042.message);
         }
-        if(ExecStatusEnum.EXEC.getCode() == entity.getExecStatus()){
+        if (ExecStatusEnum.EXEC.getCode() == entity.getExecStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.message);
         }
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
@@ -692,7 +721,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> enable(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.message);
         }
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
@@ -711,7 +740,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.message);
         }
         if (0 != param.getExecType() && 1 != param.getExecType()) {
@@ -740,7 +769,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> cease(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000045.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000045.message);
         }
         if (ExecStatusEnum.EXEC.getCode() != entity.getExecStatus()) {//不是 “执行中” 状态
@@ -833,6 +862,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
+        List<String> workspaceIdList = new ArrayList<>();
+        if("all".equals(param.getWorkspaceId())){
+            workspaceIdList = workSpaceFeign.getWorkSpaceIdsByUserId(dispatchPageDTO.getCurrLoginUserId());
+        }else{
+            workspaceIdList.add(param.getWorkspaceId());
+        }
+        dispatchPageDTO.setWorkspaceIds(workspaceIdList);
         dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
         long dispatchCount = syncTaskMapper.countDispatch(dispatchPageDTO);
         List<DataSyncDispatchTaskPageResult> dispatchList = syncTaskMapper.dispatchList(dispatchPageDTO);

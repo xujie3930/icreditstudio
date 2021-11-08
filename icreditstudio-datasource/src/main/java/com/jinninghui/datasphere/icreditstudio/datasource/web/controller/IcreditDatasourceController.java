@@ -7,7 +7,6 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DataSourceBaseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.result.DatasourceDetailResult;
@@ -99,7 +98,7 @@ public class IcreditDatasourceController {
     @Logable
     public BusinessResult<BusinessPageResult> pageList(@RequestHeader(value = "x-userid") String userId,
                                                        @RequestBody IcreditDatasourceEntityPageRequest pageRequest) {
-        BusinessPageResult page = datasourceService.queryPage(pageRequest);
+        BusinessPageResult page = datasourceService.queryPage(userId, pageRequest);
         return BusinessResult.success(page);
     }
 

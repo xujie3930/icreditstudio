@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 
 import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,6 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
+import com.jinninghui.datasphere.icreditstudio.datasource.feign.UserWorkspaceFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
@@ -19,11 +21,11 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasou
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceCatalogue;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceResult;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.DataSourceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.datasource.web.request.IcreditDatasourceTestConnectRequest;
@@ -74,12 +76,12 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     private IcreditDatasourceMapper datasourceMapper;
     @Resource
     private IcreditDdlSyncService icreditDdlSyncService;
-
     @Autowired
     private SequenceService sequenceService;
-
     @Autowired
     private SystemFeignClient systemFeignClient;
+    @Autowired
+    private UserWorkspaceFeignClient userWorkspaceFeignClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -112,12 +114,26 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     @BusinessParamsValidate
-    public BusinessPageResult queryPage(IcreditDatasourceEntityPageRequest pageRequest) {
+    public BusinessPageResult queryPage(String userId, IcreditDatasourceEntityPageRequest pageRequest) {
         QueryWrapper<IcreditDatasourceEntity> wrapper = new QueryWrapper<>();
         //不管是否管理员，都只能查询未删除的数据
         wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
         if (StringUtils.isNotBlank(pageRequest.getSpaceId())) {
             wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getSpaceId());
+        }else {
+            //根据userId查询所有的空间id
+            BusinessResult<Boolean> result = systemFeignClient.isAdmin();
+            if (result.isSuccess() && result.getData()){
+                log.info("当前用户为管理员，拥有全部空间权限");
+                userId = "";
+            }
+            BusinessResult<List<Map<String, String>>> workspaceList = userWorkspaceFeignClient.getWorkspaceListByUserId(userId);
+            List<Map<String, String>> data = workspaceList.getData();
+            List<String> list = new ArrayList<>();
+            for (Map<String, String> map : data) {
+                list.add(map.get("id"));
+            }
+            wrapper.in(IcreditDatasourceEntity.SPACE_ID, list);
         }
         if (StringUtils.isNotBlank(pageRequest.getName())) {
             wrapper.like(IcreditDatasourceEntity.NAME, pageRequest.getName());
@@ -147,6 +163,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
+        String result = String.format("同步成功，新增 %s 张表， 修改 %s 张表， 删除 %s 张表", 0, 0, 0);
         if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())) {
             throw new AppException("70000010");
         }
@@ -178,11 +195,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
                 extracted(map, key, ddlEntity);
+                result = String.format("同步成功，新增 %s 张表", map.get("tablesCount"));
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
                     extracted(map, key, ddlEntity);
+                    result = getResult(oldColumnsInfo, map.get("datasourceInfo"));
                 }
             }
         } catch (Exception e) {
@@ -192,7 +211,27 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
         datasourceMapper.updateById(dataEntity);
-        return BusinessResult.success(map.get("tablesCount"));
+        return BusinessResult.success(result);
+    }
+
+    private String getResult(String oldColumnsInfo, String datasourceInfo) {
+        //根据新旧json统计新增、删除、修改表的数量
+        Integer add = 0;
+        Integer del = 0;
+        Integer update = 0;
+        List<TableSyncInfo> oldStructure = JSON.parseArray(oldColumnsInfo, TableSyncInfo.class);
+        List<TableSyncInfo> newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
+        for (TableSyncInfo tableSyncInfo : oldStructure) {
+            if (newStructure.stream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
+                    !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList())))
+                update ++ ;
+            else if (!newStructure.stream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName())))
+                del ++ ;
+        }
+        for (TableSyncInfo tableSyncInfo : newStructure) {
+            if (!oldStructure.stream().anyMatch(o -> o.getTableName().equals(tableSyncInfo.getTableName()))) add ++ ;
+        }
+        return String.format("同步成功，新增 %s 张表， 修改 %s 张表， 删除 %s 张表", add, update, del);
     }
 
     private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {

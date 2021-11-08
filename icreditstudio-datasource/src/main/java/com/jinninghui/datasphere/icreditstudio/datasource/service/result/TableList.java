@@ -11,18 +11,19 @@ import java.util.List;
  * @create 2021-11-05 11:42
  **/
 @Data
-public class DatasourceStructureResult {
-
+public class TableList {
+    /**
+     * 表名
+     */
     private String tableName;
     private List<ColumnList> columnList = new ArrayList<>();
 
     @Data
-    public class ColumnList{
-
+    public class ColumnList {
         /**
          * 字段名称
          */
-        private String fieldName;
+        private String field;
         /**
          * 备注
          */
@@ -30,6 +31,6 @@ public class DatasourceStructureResult {
         /**
          * 来源库
          */
-        private String fieldType;
+        private String type;
     }
 }

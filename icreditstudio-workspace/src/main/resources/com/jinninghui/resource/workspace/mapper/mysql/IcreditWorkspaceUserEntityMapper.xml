@@ -22,4 +22,10 @@
         from icredit_workspace_user
         where space_id = #{id};
     </select>
+
+    <select id="getWorkSpaceIdsByUserId" resultType="java.lang.String">
+        select space_id
+        from icredit_workspace_user
+        where user_id = #{userId};
+    </select>
 </mapper>

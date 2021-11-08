@@ -46,5 +46,11 @@ public class IcreditWorkspaceUserController {
         return BusinessResult.success(workspaceUserService.getWorkspaceByUserId(id));
     }
 
+    @GetMapping("/getWorkSpaceIdsByUserId")
+    @Logable
+    public List<String> getWorkSpaceIdsByUserId(@RequestParam("userId") String userId) {
+        return workspaceUserService.getWorkSpaceIdsByUserId(userId);
+    }
+
 }
 
