@@ -4,7 +4,7 @@
  * @Date: 2021-09-23
 -->
 <template>
-  <div class="schedule w100">
+  <div class="schedule w100 h100">
     <div class="schedule-header" v-loading="roughDataloading">
       <div class="title">
         <span class="left">近72小时内的调度情况</span>

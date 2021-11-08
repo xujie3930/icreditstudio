@@ -9,7 +9,7 @@
 
     <div class="header-text">
       <j-svg name="logo" class="logo" />
-      <span class="system-name">iCredit可信数据中台</span>
+      <span class="system-name">{{ SYSTEM_NAME }}</span>
       <span class="split"></span>
       <span class="menu">{{ workspace }}</span>
     </div>
@@ -114,7 +114,7 @@ import {
   SET_ACTIVE_MODULE_ID,
   SET_ACTIVE_MODULE_NAME
 } from '@/store/mutation-types'
-import { DEFAULT_HEAD_IMG_URL } from '@/config/constant'
+import { DEFAULT_HEAD_IMG_URL, SYSTEM_NAME } from '@/config/constant'
 import { settingUserShortMenuStatus } from '@/api/system'
 import { ALL_PRODUCT_NAME } from '@/config/menu'
 
@@ -138,6 +138,7 @@ export default {
   },
 
   data() {
+    this.SYSTEM_NAME = SYSTEM_NAME
     this.getSystemTheme = getSystemTheme
     return {
       wid: undefined,

@@ -60,8 +60,8 @@ export default {
 
   props: {
     top: {
-      type: String,
-      default: '25vh'
+      type: String
+      // default: '25vh'
     },
 
     opType: {

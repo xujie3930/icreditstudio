@@ -100,6 +100,7 @@
 </template>
 
 <script>
+import API from '@/api/icredit'
 import { uriSplit } from '@/utils/util'
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource-detail'
@@ -146,7 +147,23 @@ export default {
       this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
       this.detailData = uriSplit(data.uri, data)
+      console.log('data==', data)
+      this.getTableDetailData(data.id)
       this.$refs.baseDialog.open()
+    },
+
+    // 获取表结构信息详情
+    getTableDetailData(id) {
+      this.tableLoading = true
+      API.datasourceTableDetail(id)
+        .then(({ success, data }) => {
+          if (success && data) {
+            this.tableData = data.columnList
+          }
+        })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
 
     handleClose() {

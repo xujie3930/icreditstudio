@@ -10,6 +10,7 @@ export default _this => {
     refName: 'workspace-setting',
     id: 'setting',
     isBorder: true,
+    isStripe: true,
     hasPage: true,
     size: 'small',
     customBtnConfig: [
