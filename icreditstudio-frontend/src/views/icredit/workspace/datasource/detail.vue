@@ -158,7 +158,7 @@ export default {
       API.datasourceTableDetail(id)
         .then(({ success, data }) => {
           if (success && data) {
-            this.tableData = data.columnList
+            this.tableData = data
           }
         })
         .finally(() => {

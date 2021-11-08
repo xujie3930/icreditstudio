@@ -32,7 +32,7 @@ export default {
     {
       type: 'text',
       label: '表名称',
-      prop: 'sourceTable'
+      prop: 'tableName'
     },
     {
       type: 'text',
