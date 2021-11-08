@@ -3,12 +3,16 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.HiveFieldCategoryEnum;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.HiveMapJdbcTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDdlConditionParam;
-import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ColumnListResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.TableList;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.HDFSUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -61,16 +65,27 @@ public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper,
     }
 
     @Override
-    public BusinessResult<List<DatasourceStructureResult>> getDatasourceStructure(String id) {
-        List<DatasourceStructureResult> list = new ArrayList<>();
+    public BusinessResult<List<ColumnListResult>> getDatasourceStructure(String id) {
+        List<ColumnListResult> list = new ArrayList<>();
         IcreditDdlSyncEntity entity = ddlSyncMapper.selectMaxVersionByDatasourceId(id);
         if (Objects.isNull(entity)){
             return BusinessResult.success(list);
         }
         try {
             String datasourceJson = HDFSUtils.getStringFromHDFS(entity.getColumnsInfo());
-            datasourceJson.replaceAll("field", "fieldName").replaceAll("type", "fieldType");
-            list = JSON.parseArray(datasourceJson, DatasourceStructureResult.class);
+            List<TableList> tableLists = JSON.parseArray(datasourceJson, TableList.class);
+            for (int i = 0; i < tableLists.size(); i++) {
+                for (TableList.ColumnList columnList : tableLists.get(i).getColumnList()) {
+                    ColumnListResult result = new ColumnListResult();
+                    result.setTableName(tableLists.get(i).getTableName());
+                    result.setFieldName(columnList.getField());
+                    HiveMapJdbcTypeEnum jdbcTypeEnum = HiveMapJdbcTypeEnum.find(columnList.getType());
+                    result.setFieldType(Lists.newArrayList(jdbcTypeEnum.getCategoryEnum().getCode(), jdbcTypeEnum.getJdbcType()));
+                    result.setRemark(columnList.getRemark());
+                    result.setFieldChineseName(columnList.getRemark());
+                    list.add(result);
+                }
+            }
         } catch (Exception e) {
             log.error("查看数据源失败:{}", e.getMessage());
         }

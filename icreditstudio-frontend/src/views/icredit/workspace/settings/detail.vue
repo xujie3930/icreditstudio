@@ -1,13 +1,9 @@
 <!--
- * @Author: lizheng
  * @Description: 新增或编辑工作空间
  * @Date: 2021-08-17
 -->
 <template>
   <div class="workspace-setting">
-    <!-- <div title="返回" class="back-icon" @click="handleBackClick">
-      <j-svg name="back" />
-    </div> -->
     <el-form
       class="icredit-form"
       ref="detailForm"
@@ -297,8 +293,8 @@ export default {
 
     // 选中负责人
     handleUserChangeClick(item) {
-      console.log(item, 'ite')
       if (item) {
+        const { userId: cteUserId } = this.currentUser
         const {
           id: userId,
           name: username,
@@ -318,7 +314,11 @@ export default {
           functionalAuthority,
           createTime: new Date().getTime()
         }
-        this.detailForm.memberList.splice(1, 1, this.selectedUser)
+        this.detailForm.memberList.splice(
+          userId === cteUserId ? 0 : 1,
+          1,
+          this.selectedUser
+        )
       }
     },
 
@@ -326,33 +326,32 @@ export default {
     userSelectCallback({ opType, users }) {
       this.$refs.usersSelect.close()
       if (opType === 'confirm') {
-        this.detailForm.memberList = users
-          .map(item => {
-            const {
-              id: userId,
-              userName: username,
-              roleName: userRole,
-              orgNames,
-              functionalAuthority,
-              dataAuthority
-            } = item
-            return {
-              userId,
-              username,
-              userRole,
-              orgNames,
-              functionalAuthority,
-              dataAuthority,
-              createTime: new Date().getTime()
-            }
-          })
-          .filter(
-            ({ userId }) =>
-              this.currentUser.userId !== userId &&
-              this.selectedUser.userId !== userId
-          )
-        this.detailForm.memberList.unshift(this.selectedUser)
-        this.detailForm.memberList.unshift(this.currentUser)
+        this.detailForm.memberList = users.map(item => {
+          const {
+            id: userId,
+            userName: username,
+            roleName: userRole,
+            orgNames,
+            functionalAuthority,
+            dataAuthority
+          } = item
+          return {
+            userId,
+            username,
+            userRole,
+            orgNames,
+            functionalAuthority,
+            dataAuthority,
+            createTime: new Date().getTime()
+          }
+        })
+        // .filter(
+        //   ({ userId }) =>
+        //     this.currentUser.userId !== userId &&
+        //     this.selectedUser.userId !== userId
+        // )
+        // this.detailForm.memberList.unshift(this.selectedUser)
+        // this.detailForm.memberList.unshift(this.currentUser)
       }
     },
 
@@ -382,7 +381,7 @@ export default {
       }
     },
 
-    // 新增
+    // 新增或编辑工作空间
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {

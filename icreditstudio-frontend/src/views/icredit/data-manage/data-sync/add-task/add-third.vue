@@ -147,7 +147,7 @@ export default {
 
       taskForm: {
         maxThread: 2,
-        limitRate: '',
+        limitRate: undefined,
         syncRate: 1,
         scheduleType: 1,
         cron: ''
@@ -166,7 +166,9 @@ export default {
         period: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
-        limitRate: [{ validator: verifyLimitRate, trigger: 'blur' }],
+        limitRate: [
+          { required: true, validator: verifyLimitRate, trigger: 'blur' }
+        ],
         cron: [
           {
             required: true,
