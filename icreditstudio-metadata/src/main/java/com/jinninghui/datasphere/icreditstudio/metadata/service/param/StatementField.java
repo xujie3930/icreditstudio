@@ -15,4 +15,12 @@ public class StatementField {
      * 字段类型
      */
     private String fieldType;
+    /**
+     * 长度
+     */
+    private int length;
+    /**
+     * 备注
+     */
+    private String comment;
 }

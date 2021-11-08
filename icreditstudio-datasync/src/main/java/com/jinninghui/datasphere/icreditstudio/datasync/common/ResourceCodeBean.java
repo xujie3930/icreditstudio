@@ -60,6 +60,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000043("60000043", "任务不是【停用】状态，不能进行【启用】"),
         RESOURCE_CODE_60000044("60000044", "任务还没【启用】，不能进行【执行|立即执行】"),
         RESOURCE_CODE_60000045("60000045", "任务还没【启用】，不能进行【停止执行】"),
+        RESOURCE_CODE_60000046("60000046", "用户ID为空"),
         ;
 
         public final String code;

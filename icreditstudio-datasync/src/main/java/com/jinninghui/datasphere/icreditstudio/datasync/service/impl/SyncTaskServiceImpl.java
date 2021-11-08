@@ -107,15 +107,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
             taskId = threeStepSave(param);
-
-            User user = null;
-            BusinessResult<User> userAccountInfo = systemFeign.getUserAccountInfo(param.getUserId());
-            if (userAccountInfo.isSuccess() && userAccountInfo.getData() != null) {
-                user = userAccountInfo.getData();
-            } else {
-                throw new AppException("60000038");
-            }
-            if (StringUtils.isBlank(param.getTaskId())) {
+            //查询访问用户信息
+            User user = getSystemUserByUserId(param.getUserId());
+            //执行发布任务时，taskId一定不为空，查询
+            SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(param.getTaskId());
+            if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
@@ -160,6 +156,34 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
+    }
+
+    private User getSystemUserByUserId(String userId) {
+        if (StringUtils.isBlank(userId)) {
+            log.error("查询系统用户,传递参数userId为空");
+            throw new AppException("60000046");
+        }
+        User user = null;
+        BusinessResult<User> userAccountInfo = systemFeign.getUserAccountInfo(userId);
+        if (userAccountInfo.isSuccess() && Objects.nonNull(userAccountInfo.getData())) {
+            user = userAccountInfo.getData();
+        } else {
+            throw new AppException("60000038");
+        }
+        return user;
+    }
+
+    private SyncTaskEntity getSyncTaskEntityById(String taskId) {
+        if (StringUtils.isBlank(taskId)) {
+            log.error("根据同步任务ID查询信息，参数任务ID为空");
+            throw new AppException("60000016");
+        }
+        SyncTaskEntity byId = getById(taskId);
+        if (Objects.isNull(byId)) {
+            log.error("根据同步任务ID查询信息失败，taskId:" + taskId);
+            throw new AppException("60000039");
+        }
+        return byId;
     }
 
     /**
@@ -656,7 +680,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> stop(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000041.message);
         }
         entity = new SyncTaskEntity();
@@ -675,10 +699,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> remove(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() == entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() == entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000042.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000042.message);
         }
-        if(ExecStatusEnum.EXEC.getCode() == entity.getExecStatus()){
+        if (ExecStatusEnum.EXEC.getCode() == entity.getExecStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000035.message);
         }
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
@@ -692,7 +716,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> enable(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000043.message);
         }
         String processDefinitionId = getProcessDefinitionIdById(param.getTaskId());
@@ -711,7 +735,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.message);
         }
         if (0 != param.getExecType() && 1 != param.getExecType()) {
@@ -740,7 +764,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<Boolean> cease(DataSyncExecParam param) {
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
-        if(entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()){
+        if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000045.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000045.message);
         }
         if (ExecStatusEnum.EXEC.getCode() != entity.getExecStatus()) {//不是 “执行中” 状态
