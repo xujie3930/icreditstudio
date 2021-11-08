@@ -55,6 +55,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -163,7 +164,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
-        String result = String.format("同步成功，新增 %s 张表， 修改 %s 张表， 删除 %s 张表", 0, 0, 0);
+        String result = String.format("同步成功");
         if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())) {
             throw new AppException("70000010");
         }
@@ -195,7 +196,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
                 extracted(map, key, ddlEntity);
-                result = String.format("同步成功，新增 %s 张表", map.get("tablesCount"));
+                result = getResult(null, map.get("datasourceInfo"));
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
@@ -215,23 +216,41 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     private String getResult(String oldColumnsInfo, String datasourceInfo) {
-        //根据新旧json统计新增、删除、修改表的数量
+        List<TableSyncInfo> oldStructure;
+        List<TableSyncInfo> newStructure;
         Integer add = 0;
+        Integer addCloumns = 0;
         Integer del = 0;
+        Integer delCloumns = 0;
         Integer update = 0;
-        List<TableSyncInfo> oldStructure = JSON.parseArray(oldColumnsInfo, TableSyncInfo.class);
-        List<TableSyncInfo> newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
+        if (StringUtils.isBlank(oldColumnsInfo)){
+            newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
+            for (TableSyncInfo tableSyncInfo : newStructure) {
+                add ++;
+                addCloumns += tableSyncInfo.getColumnList().size();
+            }
+            return String.format("同步成功，新增 %s 张表,新增 %s 列 ", add, addCloumns);
+        }
+        //根据新旧json统计新增、删除、修改表的数量
+        oldStructure = JSON.parseArray(oldColumnsInfo, TableSyncInfo.class);
+        newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
         for (TableSyncInfo tableSyncInfo : oldStructure) {
-            if (newStructure.stream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
+            if (newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
                     !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList())))
                 update ++ ;
-            else if (!newStructure.stream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName())))
+            else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))){
                 del ++ ;
+                delCloumns += tableSyncInfo.getColumnList().size();
+            }
         }
+
         for (TableSyncInfo tableSyncInfo : newStructure) {
-            if (!oldStructure.stream().anyMatch(o -> o.getTableName().equals(tableSyncInfo.getTableName()))) add ++ ;
+            if (!oldStructure.parallelStream().anyMatch(o -> o.getTableName().equals(tableSyncInfo.getTableName()))){
+                add ++ ;
+                addCloumns += tableSyncInfo.getColumnList().size();
+            }
         }
-        return String.format("同步成功，新增 %s 张表， 修改 %s 张表， 删除 %s 张表", add, update, del);
+        return String.format("同步成功，新增 %s 张表,新增 %s 列 ; 修改 %s 张表; 删除 %s 张表,删除 %s 列", add, addCloumns, update, del, delCloumns);
     }
 
     private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
