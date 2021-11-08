@@ -24,7 +24,7 @@ import java.util.List;
  * @since 2021-08-25
  */
 @RestController
-@RequestMapping("/ddlSync")
+@RequestMapping("/datasource")
 public class IcreditDdlSyncController {
 
     @Autowired
