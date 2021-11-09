@@ -4,7 +4,7 @@
  * @Date: 2021-10-11
  */
 
-export default {
+export default that => ({
   refName: 'modelLink',
   id: 'modelLink',
   isBorder: true,
@@ -12,21 +12,29 @@ export default {
   group: [
     {
       type: 'select',
-      label: 'tableA',
-      prop: 'type',
-      options: [{ value: 'A' }]
+      label: that.aTableName,
+      prop: 'left',
+      width: 200,
+      placeholder: '请选择关联字段',
+      options: that.aTableOption,
+      change: that.handleChangeLeftSelect
     },
     {
       type: 'select',
       label: '关系',
-      prop: 'fieldType',
-      options: [{ value: '=' }]
+      prop: 'associate',
+      placeholder: '请选择关联关系',
+      width: 180,
+      options: that.conditionsOptions
     },
     {
       type: 'select',
-      label: 'tableB',
-      prop: 'length',
-      options: [{ value: 'B' }]
+      label: that.bTableName,
+      prop: 'right',
+      width: 200,
+      placeholder: '请选择关联字段',
+      options: that.bTableOption,
+      change: that.handleChangeRightSelect
     },
     {
       type: 'slot',
@@ -35,4 +43,4 @@ export default {
       width: 80
     }
   ]
-}
+})

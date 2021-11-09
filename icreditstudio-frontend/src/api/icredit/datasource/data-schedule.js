@@ -35,7 +35,7 @@ const dataScheduleSyncOperate = params =>
 
 // 同步任务调度-历史日志
 const dataScheduleSyncHistoryLog = params =>
-  getAction('/dolphinscheduler/dispatch/log/page', params)
+  postAction('/dolphinscheduler/dispatch/log/page', params)
 
 // 同步任务调度-日志详情
 const dataScheduleSyncLogDetail = params =>

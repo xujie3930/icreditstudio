@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.common.ResourceCodeBean;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
+import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -133,9 +134,11 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
-    public BusinessResult<List<DispatchLogVO>> logPage(String taskId) {
-        String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
-        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId);
+    public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(LogPageParam param) {
+        int pageNum = (param.getPageNum() - 1) * param.getPageSize();
+        String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(param.getTaskId());
+        long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId);
+        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, pageNum, param.getPageSize());
         for (DispatchLogVO dispatchLogVO : logVOList) {
             if(7 == dispatchLogVO.getTaskInstanceState() || 8 == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(0);
@@ -146,6 +149,6 @@ public class DispatchServiceImpl implements DispatchService {
             }
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
-        return BusinessResult.success(logVOList);
+        return BusinessResult.success(BusinessPageResult.build(logVOList, param, countLog));
     }
 }

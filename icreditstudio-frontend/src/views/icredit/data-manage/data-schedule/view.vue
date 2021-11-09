@@ -16,6 +16,9 @@
         v-loading="tableLoading"
         :table-data="tableData"
         :table-configuration="tableConfiguration"
+        :table-pagination="tablePagination"
+        @handleSizeChange="handleSizeChange"
+        @handleCurrentChange="handleCurrentChange"
       >
         <!-- 执行状态 -->
         <template #taskInstanceStateColumn="{row: {taskInstanceState}}">
@@ -58,12 +61,21 @@ export default {
     return {
       execStatusMapping,
       title: '历史执行情况',
+      taskId: null,
       titleName: '',
       logDetail: '',
       detailLoading: false,
       tableLoading: false,
       tableData: [],
-      tableConfiguration: tableConfiguration(this)
+      tableConfiguration: tableConfiguration(this),
+      tablePagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+        pagerCount: 5,
+        handleSizeChange: this.handleSizeChange,
+        handleCurrentChange: this.handleCurrentChange
+      }
     }
   },
 
@@ -71,10 +83,22 @@ export default {
     open(row) {
       this.titleName = row.taskName
       this.logDetail = ''
+      this.taskId = row.taskId
       this.getHistoryLogData(row.taskId)
       this.$refs.baseDialog.open()
     },
 
+    handleSizeChange(size) {
+      this.tablePagination.pageSize = size
+      this.getHistoryLogData(this.taskId)
+    },
+
+    handleCurrentChange(pageIndex) {
+      this.tablePagination.currentPage = pageIndex
+      this.getHistoryLogData(this.taskId)
+    },
+
+    // 日志详情
     handleViewLogDetail({ row }) {
       this.getLogDetailData(row.taskInstanceId)
       this.$refs.detailLogDialog.open()
@@ -82,11 +106,13 @@ export default {
 
     // 历史日志列表数据
     getHistoryLogData(taskId) {
+      const { pageNum, pageSize } = this.tablePagination
       this.tableLoading = true
-      API.dataScheduleSyncHistoryLog({ taskId })
+      API.dataScheduleSyncHistoryLog({ taskId, pageNum, pageSize })
         .then(({ success, data }) => {
           if (success && data) {
-            this.tableData = data
+            this.tableData = data.list
+            this.tablePagination.total = data.total || 0
           }
         })
         .finally(() => {

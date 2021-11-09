@@ -93,7 +93,9 @@ export default {
 
   methods: {
     iconNameMapping(key) {
-      return this.iconMapping[key] ? this.iconMapping[key].icon : undefined
+      return this.iconMapping[key]
+        ? this.iconMapping[key].iconActive
+        : undefined
     }
   }
 }

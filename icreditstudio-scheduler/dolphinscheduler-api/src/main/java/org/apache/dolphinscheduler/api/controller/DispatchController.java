@@ -4,14 +4,14 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
+import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.request.DispatchTaskPageRequest;
+import org.apache.dolphinscheduler.api.request.LogPageRequest;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 调度中心
@@ -46,9 +46,11 @@ public class DispatchController {
         return dispatchService.startOrStop(taskId, execType);
     }
 
-    @GetMapping("/log/page")
-    public BusinessResult<List<DispatchLogVO>> logPage(@RequestParam("taskId") String taskId){
-        return dispatchService.logPage(taskId);
+    @PostMapping("/log/page")
+    public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(@RequestBody LogPageRequest request){
+        LogPageParam param = new LogPageParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return dispatchService.logPage(param);
     }
 
 }

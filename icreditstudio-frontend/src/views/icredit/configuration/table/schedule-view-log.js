@@ -4,11 +4,11 @@
  * @Date: 2021-09-26
  */
 export default that => ({
-  refName: 'schedule-view-log',
+  refName: 'scheduleViewLog',
   id: 'viewLog',
   isBorder: true,
-  hasPage: false,
-  maxHeight: 350,
+  hasPage: true,
+  maxHeight: 500,
   group: [
     {
       type: 'text',
@@ -24,28 +24,32 @@ export default that => ({
     {
       type: 'slot',
       label: '执行状态',
-      prop: 'taskInstanceState'
+      prop: 'taskInstanceState',
+      width: 100
     },
     {
       type: 'text',
       label: '执行时长(秒)',
-      prop: 'taskInstanceExecDuration'
+      prop: 'taskInstanceExecDuration',
+      width: 110
     },
     {
       type: 'text',
       label: '同步数据量(条)',
-      prop: 'totalSyncInstanceNum'
+      prop: 'totalSyncInstanceNum',
+      width: 250
     },
     {
       type: 'text',
       label: '质检处理数据量',
-      prop: 'totalQualityCheckInstanceNum'
+      prop: 'totalQualityCheckInstanceNum',
+      width: 150
     },
     {
       type: 'operation',
       label: '操作',
       prop: 'operation',
-      width: '120px',
+      width: 120,
       fixed: 'right',
       operationList: [
         {

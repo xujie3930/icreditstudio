@@ -9,6 +9,7 @@
       class="icredit-dialog"
       :visible.sync="dialogVisible"
       :width="width"
+      :close-on-click-modal="closeOnClickModal"
       :top="top"
     >
       <div class="icredit-dialog-title" slot="title">
@@ -111,6 +112,11 @@ export default {
     iconColor: {
       type: String,
       default: '#e6a23c'
+    },
+
+    closeOnClickModal: {
+      type: Boolean,
+      default: true
     }
   },
 
