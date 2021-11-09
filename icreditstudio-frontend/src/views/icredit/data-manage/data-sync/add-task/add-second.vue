@@ -522,7 +522,6 @@ export default {
 
     // 删除表格的某一行
     handleDateleRow(options) {
-      console.log(options, 'lplp')
       this.$confirm('请确认是否删除该表字段?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -856,7 +855,8 @@ export default {
 
     // 处理可视化表单参数
     handleVisualizationParams() {
-      this.secondTaskForm.dialect = this.selectedTable[0]?.dialect
+      const { dialect } = this.secondTaskForm
+      this.secondTaskForm.dialect = dialect ?? this.selectedTable[0]?.dialect
       this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
         ({ idx, ...item }) => item
       )
@@ -928,13 +928,13 @@ export default {
       }
 
       const visualParams = {
-        datasourceId: this.selectedTable[0]?.datasourceId || this.datasourceId,
+        dialect,
         createMode,
+        view: sourceTables.length === 1 ? [] : view,
+        datasourceId: this.selectedTable[0]?.datasourceId || this.datasourceId,
         sourceTables: deepClone(
           sourceTables
-        ).map(({ database, tableName }) => ({ database, tableName })),
-        view: sourceTables.length === 1 ? [] : view,
-        dialect
+        ).map(({ database, tableName }) => ({ database, tableName }))
       }
 
       this.isCanJumpNext = false
@@ -1043,7 +1043,7 @@ export default {
       if (rightSource && rightSourceDatabase) {
         this.selectedTable[1] = {
           type: 'line',
-          iconName: iconMapping[associatedType]?.icon,
+          iconName: iconMapping[associatedType]?.iconActive,
           isShow: true
         }
         this.selectedTable[2] = {
@@ -1059,7 +1059,7 @@ export default {
           case 1:
             this.selectedTable[3] = {
               type: 'line',
-              iconName: iconMapping[associatedType]?.icon,
+              iconName: iconMapping[associatedType]?.iconActive,
               isShow: true
             }
             break
@@ -1077,7 +1077,7 @@ export default {
 
             this.selectedTable[1] = {
               type: 'line',
-              iconName: iconMapping[graphicData[0].associatedType]?.icon,
+              iconName: iconMapping[graphicData[0].associatedType]?.iconActive,
               isShow: true
             }
 
@@ -1093,7 +1093,7 @@ export default {
 
             this.selectedTable[3] = {
               type: 'line',
-              iconName: iconMapping[graphicData[1].associatedType]?.icon,
+              iconName: iconMapping[graphicData[1].associatedType]?.iconActive,
               isShow: true
             }
 
@@ -1109,7 +1109,7 @@ export default {
 
             this.selectedTable[5] = {
               type: 'line',
-              iconName: iconMapping[graphicData[1].associatedType]?.icon,
+              iconName: iconMapping[graphicData[1].associatedType]?.iconActive,
               isShow: true
             }
             break
@@ -1127,7 +1127,7 @@ export default {
 
             this.selectedTable[1] = {
               type: 'line',
-              iconName: iconMapping[graphicData[0].associatedType]?.icon,
+              iconName: iconMapping[graphicData[0].associatedType]?.iconActive,
               isShow: true
             }
 
@@ -1143,7 +1143,7 @@ export default {
 
             this.selectedTable[3] = {
               type: 'line',
-              iconName: iconMapping[graphicData[1].associatedType]?.icon,
+              iconName: iconMapping[graphicData[1].associatedType]?.iconActive,
               isShow: true
             }
 
@@ -1159,7 +1159,7 @@ export default {
 
             this.selectedTable[5] = {
               type: 'line',
-              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              iconName: iconMapping[graphicData[2].associatedType]?.iconActive,
               isShow: true
             }
 
@@ -1175,7 +1175,7 @@ export default {
 
             this.selectedTable[7] = {
               type: 'line',
-              iconName: iconMapping[graphicData[2].associatedType]?.icon,
+              iconName: iconMapping[graphicData[2].associatedType]?.iconActive,
               isShow: true
             }
             break
@@ -1287,7 +1287,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.datasourceId = data.datasourceId
-            this.secondTaskForm.dialect = data.dialect
             for (const [key, value] of Object.entries(data)) {
               switch (key) {
                 case 'fieldInfos':

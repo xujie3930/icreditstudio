@@ -128,7 +128,7 @@ export default {
         spaceId: this.workspaceId,
         ...params
       }
-      this.workspaceId === 'all' && delete newParams.spaceId
+      // this.workspaceId === 'all' && delete newParams.spaceId
       return newParams
     },
 
