@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.web.controller;
 
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ColumnListResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class IcreditDdlSyncController {
 
     @Logable
     @GetMapping("/datasourceStructure/{id}")
-    public BusinessResult<List<ColumnListResult>> getDatasourceStructure(@PathVariable("id") String id) {
+    public BusinessResult<DatasourceStructureResult> getDatasourceStructure(@PathVariable("id") String id) {
         return ddlSyncService.getDatasourceStructure(id);
     }
 }

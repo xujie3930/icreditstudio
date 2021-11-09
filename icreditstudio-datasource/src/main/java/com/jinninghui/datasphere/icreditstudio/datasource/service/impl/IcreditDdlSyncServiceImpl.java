@@ -12,6 +12,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncM
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDdlConditionParam;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ColumnListResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.TableList;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.HDFSUtils;
@@ -65,19 +66,25 @@ public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper,
     }
 
     @Override
-    public BusinessResult<List<ColumnListResult>> getDatasourceStructure(String id) {
-        List<ColumnListResult> list = new ArrayList<>();
+    public BusinessResult<DatasourceStructureResult> getDatasourceStructure(String id) {
+        DatasourceStructureResult structureResult = new DatasourceStructureResult();
+        List<String> tableOptions = new ArrayList<>();
+        Integer tableCount = 0;
         IcreditDdlSyncEntity entity = ddlSyncMapper.selectMaxVersionByDatasourceId(id);
         if (Objects.isNull(entity)){
-            return BusinessResult.success(list);
+            return BusinessResult.success(structureResult);
         }
         try {
             String datasourceJson = HDFSUtils.getStringFromHDFS(entity.getColumnsInfo());
+            List<ColumnListResult> list = new ArrayList<>();
             List<TableList> tableLists = JSON.parseArray(datasourceJson, TableList.class);
             for (int i = 0; i < tableLists.size(); i++) {
+                tableCount ++;
+                String tableName  = tableLists.get(i).getTableName();
+                tableOptions.add(tableName);
                 for (TableList.ColumnList columnList : tableLists.get(i).getColumnList()) {
                     ColumnListResult result = new ColumnListResult();
-                    result.setTableName(tableLists.get(i).getTableName());
+                    result.setTableName(tableName);
                     result.setFieldName(columnList.getField());
                     HiveMapJdbcTypeEnum jdbcTypeEnum = HiveMapJdbcTypeEnum.find(columnList.getType());
                     result.setFieldType(Lists.newArrayList(jdbcTypeEnum.getCategoryEnum().getCode(), jdbcTypeEnum.getJdbcType()));
@@ -86,10 +93,13 @@ public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper,
                     list.add(result);
                 }
             }
+            structureResult.setTableCount(tableCount);
+            structureResult.setTableOptions(tableOptions);
+            structureResult.setColumnList(list);
         } catch (Exception e) {
             log.error("查看数据源失败:{}", e.getMessage());
         }
-        return BusinessResult.success(list);
+        return BusinessResult.success(structureResult);
     }
 
     private QueryWrapper<IcreditDdlSyncEntity> queryWrapper(IcreditDdlConditionParam param) {
