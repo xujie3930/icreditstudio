@@ -5,6 +5,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractDataSy
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.QueryField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.StringJoiner;
@@ -13,7 +14,8 @@ import java.util.stream.Collectors;
 /**
  * @author Peng
  */
-public class MysqlDataSyncQuery extends AbstractDataSyncQuery {
+@Component
+public class JdbcDataSyncQuery extends AbstractDataSyncQuery {
     @Override
     public String querySql(List<QueryField> queryFields, String srcSql) {
 
