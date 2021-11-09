@@ -131,7 +131,7 @@ public class HomePageServiceImpl implements HomePageService {
         for (Map<String, Object> m : definitionList) {
             String definitionId = (String) m.get("id");
             Double runtime = taskInstanceService.runtimeTotalByDefinition(definitionId, new int[]{});
-            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("id"), (String)m.get("name"), runtime, (Integer)m.get("scheduleType")));
+            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("platformTaskId"), (String)m.get("name"), runtime, (Integer)m.get("scheduleType")));
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
@@ -153,7 +153,7 @@ public class HomePageServiceImpl implements HomePageService {
         for (Map<String, Object> m : definitionList) {
             String definitionId = (String) m.get("id");
             Long errorNum = taskInstanceService.getCountByByDefinitionAndStates(definitionId, new int[]{ExecutionStatus.FAILURE.getCode()});
-            runErrorRankList.add(new RunErrorRankResult((String)m.get("id"), (String)m.get("name"), errorNum, (Integer)m.get("scheduleType")));
+            runErrorRankList.add(new RunErrorRankResult((String)m.get("platformTaskId"), (String)m.get("name"), errorNum, (Integer)m.get("scheduleType")));
         }
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
         runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);
