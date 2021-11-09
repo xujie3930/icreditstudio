@@ -645,7 +645,7 @@ export default {
       // 显示已设置关联关系的表的状态
       this.selectedTable[idx - 1].isChecked = true
       this.selectedTable[idx + 1].isChecked = true
-      this.selectedTable[idx].iconName = iconMapping[associatedType].icon
+      this.selectedTable[idx].iconName = iconMapping[associatedType].iconActive
     },
 
     handlePreventDefault(evt) {
@@ -731,6 +731,8 @@ export default {
       const vidx = (idx - 1) / 2
       const { associatedType, conditions } =
         view[vidx] || deepClone(viewDefaultData)
+
+      console.log('view[vidx]', associatedType, conditions)
 
       this.$refs.linkDialog.open({
         idx,

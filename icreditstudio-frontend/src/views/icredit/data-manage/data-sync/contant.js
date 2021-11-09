@@ -94,9 +94,9 @@ export const fieldTypeMapping = tableFieldTypeMapping()
 
 // 关联类型icon名称映射
 export const iconMapping = {
-  0: { icon: 'left-link', name: '左关联' },
-  1: { icon: 'cover-link', name: '内关联' },
-  2: { icon: 'all-link', name: '全关联' }
+  0: { iconActive: 'left-link', icon: 'left-link-gray', name: '左关联' },
+  1: { iconActive: 'cover-link', icon: 'cover-link-gray', name: '内关联' },
+  2: { iconActive: 'all-link', icon: 'all-link-gray', name: '全关联' }
 }
 
 // 任务详情接口字段映射
