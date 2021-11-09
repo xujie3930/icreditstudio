@@ -46,9 +46,7 @@ public class MysqlDatasource implements DatasourceSync {
                 row.setField(columnName);
                 // 数据类型
                 String columnType = columnResultSet.getString("TYPE_NAME");
-                // 字段长度
-                int datasize = columnResultSet.getInt("COLUMN_SIZE");
-                row.setType(columnType + "(" + datasize + ")");
+                row.setType(columnType);
                 // 描述
                 String remarks = columnResultSet.getString("REMARKS");
                 row.setRemark(remarks);
