@@ -4,10 +4,10 @@
  * @Date: 2021-09-26
  */
 export default that => ({
-  refName: 'schedule-view-log',
+  refName: 'scheduleViewLog',
   id: 'viewLog',
   isBorder: true,
-  hasPage: false,
+  hasPage: true,
   maxHeight: 350,
   group: [
     {

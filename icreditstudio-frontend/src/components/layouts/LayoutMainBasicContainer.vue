@@ -129,9 +129,9 @@ export default {
 </script>
 <style scoped lang="scss">
 .iframe-layout-basic-container {
-  height: 100%;
+  min-height: calc(100vh - 126px);
   padding: 0 16px 16px;
-  background-color: #ffffff;
+  background-color: #fff;
 }
 
 .iframe-layout-basic-header {

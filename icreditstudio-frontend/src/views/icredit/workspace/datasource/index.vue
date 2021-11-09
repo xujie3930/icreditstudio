@@ -100,11 +100,7 @@
     <div class="source-slider" v-if="isSyncClick">
       <div :class="[isSyncStatus ? '' : 'red-bar', 'bar']"></div>
       <div :class="[isSyncStatus ? '' : 'red-text', 'text']">
-        {{
-          isSyncStatus
-            ? `100% 同步成功，新增${syncDataCount}张表！`
-            : '0% 同步失败，请重试！'
-        }}
+        {{ isSyncStatus ? `100% ${syncMessage}` : '0% 同步失败，请重试！' }}
       </div>
     </div>
 
@@ -149,7 +145,7 @@ export default {
       timerId: null,
       isSyncClick: false,
       isSyncStatus: true,
-      syncDataCount: 0,
+      syncMessage: '',
 
       btnViewLoading: false,
       btnEditLoading: false,
@@ -221,11 +217,11 @@ export default {
     handleSyncClick(row) {
       this.timerId = null
       this.isSyncStatus = true
-      this.syncDataCount = 0
+      this.syncMessage = ''
       API.datasourceSync(row.id)
         .then(({ success, data }) => {
           if (success) {
-            this.syncDataCount = data
+            this.syncMessage = data
             this.$notify.success({
               title: '操作提示',
               message: '数据源同步成功！'

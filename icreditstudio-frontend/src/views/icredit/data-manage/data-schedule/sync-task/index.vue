@@ -34,10 +34,6 @@
           @handleSizeChange="mixinHandleSizeChange"
           @handleCurrentChange="mixinHandleCurrentChange"
         >
-          <!-- <template #empty>
-            <Empty />
-          </template> -->
-
           <!-- 任务状态 -->
           <template #taskStatusColumn="{row: {taskStatus}}">
             <span :style="{ color: taskStatusMapping[taskStatus || 0].color }">

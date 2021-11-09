@@ -16,6 +16,9 @@
         v-loading="tableLoading"
         :table-data="tableData"
         :table-configuration="tableConfiguration"
+        :table-pagination="tabTablePagination"
+        @handleSizeChange="handleSizeChange"
+        @handleCurrentChange="handleCurrentChange"
       >
         <!-- 执行状态 -->
         <template #taskInstanceStateColumn="{row: {taskInstanceState}}">
@@ -58,12 +61,21 @@ export default {
     return {
       execStatusMapping,
       title: '历史执行情况',
+      taskId: null,
       titleName: '',
       logDetail: '',
       detailLoading: false,
       tableLoading: false,
       tableData: [],
-      tableConfiguration: tableConfiguration(this)
+      tableConfiguration: tableConfiguration(this),
+      tabTablePagination: {
+        currentPage: 1,
+        pageSize: 10,
+        total: 0,
+        pagerCount: 5,
+        handleSizeChange: this.handleSizeChange,
+        handleCurrentChange: this.handleCurrentChange
+      }
     }
   },
 
@@ -71,10 +83,22 @@ export default {
     open(row) {
       this.titleName = row.taskName
       this.logDetail = ''
+      this.taskId = row.taskId
       this.getHistoryLogData(row.taskId)
       this.$refs.baseDialog.open()
     },
 
+    handleSizeChange(size) {
+      this.tabTablePagination.pageSize = size
+      this.getHistoryLogData(this.taskId)
+    },
+
+    handleCurrentChange(pageIndex) {
+      this.tabTablePagination.currentPage = pageIndex
+      this.getHistoryLogData(this.taskId)
+    },
+
+    // 日志详情
     handleViewLogDetail({ row }) {
       this.getLogDetailData(row.taskInstanceId)
       this.$refs.detailLogDialog.open()
