@@ -11,11 +11,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.DataSyncQuery;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.DataSyncQueryContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.QueryField;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
@@ -110,12 +113,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             User user = getSystemUserByUserId(param.getUserId());
             //执行发布任务时，taskId一定不为空，查询
             SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(param.getTaskId());
+
+            List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
+            DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
+            String querySql = matching.querySql(queryFields, param.getSql());
             if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
+                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, querySql), 0))
                         .build();
                 BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(build);
                 if (businessResult.isSuccess() && businessResult.getData() != null) {
@@ -155,6 +162,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
+    }
+
+    private List<QueryField> transferQueryField(List<WideTableFieldRequest> fieldInfos) {
+        return Optional.ofNullable(fieldInfos).orElse(Lists.newArrayList())
+                .parallelStream()
+                .filter(Objects::nonNull)
+                .map(field -> {
+                    QueryField queryField = new QueryField();
+                    queryField.setFieldName(field.getFieldName());
+                    queryField.setDatabaseName(field.getDatabaseName());
+                    queryField.setSourceTable(field.getSourceTable());
+                    return queryField;
+                }).collect(Collectors.toList());
     }
 
     private User getSystemUserByUserId(String userId) {

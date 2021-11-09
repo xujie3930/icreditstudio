@@ -112,7 +112,8 @@
     <select id="selectByWorkspaceIdAndTime" resultType="map">
         select d.id as id,
                d.name as name,
-               d.schedule_type as scheduleType
+               d.schedule_type as scheduleType,
+               d.platform_task_id as platformTaskId
         from t_ds_process_definition d
         where d.workspace_id = #{workspaceId}
           and d.update_time > #{startTime} and d.update_time <![CDATA[<]]> #{endTime}
