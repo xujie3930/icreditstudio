@@ -13,6 +13,7 @@ import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.DataSyncQueryContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
