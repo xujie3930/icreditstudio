@@ -50,7 +50,7 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
 
         IcreditWorkspaceSaveParam param = new IcreditWorkspaceSaveParam();
         BeanCopyUtils.copyProperties(request, param);
-        return workspaceService.saveDef(param);
+        return workspaceService.saveDef(userId, param);
     }
 
     /**

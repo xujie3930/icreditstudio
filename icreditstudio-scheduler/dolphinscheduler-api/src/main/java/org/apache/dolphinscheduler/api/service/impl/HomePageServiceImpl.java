@@ -33,12 +33,13 @@ public class HomePageServiceImpl implements HomePageService {
     @Autowired
     private TaskInstanceService taskInstanceService;
     //TODO:这里暂且用redisTemplate构建RedisUtils,存在ABA和一致性的问题，后续再完善redis工具类
-    @Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-    @PostConstruct
-    public void init() {
-        RedisUtils.setRedisTemplate(redisTemplate);
-    }
+    //TODO:这里暂且不采用缓存，正式发版时候补上
+//    @Autowired
+//    private RedisTemplate<Object, Object> redisTemplate;
+//    @PostConstruct
+//    public void init() {
+//        RedisUtils.setRedisTemplate(redisTemplate);
+//    }
 
 
     private static final String SCHEDULER= "scheduler-api";
@@ -63,10 +64,10 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Override
     public BusinessResult<TaskRoughResult> rough(SchedulerHomepageRequest request) {
-        TaskRoughResult result = (TaskRoughResult) RedisUtils.get(PREROUGH + request.getWorkspaceId());
-        if (null != result){
-            return BusinessResult.success(result);
-        }
+//        TaskRoughResult result = (TaskRoughResult) RedisUtils.get(PREROUGH + request.getWorkspaceId());
+//        if (null != result){
+//            return BusinessResult.success(result);
+//        }
         TaskRoughResult taskRoughResult = new TaskRoughResult();
         //前三天0点
         Date startTime = DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -3));
@@ -84,16 +85,16 @@ public class HomePageServiceImpl implements HomePageService {
         //新增数据量
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
         taskRoughResult.setNewlyDataSize(((double) newlyDataSize) / 1024);
-        RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
+//        RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
 
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String workspaceId) {
-        List<TaskSituationResult> list = (List<TaskSituationResult>) RedisUtils.get(PRESITUATION + workspaceId);
-        if (!CollectionUtils.isEmpty(list)){
-            return BusinessResult.success(list);
-        }
+//        List<TaskSituationResult> list = (List<TaskSituationResult>) RedisUtils.get(PRESITUATION + workspaceId);
+//        if (!CollectionUtils.isEmpty(list)){
+//            return BusinessResult.success(list);
+//        }
         Date date = new Date();
         Date startTime = DateUtils.getStartOfDay(date);
         Date endTime = DateUtils.getEndOfDay((date));
@@ -103,31 +104,31 @@ public class HomePageServiceImpl implements HomePageService {
         Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(),
                 ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
-        RedisUtils.set(PRESITUATION + workspaceId,taskSituationResultList, FIVE_MINUTE_TIME);
+//        RedisUtils.set(PRESITUATION + workspaceId,taskSituationResultList, FIVE_MINUTE_TIME);
         return BusinessResult.success(taskSituationResultList);
     }
 
     @Override
     public BusinessResult<List<TaskCountResult>> taskCount(SchedulerHomepageRequest request) {
-        List<TaskCountResult> list = (List<TaskCountResult>) RedisUtils.get(PRETASKCOUNT + request.getWorkspaceId());
-        if (!CollectionUtils.isEmpty(list)){
-            return BusinessResult.success(list);
-        }
+//        List<TaskCountResult> list = (List<TaskCountResult>) RedisUtils.get(PRETASKCOUNT + request.getWorkspaceId());
+//        if (!CollectionUtils.isEmpty(list)){
+//            return BusinessResult.success(list);
+//        }
         List<TaskCountResult> resultList = taskInstanceService.countByDay(request);
-        RedisUtils.set(PRETASKCOUNT + request.getWorkspaceId(), resultList, ONE_DAY_TIME);
+//        RedisUtils.set(PRETASKCOUNT + request.getWorkspaceId(), resultList, ONE_DAY_TIME);
         return BusinessResult.success(resultList);
     }
 
     @Override
     public BusinessResult<List<RuntimeRankResult>> runtimeRank(SchedulerHomepageRequest request) {
-        List<RuntimeRankResult> list = (List<RuntimeRankResult>) RedisUtils.get(PRERUNTIMERANK + request.getWorkspaceId());
-        if (!CollectionUtils.isEmpty(list)){
-            return BusinessResult.success(list);
-        }
+//        List<RuntimeRankResult> list = (List<RuntimeRankResult>) RedisUtils.get(PRERUNTIMERANK + request.getWorkspaceId());
+//        if (!CollectionUtils.isEmpty(list)){
+//            return BusinessResult.success(list);
+//        }
         List<RuntimeRankResult> runtimeRankResultList = new ArrayList<>();
         Date date = new Date();
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
-                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(date));
+                DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1)));
         for (Map<String, Object> m : definitionList) {
             String definitionId = (String) m.get("id");
             Double runtime = taskInstanceService.runtimeTotalByDefinition(definitionId, new int[]{});
@@ -135,16 +136,16 @@ public class HomePageServiceImpl implements HomePageService {
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
-        RedisUtils.set(PRERUNTIMERANK + request.getWorkspaceId(), runtimeRankResultList, ONE_DAY_TIME);
+//        RedisUtils.set(PRERUNTIMERANK + request.getWorkspaceId(), runtimeRankResultList, ONE_DAY_TIME);
         return BusinessResult.success(runtimeRankResultList);
     }
 
     @Override
     public BusinessResult<List<RunErrorRankResult>> runErrorRank(SchedulerHomepageRequest request) {
-        List<RunErrorRankResult> list = (List<RunErrorRankResult>) RedisUtils.get(PRERUNERRORRANK + request.getWorkspaceId());
-        if (!CollectionUtils.isEmpty(list)){
-            return BusinessResult.success(list);
-        }
+//        List<RunErrorRankResult> list = (List<RunErrorRankResult>) RedisUtils.get(PRERUNERRORRANK + request.getWorkspaceId());
+//        if (!CollectionUtils.isEmpty(list)){
+//            return BusinessResult.success(list);
+//        }
         //TODO:runErrorRankList改为每日定时获取
         List<RunErrorRankResult> runErrorRankList = new ArrayList<>();
         Date date = new Date();
@@ -158,7 +159,7 @@ public class HomePageServiceImpl implements HomePageService {
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
         runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);
 
-        RedisUtils.set(PRERUNERRORRANK + request.getWorkspaceId(), runErrorRankList, ONE_DAY_TIME);
+//        RedisUtils.set(PRERUNERRORRANK + request.getWorkspaceId(), runErrorRankList, ONE_DAY_TIME);
         return BusinessResult.success(runErrorRankList);
     }
 

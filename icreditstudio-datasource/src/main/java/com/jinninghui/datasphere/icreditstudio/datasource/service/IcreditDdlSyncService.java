@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ColumnListResult;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -57,5 +58,5 @@ public interface IcreditDdlSyncService extends IService<IcreditDdlSyncEntity> {
         return JSONArray.parseArray(columnsInfo).toJavaList(TableSyncInfo.class);
     }
 
-    BusinessResult<List<ColumnListResult>> getDatasourceStructure(String id);
+    BusinessResult<DatasourceStructureResult> getDatasourceStructure(String id);
 }
