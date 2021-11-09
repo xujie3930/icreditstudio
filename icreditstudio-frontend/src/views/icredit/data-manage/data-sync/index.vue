@@ -143,6 +143,7 @@ export default {
   data() {
     return {
       isSyncClick: false,
+      timerId: null,
       sliderVal: 100,
 
       // 表格与表单参数
@@ -167,6 +168,10 @@ export default {
 
   created() {
     this.mixinRetrieveTableData()
+  },
+
+  beforeDestroy() {
+    this.handleClearInterval()
   },
 
   methods: {
@@ -222,6 +227,10 @@ export default {
             message: '操作成功，执行结果请到调度中心查看！'
           })
           this.mixinRetrieveTableData()
+
+          // 轮询
+          this.handleClearInterval()
+          this.getTableData()
         }
       })
     },
@@ -248,6 +257,18 @@ export default {
         query: { opType: 'edit', taskId: row.taskId }
       }
       this.$router.push(params)
+    },
+
+    // 清空定时器
+    handleClearInterval() {
+      this.timerId && clearInterval(this.timerId)
+    },
+
+    // 轮询查询表格数据
+    getTableData() {
+      this.timerId = setInterval(() => {
+        this.mixinRetrieveTableData()
+      }, 5000)
     },
 
     // 弹窗提示回调函数
