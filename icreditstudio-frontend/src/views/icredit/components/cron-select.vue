@@ -6,7 +6,6 @@
       placeholder="请选择"
       v-model="expression"
       @focus="handleFocus"
-      @blur="handleBlur"
       @change="$emit('change', $event.target.value)"
     >
       <i
@@ -62,11 +61,6 @@ export default {
       this.$emit('open', this.showCorn)
     },
 
-    handleBlur() {
-      // this.showCorn = false
-      // this.suffixIcon = 'el-icon-arrow-down'
-    },
-
     handleChange(options) {
       console.log(options)
       this.expression = options.expression
@@ -74,17 +68,16 @@ export default {
     },
 
     handleConfirm(val) {
-      console.log(val, ';mllp')
       this.value = val
       this.expression = val
       this.showCorn = false
+      this.handleClose()
       this.$emit('change', val)
     },
 
     handleClose() {
       this.showCorn = !this.showCorn
       this.$emit('open', this.showCorn)
-      // this.suffixIcon = 'el-icon-arrow-down'
     },
 
     handleReset(expression) {

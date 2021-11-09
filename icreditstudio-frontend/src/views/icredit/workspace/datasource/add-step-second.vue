@@ -11,6 +11,7 @@
     width="600px"
     top="20vh"
     :title="title"
+    :close-on-click-modal="false"
     @onClose="handleClose"
     @onConfirm="handleConfirm"
   >
@@ -254,7 +255,7 @@ export default {
         name: '',
         databaseName: '',
         ip: '',
-        port: undefined,
+        port: undefined, // mysql 3306  oracle: 1521
         username: '',
         password: '',
         status: 0,
@@ -297,10 +298,16 @@ export default {
 
   methods: {
     open(type, name) {
+      console.log(name, 'name')
+      const portMapping = {
+        mysql: 3306,
+        oracle: 1521
+      }
       this.title = '新增数据源'
       this.opType = 'Add'
       this.dataType = type
       this.databaseType = name
+      this.dataSourceForm.port = portMapping[name] ?? undefined
       this.$refs.baseDialog.open()
       this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
     },
