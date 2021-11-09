@@ -108,15 +108,17 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
+            List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
+            DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
+            String querySql = matching.querySql(queryFields, param.getSql());
+
+            param.setSql(querySql);
             taskId = threeStepSave(param);
             //查询访问用户信息
             User user = getSystemUserByUserId(param.getUserId());
             //执行发布任务时，taskId一定不为空，查询
-            SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(param.getTaskId());
+            SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(taskId);
 
-            List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
-            DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
-            String querySql = matching.querySql(queryFields, param.getSql());
             if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
