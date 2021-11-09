@@ -16,7 +16,7 @@
         v-loading="tableLoading"
         :table-data="tableData"
         :table-configuration="tableConfiguration"
-        :table-pagination="tabTablePagination"
+        :table-pagination="tablePagination"
         @handleSizeChange="handleSizeChange"
         @handleCurrentChange="handleCurrentChange"
       >
@@ -68,7 +68,7 @@ export default {
       tableLoading: false,
       tableData: [],
       tableConfiguration: tableConfiguration(this),
-      tabTablePagination: {
+      tablePagination: {
         currentPage: 1,
         pageSize: 10,
         total: 0,
@@ -89,12 +89,12 @@ export default {
     },
 
     handleSizeChange(size) {
-      this.tabTablePagination.pageSize = size
+      this.tablePagination.pageSize = size
       this.getHistoryLogData(this.taskId)
     },
 
     handleCurrentChange(pageIndex) {
-      this.tabTablePagination.currentPage = pageIndex
+      this.tablePagination.currentPage = pageIndex
       this.getHistoryLogData(this.taskId)
     },
 
@@ -106,11 +106,13 @@ export default {
 
     // 历史日志列表数据
     getHistoryLogData(taskId) {
+      const { pageNum, pageSize } = this.tablePagination
       this.tableLoading = true
-      API.dataScheduleSyncHistoryLog({ taskId })
+      API.dataScheduleSyncHistoryLog({ taskId, pageNum, pageSize })
         .then(({ success, data }) => {
           if (success && data) {
-            this.tableData = data
+            this.tableData = data.list
+            this.tablePagination.total = data.total || 0
           }
         })
         .finally(() => {
