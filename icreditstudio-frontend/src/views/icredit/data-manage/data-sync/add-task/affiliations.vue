@@ -7,18 +7,19 @@
   <BaseDialog
     class="link-type"
     ref="baseDialog"
-    width="1000px"
+    width="800px"
     :title="title"
     :hideFooter="opType === 'edit'"
     @on-confirm="confirm"
   >
     <el-form ref="form" :model="form" label-width="100px" v-loading="loading">
       <el-form-item
+        class="form-item"
         label="关联类型"
         prop="associatedType"
         :rules="{ required: true, message: '必填项不能为空', trigger: 'blur' }"
       >
-        <el-tag
+        <!-- <el-tag
           size="medium"
           effect="plain"
           class="link-type-tag"
@@ -32,11 +33,55 @@
             v-if="form.associatedType === Number(tag.code)"
             class="el-icon-success is-checked"
           />
-        </el-tag>
+        </el-tag> -->
+        <div class="link-wrap">
+          <div
+            :class="[
+              'link-item',
+              item.code === form.associatedType ? 'link-item-active' : ''
+            ]"
+            :key="idx"
+            v-for="(item, idx) in form.linkTypeData.assocTypes"
+            @click="handleChangeLink(item)"
+          >
+            <j-svg
+              class="j-svg"
+              :name="
+                item.code === form.associatedType ? item.iconActive : item.icon
+              "
+            />
+            <span class="text">{{ item.name }}</span>
+          </div>
+        </div>
       </el-form-item>
 
-      <el-form-item label="关联条件">
-        <div class="link-table">
+      <el-form-item
+        class="form-item"
+        style="margin-top:30px"
+        label="关联条件"
+        prop="linkTypeData"
+        :rules="{ required: true, message: '必填项不能为空', trigger: 'blur' }"
+      >
+        <div class="content">
+          <JTable
+            ref="table"
+            class="form-table"
+            :table-data="form.linkTypeData.conditions"
+            :table-configuration="tableConfiguration"
+          >
+            <template #operationColumn="{row, index}">
+              <div class="btn-wrap">
+                <span class="btn" @click="handleAddClick(row, index)">
+                  <i class="el-icon-plus icon"></i>
+                </span>
+                <span class="btn" @click="handleMinusClick(row, index)">
+                  <i class="el-icon-minus icon"></i>
+                </span>
+              </div>
+            </template>
+          </JTable>
+        </div>
+        <!-- <div class="link-table">
           <el-row :gutter="20">
             <el-col class="col-center" :span="7">{{ aTableName }}</el-col>
             <el-col class="col-center" :span="7">关系</el-col>
@@ -53,7 +98,7 @@
                   @change="handleChangeLeftSelect(item)"
                 >
                   <el-option
-                    v-for="item in aTableOption"
+                    v-for="item in form.linkTypeData.conditions"
                     :key="item.name"
                     :label="item.name"
                     :value="item.name"
@@ -114,7 +159,7 @@
               </el-col>
             </el-row>
           </template>
-        </div>
+        </div> -->
       </el-form-item>
     </el-form>
   </BaseDialog>
@@ -123,8 +168,9 @@
 <script>
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
-import { deepClone, unique } from '@/utils/util'
+import { deepClone } from '@/utils/util'
 import { iconMapping } from '../contant'
+import tableConfiguration from '@/views/icredit/configuration/table/workspace-model-link'
 
 export default {
   components: { BaseDialog },
@@ -139,8 +185,8 @@ export default {
       title: '',
       opType: '',
       loading: false,
-      aTableName: '',
-      bTableName: '',
+      aTableName: 'tableA',
+      bTableName: 'tableB',
       aTableOption: [],
       leftTable: {},
       rightTable: {},
@@ -148,12 +194,18 @@ export default {
       conditionsOptions: [],
 
       form: {
-        associatedType: null,
+        associatedType: 0,
         linkTypeData: {
           assocTypes: [],
           conditions: []
         }
       }
+    }
+  },
+
+  computed: {
+    tableConfiguration() {
+      return tableConfiguration(this)
     }
   },
 
@@ -178,8 +230,9 @@ export default {
       this.rightTable = rightTable
       this.aTableName = leftTable.name
       this.bTableName = rightTable.name
-      this.form.associatedType = associatedType
+      this.form.associatedType = associatedType ?? 0
       this.form.linkTypeData.conditions = conditions
+      console.log(conditions, this.form, 'conditions')
 
       this.$refs.baseDialog.open()
       this.getLinkTypeData(dialect)
@@ -201,29 +254,27 @@ export default {
       this.$refs.baseDialog.close()
     },
 
-    initData() {},
-
     closeBtnLoading() {
       this.$refs.baseDialog.btnLoadingClose()
     },
 
     confirm() {
-      const {
-        form,
-        form: { linkTypeData },
-        leftTable,
-        rightTable
-      } = this
+      const { form, leftTable, rightTable } = this
       const relationData = {
         idx: this.idx,
         associatedType: form.associatedType,
-        conditions: unique(linkTypeData.conditions),
+        conditions: this.form.linkTypeData.conditions,
         leftSource: leftTable.name,
         leftSourceDatabase: leftTable.database,
         rightSource: rightTable.name,
         rightSourceDatabase: rightTable.database
       }
 
+      console.log(
+        'relationData',
+        this.form.linkTypeData.conditions,
+        relationData
+      )
       // 关联条件必填
       if (relationData.conditions.length) {
         relationData.conditions.forEach(({ left, right, associate }) => {
@@ -252,16 +303,23 @@ export default {
       this.$refs.form.clearValidate()
     },
 
-    handleChangeLeftSelect(item) {
-      const { left, right } = item
-      this.leftSelectVal = this.aTableOption.find(({ name }) => name === left)
+    handleChangeLink(item) {
+      this.form.associatedType = item.code
+    },
+
+    // 左表字段选择类型判断
+    handleChangeLeftSelect(options) {
+      console.log(options, 'Lfetoptions')
+      const { left, right } = options.scope.row
+      this.leftSelectVal = this.aTableOption.find(({ value }) => value === left)
+      console.log('left, right', left, right, this.leftSelectVal)
 
       if (right) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
-          item.left = ''
+          options.scope.row.left = ''
           this.$message.error({
             message: `字段类型不统一, 左表字段类型：${fieldType}, 右表字段类型：${rType}, 请重新选择!`,
             duration: 3500
@@ -270,16 +328,22 @@ export default {
       }
     },
 
-    handleChangeRightSelect(item) {
-      const { left, right } = item
-      this.rightSelectVal = this.bTableOption.find(({ name }) => name === right)
+    // 右表字段选择类型判断
+    handleChangeRightSelect(options) {
+      console.log(options, 'kplkpl')
+
+      const { left, right } = options.scope.row
+      this.rightSelectVal = this.bTableOption.find(
+        ({ value }) => value === right
+      )
+      console.log('left, right', left, right, this.rightSelectVal)
 
       if (left) {
         const { fieldType } = this.leftSelectVal
         const { fieldType: rType } = this.rightSelectVal
         if (fieldType !== rType) {
           // eslint-disable-next-line no-param-reassign
-          item.right = ''
+          options.scope.row.right = ''
           this.$message.error({
             message: `字段类型不统一, 左表字段类型：${fieldType}, 右表字段类型：${rType}, 请重新选择!`,
             duration: 3500
@@ -295,6 +359,8 @@ export default {
         associate: '',
         right: ''
       })
+
+      console.log(this.form.linkTypeData, 'mkin')
     },
 
     // 删除字段关联
@@ -311,9 +377,12 @@ export default {
           if (success && data) {
             this.form.linkTypeData.assocTypes = deepClone(data.assocTypes).map(
               item => {
+                const { icon, name, iconActive } = iconMapping[item.code]
                 return {
-                  icon: iconMapping[item.code].icon,
-                  name: iconMapping[item.code].name,
+                  icon,
+                  name,
+                  iconActive,
+                  code: Number(item.code),
                   ...item
                 }
               }
@@ -336,7 +405,11 @@ export default {
       API.dataSyncFieldSearch(params)
         .then(({ success, data }) => {
           if (success && data) {
-            this[type] = data
+            this[type] = deepClone(data).map(({ name, fieldType }) => ({
+              value: name,
+              fieldType
+            }))
+
             if (type !== 'bTableOption') {
               this.getTableField('bTableOption', {
                 datasourceId: this.rightTable.datasourceId,
@@ -386,6 +459,96 @@ export default {
     .blank {
       width: 100%;
       height: 32px;
+    }
+  }
+
+  .form-item {
+    @include flex(row, flex-start);
+    margin: 15px 0;
+    font-family: PingFangSC, PingFangSC-Regular;
+
+    .label {
+      width: 120px;
+      margin-right: 10px;
+      text-align: right;
+    }
+
+    .content {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 400;
+      text-align: left;
+      color: #666;
+
+      // .form-table {
+      //   width: 580px;
+      // }
+
+      .btn-wrap {
+        @include flex;
+        .btn {
+          display: inline-block;
+          width: 14px;
+          height: 14px;
+          border: 1px solid #999;
+          margin: 0 10px;
+          line-height: 14px;
+          text-align: center;
+          cursor: pointer;
+          font-size: 12px;
+          border-radius: 2px;
+
+          .icon {
+            font-size: 12px;
+            transform: scale(0.6);
+          }
+        }
+      }
+    }
+
+    .link-wrap {
+      @include flex(row, flex-start);
+      flex: 1;
+
+      .link-item {
+        @include flex(column);
+        width: 110px;
+        height: 80px;
+        border: 1px solid #00000026;
+        border-radius: 4px;
+        margin-right: 20px;
+        cursor: pointer;
+
+        .j-svg {
+          width: 45px;
+          height: 30px;
+        }
+
+        .text {
+          font-size: 14px;
+          font-family: PingFangSC, PingFangSC-Regular;
+          font-weight: 400;
+          text-align: right;
+          color: rgba(0, 0, 0, 0.85);
+          line-height: 20px;
+          margin-top: 10px;
+        }
+      }
+
+      .link-item-active {
+        border: 1px solid #1890ff;
+      }
+    }
+
+    ::v-deep {
+      .form-table .el-input__inner {
+        border: none;
+        background-color: transparent;
+      }
+
+      .el-form-item__content {
+        margin-left: 0 !important;
+      }
     }
   }
 }

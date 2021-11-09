@@ -160,11 +160,6 @@ public class MetadataServiceImpl implements MetadataService {
                 sj.add(filed);
             }
         }
-        //分区
-        String partitionCondition = new StringJoiner(" ").add("partitioned by (").add(param.getPartition()).add(" string)").toString();
-        //分隔符
-        String delimiterCondition = new StringJoiner(" ").add("row format delimited fields terminated by ").add("\'" + param.getDelimiter() + "\'").toString();
-
         String wideTableName = param.getWideTableName();
         StringJoiner statement = null;
         if (StringUtils.isNotBlank(param.getDatabaseName()) && StringUtils.isNotBlank(wideTableName) && Objects.nonNull(sj)) {
@@ -173,9 +168,13 @@ public class MetadataServiceImpl implements MetadataService {
             statement.add(new StringJoiner(".").add(param.getDatabaseName()).add(wideTableName).toString());
             statement.add(sj.toString());
             if (StringUtils.isNotBlank(param.getPartition())) {
+                //分区
+                String partitionCondition = new StringJoiner(" ").add("partitioned by (").add(param.getPartition()).add(" string)").toString();
                 statement.add(partitionCondition);
             }
             if (StringUtils.isNotEmpty(param.getDelimiter())) {
+                //分隔符
+                String delimiterCondition = new StringJoiner(" ").add("row format delimited fields terminated by ").add("\'" + param.getDelimiter() + "\'").toString();
                 statement.add(delimiterCondition);
             }
             statement.add("stored as  orc");

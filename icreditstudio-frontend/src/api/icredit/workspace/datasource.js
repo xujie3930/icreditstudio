@@ -27,6 +27,10 @@ const datasourceTestLink = params =>
 const verifyDatasourceName = params =>
   postAction('/datasource/hasExist', params)
 
+// 数据源管理-查看数据源表结构
+const datasourceTableDetail = params =>
+  getAction(`/datasource/datasourceStructure/${params}`)
+
 export default {
   datasourceAdd,
   datasourceDelete,
@@ -34,5 +38,6 @@ export default {
   datasourceDetail,
   datasourceSync,
   datasourceTestLink,
+  datasourceTableDetail,
   verifyDatasourceName
 }

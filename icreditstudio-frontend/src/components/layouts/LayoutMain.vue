@@ -108,7 +108,6 @@ export default {
     },
 
     initBreadCrumbItems(router) {
-      console.log(router, 'router')
       const breadCrumbItem = []
       router.matched.forEach(item => {
         if (item.meta && item.meta.name) {
@@ -122,7 +121,7 @@ export default {
       this.curBreadcrumb.push(breadCrumbItem[0])
     },
 
-    // 非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
+    // (待删除)非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
     autoSelectWorkspaceId() {
       const { path } = this.$route
       if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
@@ -134,7 +133,7 @@ export default {
     handleCrumbJump(toMenu) {
       const { path, redirectPath } = toMenu
       this.$router.push(redirectPath || path)
-      this.autoSelectWorkspaceId()
+      // this.autoSelectWorkspaceId()
     },
 
     // 一级菜单
@@ -170,7 +169,7 @@ export default {
         : [this.curBreadcrumb[0], rest]
       this.$ls.remove('taskForm')
       this.$ls.remove('selectedTable')
-      this.autoSelectWorkspaceId()
+      // this.autoSelectWorkspaceId()
     }
   }
 }

@@ -4,7 +4,7 @@
 -->
 
 <template>
-  <div class="workspace-setting">
+  <div class="workspace-setting h100">
     <crud-basic
       class="user-container"
       ref="crud"

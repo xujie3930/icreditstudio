@@ -9,6 +9,8 @@ import java.util.List;
  */
 @Data
 public class TaskBuildInfo {
+
+    private String dialect;
     /**
      * 目标库名
      */
