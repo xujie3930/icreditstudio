@@ -33,6 +33,7 @@ public class JdbcDataSyncQuery extends AbstractDataSyncQuery {
             StringJoiner sql = new StringJoiner(" ");
             sql.add("select");
             sql.add(sj.toString());
+            sql.add("from");
             sql.add(from);
             result = sql.toString();
         } else {
