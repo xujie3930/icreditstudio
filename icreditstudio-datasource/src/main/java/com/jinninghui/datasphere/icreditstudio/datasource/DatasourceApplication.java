@@ -18,7 +18,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //@EnableValidator
 @EnableScheduling
 @MapperScan(basePackages = {"com.jinninghui.**.mapper"})
-@EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
 @ComponentScan("com.jinninghui")
 public class DatasourceApplication {
     public static void main(String[] args) {
