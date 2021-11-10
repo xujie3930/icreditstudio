@@ -65,7 +65,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param) {
+    public BusinessResult<Boolean> saveDef(String userId, IcreditWorkspaceSaveParam param) {
         Date date = new Date();
         String createUserName = param.getCreateUser().getUsername();
         //保存工作空间信息
