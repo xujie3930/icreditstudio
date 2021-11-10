@@ -186,6 +186,7 @@ export default {
       this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
       this.detailData = uriSplit(data.uri, data)
+      this.handleReset()
       this.getTableDetailData(data.id)
       this.$refs.baseDialog.open()
     },
@@ -229,8 +230,16 @@ export default {
       }, 300)
     },
 
+    handleReset() {
+      this.tableName = ''
+      this.tableIndex = null
+      this.tableData = []
+      this.sourceTableData = []
+    },
+
     handleClose() {
       this.dialogVisible = false
+      this.handleReset()
     },
 
     handleConfirm() {
