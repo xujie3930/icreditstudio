@@ -6,6 +6,7 @@
 <template>
   <BaseDialog
     ref="baseDialog"
+    class="datasource-dialog"
     width="850px"
     :title="title"
     :hide-footer="true"
@@ -84,9 +85,41 @@
       </el-form>
     </div>
 
-    <div class="detail-table" style="margin-top:38px">
-      <div class="banner-title">
-        <span class="text">数据源表结构信息</span>
+    <div class="detail-table">
+      <div class="banner-title banner-select">
+        <div class="text">数据源表结构信息</div>
+        <div class="right">
+          <span class="right-label">选择表</span>
+          <el-select
+            v-model="tableName"
+            filterable
+            clearable
+            placeholder="请输入或选择表名"
+            @change="handleTableSelectChange"
+          >
+            <el-option
+              v-for="(item, idx) in tableOptions"
+              :key="idx"
+              :label="item.value"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+
+          <div class="right-text">
+            <template v-if="tableIndex == null || tableIndex === undefined">
+              <span>全部表，</span>
+            </template>
+            <template v-else>
+              第<span class="right-text-num">{{ tableIndex }}</span
+              >张表，
+            </template>
+            <template
+              >共<span class="right-text-num">{{ tableCount }}</span
+              >张表
+            </template>
+          </div>
+        </div>
       </div>
       <j-table
         ref="editTable"
@@ -101,7 +134,7 @@
 
 <script>
 import API from '@/api/icredit'
-import { uriSplit } from '@/utils/util'
+import { uriSplit, deepClone } from '@/utils/util'
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/workspace-datasource-detail'
 
@@ -109,6 +142,7 @@ export default {
   components: { BaseDialog },
   data() {
     return {
+      timerId: null,
       title: '',
       opType: 'View',
       dialogVisible: false,
@@ -125,7 +159,12 @@ export default {
         ]
       },
       tableLoading: false,
+      sourceTableData: [],
       tableData: [],
+      tableCount: 0,
+      tableIndex: null,
+      tableName: undefined,
+      tableOptions: [],
       tableConfiguration
     }
   },
@@ -147,7 +186,6 @@ export default {
       this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
       this.detailData = uriSplit(data.uri, data)
-      console.log('data==', data)
       this.getTableDetailData(data.id)
       this.$refs.baseDialog.open()
     },
@@ -158,12 +196,37 @@ export default {
       API.datasourceTableDetail(id)
         .then(({ success, data }) => {
           if (success && data) {
-            this.tableData = data
+            this.tableCount = data.tableCount
+            this.tableOptions = data.tableOptions.map(value => ({ value }))
+            this.tableData = data.columnList
+            this.sourceTableData = data.columnList
           }
         })
         .finally(() => {
           this.tableLoading = false
         })
+    },
+
+    handleTableSelectChange() {
+      console.log(this.tableName, 'komhi')
+      this.tableLoading = true
+      clearTimeout(this.timerId)
+      if (this.tableName) {
+        this.tableIndex = this.tableOptions.findIndex(
+          item => item.value === this.tableName
+        )
+        this.tableIndex++
+        this.tableData = deepClone(this.sourceTableData).filter(
+          item => item.tableName === this.tableName
+        )
+      } else {
+        this.tableIndex = null
+        this.tableData = this.sourceTableData
+      }
+
+      this.timerId = setTimeout(() => {
+        this.tableLoading = false
+      }, 300)
     },
 
     handleClose() {
@@ -179,6 +242,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.datasource-dialog {
+  ::v-deep {
+    .el-dialog__body {
+      padding: 20px;
+    }
+  }
+}
 .icredit-form {
   @include icredit-form;
 
@@ -200,6 +270,8 @@ export default {
 
 .detail-form,
 .detail-table {
+  margin-top: 30px;
+
   .banner-title {
     position: relative;
     margin: 20px 0;
@@ -224,6 +296,35 @@ export default {
       height: 18px;
       background: #1890ff;
       border-radius: 0px 2px 2px 0px;
+    }
+  }
+
+  .banner-select {
+    @include flex(row, space-between);
+    font-size: 14px;
+    font-family: PingFangSC, PingFangSC-Regular;
+    font-weight: 400;
+    text-align: right;
+    color: #262626;
+
+    .right {
+      @include flex;
+
+      &-label {
+        margin-right: 12px;
+      }
+
+      &-text {
+        margin-left: 16px;
+
+        &-num {
+          color: #1890ff;
+        }
+      }
+    }
+
+    &::before {
+      top: 7px;
     }
   }
 }
