@@ -16,6 +16,7 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.result.Warehouse
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.hive.metastore.api.AlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,10 @@ public class MetadataServiceImpl implements MetadataService {
                 stmt.execute(sql);
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                throw new AppException("80000000", e.getMessage());
+                String message = e.getMessage();
+                if (e instanceof AlreadyExistsException) {
+                    throw new AppException("80000000", e.getMessage());
+                }
             }
             return true;
         });

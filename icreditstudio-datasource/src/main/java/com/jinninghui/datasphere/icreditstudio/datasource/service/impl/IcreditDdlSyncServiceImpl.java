@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.HiveFieldCategoryEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.HiveMapJdbcTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
+import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.IcreditDdlConditionParam;
@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,8 @@ import java.util.stream.Collectors;
 public class IcreditDdlSyncServiceImpl extends ServiceImpl<IcreditDdlSyncMapper, IcreditDdlSyncEntity> implements IcreditDdlSyncService {
     @Autowired
     private IcreditDdlSyncMapper ddlSyncMapper;
+    @Resource
+    private IcreditDatasourceMapper datasourceMapper;
     @Override
     public Map<String, Optional<IcreditDdlSyncEntity>> categoryLatelyDdlSyncs(Collection<String> datasourceIds) {
         Map<String, Optional<IcreditDdlSyncEntity>> results = null;

@@ -16,7 +16,7 @@ export default {
     {
       type: 'index',
       label: '序号',
-      width: '100px'
+      width: '80px'
     },
     {
       type: 'text',
@@ -27,6 +27,7 @@ export default {
       type: 'text',
       label: '字段类型',
       prop: 'fieldType',
+      width: 120,
       formatter: row => fieldTypeMapping[row?.fieldType[0]] || ''
     },
     {
