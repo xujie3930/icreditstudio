@@ -198,16 +198,19 @@ public class DataxTask extends AbstractTask {
         JSONObject root = new JSONObject();
         if (dataXParameters.getCustomConfig() == Flag.YES.ordinal()) {
             json = dataXParameters.getJson().replaceAll("\\r\\n", "\n");
-            root.put("job", JSONObject.parseObject(json));
+            JSONObject obj = JSONObject.parseObject(json);
+            job.put("content", obj.getJSONArray("content"));
+            job.put("setting", obj.getJSONObject("setting"));
+            root.put("job", job);
+            root.put("core", obj.getJSONObject("core"));
         } else {
             job.put("content", buildDataxJobContentJson());
             job.put("setting", buildDataxJobSettingJson());
             root.put("job", job);
+            root.put("core", buildDataxCoreJson());
         }
 
-        root.put("core", buildDataxCoreJson());
         json = root.toString();
-        json = json.replace("\\\\", "");
 
         // replace placeholder
         json = ParameterUtils.convertParameterPlaceholders(json, ParamUtils.convert(paramsMap));
