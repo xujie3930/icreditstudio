@@ -56,6 +56,10 @@ public class ProcessDefinition {
     private String workspaceId;//新增工作空间id
 
     private Integer scheduleType;//0-周期实例，1-手动实例
+    /**
+     * 分区参数
+     */
+    private String partitionParam;
 
     /**
      * 平台任务ID
