@@ -159,7 +159,7 @@ import operate from '@/mixins/operate'
 import API from '@/api/icredit'
 import UserSelect from './users-select.vue'
 import { debounce } from 'lodash'
-import { verifySpecialStr } from '@/utils/validate'
+// import { verifySpecialStr } from '@/util s/validate'
 
 export default {
   mixins: [crud, operate],
@@ -203,10 +203,10 @@ export default {
         ],
         director: [
           { required: true, message: '必填项不能为空', trigger: 'change' }
-        ],
-        descriptor: [
-          { required: false, validator: verifySpecialStr, trigger: 'blur' }
         ]
+        // descriptor: [
+        //   { required: false, validator: verifySpecialStr, trigger: 'blur' }
+        // ]
       },
       userOptions: []
     }
