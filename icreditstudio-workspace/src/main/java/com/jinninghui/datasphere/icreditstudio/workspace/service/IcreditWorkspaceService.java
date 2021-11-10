@@ -21,7 +21,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
  */
 public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity> {
 
-    BusinessResult<Boolean> saveDef(IcreditWorkspaceSaveParam param);
+    BusinessResult<Boolean> saveDef(String userId, IcreditWorkspaceSaveParam param);
 
     BusinessResult<Boolean> deleteById(IcreditWorkspaceDelParam param);
 
