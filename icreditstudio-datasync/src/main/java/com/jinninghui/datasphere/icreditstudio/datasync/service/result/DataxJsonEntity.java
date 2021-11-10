@@ -20,6 +20,7 @@ public final class DataxJsonEntity {
     private DataxReader reader;
     private DataxWriter writer;
     private Map<String, Object> setting;
+    private Map<String, Object> core;
 
     public Map<String, Object> buildDataxJson() {
         Map<String, Object> job = new HashMap<>(2);
@@ -30,6 +31,7 @@ public final class DataxJsonEntity {
         contents.add(content);
         job.put("content", contents);
         job.put("setting", setting);
+        job.put("core", core);
         return job;
     }
 }
