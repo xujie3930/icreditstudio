@@ -462,6 +462,7 @@ export default {
 
         // 可视化表单参数
         dialect: null,
+        datasourceId: null,
         sourceTables: [],
         view: []
       }
@@ -485,7 +486,6 @@ export default {
 
   methods: {
     initPage() {
-      this.datasourceId = null
       this.opType = this.$route.query?.opType || 'add'
       this.step = this.$route.query?.step || ''
       const taskForm = this.$ls.get('taskForm') || {}
@@ -855,11 +855,12 @@ export default {
 
     // 处理可视化表单参数
     handleVisualizationParams() {
-      const { dialect } = this.secondTaskForm
-      this.secondTaskForm.dialect = dialect ?? this.selectedTable[0]?.dialect
-      this.secondTaskForm.view = deepClone(this.secondTaskForm.view).map(
-        ({ idx, ...item }) => item
-      )
+      const { dialect: dia, view } = this.secondTaskForm
+      const { dialect, datasourceId: sourceId } = this.selectedTable[0] || {}
+
+      this.secondTaskForm.dialect = dia ?? dialect
+      this.secondTaskForm.datasourceId = sourceId ?? this.datasourceId
+      this.secondTaskForm.view = deepClone(view).map(({ idx, ...item }) => item)
 
       this.secondTaskForm.sourceTables = deepClone(this.selectedTable)
         .filter(({ type }) => type === 'tag')
@@ -931,7 +932,7 @@ export default {
         dialect,
         createMode,
         view: sourceTables.length === 1 ? [] : view,
-        datasourceId: this.selectedTable[0]?.datasourceId || this.datasourceId,
+        datasourceId: this.selectedTable[0]?.datasourceId ?? this.datasourceId,
         sourceTables: deepClone(
           sourceTables
         ).map(({ database, tableName }) => ({ database, tableName }))
