@@ -229,10 +229,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         HdfsWriterEntity hdfsWriterEntity = new HdfsWriterEntity(wideTableColumns, hdfsWriterConfigParam);
 
+        SyncTaskEntity byId = getById(taskId);
+        String taskParamJson = null;
+        if (Objects.nonNull(byId)) {
+            taskParamJson = byId.getTaskParamJson();
+        }
         Map<String, Object> taskConfig = DataxJsonEntity.builder()
                 .reader(mySqlReaderEntity)
                 .writer(hdfsWriterEntity)
-                .setting(getDataxSetting())
+                .setting(getDataxSetting(taskParamJson))
+                .core(getDataxCore(taskParamJson))
                 .build().buildDataxJson();
         return JSONObject.toJSONString(taskConfig);
     }
@@ -255,11 +261,36 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return database;
     }
 
-    private Map<String, Object> getDataxSetting() {
-        Map<String, Object> result = Maps.newHashMap();
+    private Map<String, Object> getDataxCore(String taskParamJson) {
+        Map<String, Object> transport = new HashMap<>(1);
+        Map<String, Object> channel = new HashMap<>(1);
+        Map<String, Integer> speed = new HashMap<>(2);
 
+        if (StringUtils.isNotBlank(taskParamJson)) {
+            TaskScheduleInfo parse = taskScheduleInfoParser.parse(taskParamJson);
+            Integer ch = parse.getMaxThread() == null ? 1 : parse.getMaxThread();
+            Integer rate = parse.getLimitRate() == null ? 20000 : parse.getLimitRate();
+            speed.put("channel", ch);
+            speed.put("record", rate);
+        } else {
+            speed.put("channel", 1);
+            speed.put("record", 20000);
+        }
+        channel.put("channel", speed);
+        transport.put("transport", channel);
+        return transport;
+    }
+
+    private Map<String, Object> getDataxSetting(String taskParamJson) {
+        Map<String, Object> result = Maps.newHashMap();
         Map<String, Object> speed = Maps.newHashMap();
-        speed.put("channel", 1);
+        if (StringUtils.isNotBlank(taskParamJson)) {
+            TaskScheduleInfo parse = taskScheduleInfoParser.parse(taskParamJson);
+            Integer channel = parse.getMaxThread() == null ? 1 : parse.getMaxThread();
+            speed.put("channel", channel);
+        } else {
+            speed.put("channel", 1);
+        }
         result.put("speed", speed);
         return result;
     }
