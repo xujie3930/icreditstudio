@@ -45,12 +45,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.annotation.Resource;
 import java.sql.Connection;
@@ -58,7 +57,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -87,7 +85,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Autowired
     private UserWorkspaceFeignClient userWorkspaceFeignClient;
     @Autowired
-    private DataSourceTransactionManager transactionManager;
+    private IcreditDatasourceService icreditDatasourceService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -167,9 +166,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    @BusinessParamsValidate
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<String> syncById(String id) {
-        DefaultTransactionDefinition def = new DefaultTransactionDefinition();
-        TransactionStatus status = transactionManager.getTransaction(def);
         String result = String.format("同步成功");
         if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())) {
             throw new AppException("70000010");
@@ -212,15 +211,19 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 }
             }
         } catch (Exception e) {
-            transactionManager.rollback(status);
-            datasourceMapper.updateById(dataEntity);
+            IcreditDatasourceServiceImpl icreditDatasourceService = (IcreditDatasourceServiceImpl) AopContext.currentProxy();
+            icreditDatasourceService.updateDatasourceById(dataEntity);
             log.error("数据源同步异常:{}", e.getMessage());
             throw new AppException("70000003");
         }
         dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
         datasourceMapper.updateById(dataEntity);
-        transactionManager.commit(status);
         return BusinessResult.success(result);
+    }
+
+    @Transactional(propagation =Propagation.REQUIRES_NEW)
+    public void updateDatasourceById(IcreditDatasourceEntity dataEntity) {
+        datasourceMapper.updateById(dataEntity);
     }
 
     private String getResult(String oldColumnsInfo, String datasourceInfo) {

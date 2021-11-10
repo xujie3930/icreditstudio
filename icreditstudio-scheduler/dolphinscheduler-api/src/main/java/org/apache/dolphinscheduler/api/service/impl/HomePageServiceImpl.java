@@ -9,6 +9,7 @@ import org.apache.dolphinscheduler.api.service.HomePageService;
 import org.apache.dolphinscheduler.api.service.ProcessDefinitionService;
 import org.apache.dolphinscheduler.api.service.TaskInstanceService;
 import org.apache.dolphinscheduler.api.service.result.*;
+import org.apache.dolphinscheduler.api.utils.DoubleUtils;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author xujie
@@ -81,10 +84,10 @@ public class HomePageServiceImpl implements HomePageService {
         taskRoughResult.setFailCount(failCount);
         //新增数据量条数
         Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyLine(((double)newlyLine) / 10000);
+        taskRoughResult.setNewlyLine(DoubleUtils.formatDouble(((double)newlyLine) / 10000));
         //新增数据量
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyDataSize(((double) newlyDataSize) / 1024);
+        taskRoughResult.setNewlyDataSize(DoubleUtils.formatDouble(((double) newlyDataSize) / 1024));
 //        RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
@@ -132,7 +135,7 @@ public class HomePageServiceImpl implements HomePageService {
         for (Map<String, Object> m : definitionList) {
             String definitionId = (String) m.get("id");
             Double runtime = taskInstanceService.runtimeTotalByDefinition(definitionId, new int[]{});
-            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("platformTaskId"), (String)m.get("name"), runtime, (Integer)m.get("scheduleType")));
+            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("platformTaskId"), (String)m.get("name"), DoubleUtils.formatDouble(runtime), (Integer)m.get("scheduleType")));
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
@@ -157,6 +160,7 @@ public class HomePageServiceImpl implements HomePageService {
             runErrorRankList.add(new RunErrorRankResult((String)m.get("platformTaskId"), (String)m.get("name"), errorNum, (Integer)m.get("scheduleType")));
         }
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
+        runErrorRankList = runErrorRankList.parallelStream().filter(runErrorRank -> "0".equals(runErrorRank.getErrorNum())).sorted(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed()).collect(Collectors.toList());
         runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);
 
 //        RedisUtils.set(PRERUNERRORRANK + request.getWorkspaceId(), runErrorRankList, ONE_DAY_TIME);
@@ -172,10 +176,10 @@ public class HomePageServiceImpl implements HomePageService {
             return situationZeroList;
         }
         List<TaskSituationResult> list = new ArrayList<>();
-        list.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), args[0], (double)args[0] / count));
-        list.add(new TaskSituationResult(TaskStatus.FAILURE.getDescp(), args[1], (double)args[1] / count));
-        list.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), args[2], (double)args[2] / count));
-        list.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), args[3], (double)args[3] / count));
+        list.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), args[0], DoubleUtils.formatDouble((double)args[0] / count)));
+        list.add(new TaskSituationResult(TaskStatus.FAILURE.getDescp(), args[1], DoubleUtils.formatDouble((double)args[1] / count)));
+        list.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), args[2], DoubleUtils.formatDouble((double)args[2] / count)));
+        list.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), args[3], DoubleUtils.formatDouble((double)args[3] / count)));
         return list;
     }
 }

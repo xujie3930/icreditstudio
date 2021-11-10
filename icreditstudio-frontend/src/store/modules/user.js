@@ -121,7 +121,8 @@ const actions = {
             const workspaceId = Vue.ls.get('workspaceId') || 'all'
             const nWorkList = [{ name: '全部', id: 'all' }, ...workspaceList]
             const idx = nWorkList.findIndex(({ id }) => workspaceId === id)
-            const wid = nWorkList.length > 1 ? nWorkList[1].id : nWorkList[0].id
+            // const wid = nWorkList.length > 1 ? nWorkList[1].id : nWorkList[0].id
+            const wid = nWorkList[0].id
 
             idx < 0 && Vue.ls.set('workspaceId', wid)
 

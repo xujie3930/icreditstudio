@@ -3,12 +3,15 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.google.common.collect.Lists;
+import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ColumnListResult;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.DatasourceStructureResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
