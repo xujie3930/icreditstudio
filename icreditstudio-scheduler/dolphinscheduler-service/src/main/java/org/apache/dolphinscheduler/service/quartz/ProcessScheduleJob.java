@@ -18,16 +18,12 @@
 package org.apache.dolphinscheduler.service.quartz;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ReleaseState;
 import org.apache.dolphinscheduler.common.model.Configuration;
-import org.apache.dolphinscheduler.common.model.TaskNode;
-import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.dao.entity.Command;
-import org.apache.dolphinscheduler.dao.entity.ProcessData;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
@@ -42,7 +38,6 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * process schedule job
@@ -104,12 +99,14 @@ public class ProcessScheduleJob implements Job {
         }
 
         String processDefinitionJson = processDefinition.getProcessDefinitionJson();
+        log.info("processDefinitionJson" +processDefinitionJson);
+        /*String processDefinitionJson = processDefinition.getProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(processDefinitionJson), ProcessData.class);
         List<TaskNode> tasks = processData.getTasks();
         for (TaskNode task : tasks) {
             String params = task.getParams();
             log.info("datax执行脚本:" + params);
-        }
+        }*/
 
         Command command = new Command();
         command.setCommandType(CommandType.SCHEDULER);

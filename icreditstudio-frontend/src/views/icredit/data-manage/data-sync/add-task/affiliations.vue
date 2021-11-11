@@ -71,10 +71,10 @@
           >
             <template #operationColumn="{row, index}">
               <div class="btn-wrap">
-                <span class="btn" @click="handleAddClick(row, index)">
+                <span class="btn" @click="handleAddClick(index)">
                   <i class="el-icon-plus icon"></i>
                 </span>
-                <span class="btn" @click="handleMinusClick(row, index)">
+                <span class="btn" @click="handleMinusClick(index)">
                   <i class="el-icon-minus icon"></i>
                 </span>
               </div>
@@ -309,10 +309,8 @@ export default {
 
     // 左表字段选择类型判断
     handleChangeLeftSelect(options) {
-      console.log(options, 'Lfetoptions')
       const { left, right } = options.scope.row
       this.leftSelectVal = this.aTableOption.find(({ value }) => value === left)
-      console.log('left, right', left, right, this.leftSelectVal)
 
       if (right) {
         const { fieldType } = this.leftSelectVal
@@ -330,13 +328,10 @@ export default {
 
     // 右表字段选择类型判断
     handleChangeRightSelect(options) {
-      console.log(options, 'kplkpl')
-
       const { left, right } = options.scope.row
       this.rightSelectVal = this.bTableOption.find(
         ({ value }) => value === right
       )
-      console.log('left, right', left, right, this.rightSelectVal)
 
       if (left) {
         const { fieldType } = this.leftSelectVal
@@ -359,8 +354,6 @@ export default {
         associate: '',
         right: ''
       })
-
-      console.log(this.form.linkTypeData, 'mkin')
     },
 
     // 删除字段关联

@@ -262,7 +262,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     private Map<String, Object> getDataxCore(String taskParamJson) {
-        Map<String, Object> core = new HashMap<>(1);
         Map<String, Object> transport = new HashMap<>(1);
         Map<String, Object> channel = new HashMap<>(1);
         Map<String, Integer> speed = new HashMap<>(2);
@@ -279,8 +278,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         channel.put("channel", speed);
         transport.put("transport", channel);
-        core.put("core", transport);
-        return core;
+        return transport;
     }
 
     private Map<String, Object> getDataxSetting(String taskParamJson) {
