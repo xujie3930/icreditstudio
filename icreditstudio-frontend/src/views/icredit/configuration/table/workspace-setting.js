@@ -6,6 +6,65 @@
 
 export default _this => {
   const { workspaceCreateAuth, workspaceId } = _this
+  const group = [
+    {
+      type: 'index',
+      label: '序号',
+      width: '100px',
+      prop: 'serialNumber'
+    },
+    {
+      type: 'text',
+      label: '工作空间名称',
+      prop: 'name'
+    },
+    {
+      type: 'slot',
+      label: '空间状态',
+      prop: 'status',
+      width: 100
+    },
+    {
+      type: 'text',
+      label: '包含业务流程数（个）',
+      prop: 'businessFlowCount',
+      width: 200
+    },
+    {
+      type: 'text',
+      label: '包含工作流个数（个）',
+      prop: 'workFlowCount',
+      width: 200
+    },
+    {
+      type: 'text',
+      label: '更新时间',
+      prop: 'updateTime'
+    },
+    {
+      type: 'text',
+      label: '更新人',
+      prop: 'updateUser'
+    },
+    {
+      type: 'text',
+      label: '描述',
+      prop: 'descriptor'
+    }
+  ]
+
+  const operate = {
+    type: 'slot',
+    label: '操作',
+    prop: 'operation',
+    width: '250px',
+    fixed: 'right'
+  }
+
+  if (workspaceId !== '0') {
+    group.push(operate)
+  }
+
   return {
     refName: 'workspace-setting',
     id: 'setting',
@@ -18,66 +77,13 @@ export default _this => {
         label: '新增工作空间',
         type: 'primary',
         key: 'addWorkspace',
-        disabled: !workspaceCreateAuth || workspaceId !== 'all',
-        // isHide: !_this.workspaceCreateAuth,
+        disabled: !workspaceCreateAuth || workspaceId !== '0',
         options: {
           eventType: 'click',
           eventName: 'handleAddWorkspace'
         }
       }
     ],
-    group: [
-      {
-        type: 'index',
-        label: '序号',
-        width: '100px',
-        prop: 'serialNumber'
-      },
-      {
-        type: 'text',
-        label: '工作空间名称',
-        prop: 'name'
-      },
-      {
-        type: 'slot',
-        label: '空间状态',
-        prop: 'status',
-        width: 100
-      },
-      {
-        type: 'text',
-        label: '包含业务流程数（个）',
-        prop: 'businessFlowCount',
-        width: 200
-      },
-      {
-        type: 'text',
-        label: '包含工作流个数（个）',
-        prop: 'workFlowCount',
-        width: 200
-      },
-      {
-        type: 'text',
-        label: '更新时间',
-        prop: 'updateTime'
-      },
-      {
-        type: 'text',
-        label: '更新人',
-        prop: 'updateUser'
-      },
-      {
-        type: 'text',
-        label: '描述',
-        prop: 'descriptor'
-      },
-      {
-        type: 'slot',
-        label: '操作',
-        prop: 'operation',
-        width: '250px',
-        fixed: 'right'
-      }
-    ]
+    group
   }
 }
