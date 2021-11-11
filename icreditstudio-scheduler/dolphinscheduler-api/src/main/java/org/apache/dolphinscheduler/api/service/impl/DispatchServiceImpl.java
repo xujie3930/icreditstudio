@@ -53,20 +53,12 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
-    public BusinessResult<Boolean> startOrStop(String taskId, String execType) {
-        if(StringUtils.isEmpty(taskId)){
+    public BusinessResult<Boolean> startOrStop(String processInstanceId, String execType) {
+        if(StringUtils.isEmpty(processInstanceId)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.message);
         }
         if(StringUtils.isEmpty(execType)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.message);
-        }
-        String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
-        if(null == processDefinitionId){
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000007.message);
-        }
-        String processInstanceId = processInstanceMapper.getIdByProcessDefinitionId(processDefinitionId);
-        if(StringUtils.isEmpty(processInstanceId)){
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000006.message);
         }
         //processInstanceId , ExecuteType executeType
         int execStatus = this.executeInstance(processInstanceId, execType);
@@ -84,6 +76,9 @@ public class DispatchServiceImpl implements DispatchService {
      */
     private int executeInstance(String instanceId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
+        //todo  设置 writemode 为truncate，清理之前的文件内容，但需要注意 filename 的值（慎重）
+//        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"truncate\\\"");
+//        processInstance.setProcessInstanceJson(instanceJson);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
         if("1".equals(execType)){
@@ -92,7 +87,7 @@ public class DispatchServiceImpl implements DispatchService {
             }
             result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
         }else{
-            if (processInstance.getState() != ExecutionStatus.FAILURE) {//该任务不是 【失败】状态，不能重跑
+            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
@@ -137,12 +132,13 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(LogPageParam param) {
         int pageNum = (param.getPageNum() - 1) * param.getPageSize();
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(param.getTaskId());
-        long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId);
-        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, pageNum, param.getPageSize());
+        long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd());
+        List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd(), pageNum, param.getPageSize());
         for (DispatchLogVO dispatchLogVO : logVOList) {
-            if(7 == dispatchLogVO.getTaskInstanceState() || 8 == dispatchLogVO.getTaskInstanceState()){//成功
+            if(ExecutionStatus.SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.NEED_FAULT_TOLERANCE.getCode() == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(0);
-            }else if(0 == dispatchLogVO.getTaskInstanceState() || 1 == dispatchLogVO.getTaskInstanceState() || 10 == dispatchLogVO.getTaskInstanceState()){//执行中
+            }else if(ExecutionStatus.SUBMITTED_SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.RUNNING_EXECUTION.getCode() == dispatchLogVO.getTaskInstanceState()
+                    || ExecutionStatus.WAITTING_THREAD.getCode() == dispatchLogVO.getTaskInstanceState()){//执行中
                 dispatchLogVO.setTaskInstanceState(2);
             }else{//失败
                 dispatchLogVO.setTaskInstanceState(1);

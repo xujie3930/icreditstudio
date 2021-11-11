@@ -37,13 +37,13 @@ public class DispatchController {
 
     /**
      *
-     * @param taskId
+     * @param processInstanceId
      * @param execType   执行类型 ：0 表示 重跑，1 表示 终止
      * @return
      */
     @GetMapping("/execInstance")
-    public BusinessResult<Boolean> startOrStop(@RequestParam("taskId") String taskId, @RequestParam("execType") String execType){
-        return dispatchService.startOrStop(taskId, execType);
+    public BusinessResult<Boolean> startOrStop(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("execType") String execType){
+        return dispatchService.startOrStop(processInstanceId, execType);
     }
 
     @PostMapping("/log/page")

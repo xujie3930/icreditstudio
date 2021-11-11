@@ -80,7 +80,8 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
     Long getCountByByDefinitionAndStates(@Param("definitionId")String definitionId, @Param("states") int[] stateArray);
 
-    List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("pageNum") int pageNum, @Param("pageSize") int pageSize);
+    List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("taskStatus") Integer taskStatus,
+                                                       @Param("execTimeStart") Date execTimeStart, @Param("execTimeEnd") Date execTimeEnd, @Param("pageNum") int pageNum, @Param("pageSize") int pageSize);
 
     void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
@@ -88,5 +89,6 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
 
     Long totalBytesByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 
-    long countTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
+    long countTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("taskStatus") Integer taskStatus,
+                                        @Param("execTimeStart") Date execTimeStart, @Param("execTimeEnd") Date execTimeEnd);
 }

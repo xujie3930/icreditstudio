@@ -174,6 +174,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         IcreditWorkspaceEntity entity = BeanCopyUtils.copyProperties(param, new IcreditWorkspaceEntity());
         entity.setUpdateTime(new Date());
         updateById(entity);
+        if (CollectionUtils.isEmpty(param.getMemberList())){
+            return BusinessResult.success(true);
+        }
         String spaceId = entity.getId();
         //先删除该空间下所有成员
         List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(userEntity -> userEntity.getId()).collect(Collectors.toList());

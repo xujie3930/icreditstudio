@@ -10,6 +10,8 @@ public class DispatchLogVO {
 
     //task任务实例ID
     private String taskInstanceId;
+    //流程实例ID
+    private String processInstanceId;
     //task任务实例名称
     private String taskInstanceName;
     //task任务实例状态
