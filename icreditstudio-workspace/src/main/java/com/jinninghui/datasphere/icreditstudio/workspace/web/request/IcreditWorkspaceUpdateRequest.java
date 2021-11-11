@@ -22,5 +22,7 @@ public class IcreditWorkspaceUpdateRequest {
     private int status = 0;//空间状态
     private String director;//负责人
     private String createUser;//创建人
+    private String updateUser;//更新人
+    private String delFlag;
     private List<WorkspaceMember> memberList = new ArrayList<>();
 }

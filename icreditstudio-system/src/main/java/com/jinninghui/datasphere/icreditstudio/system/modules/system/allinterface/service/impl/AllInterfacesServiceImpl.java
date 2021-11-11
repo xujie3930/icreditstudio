@@ -10,6 +10,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterfac
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.param.OrgTreeQueryParams;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.param.UserAuthParams;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.param.UserRoleDataQueryParam;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.*;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.service.AllInterfacesService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.web.request.OrgEntityQueryRequest;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.web.request.RoleEntityQueryRequest;
@@ -35,7 +36,6 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.servic
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserRoleMapService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.uaa.common.em.UaaCodeBean;
-import com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterface.result.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -219,7 +219,7 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
             userId = "";
         }
         BusinessResult<List<Map<String, String>>> workspaceList = workspaceFeignClient.getWorkspaceListByUserId(userId);
-        if (workspaceList.isSuccess() & CollectionUtils.isNotEmpty(workspaceList.getData())) {
+        if (workspaceList.isSuccess() && CollectionUtils.isNotEmpty(workspaceList.getData())) {
             authResult.setWorkspaceList(workspaceList.getData());
         }
         return BusinessResult.success(authResult);
