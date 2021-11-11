@@ -89,8 +89,8 @@
 
       <div class="schedule-footer-right">
         <div class="title">
-          <span class="left">近一月运行出错排行</span>
-          <span class="right">上次更新：{{ yesterdayRight }}</span>
+          <span class="left">近一天运行出错排行</span>
+          <span class="right">前一天：{{ yesterdayRight }}</span>
         </div>
         <div class="content">
           <j-table

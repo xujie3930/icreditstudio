@@ -159,7 +159,7 @@ import operate from '@/mixins/operate'
 import API from '@/api/icredit'
 import UserSelect from './users-select.vue'
 import { debounce } from 'lodash'
-// import { verifySpecialStr } from '@/util s/validate'
+import { deepClone } from '@/utils/util'
 
 export default {
   mixins: [crud, operate],
@@ -294,7 +294,7 @@ export default {
     // 选中负责人
     handleUserChangeClick(item) {
       if (item) {
-        const { userId: cteUserId } = this.currentUser
+        const { userId: cId } = this.currentUser
         const {
           id: userId,
           name: username,
@@ -315,7 +315,7 @@ export default {
           createTime: new Date().getTime()
         }
         this.detailForm.memberList.splice(
-          userId === cteUserId ? 0 : 1,
+          userId === cId ? 0 : 1,
           1,
           this.selectedUser
         )
@@ -324,9 +324,11 @@ export default {
 
     // 选择成员
     userSelectCallback({ opType, users }) {
+      const { userId: cId } = this.currentUser
+      const { userId: sId } = this.selectedUser
       this.$refs.usersSelect.close()
       if (opType === 'confirm') {
-        this.detailForm.memberList = users.map(item => {
+        const userList = users.map(item => {
           const {
             id: userId,
             userName: username,
@@ -345,13 +347,13 @@ export default {
             createTime: new Date().getTime()
           }
         })
-        // .filter(
-        //   ({ userId }) =>
-        //     this.currentUser.userId !== userId &&
-        //     this.selectedUser.userId !== userId
-        // )
-        // this.detailForm.memberList.unshift(this.selectedUser)
-        // this.detailForm.memberList.unshift(this.currentUser)
+        this.detailForm.memberList = deepClone(userList).filter(
+          ({ userId }) => ![cId, sId].includes(userId)
+        )
+
+        // 当前登录系统用户与负责人不是同一个人
+        cId !== sId && this.detailForm.memberList.unshift(this.selectedUser)
+        this.detailForm.memberList.unshift(this.currentUser)
       }
     },
 
