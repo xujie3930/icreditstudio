@@ -89,9 +89,12 @@ public class IcreditWorkspaceUserEntity implements Serializable {
     private String updateUser;
 
     /**
-     * 创建人
+     * 描述
      */
     private String remark;
 
-
+    /**
+     * 排序字段，用于展示成员列表的排序，空间的创建者为0
+     */
+    private Integer sort;
 }

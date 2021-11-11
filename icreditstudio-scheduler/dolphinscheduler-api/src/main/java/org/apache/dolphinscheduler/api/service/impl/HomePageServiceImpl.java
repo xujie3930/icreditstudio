@@ -52,8 +52,7 @@ public class HomePageServiceImpl implements HomePageService {
     private static final String PRERUNTIMERANK= SCHEDULER + "runtimeRank";
     private static final String PRERUNERRORRANK= SCHEDULER + "runErrorRank";
 
-    private static final long FIVE_MINUTE_TIME = 1 * 60L;
-    private static final long ONE_DAY_TIME = 1 * 60L;
+    private static final long FIVE_MINUTE_TIME = 5 * 60L;
 
     static List<TaskSituationResult> situationZeroList = new ArrayList<>();
 
@@ -149,11 +148,10 @@ public class HomePageServiceImpl implements HomePageService {
 //        if (!CollectionUtils.isEmpty(list)){
 //            return BusinessResult.success(list);
 //        }
-        //TODO:runErrorRankList改为每日定时获取
         List<RunErrorRankResult> runErrorRankList = new ArrayList<>();
         Date date = new Date();
         List<Map<String, Object>> definitionList = processDefinitionService.selectByWorkspaceIdAndTime(request.getWorkspaceId(),
-                DateUtils.getStartOfDay(DateUtils.getSomeMonth(date, -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(date, -1)));
+                DateUtils.getStartOfDay(DateUtils.getSomeDay(date, -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(date, -1)));
         for (Map<String, Object> m : definitionList) {
             String definitionId = (String) m.get("id");
             Long errorNum = taskInstanceService.getCountByByDefinitionAndStates(definitionId, new int[]{ExecutionStatus.FAILURE.getCode()});

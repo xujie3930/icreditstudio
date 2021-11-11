@@ -79,11 +79,13 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         save(defEntity);
         //保存创建人信息
         IcreditWorkspaceUserEntity createUser = getNewMember(param.getCreateUser(), defEntity);
+        createUser.setSort(0);
         workspaceUserService.save(createUser);
         //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())) {
-            for (WorkspaceMember member : param.getMemberList()) {
-                IcreditWorkspaceUserEntity entity = getNewMember(member, defEntity);
+            for (int i = 0; i < param.getMemberList().size(); i++) {
+                IcreditWorkspaceUserEntity entity = getNewMember(param.getMemberList().get(i), defEntity);
+                entity.setSort(i + 1);
                 workspaceUserService.save(entity);
             }
         }
@@ -173,27 +175,13 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         entity.setUpdateTime(new Date());
         updateById(entity);
         String spaceId = entity.getId();
+        //先删除该空间下所有成员
         List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(userEntity -> userEntity.getId()).collect(Collectors.toList());
-        //更新member，有则更新，无则创建
-        if (CollectionUtils.isEmpty(param.getMemberList())){
-            return BusinessResult.success(true);
-        }
-        for (WorkspaceMember member : param.getMemberList()) {
-            QueryWrapper<IcreditWorkspaceUserEntity> wrapper = new QueryWrapper<>();
-            wrapper.eq(IcreditWorkspaceUserEntity.SPACE_ID, spaceId);
-            wrapper.eq(IcreditWorkspaceUserEntity.USER_ID, member.getUserId());
-            IcreditWorkspaceUserEntity user = workspaceUserService.getOne(wrapper);
-            if (null == user){
-                IcreditWorkspaceUserEntity newMember = getNewMember(member, entity);
-                workspaceUserService.save(newMember);
-            }else {
-                workspaceUserService.updateById(user);
-                delList.remove(user.getId());
-            }
-        }
-        //删除多余的member
-        if (!CollectionUtils.isEmpty(delList)){
-            workspaceUserService.removeByIds(delList);
+        workspaceUserService.removeByIds(delList);
+        for (int i = 0; i < param.getMemberList().size(); i++) {
+            IcreditWorkspaceUserEntity newMember = getNewMember(param.getMemberList().get(i), entity);
+            newMember.setSort(i);
+            workspaceUserService.save(newMember);
         }
         return BusinessResult.success(true);
     }
