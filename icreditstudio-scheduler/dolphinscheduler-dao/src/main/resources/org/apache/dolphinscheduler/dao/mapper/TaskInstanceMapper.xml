@@ -179,10 +179,25 @@
     </select>
 
     <select id="queryTaskByProcessDefinitionId" resultType="org.apache.dolphinscheduler.common.vo.DispatchLogVO">
-        SELECT id AS taskInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
+        SELECT id AS taskInstanceId,process_instance_id AS processInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
                 total_records AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum,start_time AS startTime,end_time AS endTime
         FROM t_ds_task_instance
         WHERE process_definition_id = #{processDefinitionId}
+        <if test="taskStatus == 0">
+            AND state IN (7,8)
+        </if>
+        <if test="taskStatus == 2">
+            AND state IN (0,1,10)
+        </if>
+        <if test="taskStatus == 1">
+            AND state IN (4,5,6,9)
+        </if>
+        <if test="execTimeStart != null">
+            AND submit_time <![CDATA[ >= ]]> #{execTimeStart}
+        </if>
+        <if test="execTimeEnd != null">
+            AND submit_time <![CDATA[ <= ]]> #{execTimeEnd}
+        </if>
         ORDER BY submit_time DESC
         limit #{pageNum},#{pageSize}
     </select>
@@ -190,6 +205,21 @@
         SELECT count(1)
         FROM t_ds_task_instance
         WHERE process_definition_id = #{processDefinitionId}
+        <if test="taskStatus == 0">
+            AND state IN (7,8)
+        </if>
+        <if test="taskStatus == 2">
+            AND state IN (0,1,10)
+        </if>
+        <if test="taskStatus == 1">
+            AND state IN (4,5,6,9)
+        </if>
+        <if test="execTimeStart != null">
+            AND submit_time <![CDATA[ >= ]]> #{execTimeStart}
+        </if>
+        <if test="execTimeEnd != null">
+            AND submit_time <![CDATA[ <= ]]> #{execTimeEnd}
+        </if>
     </select>
 
     <delete id="deleteByProcessDefinitionId">
