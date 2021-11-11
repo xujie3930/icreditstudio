@@ -94,8 +94,8 @@ public class MetadataServiceImpl implements MetadataService {
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
                 String message = e.getMessage();
-                if (e instanceof AlreadyExistsException) {
-                    throw new AppException("80000000", e.getMessage());
+                if (message.contains("AlreadyExistsException")) {
+                    throw new AppException("80000003");
                 }
             }
             return true;

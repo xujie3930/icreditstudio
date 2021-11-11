@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.time;
 
+import cn.hutool.core.date.DateUtil;
 import lombok.Data;
 
 import java.util.Date;
@@ -10,6 +11,7 @@ import java.util.Date;
 @Data
 public class SyncTimeInterval {
 
+    private String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
     /**
      * 是否已执行
      */
@@ -30,4 +32,18 @@ public class SyncTimeInterval {
      * 时间格式化
      */
     private String timeFormat;
+
+    public String formatStartTime() {
+        if (startTime != null) {
+            return DateUtil.format(startTime, TIME_FORMAT);
+        }
+        return null;
+    }
+
+    public String formatEndTime() {
+        if (endTime != null) {
+            return DateUtil.format(endTime, TIME_FORMAT);
+        }
+        return null;
+    }
 }
