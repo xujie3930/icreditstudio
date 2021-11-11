@@ -166,7 +166,9 @@ export default {
       runtimeDataLoading: false,
       countDataLoading: false,
       runDayDataLoading: false,
-      errMonthDataLoading: false
+      errMonthDataLoading: false,
+
+      chartInstance: null
     }
   },
 
@@ -264,7 +266,8 @@ export default {
         schedulerEndTime
       }
 
-      const chartInstance = renderChart(id, optionsMapping[id])
+      this.chartInstance && this.chartInstance.dispose()
+      this.chartInstance = renderChart(id, optionsMapping[id])
       this.countDataLoading = true
       API.dataScheduleHomeCount(params)
         .then(({ success, data }) => {
@@ -273,12 +276,13 @@ export default {
               new Date().getTime() - 24 * 60 * 60 * 1000
             ).format('YYYY-MM-DD')
             const name = dayjs(data[data.length - 1].date).format('YYYY')
-            chartInstance.setOption({
+            this.chartInstance.setOption({
               xAxis: {
                 name,
                 data: data.map(({ date: d }) => dayjs(d).format('YYYY.MM.DD'))
               },
-              series: [{ data: data.map(({ value }) => value) }]
+              series: [{ data: data.map(({ value }) => value) }],
+              dataZoom: [{ end: data.length > 7 ? 30 : 100 }]
             })
           }
         })
