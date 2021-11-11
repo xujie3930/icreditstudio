@@ -28,11 +28,9 @@ public interface LoggerService {
      * view log
      *
      * @param taskInstId  task instance id
-     * @param skipLineNum skip line number
-     * @param limit       limit
      * @return log string data
      */
-    BusinessResult<String> queryLog(String taskInstId, int skipLineNum, int limit);
+    BusinessResult<String> queryLog(String taskInstId);
 
 
     /**
