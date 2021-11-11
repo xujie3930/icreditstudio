@@ -16,6 +16,18 @@ public class SyncCondition {
      */
     private String partition;
     /**
+     * 增量存储
+     */
+    private Boolean inc;
+
+    public Boolean isInc() {
+        if (inc == null) {
+            return true;
+        }
+        return inc;
+    }
+
+    /**
      * 时间T+n
      */
     private Integer n;

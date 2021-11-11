@@ -61,6 +61,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000044("60000044", "任务还没【启用】，不能进行【执行|立即执行】"),
         RESOURCE_CODE_60000045("60000045", "任务还没【启用】，不能进行【停止执行】"),
         RESOURCE_CODE_60000046("60000046", "用户ID为空"),
+        RESOURCE_CODE_60000047("60000047", "cron表达式不规范"),
+        RESOURCE_CODE_60000048("60000048", "未找到合适的同步sql解析器"),
         ;
 
         public final String code;
