@@ -60,12 +60,10 @@ public class LoggerServiceImpl implements LoggerService {
      * view log
      *
      * @param taskInstId  task instance id
-     * @param skipLineNum skip line number
-     * @param limit       limit
      * @return log string data
      */
     @Override
-    public BusinessResult<String> queryLog(String taskInstId, int skipLineNum, int limit) {
+    public BusinessResult<String> queryLog(String taskInstId) {
 
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstId);
 
@@ -77,7 +75,7 @@ public class LoggerServiceImpl implements LoggerService {
 
         logger.info("log host : {} , logPath : {} , logServer port : {}", host, taskInstance.getLogPath(), Constants.RPC_PORT);
 
-        String log = logClient.rollViewLog(host, Constants.RPC_PORT, taskInstance.getLogPath(), skipLineNum, limit);
+        String log = logClient.viewLog(host, Constants.RPC_PORT, taskInstance.getLogPath());
         return BusinessResult.success(log);
     }
 

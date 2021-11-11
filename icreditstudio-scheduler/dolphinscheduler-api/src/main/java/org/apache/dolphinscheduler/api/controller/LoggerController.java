@@ -45,7 +45,7 @@ public class LoggerController extends BaseController {
      */
     @GetMapping(value = "/detail")
     public BusinessResult<String> queryLog(@RequestParam(value = "taskInstanceId") String taskInstanceId) {
-        return loggerService.queryLog(taskInstanceId, 100, 100);
+        return loggerService.queryLog(taskInstanceId);
     }
 
 

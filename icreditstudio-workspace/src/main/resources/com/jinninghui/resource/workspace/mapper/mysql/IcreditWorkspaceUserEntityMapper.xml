@@ -20,7 +20,7 @@
             resultType="com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity">
         select *
         from icredit_workspace_user
-        where space_id = #{id};
+        where space_id = #{id} order by sort asc ;
     </select>
 
     <select id="getWorkSpaceIdsByUserId" resultType="java.lang.String">
