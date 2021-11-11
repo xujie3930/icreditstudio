@@ -183,7 +183,7 @@ export default {
       // 当前登录用户
       currentUser: {},
       // 选择的负责人
-      selectedUser: {},
+      selectedUser: null,
 
       // 工作空间表单
       detailForm: {
@@ -325,7 +325,7 @@ export default {
     // 选择成员
     userSelectCallback({ opType, users }) {
       const { userId: cId } = this.currentUser
-      const { userId: sId } = this.selectedUser
+      const { userId: sId } = this.selectedUser || {}
       this.$refs.usersSelect.close()
       if (opType === 'confirm') {
         const userList = users.map(item => {
@@ -351,15 +351,20 @@ export default {
           ({ userId }) => ![cId, sId].includes(userId)
         )
 
+        console.log(this.selectedUser, cId !== sId, 'kkmm')
         // 当前登录系统用户与负责人不是同一个人
-        cId !== sId && this.detailForm.memberList.unshift(this.selectedUser)
+        cId !== sId &&
+          this.selectedUser &&
+          this.detailForm.memberList.unshift(this.selectedUser)
         this.detailForm.memberList.unshift(this.currentUser)
       }
     },
 
     // 编辑操作数据回显
     mixinDetailInfo(data) {
+      const { memberList, director } = data
       this.detailForm = data
+      this.selectedUser = memberList.find(item => item.username === director)
       this.oldName = this.detailForm.name
     },
 

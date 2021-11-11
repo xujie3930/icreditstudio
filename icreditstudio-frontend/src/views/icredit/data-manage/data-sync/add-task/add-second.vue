@@ -273,10 +273,11 @@
               <template #fieldChineseNameColumn="{row}">
                 <el-input
                   clearable
+                  show-word-limit
                   placeholder="请输入中文名称"
                   v-model.trim="row.fieldChineseName"
-                  @blur="handleChangeChineseName(row.fieldChineseName)"
                 ></el-input>
+                <!-- @blur="handleChangeChineseName(row)" -->
               </template>
 
               <!-- 关联字典表 -->
@@ -746,8 +747,8 @@ export default {
     },
 
     // 中文名称
-    handleChangeChineseName(name) {
-      if (name) {
+    handleChangeChineseName(row) {
+      if (row.fieldChineseName) {
         const valid = validStrZh(name)
         this.isCanSaveSetting = valid
         valid && this.$message.error('该字段为中文名称输入，请检查后重新输入！')
@@ -866,8 +867,8 @@ export default {
         .filter(({ type }) => type === 'tag')
         .map(({ datasourceId, database, name }) => {
           return {
-            datasourceId,
             database,
+            datasourceId: datasourceId ?? this.datasourceId,
             tableName: name
           }
         })
