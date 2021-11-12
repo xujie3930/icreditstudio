@@ -3,7 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.feign;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignDataSourcesRequest;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.MysqlReaderConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DatasourceInfo;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.cloud.openfeign.FeignClient;

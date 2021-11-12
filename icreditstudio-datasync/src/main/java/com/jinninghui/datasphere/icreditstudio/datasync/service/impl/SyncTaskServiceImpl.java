@@ -34,9 +34,11 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.HdfsWriterEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.MySqlReaderEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.MysqlReaderConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
@@ -227,7 +229,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
 
         MysqlReaderConfigParam readerConfigParam = findReaderConfigParam(taskId, sql);
-        MySqlReaderEntity mySqlReaderEntity = new MySqlReaderEntity(transferColumnsByTaskId, dictInfos, readerConfigParam);
+        MySqlReader mySqlReader = new MySqlReader(transferColumnsByTaskId, dictInfos, readerConfigParam);
 
         HdfsWriterConfigParam hdfsWriterConfigParam = findHdfsWriterConfigParam(taskId);
         List<Column> wideTableColumns = getWideTableColumns(taskId);
@@ -240,7 +242,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             taskParamJson = byId.getTaskParamJson();
         }
         Map<String, Object> taskConfig = DataxJsonEntity.builder()
-                .reader(mySqlReaderEntity)
+                .reader(mySqlReader)
                 .writer(hdfsWriterEntity)
                 .setting(getDataxSetting(taskParamJson))
                 .core(getDataxCore(taskParamJson))

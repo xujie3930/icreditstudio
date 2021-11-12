@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.mysql;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql;
 
 import lombok.Data;
 

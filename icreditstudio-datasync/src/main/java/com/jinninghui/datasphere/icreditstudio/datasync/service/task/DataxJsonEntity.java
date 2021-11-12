@@ -1,7 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxReader;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxWriter;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.DataxReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.DataxWriter;
 import lombok.Builder;
 import lombok.Data;
 

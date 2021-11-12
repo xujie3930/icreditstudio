@@ -1,8 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.mysql;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs;
 
 import com.google.common.collect.Maps;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxWriter;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.HdfsWriterConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.DataxWriter;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;

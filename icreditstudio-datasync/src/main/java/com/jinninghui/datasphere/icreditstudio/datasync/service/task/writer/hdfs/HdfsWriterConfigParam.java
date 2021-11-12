@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.param;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs;
 
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
