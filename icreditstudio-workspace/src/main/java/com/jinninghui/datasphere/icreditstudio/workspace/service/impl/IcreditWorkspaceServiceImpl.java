@@ -1,9 +1,16 @@
 package com.jinninghui.datasphere.icreditstudio.workspace.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.DateUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import com.jinninghui.datasphere.icreditstudio.workspace.common.enums.WorkspaceStatusEnum;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
@@ -19,14 +26,6 @@ import com.jinninghui.datasphere.icreditstudio.workspace.web.request.IcreditWork
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.WorkspaceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.WorkspaceMember;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkspaceDetailResult;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
-import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.sequence.api.SequenceService;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.DateUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +60,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     private SystemFeignClient systemFeignClient;
     @Autowired
     private DatasourceFeignClient datasourceFeignClient;
+    private static final String DEFAULT_WORKSPACEID = "0";
 
     @Override
     @BusinessParamsValidate
@@ -99,7 +99,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         newMember.setSpaceId(defEntity.getId());
         newMember.setCreateUser(defEntity.getCreateUser());
         newMember.setCreateTime(new Date());
-        if (!CollectionUtils.isEmpty(member.getOrgNames())){
+        if (!CollectionUtils.isEmpty(member.getOrgNames())) {
             newMember.setOrgName(String.join(",", member.getOrgNames()));
         }
         return newMember;
@@ -108,30 +108,33 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Transactional(rollbackFor = Exception.class)
     @Override
     public BusinessResult<Boolean> deleteById(IcreditWorkspaceDelParam param) {
-        if (WorkspaceStatusEnum.ON.getCode().equals(getById(param.getId()).getStatus())){
+        if (DEFAULT_WORKSPACEID.equals(param.getId())) {
+            throw new AppException("80000002");
+        }
+        if (WorkspaceStatusEnum.ON.getCode().equals(getById(param.getId()).getStatus())) {
             throw new AppException("80000001");
         }
         //软删除该工作空间下的所有数据源及同步记录（暂且把数据源部分操作放在前面,保证事务性）
         BusinessResult<Boolean> result = datasourceFeignClient.delDatasourceFromWorkspace(param.getId());
-        if (!result.isSuccess()){
+        if (!result.isSuccess()) {
             throw new AppException(result.getReturnCode());
         }
         workspaceMapper.updateStatusById(param.getId());
         return BusinessResult.success(true);
     }
 
+    //TODO:sql待优化
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest) {
-        //mybatis-plus.configuration.log-impl=org.apache.ibatis.logging.stdout.StdOutImpl
         IcreditWorkspaceEntityPageParam param = BeanCopyUtils.copyProperties(pageRequest, new IcreditWorkspaceEntityPageParam());
         Page<IcreditWorkspaceEntity> page = new Page<>(param.getPageNum(), param.getPageSize());
         BusinessResult<Boolean> result = systemFeignClient.isAdmin();
         //管理员，可以查询所有数据
-        if (result.isSuccess() && result.getData()){
+        if (result.isSuccess() && result.getData()) {
             log.info("当前用户为管理员，拥有全部空间权限");
             param.setUserId("");
         }
-        if (!StringUtils.isBlank(pageRequest.getUpdateTime())){
+        if (!StringUtils.isBlank(pageRequest.getUpdateTime())) {
             param.setUpdateStartTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 00:00:00"));
             param.setUpdateEndTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 23:59:59"));
         }
@@ -146,9 +149,12 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
 
     @Override
     public WorkspaceDetailResult getDetailById(String id) {
+        if (DEFAULT_WORKSPACEID.equals(id)) {
+            throw new AppException("80000003");
+        }
         WorkspaceDetailResult result = new WorkspaceDetailResult();
         IcreditWorkspaceEntity entity = getById(id);
-        if (null == entity){
+        if (null == entity) {
             return result;
         }
         BeanCopyUtils.copyProperties(entity, result);
@@ -158,7 +164,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         List<WorkspaceMember> collect = memberList.stream().map(user -> {
             WorkspaceMember member = BeanCopyUtils.copyProperties(user, new WorkspaceMember());
             member.setCreateTime(user.getCreateTime().getTime());
-            if (!StringUtils.isBlank(user.getOrgName())){
+            if (!StringUtils.isBlank(user.getOrgName())) {
                 member.setOrgNames(Arrays.asList(user.getOrgName().split(",")));
             }
             return member;
@@ -170,11 +176,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> updateWorkSpaceAndMember(IcreditWorkspaceUpdateParam param) {
+        if (DEFAULT_WORKSPACEID.equals(param.getId())) {
+            throw new AppException("80000004");
+        }
         //更新workspace
         IcreditWorkspaceEntity entity = BeanCopyUtils.copyProperties(param, new IcreditWorkspaceEntity());
         entity.setUpdateTime(new Date());
         updateById(entity);
-        if (CollectionUtils.isEmpty(param.getMemberList())){
+        if (CollectionUtils.isEmpty(param.getMemberList())) {
             return BusinessResult.success(true);
         }
         String spaceId = entity.getId();
