@@ -3,13 +3,12 @@ package com.jinninghui.datasphere.icreditstudio.datasync.dto;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 @Data
 public class DataSyncDispatchTaskPageDTO {
 
     //工作空间id
-    private List<String> workspaceIds;
+    private String workspaceId;
     //当前登陆人ID
     private String currLoginUserId;
     //任务名称
