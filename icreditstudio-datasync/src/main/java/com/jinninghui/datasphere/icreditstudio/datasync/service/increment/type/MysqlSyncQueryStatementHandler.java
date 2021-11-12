@@ -1,7 +1,7 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type.mysql;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type;
 
 import cn.hutool.core.util.StrUtil;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type.AbstractSyncQueryStatement;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.AbstractSyncQueryStatement;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 

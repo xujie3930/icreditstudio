@@ -2,8 +2,6 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.increment;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type.SyncQueryStatement;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type.SyncQueryStatementContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncCondition;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.CronParse;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;

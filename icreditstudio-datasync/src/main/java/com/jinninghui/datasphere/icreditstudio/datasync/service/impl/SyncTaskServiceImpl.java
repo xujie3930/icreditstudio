@@ -393,9 +393,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException("60000033");
         }
         BusinessResult<MysqlReaderConfigParam> datasourceJdbcInfo = datasourceFeign.getDatasourceJdbcInfo(datasourceId);
-
         MysqlReaderConfigParam data = null;
         if (datasourceJdbcInfo.isSuccess()) {
+
+            String dialect = wideTableField.getDialect();
+            String syncCondition = wideTableField.getSyncCondition();
+            SyncCondition parse = syncConditionParser.parse(syncCondition);
+//            IncrementUtil.getTimeIncQueryStatement(wideTableField.getSqlStr(),dialect,parse.getIncrementalField(),);
             data = datasourceJdbcInfo.getData();
             data.setQuerySql(wideTableField.getSqlStr());
         }

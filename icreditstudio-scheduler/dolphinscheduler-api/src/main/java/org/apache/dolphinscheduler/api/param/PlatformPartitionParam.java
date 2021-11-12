@@ -15,6 +15,8 @@ public class PlatformPartitionParam {
      * 分区类型
      */
     private String partition;
+
+    private Boolean inc;
     /**
      * 时间T+n
      */
