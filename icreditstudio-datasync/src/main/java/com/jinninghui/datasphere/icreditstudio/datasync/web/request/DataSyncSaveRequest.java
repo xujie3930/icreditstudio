@@ -16,7 +16,7 @@ import java.util.List;
  * @author Peng
  */
 @Data
-public class DataSyncSaveRequest {
+public class  DataSyncSaveRequest {
     /**
      * 工作空间id
      */

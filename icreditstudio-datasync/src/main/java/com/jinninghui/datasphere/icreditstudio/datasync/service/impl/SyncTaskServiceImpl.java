@@ -33,6 +33,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.HdfsWriterEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.MySqlReaderEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.mysql.MysqlReaderConfigParam;
@@ -92,6 +93,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
+
+        SyncCondition syncCondition = param.getSyncCondition();
+        if (Objects.nonNull(syncCondition)) {
+            String cron = param.getCron();
+            IncrementUtil.getSyncCondition(syncCondition, cron);
+        }
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = oneStepSave(param);
@@ -385,9 +392,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException("60000033");
         }
         BusinessResult<MysqlReaderConfigParam> datasourceJdbcInfo = datasourceFeign.getDatasourceJdbcInfo(datasourceId);
-
         MysqlReaderConfigParam data = null;
         if (datasourceJdbcInfo.isSuccess()) {
+
+            String dialect = wideTableField.getDialect();
+            String syncCondition = wideTableField.getSyncCondition();
+            SyncCondition parse = syncConditionParser.parse(syncCondition);
+//            IncrementUtil.getTimeIncQueryStatement(wideTableField.getSqlStr(),dialect,parse.getIncrementalField(),);
             data = datasourceJdbcInfo.getData();
             data.setQuerySql(wideTableField.getSqlStr());
         }

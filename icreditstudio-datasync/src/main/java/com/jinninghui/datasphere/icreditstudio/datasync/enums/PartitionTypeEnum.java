@@ -9,10 +9,12 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum PartitionTypeEnum {
-    HOUR(0, "hour"),
-    DAY(1, "day"),
-    MONTH(2, "month"),
-    YEAR(3, "year"),
+
+    MINUTE(0, "minute_"),
+    HOUR(1, "hour_"),
+    DAY(2, "day_"),
+    MONTH(3, "month_"),
+    YEAR(4, "year_"),
     ;
     private Integer code;
     private String name;

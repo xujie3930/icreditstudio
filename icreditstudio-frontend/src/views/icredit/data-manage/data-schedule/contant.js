@@ -2,7 +2,7 @@ import { echarts } from '@/utils/echarts'
 
 // 当天运行情况 - 饼图
 export const runtimeOptions = {
-  color: ['#ff7a7b', '#6699ff', '#ffae31', '#52cca3'],
+  color: ['#52cca3', '#ff7a7b', '#6699ff', '#ffae31'],
   textStyle: { color: '#fff' },
   tooltip: {
     trigger: 'item',
@@ -116,13 +116,10 @@ export const scheduleTaskOptions = {
   },
   dataZoom: [
     {
-      type: 'inside',
-      start: 2,
-      end: 20
-    },
-    {
+      type: 'slider',
+      show: true,
       start: 0,
-      end: 20
+      end: 100
     }
   ],
   series: [
