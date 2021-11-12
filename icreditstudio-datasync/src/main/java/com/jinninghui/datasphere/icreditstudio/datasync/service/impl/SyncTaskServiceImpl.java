@@ -97,9 +97,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         String taskId = null;
 
         SyncCondition syncCondition = param.getSyncCondition();
-        String cron = param.getCron();
-        IncrementUtil.getSyncCondition(syncCondition, cron);
-
+        if (Objects.nonNull(syncCondition)) {
+            String cron = param.getCron();
+            IncrementUtil.getSyncCondition(syncCondition, cron);
+        }
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = oneStepSave(param);
