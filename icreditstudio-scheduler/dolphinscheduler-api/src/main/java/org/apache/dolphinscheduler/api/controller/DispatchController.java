@@ -9,14 +9,14 @@ import org.apache.dolphinscheduler.api.request.DispatchTaskPageRequest;
 import org.apache.dolphinscheduler.api.request.LogPageRequest;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
-import org.apache.dolphinscheduler.common.utils.DateUtils;
-import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 /**
- * 调度中心
+ * 同步任务调度
  */
 @RestController
 @RequestMapping("/dispatch")
@@ -52,16 +52,11 @@ public class DispatchController {
     public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(@RequestBody LogPageRequest request){
         LogPageParam param = new LogPageParam();
         BeanCopyUtils.copyProperties(request, param);
-        StringBuilder dateStr = null;
-        if(StringUtils.isNotEmpty(request.getExecTimeStart())){
-            dateStr = new StringBuilder(request.getExecTimeStart());
-            dateStr.append(" 00:00:00");
-            param.setExecTimeStart(DateUtils.parse(String.valueOf(dateStr), "yyyy-MM-dd HH:mm:ss"));
+        if(null != request.getExecTimeStart()){
+            param.setExecTimeStart(new Date(request.getExecTimeStart()));
         }
-        if(StringUtils.isNotEmpty(request.getExecTimeEnd())){
-            dateStr = new StringBuilder(request.getExecTimeEnd());
-            dateStr.append(" 23:59:59");
-            param.setExecTimeEnd(DateUtils.parse(String.valueOf(dateStr), "yyyy-MM-dd HH:mm:ss"));
+        if(null != request.getExecTimeEnd()){
+            param.setExecTimeEnd(new Date(request.getExecTimeEnd()));
         }
         return dispatchService.logPage(param);
     }

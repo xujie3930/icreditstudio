@@ -8,7 +8,7 @@ public class LogPageRequest extends BusinessBasePageForm {
 
     private String taskId;
     private Integer taskStatus;
-    private String execTimeStart;
-    private String execTimeEnd;
+    private Long execTimeStart;
+    private Long execTimeEnd;
 
 }
