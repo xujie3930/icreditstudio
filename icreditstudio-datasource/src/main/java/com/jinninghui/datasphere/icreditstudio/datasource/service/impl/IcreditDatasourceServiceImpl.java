@@ -240,7 +240,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 add ++;
                 addCloumns += tableSyncInfo.getColumnList().size();
             }
-            return String.format("同步成功，新增 %s 张表,新增 %s 列 ", add, addCloumns);
+            return String.format("同步成功，新增 %s 张表,共 %s 个字段 ", add, addCloumns);
         }
         //根据新旧json统计新增、删除、修改表的数量
         oldStructure = JSON.parseArray(oldColumnsInfo, TableSyncInfo.class);
