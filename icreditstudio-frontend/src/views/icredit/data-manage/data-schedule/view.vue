@@ -61,6 +61,23 @@
                 }}
               </span>
             </template>
+
+            <!-- 操作按钮 -->
+            <template #operationColumn="{row}">
+              <el-button
+                type="text"
+                v-if="row.taskInstanceState === 2"
+                @click="handleStopTask(row)"
+              >
+                终止
+              </el-button>
+              <el-button v-else type="text" @click="handleReRuningTask(row)">
+                重跑
+              </el-button>
+              <el-button type="text" @click="handleViewLogDetail(row)">
+                查看日志
+              </el-button>
+            </template>
           </j-table>
         </template>
       </crud-basic>
@@ -72,6 +89,8 @@
       </div>
       <div v-else>暂无数据</div>
     </BaseDialog>
+
+    <Message ref="message" @on-confirm="handleMessageCallback" />
   </div>
 </template>
 
@@ -82,10 +101,11 @@ import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-view-log'
 import formOption from '@/views/icredit/configuration/form/schedule-view-log'
 import { execStatusMapping } from '@/views/icredit/data-manage/data-sync/contant'
+import Message from '@/views/icredit/components/message'
 
 export default {
   mixins: [crud],
-  components: { BaseDialog },
+  components: { BaseDialog, Message },
 
   data() {
     return {
@@ -95,17 +115,7 @@ export default {
       titleName: '',
       logDetail: '',
       detailLoading: false,
-      tableLoading: false,
-      tableData: [],
-      tableConfiguration: tableConfiguration(this),
-      tablePagination: {
-        currentPage: 1,
-        pageSize: 10,
-        total: 0,
-        pagerCount: 5,
-        handleSizeChange: this.handleSizeChange,
-        handleCurrentChange: this.handleCurrentChange
-      },
+      tableConfiguration,
 
       // 表格与表单参数
       formOption,
@@ -144,26 +154,56 @@ export default {
       return newParams
     },
 
-    // 日志详情
-    handleViewLogDetail({ row }) {
-      this.getLogDetailData(row.taskInstanceId)
-      this.$refs.detailLogDialog.open()
+    // 重跑
+    handleReRuningTask({ processInstanceId }) {
+      const params = { processInstanceId, execType: 0 }
+      API.dataScheduleSyncOperate(params).then(({ success, data }) => {
+        if (success && data) {
+          this.$message.success({
+            duration: 5000,
+            center: true,
+            offset: 200,
+            message: '重跑任务已提交，稍后请在日志中查看执行结果!'
+          })
+        }
+      })
     },
 
-    // 历史日志列表数据
-    getHistoryLogData(taskId) {
-      const { pageNum, pageSize } = this.tablePagination
-      this.tableLoading = true
-      API.dataScheduleSyncHistoryLog({ taskId, pageNum, pageSize })
-        .then(({ success, data }) => {
-          if (success && data) {
-            this.tableData = data.list
-            this.tablePagination.total = data.total || 0
+    // 终止
+    handleStopTask(row) {
+      const options = {
+        row,
+        name: row.taskInstanceName,
+        opType: 'Stop',
+        title: '终止同步任务',
+        afterTitleName: row.taskInstanceName,
+        beforeOperateMsg: '终止同步任务',
+        afterOperateMsg:
+          '后，当前同步任务将杀掉进程且宣告任务失败，确认要终止吗？'
+      }
+      this.$refs.message.open(options)
+    },
+
+    // 终止操作弹窗提示回调
+    handleMessageCallback(type, row) {
+      const params = { processInstanceId: row.processInstanceId, execType: 1 }
+      API.dataScheduleSyncOperate(params)
+        .then(({ success }) => {
+          if (success) {
+            this.$message.success('同步任务终止成功！')
+            this.$refs.message.close()
+            this.mixinRetrieveTableData()
           }
         })
         .finally(() => {
-          this.tableLoading = false
+          this.$refs.message.btnLoadingClose()
         })
+    },
+
+    // 日志详情
+    handleViewLogDetail(row) {
+      this.getLogDetailData(row.taskInstanceId)
+      this.$refs.detailLogDialog.open()
     },
 
     // 某条历史日志详情数据
@@ -196,7 +236,7 @@ export default {
     }
 
     .el-dialog__body {
-      max-height: 72vh;
+      max-height: 75vh;
     }
 
     .el-dialog {

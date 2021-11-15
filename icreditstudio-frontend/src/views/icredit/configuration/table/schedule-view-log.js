@@ -3,7 +3,7 @@
  * @Description: 查看日志
  * @Date: 2021-09-26
  */
-export default that => ({
+export default {
   refName: 'scheduleViewLog',
   id: 'viewLog',
   isBorder: true,
@@ -46,18 +46,12 @@ export default that => ({
       width: 150
     },
     {
-      type: 'operation',
+      type: 'slot',
       label: '操作',
       prop: 'operation',
-      width: 120,
+      width: 140,
       fixed: 'right',
-      operationList: [
-        {
-          func: that.handleViewLogDetail,
-          label: '查看日志',
-          key: 'viewLog'
-        }
-      ]
+      operationList: []
     }
   ]
-})
+}
