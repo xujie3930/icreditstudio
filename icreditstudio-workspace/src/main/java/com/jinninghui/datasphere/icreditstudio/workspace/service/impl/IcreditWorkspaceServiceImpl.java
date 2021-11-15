@@ -138,7 +138,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             param.setUpdateStartTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 00:00:00"));
             param.setUpdateEndTime(DateUtils.parseDate(pageRequest.getUpdateTime() + " 23:59:59"));
         }
-        return BusinessPageResult.build(page.setRecords(workspaceMapper.queryPage(page, param)), param);
+        List<IcreditWorkspaceEntity> list = workspaceMapper.queryPage(page, param);
+        //如果指定了空间，则不用展示默认工作空间
+        if (!StringUtils.isBlank(pageRequest.getSpaceId())){
+            list = list.parallelStream()
+                    .filter(w -> !DEFAULT_WORKSPACEID.equals(w.getId()))
+                    .collect(Collectors.toList());
+        }
+        return BusinessPageResult.build(page.setRecords(list), param);
     }
 
     @Override
