@@ -1,6 +1,16 @@
 package org.apache.dolphinscheduler.api.param;
 
-import org.apache.dolphinscheduler.api.request.LogPageRequest;
+import com.jinninghui.datasphere.icreditstudio.framework.result.base.BusinessBasePageForm;
+import lombok.Data;
 
-public class LogPageParam extends LogPageRequest {
+import java.util.Date;
+
+@Data
+public class LogPageParam extends BusinessBasePageForm {
+
+    private String taskId;
+    private Integer taskStatus;
+    private Date execTimeStart;
+    private Date execTimeEnd;
+
 }
