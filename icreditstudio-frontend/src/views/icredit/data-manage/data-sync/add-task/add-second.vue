@@ -215,6 +215,7 @@
                   size="mini"
                   v-model="secondTaskForm.syncCondition.incrementalField"
                   placeholder="请选择增量字段"
+                  @change="handleIncrementFieldChange"
                 >
                   <el-option
                     v-for="(item, idx) in increFieldsOptions"
@@ -226,7 +227,7 @@
                 </el-select>
 
                 <!-- 增量类型 -->
-                <el-select
+                <!-- <el-select
                   style="margin-left:10px"
                   size="mini"
                   v-model="secondTaskForm.syncCondition.partition"
@@ -239,7 +240,15 @@
                     :value="item.value"
                   >
                   </el-option>
-                </el-select>
+                </el-select> -->
+                <el-checkbox
+                  size="mini"
+                  style="margin-left:16px"
+                  v-if="secondTaskForm.syncCondition.incrementalField"
+                  v-model="secondTaskForm.syncCondition.inc"
+                >
+                  增量存储
+                </el-checkbox>
               </div>
               <div class="label-wrap">
                 <div class="label">时间过滤条件: T +</div>
@@ -247,7 +256,7 @@
                   size="mini"
                   style="width: 80px"
                   controls-position="right"
-                  :min="0"
+                  :min="1"
                   v-model="secondTaskForm.syncCondition.n"
                 />
               </div>
@@ -452,7 +461,7 @@ export default {
 
       // 表单参数
       secondTaskForm: {
-        syncCondition: { incrementalField: '', partition: '', n: undefined },
+        syncCondition: { incrementalField: '', inc: undefined, n: undefined },
         sql: '',
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
@@ -519,6 +528,10 @@ export default {
     // TODO
     handleChangeTableName(name) {
       console.log(name)
+    },
+
+    handleIncrementFieldChange(value) {
+      this.secondTaskForm.syncCondition.inc = !!value ?? false
     },
 
     // 删除表格的某一行
