@@ -29,6 +29,7 @@
         <!-- 组件内容 -->
         <div class="layout-content">
           <LayoutBreadcrumd
+            v-if="$route.path !== '/home'"
             :curBreadcrumb="curBreadcrumb"
             @jump="handleCrumbJump"
           />

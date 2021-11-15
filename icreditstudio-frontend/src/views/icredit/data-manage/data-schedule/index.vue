@@ -211,11 +211,12 @@ export default {
         .then(({ success, data }) => {
           if (success) {
             this.scheduleSituation = scheduleSituation.map(
-              ({ key, value, ...rest }) => {
+              ({ key, name, unit }) => {
                 return {
                   key,
+                  name,
                   value: data[key],
-                  ...rest
+                  unit: key === 'newlyDataSize' ? data.unit : unit
                 }
               }
             )
