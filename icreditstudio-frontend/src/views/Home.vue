@@ -1,6 +1,20 @@
 <template>
   <div class="home iframe-flex-row-center-center h100">
-    iCredit
+    <div class="home-left">
+      <div class="home-left-gif"></div>
+      <div class="home-left-func">
+        <div class="title">
+          <img src="../assets/home.gif" />
+        </div>
+        <div class="func-wrap">
+          <div class="func-item">
+            <j-svg name="menu-space" />
+            <span>工作空间</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="home-right"></div>
   </div>
 </template>
 

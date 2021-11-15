@@ -212,6 +212,7 @@
               <div class="label-wrap">
                 <div class="label">增量字段</div>
                 <el-select
+                  clearable
                   size="mini"
                   v-model="secondTaskForm.syncCondition.incrementalField"
                   placeholder="请选择增量字段"
