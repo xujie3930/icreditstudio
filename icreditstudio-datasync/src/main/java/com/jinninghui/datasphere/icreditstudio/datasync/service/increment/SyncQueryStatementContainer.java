@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.increment.type;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.increment;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractMapContainer;
 

@@ -11,9 +11,9 @@ public class LogPageRequest extends BusinessBasePageForm {
 
     private String taskId;
     private Integer taskStatus;
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date execTimeStart;
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date execTimeEnd;
 
 }

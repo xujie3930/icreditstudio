@@ -54,7 +54,7 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
             put("id", "0");
             put("name", "默认工作空间");
         }};
-        list.add(defaultWorkspace);
+        list.add(0, defaultWorkspace);
         return list;
     }
 

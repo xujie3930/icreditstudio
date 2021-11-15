@@ -1,8 +1,8 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.mysql;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.DataxReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.DataxReader;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @Data
 @AllArgsConstructor
-public class MySqlReaderEntity implements DataxReader {
+public class MySqlReader implements DataxReader {
     /**
      * 需要字典转换的列
      */

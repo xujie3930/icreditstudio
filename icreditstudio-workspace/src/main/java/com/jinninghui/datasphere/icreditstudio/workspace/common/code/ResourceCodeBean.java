@@ -11,6 +11,9 @@ public class ResourceCodeBean {
 
     public enum ResourceCode {
         RESOURCE_CODE_80000001("80000001", "工作空间启用中，不能删除"),
+        RESOURCE_CODE_80000002("80000002", "默认工作空间不支持删除"),
+        RESOURCE_CODE_80000003("80000003", "默认工作空间不支持查询"),
+        RESOURCE_CODE_80000004("80000004", "默认工作空间不支持修改"),
         ;
 
         public final String code;

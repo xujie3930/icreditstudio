@@ -24,7 +24,7 @@
 
     <select id="queryPage"
             resultType="com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity">
-        select DISTINCT w.id, w.status, w.del_flag, w.descriptor, w.director, w.name, w.create_time, w.create_user,
+        select * from (select DISTINCT w.id, w.status, w.del_flag, w.descriptor, w.director, w.name, w.create_time, w.create_user,
         w.update_time, w.update_user
         from icredit_workspace w, icredit_workspace_user u
         <where>
@@ -49,6 +49,10 @@
                 AND del_flag = 'N'
                 AND w.id = u.space_id
         </where>
-        order by w.status asc, w.update_time desc
+        union all
+        select  iw.id, iw.status, iw.del_flag, iw.descriptor, iw.director, iw.name, iw.create_time, iw.create_user,
+        iw.update_time, iw.update_user
+        from icredit_workspace iw where iw.id = '0') wu
+        order by status asc, update_time desc
     </select>
 </mapper>
