@@ -18,6 +18,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -55,6 +56,7 @@ public class HomePageServiceImpl implements HomePageService {
     private static final long FIVE_MINUTE_TIME = 5 * 60L;
 
     static List<TaskSituationResult> situationZeroList = new ArrayList<>();
+    static final String[] units = new String[]{"B", "KB", "MB", "GB", "TB", "PB"};
 
     static {
         situationZeroList.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), 0L, 0.00));
@@ -84,11 +86,28 @@ public class HomePageServiceImpl implements HomePageService {
         //新增数据量条数
         Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
         taskRoughResult.setNewlyLine(DoubleUtils.formatDouble(((double)newlyLine) / 10000));
-        //新增数据量
+        //新增数据量：最小单位为M，超过1024为G，一次类推最大为PB
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
-        taskRoughResult.setNewlyDataSize(DoubleUtils.formatDouble(((double) newlyDataSize) / 1024));
+        taskRoughResult.setNewlyDataSize(getDataSize(newlyDataSize));
+        taskRoughResult.setUnit(getDataSizeUnit(newlyDataSize));
 //        RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
+    }
+
+    private static String getDataSizeUnit(Long size) {
+        if (size == 0){
+            return units[0];
+        }
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return units[digitGroups];
+    }
+
+    private static Double getDataSize(Long size) {
+        if (size == 0){
+            return 0.00;
+        }
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return DoubleUtils.formatDouble(size / Math.pow(1024, digitGroups));
     }
 
     @Override
@@ -179,5 +198,9 @@ public class HomePageServiceImpl implements HomePageService {
         list.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), args[2], DoubleUtils.formatDouble((double)args[2] / count)));
         list.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), args[3], DoubleUtils.formatDouble((double)args[3] / count)));
         return list;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getDataSizeUnit(0L));
     }
 }

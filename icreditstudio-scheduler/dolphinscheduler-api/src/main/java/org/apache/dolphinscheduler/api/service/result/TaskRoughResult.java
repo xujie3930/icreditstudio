@@ -24,9 +24,13 @@ public class TaskRoughResult implements Serializable {
      */
     private Double newlyLine;
     /**
-     * 新增总数据量，单位KB
+     * 新增总数据量，
      */
-    private double newlyDataSize = 0.00;
+    private Double newlyDataSize;
+    /**
+     * 新增数据量单位
+     */
+    private String unit;
     /**
      * 实时任务记录速率，暂时为0
      */
