@@ -23,7 +23,7 @@ public interface SchedulerFeign {
      * @param request
      * @return
      */
-    @PostMapping(value = "/dolphinscheduler/platform/task/create", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
+    @PostMapping(value = "/dolphinscheduler/platform/task/create")
     BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
 
     /**

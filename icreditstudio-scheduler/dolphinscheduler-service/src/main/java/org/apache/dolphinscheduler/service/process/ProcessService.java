@@ -37,8 +37,8 @@ import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
-import java.util.*;
 import java.util.Date;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.dolphinscheduler.common.Constants.*;
@@ -96,6 +96,14 @@ public class ProcessService {
 
     @Resource
     private ErrorCommandMapper errorCommandMapper;
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateProcessDefinitionById(String processDefinitionId, String processDefinitionJson) {
+        ProcessDefinition updateEntity = new ProcessDefinition();
+        updateEntity.setId(processDefinitionId);
+        updateEntity.setProcessDefinitionJson(processDefinitionJson);
+        processDefineMapper.updateById(updateEntity);
+    }
 
     /**
      * handle Command (construct ProcessInstance from Command) , wrapped in transaction
@@ -1181,12 +1189,12 @@ public class ProcessService {
             Class.forName(this.driverStr);
             Connection con = DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
 
-            PreparedStatement pstmt = con.prepareStatement(this.sql) ;
+            PreparedStatement pstmt = con.prepareStatement(this.sql);
             pstmt.setInt(1, 7 == state ? 0 : 1);
             pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
             pstmt.execute();
-            if(null != con){
+            if (null != con) {
                 con.close();
             }
         } catch (SQLException e) {

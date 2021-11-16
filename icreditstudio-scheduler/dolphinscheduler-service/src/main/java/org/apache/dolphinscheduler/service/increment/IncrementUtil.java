@@ -1,13 +1,14 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.increment;
+package org.apache.dolphinscheduler.service.increment;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncCondition;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.time.CronParse;
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
+import org.apache.dolphinscheduler.service.time.CronParse;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 /**
  * @author Peng
@@ -21,11 +22,30 @@ public class IncrementUtil {
      * @param cron
      * @return
      */
-    public static SyncCondition getSyncCondition(SyncCondition condition, String cron) {
+    public static PlatformPartitionParam getSyncCondition(PlatformPartitionParam condition, String cron) {
         if (StringUtils.isNotBlank(condition.getIncrementalField()) && condition.isInc()) {
             condition.setPartition(getPartition(cron));
         }
         return condition;
+    }
+
+    /**
+     * 取得datax的路径
+     *
+     * @param oldPath
+     * @param partitionDir
+     * @return
+     */
+    public static String getDataxHdfsPath(String oldPath, String partitionDir) {
+        if (StringUtils.isNotBlank(oldPath)) {
+            String last = StrUtil.subAfter(oldPath, "/", true);
+            if (StringUtils.contains(last, "-")) {
+                return new StringJoiner("/").add(StrUtil.subBefore(oldPath, "/", true)).add(partitionDir).toString();
+            } else {
+                return new StringJoiner("/").add(oldPath).add(partitionDir).toString();
+            }
+        }
+        return oldPath;
     }
 
     /**
@@ -44,10 +64,10 @@ public class IncrementUtil {
      * @param syncConditionJson
      * @return
      */
-    public static SyncCondition parseSyncConditionJson(String syncConditionJson) {
-        SyncCondition condition = new SyncCondition();
+    public static PlatformPartitionParam parseSyncConditionJson(String syncConditionJson) {
+        PlatformPartitionParam condition = new PlatformPartitionParam();
         if (JSONUtil.isJson(syncConditionJson)) {
-            condition = JSONObject.parseObject(syncConditionJson).toJavaObject(SyncCondition.class);
+            condition = JSONObject.parseObject(syncConditionJson).toJavaObject(PlatformPartitionParam.class);
         }
         return condition;
     }
@@ -65,7 +85,7 @@ public class IncrementUtil {
     public static String getTimeIncQueryStatement(String oldStatement, String dialect, String field, String startTime, String endTime) {
         SyncQueryStatement syncQueryStatement = SyncQueryStatementContainer.getInstance().find(dialect);
         if (Objects.isNull(syncQueryStatement)) {
-            throw new AppException("60000048");
+            throw new RuntimeException("60000048");
         }
         return syncQueryStatement.queryStatement(oldStatement, field, startTime, endTime);
     }
