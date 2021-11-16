@@ -489,6 +489,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncTaskEntity entity = new SyncTaskEntity();
         BeanCopyUtils.copyProperties(param, entity);
         entity.setId(param.getTaskId());
+        entity.setCreateUserId(param.getUserId());
         saveOrUpdate(entity);
         return entity.getId();
     }
