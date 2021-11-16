@@ -1,0 +1,24 @@
+package org.apache.dolphinscheduler.service.quartz;
+
+import lombok.Data;
+
+/**
+ * @author Peng
+ */
+@Data
+public class PlatformPartitionParam {
+    /**
+     * 增量字段
+     */
+    private String incrementalField;
+    /**
+     * 分区类型
+     */
+    private String partition;
+
+    private Boolean inc;
+    /**
+     * 时间T+n
+     */
+    private Integer n;
+}

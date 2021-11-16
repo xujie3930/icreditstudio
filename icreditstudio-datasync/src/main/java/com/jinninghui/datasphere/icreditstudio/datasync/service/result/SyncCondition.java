@@ -33,8 +33,8 @@ public class SyncCondition {
     private Integer n;
 
     public Integer getN() {
-        if (n == null) {
-            return 0;
+        if (n == null || n <= 0) {
+            return 1;
         }
         return n;
     }

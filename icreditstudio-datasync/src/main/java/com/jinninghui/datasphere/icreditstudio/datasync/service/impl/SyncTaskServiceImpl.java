@@ -25,7 +25,10 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SystemFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
@@ -34,13 +37,13 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
@@ -127,9 +130,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(taskId);
 
             if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
+                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+                if (Objects.nonNull(param.getSyncCondition())) {
+                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
+                }
+                //创建宽表
+                createWideTable(wideTableParam);
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                        .partitionParam(param.getSyncCondition())
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, querySql), 0))
                         .build();
@@ -143,12 +153,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 } else {
                     throw new AppException("60000037");
                 }
-                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
-                if (Objects.nonNull(param.getSyncCondition())) {
-                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
-                }
-                //创建宽表
-                createWideTable(wideTableParam);
             } else {
                 String taskIdR = param.getTaskId();
                 SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
@@ -937,9 +941,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
-        if("0".equals(dispatchPageDTO.getWorkspaceId())){//默认工作空间
+        if ("0".equals(dispatchPageDTO.getWorkspaceId())) {//默认工作空间
             dispatchPageDTO.setWorkspaceId(null);
-        }else{
+        } else {
             dispatchPageDTO.setCurrLoginUserId(null);
         }
         dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());

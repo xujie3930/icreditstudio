@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.feign.request;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.enums.CollectModeEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

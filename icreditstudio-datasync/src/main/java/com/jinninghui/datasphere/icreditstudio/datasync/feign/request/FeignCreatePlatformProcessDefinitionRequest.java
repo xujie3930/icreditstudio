@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.feign.request;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.SyncCondition;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,10 @@ public class FeignCreatePlatformProcessDefinitionRequest {
      * 普通参数
      */
     private PlatformTaskOrdinaryParam ordinaryParam;
+    /**
+     * 同步参数
+     */
+    private SyncCondition partitionParam;
     /**
      * 通道控制
      */

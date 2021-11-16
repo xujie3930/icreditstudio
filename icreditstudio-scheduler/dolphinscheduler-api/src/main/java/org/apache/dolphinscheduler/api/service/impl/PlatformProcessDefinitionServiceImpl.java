@@ -23,6 +23,8 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
+import org.apache.dolphinscheduler.service.increment.IncrementUtil;
+import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -55,7 +57,9 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         ProcessDefinitionJson definitionJson = param.buildProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
 
-        processDefine.setPartitionParam(JSONObject.toJSONString(param.getPartitionParam()));
+        PlatformPartitionParam platformPartitionParam = BeanCopyUtils.copyProperties(param.getPartitionParam(), PlatformPartitionParam.class);
+        PlatformPartitionParam syncCondition = IncrementUtil.getSyncCondition(platformPartitionParam, param.getSchedulerParam().getCron());
+        processDefine.setPartitionParam(JSONObject.toJSONString(syncCondition));
         processDefine.setWorkspaceId(param.getOrdinaryParam().getWorkspaceId());
         processDefine.setScheduleType(0);
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
@@ -78,6 +82,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setUpdateTime(now);
         processDefine.setFlag(Flag.YES);
         processDefinitionMapper.insert(processDefine);
+        //如果是周期执行，则给流程创建scheduler
         if (param.getSchedulerParam().getSchedulerType() == ScheduleType.PERIOD) {
             CreateSchedulerParam createSchedulerParam = buildCreateSchedulerParam(param, processDefine.getId());
             schedulerService.createSchedule(createSchedulerParam);
