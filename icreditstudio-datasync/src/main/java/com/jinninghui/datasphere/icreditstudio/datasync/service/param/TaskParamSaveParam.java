@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.param;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.CronParam;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -42,4 +43,6 @@ public class TaskParamSaveParam {
      * 任务状态【0：启用，1：草稿，2：停用】
      */
     private Integer taskStatus;
+
+    private CronParam cronParam;
 }

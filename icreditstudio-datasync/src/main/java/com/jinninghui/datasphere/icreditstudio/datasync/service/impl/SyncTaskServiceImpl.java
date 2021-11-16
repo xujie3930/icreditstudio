@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -582,7 +583,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setCollectMode(param.getScheduleType());
         TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
         entity.setTaskParamJson(JSONObject.toJSONString(info));
-
+        entity.setCronParam(JSONObject.toJSONString(param.getCronParam()));
         saveOrUpdate(entity);
     }
 
@@ -690,6 +691,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String taskParamJson = byId.getTaskParamJson();
             info = taskScheduleInfoParser.parse(taskParamJson);
+            String cronParam = byId.getCronParam();
+            if (StringUtils.isNotBlank(cronParam)&& JSONUtil.isJson(cronParam)){
+                CronParam cronParams = JSONObject.parseObject(cronParam).toJavaObject(CronParam.class);
+                info.setCronParam(cronParams);
+            }
         }
         return BusinessResult.success(info);
     }
