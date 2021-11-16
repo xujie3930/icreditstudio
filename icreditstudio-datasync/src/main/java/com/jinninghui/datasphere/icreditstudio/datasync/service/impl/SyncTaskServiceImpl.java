@@ -46,6 +46,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.CronParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -101,7 +102,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         SyncCondition syncCondition = param.getSyncCondition();
         if (Objects.nonNull(syncCondition)) {
-            String cron = param.getCron();
+//            String cron = param.getCron();
+            CronParam cronParam = param.getCronParam();
+            String cron = cronParam.getCron();
             IncrementUtil.getSyncCondition(syncCondition, cron);
         }
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
