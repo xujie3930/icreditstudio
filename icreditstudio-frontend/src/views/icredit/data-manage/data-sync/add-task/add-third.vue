@@ -85,19 +85,14 @@
           <j-select-date
             :select-type="taskForm.cronParam.type"
             :select-cron="selectCron"
-            @change-type="type => (taskForm.cronParam.type = type)"
+            @change-type="handleChangeType"
             @change-cron="handleChangeCron"
           />
         </el-form-item>
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button
-          class="btn"
-          @click="
-            $router.push(`/data-manage/add-build?step=third&opType=${opType}`)
-          "
-        >
+        <el-button class="btn" @click="handlePreiousStep">
           上一步
         </el-button>
         <el-button
@@ -208,22 +203,66 @@ export default {
     },
 
     handleRenderCron() {
-      const { moment } = this.taskForm.cronParam
-      moment.forEach(item => {
-        for (const [key, value] of item) {
-          this.selectCron[key] = value
-        }
-      })
+      const { moment, type } = this.taskForm.cronParam
+      if (type && moment.length) {
+        moment.forEach(item => {
+          for (const [key, value] of item) {
+            this.selectCron[key] = value
+          }
+        })
+      } else {
+        this.selectCron = this.$ls.get('selectCron') || {}
+        this.taskForm.cronParam.type = this.$ls.get('cronType')
+      }
+    },
+
+    handleChangeType(type, cron) {
+      this.taskForm.cronParam.type = type
+      this.handleChangeCron(cron)
     },
 
     handleChangeCron(cron) {
+      const { type } = this.taskForm.cronParam
+      const newCron = cron
+      const arr = ['month', 'day', 'hour']
       const moment = []
-      for (const [key, value] of Object.entries(cron)) {
+      this.selectCron = cron
+
+      switch (type) {
+        case 'hour':
+          arr.forEach(item => {
+            newCron[item] = undefined
+          })
+          break
+
+        case 'day':
+          newCron.day = undefined
+          newCron.month = undefined
+          break
+
+        case 'month':
+          newCron.month = undefined
+          break
+
+        default:
+          break
+      }
+      console.log(newCron, 'new')
+      for (const [key, value] of Object.entries(newCron)) {
         if (value) {
           moment.push({ [key]: value })
         }
       }
       this.taskForm.cronParam.moment = moment
+    },
+
+    // 上一步
+    handlePreiousStep() {
+      this.$router.push(
+        `/data-manage/add-build?step=third&opType=${this.opType}`
+      )
+      this.$ls.set('selectCron', this.selectCron)
+      this.$ls.set('cronType', this.taskForm.cronParam.type)
     },
 
     // 保存设置或发布
@@ -248,6 +287,8 @@ export default {
                   this.$router.push('/data-manage/data-sync')
                   this.$ls.remove('taskForm')
                   this.$ls.remove('selectedTable')
+                  this.$ls.remove('selectCron')
+                  this.$ls.remove('cronType')
                 }
               }
             })
