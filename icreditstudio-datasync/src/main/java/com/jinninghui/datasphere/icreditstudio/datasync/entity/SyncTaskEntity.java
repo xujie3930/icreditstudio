@@ -87,4 +87,6 @@ public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
      * 调度任务ID
      */
     private String scheduleId;
+
+    private String createUserId;
 }
