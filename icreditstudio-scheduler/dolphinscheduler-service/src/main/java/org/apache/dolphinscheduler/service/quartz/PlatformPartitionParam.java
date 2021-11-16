@@ -17,8 +17,22 @@ public class PlatformPartitionParam {
     private String partition;
 
     private Boolean inc;
+
+    public Boolean isInc() {
+        if (inc == null) {
+            return false;
+        }
+        return inc;
+    }
     /**
      * 时间T+n
      */
     private Integer n;
+
+    public Integer getN() {
+        if (n == null || n <= 0) {
+            return 1;
+        }
+        return n;
+    }
 }
