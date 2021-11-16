@@ -15,17 +15,13 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void insertFill(MetaObject metaObject) {
         setFieldValByName("createTime", new Date(), metaObject);
         //todo  获取用户ID
-        setFieldValByName("createUserId", "", metaObject);
         setFieldValByName("lastUpdateTime", new Date(), metaObject);
         //todo  获取用户ID
-        setFieldValByName("lastUpdateUserId", "", metaObject);
         setFieldValByName("deleteFlag", false, metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
         setFieldValByName("lastUpdateTime", new Date(), metaObject);
-        //todo  获取用户ID
-        setFieldValByName("lastUpdateUserId", "", metaObject);
     }
 }
