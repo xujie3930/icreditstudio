@@ -80,16 +80,14 @@
           v-if="taskForm.scheduleType"
           label-width="35%"
           label="同步任务周期"
-          prop="cronParam"
+          prop="cronParam.type"
         >
-          <!-- <CronSelect
-            style="width:600px"
-            v-model="taskForm.cron"
-            @open="open => (showCorn = open)"
-            @reset="cron => (taskForm.cron = cron)"
-            @change="cron => (taskForm.cron = cron)"
-          ></CronSelect> -->
-          <j-select-date :select-type="taskForm.cronParam.type" />
+          <j-select-date
+            :select-type="taskForm.cronParam.type"
+            :select-cron="selectCron"
+            @change-type="type => (taskForm.cronParam.type = type)"
+            @change-cron="handleChangeCron"
+          />
         </el-form-item>
       </el-form>
 
@@ -145,6 +143,7 @@ export default {
       detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
+      selectCron: {},
 
       taskForm: {
         maxThread: 2,
@@ -174,7 +173,7 @@ export default {
         limitRate: [
           { required: true, validator: verifyLimitRate, trigger: 'blur' }
         ],
-        cron: [
+        'cronParam.type': [
           {
             required: true,
             message: '必填项不能为空',
@@ -200,11 +199,31 @@ export default {
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
       this.taskForm.taskId && this.getDetailData()
+      this.handleRenderCron()
     },
 
     // 打开选择CRON表达式的弹窗
     handleOpenCron() {
       this.$refs.cron.open()
+    },
+
+    handleRenderCron() {
+      const { moment } = this.taskForm.cronParam
+      moment.forEach(item => {
+        for (const [key, value] of item) {
+          this.selectCron[key] = value
+        }
+      })
+    },
+
+    handleChangeCron(cron) {
+      const moment = []
+      for (const [key, value] of Object.entries(cron)) {
+        if (value) {
+          moment.push({ [key]: value })
+        }
+      }
+      this.taskForm.cronParam.moment = moment
     },
 
     // 保存设置或发布
