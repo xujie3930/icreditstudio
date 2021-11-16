@@ -104,8 +104,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(syncCondition)) {
 //            String cron = param.getCron();
             CronParam cronParam = param.getCronParam();
-            String cron = cronParam.getCron();
-            IncrementUtil.getSyncCondition(syncCondition, cron);
+            if (Objects.nonNull(cronParam) && StringUtils.isNotBlank(cronParam.getCron())) {
+                String cron = cronParam.getCron();
+                IncrementUtil.getSyncCondition(syncCondition, cron);
+            }
         }
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
@@ -124,8 +126,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
             DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
             String querySql = matching.querySql(queryFields, param.getSql());
-
             param.setSql(querySql);
+
             taskId = threeStepSave(param);
             //查询访问用户信息
             User user = getSystemUserByUserId(param.getUserId());
