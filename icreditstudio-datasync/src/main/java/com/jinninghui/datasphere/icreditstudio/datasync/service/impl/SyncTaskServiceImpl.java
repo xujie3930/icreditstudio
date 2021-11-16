@@ -105,8 +105,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(syncCondition)) {
 //            String cron = param.getCron();
             CronParam cronParam = param.getCronParam();
-            if (Objects.nonNull(cronParam) && CollectModeEnum.CYCLE.getCode().equals(param.getScheduleType()) && StringUtils.isNotBlank(cronParam.getCron())) {
-                String cron = cronParam.getCron();
+            if (Objects.nonNull(cronParam) && CollectModeEnum.CYCLE.getCode().equals(param.getScheduleType()) && StringUtils.isNotBlank(cronParam.getCrons())) {
+                String cron = cronParam.getCrons();
                 log.info("cron表达式:" + cron);
                 IncrementUtil.getSyncCondition(syncCondition, cron);
             }

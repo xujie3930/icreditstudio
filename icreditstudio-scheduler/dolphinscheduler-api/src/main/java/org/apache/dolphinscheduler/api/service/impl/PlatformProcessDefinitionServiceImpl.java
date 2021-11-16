@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.Status;
@@ -36,6 +37,7 @@ import java.util.*;
 /**
  * @author Peng
  */
+@Slf4j
 @Service
 public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implements PlatformProcessDefinitionService {
 
@@ -51,6 +53,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CreatePlatformTaskResult create(CreatePlatformProcessDefinitionParam param) {
+        log.info("创建同步任务定义参数：" + JSONObject.toJSONString(param));
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
