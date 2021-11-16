@@ -22,7 +22,7 @@ public class SyncCondition {
 
     public Boolean isInc() {
         if (inc == null) {
-            return true;
+            return false;
         }
         return inc;
     }
