@@ -84,9 +84,12 @@
     </BaseDialog>
 
     <BaseDialog ref="detailLogDialog" width="90vw" hideFooter title="日志">
-      <div class="log-detail" v-if="logDetail" v-loading="detailLoading">
-        {{ logDetail }}
-      </div>
+      <div
+        class="log-detail"
+        v-if="logDetail"
+        v-loading="detailLoading"
+        v-html="logDetail"
+      ></div>
       <div v-else>暂无数据</div>
     </BaseDialog>
 
@@ -225,6 +228,8 @@ export default {
 
 <style lang="scss" scoped>
 .log-dialog {
+  white-space: pre-wrap;
+
   ::v-deep {
     .iframe-layout-basic-header {
       padding: 0 !important;

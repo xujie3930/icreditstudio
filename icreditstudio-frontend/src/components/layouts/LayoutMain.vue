@@ -8,7 +8,10 @@
         :active-module-id="activeModuleId"
       />
 
-      <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
+      <div
+        :style="{ marginLeft: $route.path === '/home' ? 0 : '160px' }"
+        :class="['layout-container', isCollapse ? 'layout-collapse' : '']"
+      >
         <transition v-if="isHeaderCollapse" name="fade">
           <!-- 一级菜单 -->
           <LayoutHeaderSidebar
@@ -22,7 +25,7 @@
 
         <!-- 二级菜单 -->
         <LayoutMainSidebar
-          v-else
+          v-else-if="$route.path !== '/home'"
           :menu="moduleMenus[activeModuleId]"
           @getChildMenus="getChildMenus"
         />
@@ -181,7 +184,7 @@ export default {
   .layout-container {
     display: flex;
     margin-top: 64px;
-    margin-left: 160px;
+    // margin-left: 160px;
     transition: all 0.5s ease 0s;
   }
 

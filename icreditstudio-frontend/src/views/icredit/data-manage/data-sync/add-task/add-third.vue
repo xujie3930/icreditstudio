@@ -79,16 +79,17 @@
         <el-form-item
           v-if="taskForm.scheduleType"
           label-width="35%"
-          label="Cron"
-          prop="cron"
+          label="同步任务周期"
+          prop="cronParam"
         >
-          <CronSelect
+          <!-- <CronSelect
             style="width:600px"
             v-model="taskForm.cron"
             @open="open => (showCorn = open)"
             @reset="cron => (taskForm.cron = cron)"
             @change="cron => (taskForm.cron = cron)"
-          ></CronSelect>
+          ></CronSelect> -->
+          <j-select-date :select-type="taskForm.cronParam.type" />
         </el-form-item>
       </el-form>
 
@@ -123,13 +124,13 @@
 
 <script>
 import HeaderStepBar from './header-step-bar'
-import CronSelect from '@/views/icredit/components/cron-select'
+// import CronSelect from '@/views/icredit/components/cron-select'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
 
 export default {
-  components: { HeaderStepBar, CronSelect },
+  components: { HeaderStepBar },
 
   data() {
     const verifyLimitRate = (rule, value, cb) => {
@@ -150,7 +151,11 @@ export default {
         limitRate: undefined,
         syncRate: 1,
         scheduleType: 1,
-        cron: ''
+        cron: '',
+        cronParam: {
+          type: undefined,
+          moment: []
+        }
       },
 
       taskRules: {
