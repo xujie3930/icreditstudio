@@ -101,13 +101,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
 
-        SyncCondition syncCondition = param.getSyncCondition();
-        if (Objects.nonNull(syncCondition)) {
-//            String cron = param.getCron();
-            CronParam cronParam = param.getCronParam();
-            if (Objects.nonNull(cronParam) && CollectModeEnum.CYCLE.getCode().equals(param.getScheduleType()) && StringUtils.isNotBlank(cronParam.getCrons())) {
-                String cron = cronParam.getCrons();
-                log.info("cron表达式:" + cron);
+        CronParam cronParam = param.getCronParam();
+        if (Objects.nonNull(cronParam)) {
+            String cron = cronParam.getCrons();
+            log.info("cron表达式:" + cron);
+            param.setCron(cron);
+
+            SyncCondition syncCondition = param.getSyncCondition();
+            if (Objects.nonNull(syncCondition) && StringUtils.isNotBlank(cron)) {
                 IncrementUtil.getSyncCondition(syncCondition, cron);
             }
         }
