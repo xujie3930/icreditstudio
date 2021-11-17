@@ -83,6 +83,7 @@
           prop="cronParam.type"
         >
           <j-select-date
+            ref="selectDate"
             :select-type="taskForm.cronParam.type"
             :select-cron="selectCron"
             @change-type="handleChangeType"
@@ -194,7 +195,6 @@ export default {
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
       this.taskForm.taskId && this.getDetailData()
-      this.handleRenderCron()
     },
 
     // 打开选择CRON表达式的弹窗
@@ -202,57 +202,91 @@ export default {
       this.$refs.cron.open()
     },
 
+    // 渲染周期同步任务下拉框的值
     handleRenderCron() {
+      const { taskId } = this.taskForm
       const { moment, type } = this.taskForm.cronParam
-      if (type && moment.length) {
+      if (taskId && type && moment.length) {
+        console.log(1111, taskId, type, moment)
         moment.forEach(item => {
           for (const [key, value] of item) {
             this.selectCron[key] = value
           }
         })
       } else {
+        console.log(2222)
         this.selectCron = this.$ls.get('selectCron') || {}
         this.taskForm.cronParam.type = this.$ls.get('cronType')
       }
     },
 
-    handleChangeType(type, cron) {
-      this.taskForm.cronParam.type = type
-      this.handleChangeCron(cron)
-    },
+    // 同步任务周期类型更改
+    handleChangeType(type) {
+      const month = undefined
+      const day = undefined
+      const hour = undefined
+      const minute = undefined
+      const second = undefined
 
-    handleChangeCron(cron) {
-      const { type } = this.taskForm.cronParam
-      const newCron = cron
-      const arr = ['month', 'day', 'hour']
-      const moment = []
-      this.selectCron = cron
+      this.taskForm.cronParam.type = type
+      this.taskForm.cronParam.moment = []
 
       switch (type) {
-        case 'hour':
-          arr.forEach(item => {
-            newCron[item] = undefined
-          })
-          break
-
-        case 'day':
-          newCron.day = undefined
-          newCron.month = undefined
+        case 'year':
+          this.selectCron = { month, day, hour, minute, second }
           break
 
         case 'month':
-          newCron.month = undefined
+          this.selectCron = { day, hour, minute, second }
+          break
+
+        case 'day':
+          this.selectCron = { hour, minute, second }
+          break
+
+        case 'hour':
+          this.selectCron = { minute, second }
           break
 
         default:
+          this.selectCron = {}
           break
       }
-      console.log(newCron, 'new')
+    },
+
+    // 时、分、秒、天、月下拉框值更改
+    handleChangeCron(cron) {
+      const moment = []
+      let newCron = {}
+      const { day, hour, minute, second } = cron
+      switch (this.selectValue) {
+        case 'year':
+          newCron = cron
+          break
+
+        case 'month':
+          newCron = { day, hour, minute, second }
+          break
+
+        case 'day':
+          newCron = { hour, minute, second }
+          break
+
+        case 'hour':
+          newCron = { minute, second }
+          break
+
+        default:
+          newCron = cron
+          break
+      }
+
       for (const [key, value] of Object.entries(newCron)) {
         if (value !== undefined && value !== null) {
           moment.push({ [key]: value })
         }
       }
+
       this.taskForm.cronParam.moment = moment
     },
 
@@ -265,6 +299,21 @@ export default {
       this.$ls.set('cronType', this.taskForm.cronParam.type)
     },
 
+    // 周期同步任务Cron字段校验
+    handleVerifyCronField() {
+      const { type } = this.taskForm.cronParam
+      const { selectcronForm } = this.$refs.selectDate.$refs
+      const verifyFieldArr = Object.keys(this.selectCron)
+      const msgArr = []
+
+      if (type) {
+        selectcronForm.validateField(verifyFieldArr, msg => {
+          Boolean(msg) && msgArr.push(msg)
+        })
+      }
+      return !msgArr.length
+    },
+
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
       const params = {
@@ -273,7 +322,7 @@ export default {
       }
       params.callStep = callStep
       this.$refs.taskForm.validate(valid => {
-        if (valid) {
+        if (valid && this.handleVerifyCronField()) {
           this[loading] = true
           API.dataSyncAdd(params)
             .then(({ success, data }) => {
@@ -306,13 +355,13 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              console.log(key, value, typeof value)
               this.taskForm[key] = value
             }
           }
         })
         .finally(() => {
           this.detailLoading = false
+          this.handleRenderCron()
         })
     }
   }
