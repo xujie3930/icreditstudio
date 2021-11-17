@@ -301,19 +301,20 @@ export default {
 
     // 周期同步任务Cron字段校验
     handleVerifyCronField() {
-      const { type } = this.taskForm.cronParam
-      const { selectcronForm } = this.$refs.selectDate.$refs
+      const { scheduleType, cronParam } = this.taskForm
+      const { type } = cronParam
       const verifyFieldArr = Object.keys(this.selectCron)
       const msgArr = []
 
+      if (scheduleType) return true
       if (type) {
+        const { selectcronForm } = this.$refs.selectDate.$refs
         selectcronForm.validateField(verifyFieldArr, msg => {
           Boolean(msg) && msgArr.push(msg)
         })
       }
       return !msgArr.length
     },
-
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
       const params = {
