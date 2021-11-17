@@ -151,6 +151,7 @@ export default {
       btnEditLoading: false,
 
       formOption,
+      tableConfiguration,
       mixinSearchFormConfig: {
         models: { name: '', type: '', status: '' }
       },
@@ -161,12 +162,6 @@ export default {
           method: 'post'
         }
       }
-    }
-  },
-
-  computed: {
-    tableConfiguration() {
-      return tableConfiguration(this)
     }
   },
 

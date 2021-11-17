@@ -125,14 +125,6 @@ export default {
       this.curBreadcrumb.push(breadCrumbItem[0])
     },
 
-    // (待删除)非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
-    autoSelectWorkspaceId() {
-      const { path } = this.$route
-      if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
-        this.setWorkspaceId(this.workspaceList[1].id)
-      }
-    },
-
     // 面包屑导航栏跳转
     handleCrumbJump(toMenu) {
       const { path, redirectPath } = toMenu
