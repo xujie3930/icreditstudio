@@ -62,6 +62,9 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
         PlatformPartitionParam platformPartitionParam = BeanCopyUtils.copyProperties(param.getPartitionParam(), PlatformPartitionParam.class);
 
+        if (Objects.isNull(param.getSchedulerParam())) {
+            param.setSchedulerParam(new SchedulerParam());
+        }
         PlatformPartitionParam syncCondition = IncrementUtil.getSyncCondition(platformPartitionParam, param.getSchedulerParam().getCron());
         processDefine.setPartitionParam(JSONObject.toJSONString(syncCondition));
 

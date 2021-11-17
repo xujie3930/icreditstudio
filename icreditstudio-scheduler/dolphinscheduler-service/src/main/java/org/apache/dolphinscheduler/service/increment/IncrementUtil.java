@@ -23,7 +23,7 @@ public class IncrementUtil {
      * @return
      */
     public static PlatformPartitionParam getSyncCondition(PlatformPartitionParam condition, String cron) {
-        if (StringUtils.isNotBlank(condition.getIncrementalField()) && condition.isInc()) {
+        if (StringUtils.isNotBlank(condition.getIncrementalField()) && condition.getInc()) {
             condition.setPartition(getPartition(cron));
         }
         return condition;
@@ -55,6 +55,9 @@ public class IncrementUtil {
      * @return
      */
     public static String getPartition(String cron) {
+        if (CronParse.getPartition(cron) == null) {
+            return "";
+        }
         return CronParse.getPartition(cron).getName();
     }
 
