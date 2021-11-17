@@ -209,6 +209,8 @@ public class ProcessInstance {
      */
     private int timeout;
 
+    private String fileName;
+
     /**
      * receivers for api
      */
