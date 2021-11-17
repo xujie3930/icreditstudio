@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.request.DispatchTaskPageRequest;
+import org.apache.dolphinscheduler.api.request.ExecInstanceRequest;
 import org.apache.dolphinscheduler.api.request.LogPageRequest;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
@@ -38,14 +39,13 @@ public class DispatchController {
     }
 
     /**
-     *
-     * @param processInstanceId
-     * @param execType   执行类型 ：0 表示 重跑，1 表示 终止
+     * 同步任务重跑或终止
+     * @param request
      * @return
      */
-    @GetMapping("/execInstance")
-    public BusinessResult<Boolean> startOrStop(@RequestParam("processInstanceId") String processInstanceId, @RequestParam("execType") String execType){
-        return dispatchService.startOrStop(processInstanceId, execType);
+    @PostMapping("/execInstance")
+    public BusinessResult<Boolean> reStartOrStop(@RequestBody ExecInstanceRequest request){
+        return dispatchService.reStartOrStop(request.getProcessInstanceId(), request.getTaskInstanceId(), request.getExecType());
     }
 
     @PostMapping("/log/page")

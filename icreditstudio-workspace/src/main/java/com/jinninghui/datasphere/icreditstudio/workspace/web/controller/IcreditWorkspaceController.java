@@ -13,6 +13,7 @@ import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWo
 import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWorkspaceSaveParam;
 import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWorkspaceUpdateParam;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.*;
+import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkBenchResult;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkspaceDetailResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,13 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
         }
         BusinessPageResult page = workspaceService.queryPage(pageRequest);
         return BusinessResult.success(page);
+    }
+
+    @PostMapping("/workbench")
+    @Logable
+    public BusinessResult<WorkBenchResult> workbench(@RequestHeader("x-userid") String userId, @RequestBody IcreditWorkBenchRequest request) {
+        WorkBenchResult result = workspaceService.workbench(userId, request.getId());
+        return BusinessResult.success(result);
     }
 }
 

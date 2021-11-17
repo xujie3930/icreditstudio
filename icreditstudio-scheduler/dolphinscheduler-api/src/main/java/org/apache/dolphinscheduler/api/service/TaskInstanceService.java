@@ -86,4 +86,6 @@ public interface TaskInstanceService {
     Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
 
     Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
+
+    List<Map<String, Object>> selectByWorkspaceIdAndUserId(String userId, String id);
 }

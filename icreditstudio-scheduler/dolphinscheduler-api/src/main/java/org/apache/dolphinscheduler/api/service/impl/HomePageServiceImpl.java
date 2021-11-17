@@ -184,6 +184,24 @@ public class HomePageServiceImpl implements HomePageService {
         return BusinessResult.success(runErrorRankList);
     }
 
+    @Override
+    public WorkBenchResult workbench(String userId, String id) {
+        WorkBenchResult result = new WorkBenchResult();
+        List<Map<String, Object>> list = taskInstanceService.selectByWorkspaceIdAndUserId(userId, id);
+        //正在执行
+        Map<Integer, Long> state = list.stream().collect(
+                Collectors.groupingBy(org -> (int)org.get("state"), Collectors.counting()));
+        Long success = state.get(ExecutionStatus.SUCCESS.getCode()) == null? 0L : state.get(ExecutionStatus.SUCCESS.getCode());
+        result.setSuccess(success);
+        Long failure = state.get(ExecutionStatus.FAILURE.getCode()) == null? 0L: state.get(ExecutionStatus.FAILURE.getCode());
+        result.setFailure(failure);
+        Long running = state.get(ExecutionStatus.RUNNING_EXECUTION.getCode()) == null? 0L : state.get(ExecutionStatus.RUNNING_EXECUTION.getCode());
+        result.setRunning(running);
+        Long notRun = list.size() - success - failure - running;
+        result.setNotRun(notRun);
+        return result;
+    }
+
     private List<TaskSituationResult> getTaskSituationList(Long...args) {
         Long count = 0L;
         for (Long arg : args) {

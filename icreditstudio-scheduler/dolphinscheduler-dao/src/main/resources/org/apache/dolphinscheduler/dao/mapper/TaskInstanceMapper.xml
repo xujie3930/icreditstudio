@@ -237,4 +237,21 @@
         FROM t_ds_task_instance
         WHERE workspace_id = #{workspaceId} and start_time > #{startTime} and end_time <![CDATA[<]]>  #{endTime}
     </select>
+
+    <select id="selectByWorkspaceIdAndUserId" resultType="map">
+        SELECT t.state as state,
+               d.platform_task_id as taskId,
+               d.workspace_id as workspaceId
+        FROM t_ds_task_instance t
+        left join t_ds_process_definition d
+        on t.process_definition_id = d.id
+        <where>
+            <if test="userId != null and userId != '' ">
+                AND d.user_id = #{userId}
+            </if>
+            <if test="id != null and id != '' ">
+                AND d.workspace_id = #{id}
+            </if>
+        </where>
+    </select>
 </mapper>
