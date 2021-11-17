@@ -249,7 +249,7 @@ export default {
       }
       console.log(newCron, 'new')
       for (const [key, value] of Object.entries(newCron)) {
-        if (value) {
+        if (value !== undefined && value !== null) {
           moment.push({ [key]: value })
         }
       }
