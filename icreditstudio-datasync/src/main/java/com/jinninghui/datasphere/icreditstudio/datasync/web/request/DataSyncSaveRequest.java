@@ -159,5 +159,7 @@ public class  DataSyncSaveRequest {
      * cron表达式
      */
     private String cron;
+
+    private CronParam cronParam;
     //==============end==================
 }

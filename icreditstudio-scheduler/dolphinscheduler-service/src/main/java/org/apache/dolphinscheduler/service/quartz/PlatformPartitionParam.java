@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
+package org.apache.dolphinscheduler.service.quartz;
 
 import lombok.Data;
 
@@ -6,7 +6,7 @@ import lombok.Data;
  * @author Peng
  */
 @Data
-public class SyncCondition {
+public class PlatformPartitionParam {
     /**
      * 增量字段
      */
@@ -15,9 +15,7 @@ public class SyncCondition {
      * 分区类型
      */
     private String partition;
-    /**
-     * 增量存储
-     */
+
     private Boolean inc;
 
     public Boolean getInc() {
@@ -26,7 +24,6 @@ public class SyncCondition {
         }
         return inc;
     }
-
     /**
      * 时间T+n
      */

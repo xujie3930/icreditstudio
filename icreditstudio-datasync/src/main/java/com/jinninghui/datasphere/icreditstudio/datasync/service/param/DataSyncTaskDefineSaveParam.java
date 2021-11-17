@@ -50,4 +50,6 @@ public class DataSyncTaskDefineSaveParam {
      * 任务状态【0：成功，1：失败，2：执行中】
      */
     private Integer execStatus;
+
+    private String userId;
 }

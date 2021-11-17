@@ -27,6 +27,7 @@ public class DatasourceClearTask {
 
     @Scheduled(cron = "0 */10 * * * ?")
     public void cleanDatasource() throws InterruptedException {
+        System.out.println("开始执行更新数据源任务");
         long startTime = System.currentTimeMillis();
         List<IcreditDatasourceEntity> allDatasoure = datasourceService.findAllDatasoure();
         for (IcreditDatasourceEntity datasourceEntity : allDatasoure) {

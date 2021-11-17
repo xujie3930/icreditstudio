@@ -27,7 +27,11 @@ import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * task instance service impl
@@ -196,12 +200,34 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
             endTime = DateUtils.getEndOfDay(new Date(request.getSchedulerEndTime()));
         }
 
-        //TODO:数据量大后t_ds_task_definition表加覆盖索引
+        //TODO:数据量大后t_ds_task_instance表加覆盖索引
         List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), request.getScheduleType(), startTime, endTime,  new int[]{});
+        List<TaskCountResult> list = getDaysCount(startTime, endTime, countByDay);
+        return list;
+    }
+
+    private List<TaskCountResult> getDaysCount(Date startTime, Date endTime, List<Map<String, Object>> countByDay) {
         List<TaskCountResult> list = new ArrayList<>();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar tempStart = Calendar.getInstance();
+        tempStart.setTime(startTime);
+        Calendar tempEnd = Calendar.getInstance();
+        tempEnd.setTime(endTime);
+        Map<String, Object> tempMap = new HashMap<>();
         for (Map<String, Object> m : countByDay) {
-            list.add(new TaskCountResult((String) m.get("date"), (long)m.get("count")));
+            tempMap.put((String) m.get("date"), m.get("count"));
         }
+        while (tempStart.before(tempEnd)) {
+            String date = dateFormat.format(tempStart.getTime());
+            if (!tempMap.containsKey(date)) {
+                tempMap.put(date, 0L);
+            }
+            tempStart.add(Calendar.DAY_OF_YEAR, 1);
+        }
+        for (Map.Entry<String, Object> m : tempMap.entrySet()) {
+            list.add(new TaskCountResult((String) m.getKey(), (long)m.getValue()));
+        }
+        list.sort(Comparator.comparing(TaskCountResult::getDate));
         return list;
     }
 

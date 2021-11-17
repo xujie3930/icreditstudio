@@ -9,7 +9,7 @@ const dataType = {
   8: 'MongoDB'
 }
 
-export default that => ({
+export default {
   refName: 'workspace-datascource',
   id: '',
   isBorder: true,
@@ -19,7 +19,7 @@ export default that => ({
       label: '新增数据源',
       type: 'primary',
       key: 'addDataSource',
-      disabled: that.workspaceId === 'all',
+      // disabled: that.workspaceId === '0',
       options: {
         eventType: 'click',
         eventName: 'handleAddDataSource'
@@ -85,4 +85,4 @@ export default that => ({
       fixed: 'right'
     }
   ]
-})
+}

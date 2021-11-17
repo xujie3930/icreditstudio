@@ -79,26 +79,20 @@
         <el-form-item
           v-if="taskForm.scheduleType"
           label-width="35%"
-          label="Cron"
-          prop="cron"
+          label="同步任务周期"
+          prop="cronParam.type"
         >
-          <CronSelect
-            style="width:600px"
-            v-model="taskForm.cron"
-            @open="open => (showCorn = open)"
-            @reset="cron => (taskForm.cron = cron)"
-            @change="cron => (taskForm.cron = cron)"
-          ></CronSelect>
+          <j-select-date
+            :select-type="taskForm.cronParam.type"
+            :select-cron="selectCron"
+            @change-type="handleChangeType"
+            @change-cron="handleChangeCron"
+          />
         </el-form-item>
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button
-          class="btn"
-          @click="
-            $router.push(`/data-manage/add-build?step=third&opType=${opType}`)
-          "
-        >
+        <el-button class="btn" @click="handlePreiousStep">
           上一步
         </el-button>
         <el-button
@@ -123,13 +117,13 @@
 
 <script>
 import HeaderStepBar from './header-step-bar'
-import CronSelect from '@/views/icredit/components/cron-select'
+// import CronSelect from '@/views/icredit/components/cron-select'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
 
 export default {
-  components: { HeaderStepBar, CronSelect },
+  components: { HeaderStepBar },
 
   data() {
     const verifyLimitRate = (rule, value, cb) => {
@@ -144,13 +138,18 @@ export default {
       detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
+      selectCron: {},
 
       taskForm: {
         maxThread: 2,
         limitRate: undefined,
         syncRate: 1,
         scheduleType: 1,
-        cron: ''
+        cron: '',
+        cronParam: {
+          type: undefined,
+          moment: []
+        }
       },
 
       taskRules: {
@@ -169,7 +168,7 @@ export default {
         limitRate: [
           { required: true, validator: verifyLimitRate, trigger: 'blur' }
         ],
-        cron: [
+        'cronParam.type': [
           {
             required: true,
             message: '必填项不能为空',
@@ -195,11 +194,75 @@ export default {
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       // 编辑
       this.taskForm.taskId && this.getDetailData()
+      this.handleRenderCron()
     },
 
     // 打开选择CRON表达式的弹窗
     handleOpenCron() {
       this.$refs.cron.open()
+    },
+
+    handleRenderCron() {
+      const { moment, type } = this.taskForm.cronParam
+      if (type && moment.length) {
+        moment.forEach(item => {
+          for (const [key, value] of item) {
+            this.selectCron[key] = value
+          }
+        })
+      } else {
+        this.selectCron = this.$ls.get('selectCron') || {}
+        this.taskForm.cronParam.type = this.$ls.get('cronType')
+      }
+    },
+
+    handleChangeType(type, cron) {
+      this.taskForm.cronParam.type = type
+      this.handleChangeCron(cron)
+    },
+
+    handleChangeCron(cron) {
+      const { type } = this.taskForm.cronParam
+      const newCron = cron
+      const arr = ['month', 'day', 'hour']
+      const moment = []
+      this.selectCron = cron
+
+      switch (type) {
+        case 'hour':
+          arr.forEach(item => {
+            newCron[item] = undefined
+          })
+          break
+
+        case 'day':
+          newCron.day = undefined
+          newCron.month = undefined
+          break
+
+        case 'month':
+          newCron.month = undefined
+          break
+
+        default:
+          break
+      }
+      console.log(newCron, 'new')
+      for (const [key, value] of Object.entries(newCron)) {
+        if (value !== undefined && value !== null) {
+          moment.push({ [key]: value })
+        }
+      }
+      this.taskForm.cronParam.moment = moment
+    },
+
+    // 上一步
+    handlePreiousStep() {
+      this.$router.push(
+        `/data-manage/add-build?step=third&opType=${this.opType}`
+      )
+      this.$ls.set('selectCron', this.selectCron)
+      this.$ls.set('cronType', this.taskForm.cronParam.type)
     },
 
     // 保存设置或发布
@@ -224,6 +287,8 @@ export default {
                   this.$router.push('/data-manage/data-sync')
                   this.$ls.remove('taskForm')
                   this.$ls.remove('selectedTable')
+                  this.$ls.remove('selectCron')
+                  this.$ls.remove('cronType')
                 }
               }
             })

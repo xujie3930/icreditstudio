@@ -227,6 +227,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     private String getResult(String oldColumnsInfo, String datasourceInfo) {
+        StringBuilder builder = new StringBuilder("同步成功");
         List<TableSyncInfo> oldStructure;
         List<TableSyncInfo> newStructure;
         Integer add = 0;
@@ -261,7 +262,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 addCloumns += tableSyncInfo.getColumnList().size();
             }
         }
-        return String.format("同步成功，新增 %s 张表,新增 %s 列 ; 修改 %s 张表; 删除 %s 张表,删除 %s 列", add, addCloumns, update, del, delCloumns);
+        if (add > 0 && addCloumns > 0){
+            builder.append(String.format(",新增 %s 张表,共 %s 个字段", add, addCloumns));
+        }
+        if (del > 0 && delCloumns > 0){
+            builder.append(String.format(",删除 %s 张表,共 %s 个字段", del, delCloumns));
+        }
+        return builder.toString();
     }
 
     private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {

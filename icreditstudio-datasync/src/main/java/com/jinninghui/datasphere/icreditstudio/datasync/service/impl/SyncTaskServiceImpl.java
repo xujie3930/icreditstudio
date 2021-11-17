@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -25,7 +26,10 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableFieldEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.*;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.MetadataFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SchedulerFeign;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.SystemFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
@@ -34,15 +38,16 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableFieldService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.CronParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -96,10 +101,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
 
-        SyncCondition syncCondition = param.getSyncCondition();
-        if (Objects.nonNull(syncCondition)) {
-            String cron = param.getCron();
-            IncrementUtil.getSyncCondition(syncCondition, cron);
+        CronParam cronParam = param.getCronParam();
+        if (Objects.nonNull(cronParam)) {
+            String cron = cronParam.getCrons();
+            log.info("cron表达式:" + cron);
+            param.setCron(cron);
+
+            SyncCondition syncCondition = param.getSyncCondition();
+            if (Objects.nonNull(syncCondition) && StringUtils.isNotBlank(cron)) {
+                IncrementUtil.getSyncCondition(syncCondition, cron);
+            }
         }
         if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
@@ -118,8 +129,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
             DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
             String querySql = matching.querySql(queryFields, param.getSql());
-
             param.setSql(querySql);
+
             taskId = threeStepSave(param);
             //查询访问用户信息
             User user = getSystemUserByUserId(param.getUserId());
@@ -127,9 +138,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(taskId);
 
             if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
+                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
+                if (Objects.nonNull(param.getSyncCondition())) {
+                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
+                }
+                //创建宽表
+                createWideTable(wideTableParam);
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
+                        .partitionParam(param.getSyncCondition())
                         .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
                         .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, querySql), 0))
                         .build();
@@ -143,12 +161,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 } else {
                     throw new AppException("60000037");
                 }
-                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
-                if (Objects.nonNull(param.getSyncCondition())) {
-                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
-                }
-                //创建宽表
-                createWideTable(wideTableParam);
             } else {
                 String taskIdR = param.getTaskId();
                 SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
@@ -480,6 +492,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         SyncTaskEntity entity = new SyncTaskEntity();
         BeanCopyUtils.copyProperties(param, entity);
         entity.setId(param.getTaskId());
+        entity.setCreateUserId(param.getUserId());
         saveOrUpdate(entity);
         return entity.getId();
     }
@@ -572,7 +585,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setCollectMode(param.getScheduleType());
         TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
         entity.setTaskParamJson(JSONObject.toJSONString(info));
-
+        entity.setCronParam(JSONObject.toJSONString(param.getCronParam()));
         saveOrUpdate(entity);
     }
 
@@ -680,6 +693,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String taskParamJson = byId.getTaskParamJson();
             info = taskScheduleInfoParser.parse(taskParamJson);
+            String cronParam = byId.getCronParam();
+            if (StringUtils.isNotBlank(cronParam) && JSONUtil.isJson(cronParam)) {
+                CronParam cronParams = JSONObject.parseObject(cronParam).toJavaObject(CronParam.class);
+                info.setCronParam(cronParams);
+            }
         }
         return BusinessResult.success(info);
     }
@@ -937,9 +955,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
-        if("0".equals(dispatchPageDTO.getWorkspaceId())){//默认工作空间
+        if ("0".equals(dispatchPageDTO.getWorkspaceId())) {//默认工作空间
             dispatchPageDTO.setWorkspaceId(null);
-        }else{
+        } else {
             dispatchPageDTO.setCurrLoginUserId(null);
         }
         dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());

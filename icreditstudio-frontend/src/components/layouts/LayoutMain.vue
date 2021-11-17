@@ -8,7 +8,10 @@
         :active-module-id="activeModuleId"
       />
 
-      <div :class="['layout-container', isCollapse ? 'layout-collapse' : '']">
+      <div
+        :style="{ marginLeft: $route.path === '/home' ? 0 : '160px' }"
+        :class="['layout-container', isCollapse ? 'layout-collapse' : '']"
+      >
         <transition v-if="isHeaderCollapse" name="fade">
           <!-- 一级菜单 -->
           <LayoutHeaderSidebar
@@ -22,13 +25,14 @@
 
         <!-- 二级菜单 -->
         <LayoutMainSidebar
-          v-else
+          v-else-if="$route.path !== '/home'"
           :menu="moduleMenus[activeModuleId]"
           @getChildMenus="getChildMenus"
         />
         <!-- 组件内容 -->
         <div class="layout-content">
           <LayoutBreadcrumd
+            v-if="$route.path !== '/home'"
             :curBreadcrumb="curBreadcrumb"
             @jump="handleCrumbJump"
           />
@@ -121,14 +125,6 @@ export default {
       this.curBreadcrumb.push(breadCrumbItem[0])
     },
 
-    // (待删除)非空间设置模块下自动加载workspaceList的第二条数据，第一条为全部，并非空间
-    autoSelectWorkspaceId() {
-      const { path } = this.$route
-      if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
-        this.setWorkspaceId(this.workspaceList[1].id)
-      }
-    },
-
     // 面包屑导航栏跳转
     handleCrumbJump(toMenu) {
       const { path, redirectPath } = toMenu
@@ -180,7 +176,7 @@ export default {
   .layout-container {
     display: flex;
     margin-top: 64px;
-    margin-left: 160px;
+    // margin-left: 160px;
     transition: all 0.5s ease 0s;
   }
 

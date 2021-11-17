@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.Status;
@@ -23,6 +24,8 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
+import org.apache.dolphinscheduler.service.increment.IncrementUtil;
+import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ import java.util.*;
 /**
  * @author Peng
  */
+@Slf4j
 @Service
 public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implements PlatformProcessDefinitionService {
 
@@ -49,13 +53,21 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
     @Override
     @Transactional(rollbackFor = Exception.class)
     public CreatePlatformTaskResult create(CreatePlatformProcessDefinitionParam param) {
+        log.info("创建同步任务定义参数：" + JSONObject.toJSONString(param));
         ProcessDefinition processDefine = new ProcessDefinition();
         Date now = new Date();
 
         ProcessDefinitionJson definitionJson = param.buildProcessDefinitionJson();
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
 
-        processDefine.setPartitionParam(JSONObject.toJSONString(param.getPartitionParam()));
+        PlatformPartitionParam platformPartitionParam = BeanCopyUtils.copyProperties(param.getPartitionParam(), PlatformPartitionParam.class);
+
+        if (Objects.isNull(param.getSchedulerParam())) {
+            param.setSchedulerParam(new SchedulerParam());
+        }
+        PlatformPartitionParam syncCondition = IncrementUtil.getSyncCondition(platformPartitionParam, param.getSchedulerParam().getCron());
+        processDefine.setPartitionParam(JSONObject.toJSONString(syncCondition));
+
         processDefine.setWorkspaceId(param.getOrdinaryParam().getWorkspaceId());
         processDefine.setScheduleType(0);
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
@@ -78,6 +90,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setUpdateTime(now);
         processDefine.setFlag(Flag.YES);
         processDefinitionMapper.insert(processDefine);
+        //如果是周期执行，则给流程创建scheduler
         if (param.getSchedulerParam().getSchedulerType() == ScheduleType.PERIOD) {
             CreateSchedulerParam createSchedulerParam = buildCreateSchedulerParam(param, processDefine.getId());
             schedulerService.createSchedule(createSchedulerParam);

@@ -93,6 +93,8 @@ public interface DatasourceSync {
         String jdbcUri = geturi(uri);
         try {
             Class.forName(driver);
+            //超时时间由默认30s改为5秒
+            DriverManager.setLoginTimeout(5);
             Connection conn = DriverManager.getConnection(jdbcUri, username, password);
             conn.close();
             return "测试连接成功";

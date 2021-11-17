@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.web.request.CronParam;
 import lombok.Data;
 
 /**
@@ -25,4 +26,6 @@ public class TaskScheduleInfo {
      * cron表达式
      */
     private String cron;
+
+    private CronParam cronParam;
 }

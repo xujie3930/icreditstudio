@@ -140,7 +140,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         }
         List<IcreditWorkspaceEntity> list = workspaceMapper.queryPage(page, param);
         //如果指定了空间，则不用展示默认工作空间
-        if (!StringUtils.isBlank(pageRequest.getSpaceId())){
+        if (!StringUtils.isBlank(pageRequest.getSpaceId()) && !DEFAULT_WORKSPACEID.equals(pageRequest.getSpaceId())){
             list = list.parallelStream()
                     .filter(w -> !DEFAULT_WORKSPACEID.equals(w.getId()))
                     .collect(Collectors.toList());

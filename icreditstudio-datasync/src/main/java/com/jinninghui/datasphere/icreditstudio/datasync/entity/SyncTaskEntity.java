@@ -44,6 +44,11 @@ public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
     private Integer taskStatus;
 
     /**
+     * cron参数
+     */
+    private String cronParam;
+
+    /**
      * 创建方式【0：可视化，1：SQL】
      */
     private Integer createMode;
@@ -87,4 +92,6 @@ public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
      * 调度任务ID
      */
     private String scheduleId;
+
+    private String createUserId;
 }

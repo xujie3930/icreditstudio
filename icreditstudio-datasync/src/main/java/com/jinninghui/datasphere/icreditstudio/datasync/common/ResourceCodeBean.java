@@ -63,6 +63,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000046("60000046", "用户ID为空"),
         RESOURCE_CODE_60000047("60000047", "cron表达式不规范"),
         RESOURCE_CODE_60000048("60000048", "未找到合适的同步sql解析器"),
+        RESOURCE_CODE_60000049("60000049", "cron表达式参数为空"),
         ;
 
         public final String code;
