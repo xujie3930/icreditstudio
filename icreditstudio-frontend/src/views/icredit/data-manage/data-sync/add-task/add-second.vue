@@ -251,7 +251,10 @@
                   增量存储
                 </el-checkbox>
               </div>
-              <div class="label-wrap">
+              <div
+                class="label-wrap"
+                v-if="secondTaskForm.syncCondition.incrementalField"
+              >
                 <div class="label">时间过滤条件: T +</div>
                 <el-input-number
                   size="mini"
