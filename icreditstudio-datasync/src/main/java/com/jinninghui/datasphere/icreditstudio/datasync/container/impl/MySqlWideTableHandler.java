@@ -215,7 +215,11 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                throw new AppException("60000006", e.getMessage());
+                String message = e.getMessage();
+                if ((message.contains("table") || message.contains("Table")) && message.contains("doesn't") && message.contains("exist")) {
+                    throw new AppException("60000050");
+                }
+                throw new AppException("60000051");
             }
             WideTable wideTable = new WideTable();
             wideTable.setTableName(null);
