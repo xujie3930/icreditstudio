@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web.request;
 
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
