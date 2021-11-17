@@ -37,7 +37,9 @@ public class CronParse {
      * @return
      */
     public static PartitionTypeEnum getPartition(String cron) {
-
+        if (StringUtils.isBlank(cron)) {
+            return null;
+        }
         PartitionTypeEnum partitionType = null;
         if (CronExpression.isValidExpression(cron)) {
             List<String> split = StrUtil.split(cron, " ");

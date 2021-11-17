@@ -36,9 +36,9 @@ public class CronParam {
     private List<Map<String, Integer>> moment;
 
 
-    public String getCron() {
+    public String getCrons() {
         if (CollectionUtils.isEmpty(moment)) {
-            throw new AppException("60000049");
+            return "";
         }
         CronGenerate cronGenerate = new CronGenerate();
         for (Map<String, Integer> map : moment) {

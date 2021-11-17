@@ -18,7 +18,7 @@ public class PlatformPartitionParam {
 
     private Boolean inc;
 
-    public Boolean isInc() {
+    public Boolean getInc() {
         if (inc == null) {
             return false;
         }
