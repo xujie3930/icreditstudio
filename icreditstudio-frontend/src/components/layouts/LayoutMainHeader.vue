@@ -167,16 +167,6 @@ export default {
     workspaceId(nVal) {
       this.wid = nVal
     }
-
-    // $route: {
-    //   immediate: true,
-    //   handler(nRoute) {
-    //     const { path } = nRoute
-    //     if (path !== '/workspace/space-setting' && this.workspaceId === 'all') {
-    //       this.setWorkspaceId(this.workspaceList[1].id)
-    //     }
-    //   }
-    // }
   },
 
   computed: {
@@ -205,7 +195,7 @@ export default {
 
   mounted() {
     this.isShowQuickMenu = this.systemSetting.enableCustomMenu
-    this.setWorkspaceId(this.$ls.get('workspaceId') || 'all')
+    this.setWorkspaceId(this.$ls.get('workspaceId') || '0')
     this.wid = this.workspaceId
   },
 
