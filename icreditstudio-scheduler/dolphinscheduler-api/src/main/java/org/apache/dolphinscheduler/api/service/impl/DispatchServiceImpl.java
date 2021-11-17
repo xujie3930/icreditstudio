@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -17,7 +18,6 @@ import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +37,6 @@ public class DispatchServiceImpl implements DispatchService {
     private ProcessService processService;
     @Autowired
     private TaskInstanceMapper taskInstanceMapper;
-    @Autowired
-    private ProcessInstanceMapper processInstanceMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -53,6 +51,7 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> startOrStop(String processInstanceId, String execType) {
         if(StringUtils.isEmpty(processInstanceId)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.message);
@@ -76,9 +75,6 @@ public class DispatchServiceImpl implements DispatchService {
      */
     private int executeInstance(String instanceId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
-        //todo  设置 writemode 为truncate，清理之前的文件内容，但需要注意 filename 的值（慎重）
-//        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"truncate\\\"");
-//        processInstance.setProcessInstanceJson(instanceJson);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
         if("1".equals(execType)){
@@ -90,9 +86,36 @@ public class DispatchServiceImpl implements DispatchService {
             if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
+            //设置 writemode 为truncate，清理之前的文件内容，但需要注意 filename 的值（慎重）
+            String oldFileName = parseJson(processInstance.getProcessInstanceJson());
+            StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
+            target.append(oldFileName).append("\\\"");
+            StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
+            replaceStr.append(processInstance.getFileName()).append("\\\"");
+            String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"truncate\\\"")
+                    .replace(target, replaceStr);
+            processInstance.setProcessInstanceJson(instanceJson);
+            processService.saveProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
         }
         return result;
+    }
+
+    private String parseJson(String processInstanceJson) {
+        JSONObject obj = JSONObject.parseObject(processInstanceJson);
+        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
+        JSONObject paramObj = taskObj.getJSONObject("params");
+        if(!"1".equals(paramObj.getString("customConfig"))){
+            return null;
+        }
+        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
+        JSONObject writer = content.getJSONObject("writer");
+        if(!"hdfswriter".equals(writer.getString("name"))){
+            return null;
+        }
+        JSONObject parameter = writer.getJSONObject("parameter");
+        return parameter.getString("fileName");
     }
 
     private int updateProcessInstancePrepare(ProcessInstance processInstance, CommandType commandType, ExecutionStatus executionStatus) {

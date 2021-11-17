@@ -240,6 +240,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public String execSyncTask(String processDefinitionId, int execType) {
+        String execResult = "false";
         try{
             if(0 == execType){//手动执行
                 ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
@@ -250,10 +251,11 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
             }else{//周期执行
                 schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
             }
+            execResult = "true";
         }catch (Exception e){
             e.printStackTrace();
         }
-        return "true";
+        return execResult;
     }
 
     @Override

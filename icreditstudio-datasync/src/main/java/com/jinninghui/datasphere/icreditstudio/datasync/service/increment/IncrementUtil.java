@@ -22,7 +22,7 @@ public class IncrementUtil {
      * @return
      */
     public static SyncCondition getSyncCondition(SyncCondition condition, String cron) {
-        if (StringUtils.isNotBlank(condition.getIncrementalField()) && condition.isInc()) {
+        if (StringUtils.isNotBlank(condition.getIncrementalField()) && condition.getInc()) {
             condition.setPartition(getPartition(cron));
         }
         return condition;

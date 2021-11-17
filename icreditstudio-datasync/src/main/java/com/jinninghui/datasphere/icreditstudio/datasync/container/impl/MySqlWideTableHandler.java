@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractWideTableHandler;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.ConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
@@ -215,7 +216,11 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
-                throw new AppException("60000006", e.getMessage());
+                String message = e.getMessage();
+                if ((message.contains("table") || message.contains("Table")) && message.contains("doesn't") && message.contains("exist")) {
+                    throw new AppException("60000050", ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000050.getMessage());
+                }
+                throw new AppException("60000051", ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000051.getMessage());
             }
             WideTable wideTable = new WideTable();
             wideTable.setTableName(null);
