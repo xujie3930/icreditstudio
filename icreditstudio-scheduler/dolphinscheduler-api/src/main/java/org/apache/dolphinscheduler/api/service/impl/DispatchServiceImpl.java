@@ -52,15 +52,19 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> startOrStop(String processInstanceId, String execType) {
+    public BusinessResult<Boolean> reStartOrStop(String processInstanceId, String taskId, String execType) {
+        // execType 执行类型 ：0 表示 重跑，1 表示 终止
         if(StringUtils.isEmpty(processInstanceId)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.message);
+        }
+        if(StringUtils.isEmpty(taskId)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000012.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000012.message);
         }
         if(StringUtils.isEmpty(execType)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.message);
         }
         //processInstanceId , ExecuteType executeType
-        int execStatus = this.executeInstance(processInstanceId, execType);
+        int execStatus = this.executeInstance(processInstanceId, taskId, execType);
         if(execStatus == 0){
             return BusinessResult.success(true);
         }
@@ -73,7 +77,7 @@ public class DispatchServiceImpl implements DispatchService {
      * @param execType
      * @return  返回值为 0|1 ，0 表示成功 ，1 表示失败
      */
-    private int executeInstance(String instanceId, String execType) {
+    private int executeInstance(String instanceId, String taskId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
@@ -97,6 +101,7 @@ public class DispatchServiceImpl implements DispatchService {
             processInstance.setProcessInstanceJson(instanceJson);
             processService.saveProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
+            taskInstanceMapper.deleteById(taskId);
         }
         return result;
     }

@@ -11,7 +11,7 @@ public interface DispatchService {
 
     BusinessResult<BusinessPageResult<DispatchTaskPageResult>> dispatchPage(DispatchTaskPageParam param);
 
-    BusinessResult<Boolean> startOrStop(String taskId, String execType);
+    BusinessResult<Boolean> reStartOrStop(String processInstanceId, String taskId, String execType);
 
     BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(LogPageParam param);
 }
