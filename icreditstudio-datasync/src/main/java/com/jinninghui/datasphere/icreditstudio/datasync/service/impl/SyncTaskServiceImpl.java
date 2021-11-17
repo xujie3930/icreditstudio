@@ -161,6 +161,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 } else {
                     throw new AppException("60000037");
                 }
+                updateVersion(taskId, OperatorTypeEnum.INSERT);
             } else {
                 String taskIdR = param.getTaskId();
                 SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
@@ -179,6 +180,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                             .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
                             .build();
                     schedulerFeign.update(build);
+                    updateVersion(taskId, OperatorTypeEnum.EDIT);
                 }
             }
         }
@@ -196,6 +198,24 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     queryField.setSourceTable(field.getSourceTable());
                     return queryField;
                 }).collect(Collectors.toList());
+    }
+
+    private void updateVersion(String taskId, OperatorTypeEnum operatorType) {
+        SyncTaskEntity byId = getById(taskId);
+        if (Objects.nonNull(byId)) {
+            if (OperatorTypeEnum.INSERT == operatorType) {
+                byId.setVersion(1);
+            }
+            if (OperatorTypeEnum.EDIT == operatorType) {
+                Integer version = byId.getVersion();
+                if (version == null) {
+                    byId.setVersion(1);
+                } else {
+                    byId.setVersion(version + 1);
+                }
+            }
+            updateById(byId);
+        }
     }
 
     private User getSystemUserByUserId(String userId) {
@@ -281,6 +301,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     private Map<String, Object> getDataxCore(String taskParamJson) {
+        Map<String, Object> core = new HashMap<>(1);
         Map<String, Object> transport = new HashMap<>(1);
         Map<String, Object> channel = new HashMap<>(1);
         Map<String, Integer> speed = new HashMap<>(2);
@@ -295,8 +316,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             speed.put("channel", 1);
             speed.put("record", 20000);
         }
-        channel.put("channel", speed);
-        transport.put("transport", channel);
+        channel.put("speed", speed);
+        transport.put("channel", channel);
+        core.put("transport", transport);
         return transport;
     }
 
