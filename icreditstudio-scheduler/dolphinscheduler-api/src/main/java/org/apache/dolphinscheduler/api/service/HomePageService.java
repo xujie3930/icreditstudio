@@ -17,4 +17,6 @@ public interface HomePageService {
     BusinessResult<List<RuntimeRankResult>> runtimeRank(SchedulerHomepageRequest request);
 
     BusinessResult<List<RunErrorRankResult>> runErrorRank(SchedulerHomepageRequest request);
+
+    WorkBenchResult workbench(String userId, String id);
 }

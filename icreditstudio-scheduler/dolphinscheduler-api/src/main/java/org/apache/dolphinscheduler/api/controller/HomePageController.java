@@ -5,10 +5,7 @@ import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.HomePageService;
 import org.apache.dolphinscheduler.api.service.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,6 +45,11 @@ public class HomePageController {
     @PostMapping(value = "/runErrorRank")
     public BusinessResult<List<RunErrorRankResult>> runErrorRank(@RequestBody SchedulerHomepageRequest request) {
         return homePageService.runErrorRank(request);
+    }
+
+    @GetMapping(value = "/workbench")
+    public WorkBenchResult workbench(@RequestParam("userId") String userId, @RequestParam("id") String id){
+        return homePageService.workbench(userId, id);
     }
 
 }

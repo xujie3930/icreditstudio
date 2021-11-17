@@ -250,4 +250,9 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     public Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime) {
         return taskInstanceMapper.totalBytesByWorkspaceIdAndTime(workspaceId, startTime, endTime);
     }
+
+    @Override
+    public List<Map<String, Object>> selectByWorkspaceIdAndUserId(String userId, String id) {
+        return taskInstanceMapper.selectByWorkspaceIdAndUserId(userId, id);
+    }
 }
