@@ -12,7 +12,10 @@ export const canBackPages = [
   '/data-manage/add-build',
   '/data-manage/add-transfer',
   '/data-manage/data-schedule/dag',
-  '/data-quality/rule-category/add-rules'
+  '/data-quality/rule-category/add-rules',
+  '/manage/userinfo',
+  '/manage/personalized',
+  '/manage/changepassword'
 ]
 
 // 一级菜单
