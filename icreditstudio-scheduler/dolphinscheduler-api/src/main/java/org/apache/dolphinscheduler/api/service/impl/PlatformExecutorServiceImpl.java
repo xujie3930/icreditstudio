@@ -251,6 +251,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
             }else{//周期执行
                 schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
             }
+            //更新对应processDefinition表的updateTime
+            processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
             execResult = "true";
         }catch (Exception e){
             e.printStackTrace();
