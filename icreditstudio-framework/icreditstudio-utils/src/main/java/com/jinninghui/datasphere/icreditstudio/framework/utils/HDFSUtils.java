@@ -51,6 +51,8 @@ public class HDFSUtils {
         while ((lineTxt = bufferedReader.readLine()) != null) {
             stringBuffer.append(lineTxt);
         }
+        bufferedReader.close();
+        in.close();
         return stringBuffer.toString();
     }
 
