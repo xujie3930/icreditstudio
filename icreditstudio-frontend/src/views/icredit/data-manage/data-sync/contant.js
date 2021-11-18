@@ -7,8 +7,8 @@
 // 任务状态值映射
 export const taskStatusMapping = {
   0: { label: '启用', color: '#52c41a' },
-  1: { label: '草稿', color: '#999' },
-  2: { label: '停用', color: '#ff4d4f' }
+  1: { label: '停用', color: '#ff4d4f' },
+  2: { label: '草稿', color: '#999' }
 }
 
 // 执行状态值映射
@@ -86,7 +86,6 @@ const tableFieldTypeMapping = () => {
   fieldTypeOptions.forEach(({ label, value }) => {
     typeMapping[value] = label
   })
-  console.log('typeMapping', typeMapping)
   return typeMapping
 }
 
