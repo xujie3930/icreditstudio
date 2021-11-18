@@ -89,9 +89,20 @@
         </div>
 
         <div class="container">
-          <div class="container-item container-row">
+          <div
+            class="container-item container-row"
+            v-loading="downloadLoading"
+            @click="handleDownload"
+          >
             <j-svg class="jsvg icon" name="home-book" />
             <span class="label">用户手册</span>
+            <!-- <a
+              href="../../static/intro.pdf"
+              class="label"
+              :download="filename"
+              target="_blank"
+              >用户手册</a
+            > -->
           </div>
         </div>
       </section>
@@ -115,6 +126,8 @@ export default {
       lastRefreshTime: null,
       curRefreshTime: null,
       dataLoading: false,
+      downloadLoading: false,
+      filename: '一站式大数据开发与治理平台（iCredit）用户手册V0.0.1版本.pdf',
 
       // 功能演示
       funcConfigs: [
@@ -244,6 +257,25 @@ export default {
       } else {
         this.$message.info('该模块功能暂未上线， 敬请期待！')
       }
+    },
+
+    handleDownload() {
+      this.downloadLoading = true
+      const filename =
+        '一站式大数据开发与治理平台（iCredit）用户手册V0.0.1版本.pdf'
+      const url = '../../static/intro.pdf'
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.target = '_blank'
+      document.body.appendChild(link)
+      // link.click()
+      window.open(link.href)
+      document.body.removeChild(link)
+
+      setTimeout(() => {
+        this.downloadLoading = false
+      }, 500)
     },
 
     updateRefreshTime() {
