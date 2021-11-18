@@ -45,7 +45,7 @@ public class HDFSUtils {
 
     public static String getStringFromHDFS(String destPath) throws Exception{
 
-        StringBuffer stringBuffer = new StringBuffer();;
+        StringBuffer stringBuffer = new StringBuffer();
         FSDataInputStream in =fs.open(new Path(destPath));
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
         String lineTxt ;

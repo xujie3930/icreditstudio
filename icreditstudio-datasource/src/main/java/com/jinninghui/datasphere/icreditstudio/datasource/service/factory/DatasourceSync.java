@@ -5,6 +5,7 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.SecretUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +59,7 @@ public interface DatasourceSync {
         } else {
             password = temp.substring(0, temp.indexOf(SEPARATOR));
         }
-        return password;
+        return SecretUtils.desEncrypt(password);
     }
 
     /**
