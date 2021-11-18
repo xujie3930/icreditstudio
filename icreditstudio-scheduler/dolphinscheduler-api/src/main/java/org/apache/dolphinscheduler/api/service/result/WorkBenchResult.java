@@ -2,13 +2,15 @@ package org.apache.dolphinscheduler.api.service.result;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @author xujie
  * @description 工作空间工作台
  * @create 2021-11-17 14:36
  **/
 @Data
-public class WorkBenchResult {
+public class WorkBenchResult implements Serializable {
 
     /**
      * 未运行任务
