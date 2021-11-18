@@ -39,7 +39,12 @@ public class SyncTaskEntity extends SyncBaseEntity implements Serializable {
     private String taskName;
 
     /**
-     * 任务状态【0：启用，1：草稿，2：停用】
+     * 启用状态【0：启用，1：未启用】
+     */
+    private Integer enable;
+
+    /**
+     * 任务状态【0：启用，1：停用，2：草稿】
      */
     private Integer taskStatus;
 

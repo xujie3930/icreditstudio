@@ -10,8 +10,8 @@ import lombok.Getter;
 @Getter
 public enum TaskStatusEnum {
     ENABLE(0, "启用", EnableStatusEnum.ENABLE),
-    DRAFT(1, "草稿", EnableStatusEnum.ENABLE),
-    DISABLE(2, "停用", EnableStatusEnum.DISABLE),
+    DISABLE(1, "停用", EnableStatusEnum.DISABLE),
+    DRAFT(2, "草稿", EnableStatusEnum.ENABLE),
     ALL(3, "全部", null),
     ;
     private Integer code;

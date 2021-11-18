@@ -124,6 +124,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
             taskId = threeStepSave(param);
         }
+        //发布
         if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
             param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
             List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
@@ -142,8 +143,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 if (Objects.nonNull(param.getSyncCondition())) {
                     wideTableParam.setPartition(param.getSyncCondition().getPartition());
                 }
-                //创建宽表
-                createWideTable(wideTableParam);
                 FeignCreatePlatformProcessDefinitionRequest build = FeignCreatePlatformProcessDefinitionRequest.builder()
                         .accessUser(user)
                         .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
@@ -162,6 +161,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     throw new AppException("60000037");
                 }
                 updateVersion(taskId, OperatorTypeEnum.INSERT);
+                //创建宽表
+                createWideTable(wideTableParam);
             } else {
                 String taskIdR = param.getTaskId();
                 SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
@@ -182,6 +183,18 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     schedulerFeign.update(build);
                     updateVersion(taskId, OperatorTypeEnum.EDIT);
                 }
+            }
+            //执行
+            SyncTaskEntity byId = getById(taskId);
+            if (byId == null) {
+                throw new AppException("60000052");
+            }
+            SyncCondition syncCondition = param.getSyncCondition();
+            if (Objects.nonNull(byId.getEnable())
+                    && Objects.nonNull(syncCondition)
+                    && EnableStatusEnum.ENABLE.getCode().equals(byId.getEnable())
+                    && StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
+                cycleRun(taskId);
             }
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
@@ -244,6 +257,27 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException("60000039");
         }
         return byId;
+    }
+
+    public void cycleRun(String taskId) {
+        checkTaskId(taskId);
+        SyncTaskEntity entity = syncTaskMapper.selectById(taskId);
+        if (entity != null && !TaskStatusEnum.ENABLE.getCode().equals(entity.getEnable())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.message);
+        }
+        if (ExecStatusEnum.EXEC.getCode().equals(entity.getExecStatus())) {//“执行中” 状态
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
+        }
+        String processDefinitionId = entity.getScheduleId();
+
+        entity = new SyncTaskEntity();
+        entity.setId(taskId);
+        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
+        updateById(entity);//执行中
+        BusinessResult<Boolean> result = schedulerFeign.execCycle(processDefinitionId);
+        if (!result.isSuccess()) {
+            throw new AppException("60000052");
+        }
     }
 
     /**
@@ -319,7 +353,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         channel.put("speed", speed);
         transport.put("channel", channel);
         core.put("transport", transport);
-        return transport;
+        return core;
     }
 
     private Map<String, Object> getDataxSetting(String taskParamJson) {
@@ -657,7 +691,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             info = new TaskDefineInfo();
             BeanCopyUtils.copyProperties(byId, info);
-            info.setEnable(byId.getTaskStatus());
+            info.setEnable(byId.getEnable());
             info.setTaskId(byId.getId());
             info.setTaskDescribe(byId.getTaskDescribe());
             info.setCreateMode(byId.getCreateMode());
@@ -673,7 +707,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String id = byId.getId();
             Integer version = byId.getVersion();
-            SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, version);
+            SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, null);
             if (Objects.nonNull(wideTable)) {
                 info = new TaskBuildInfo();
                 info.setDatasourceId(wideTable.getDatasourceId());

@@ -66,6 +66,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000049("60000049", "cron表达式参数为空"),
         RESOURCE_CODE_60000050("60000050", "数据表不存在,请检查"),
         RESOURCE_CODE_60000051("60000051", "请检查识别条件"),
+        RESOURCE_CODE_60000052("60000052", "任务执行失败"),
         ;
 
         public final String code;
