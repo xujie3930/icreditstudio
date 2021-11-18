@@ -260,7 +260,7 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  margin: 16px 24px;
+  // margin: 16px 24px;
   padding: 20px;
   background-color: #ffffff;
   display: flex;
@@ -302,6 +302,10 @@ export default {
     flex: 1;
     /*border: 1px solid red;*/
     padding-top: 85px;
+
+    .user_image {
+      text-align: center;
+    }
 
     .user_main_info {
       /*border: 1px solid green;*/
