@@ -248,9 +248,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
         for (TableSyncInfo tableSyncInfo : oldStructure) {
             if (newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
-                    !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList())))
+                    !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList()))) {
                 update++;
-            else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
+            }else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
                 del++;
                 delCloumns += tableSyncInfo.getColumnList().size();
             }
