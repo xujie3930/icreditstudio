@@ -235,7 +235,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         Date now = new Date();
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
         processDefine.setName(param.getOrdinaryParam().getName());
-        processDefine.setReleaseState(ReleaseState.OFFLINE);
+        processDefine.setReleaseState(param.getOrdinaryParam().getReleaseState());
         processDefine.setProjectCode(param.getOrdinaryParam().getProjectCode());
         processDefine.setUserId(param.getAccessUser().getId());
         processDefine.setProcessDefinitionJson(JSONObject.toJSONString(definitionJson));
@@ -252,6 +252,29 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setUpdateTime(now);
         processDefine.setFlag(Flag.YES);
         processDefinitionMapper.updateById(processDefine);
+
+        //如果是周期执行，则给流程创建scheduler
+        if (param.getSchedulerParam().getSchedulerType() == ScheduleType.PERIOD) {
+            CreateSchedulerParam createSchedulerParam = buildUpdateSchedulerParam(param, processDefine.getId());
+            schedulerService.createSchedule(createSchedulerParam);
+        }
         return BusinessResult.success(true);
+    }
+
+    private CreateSchedulerParam buildUpdateSchedulerParam(UpdatePlatformProcessDefinitionParam param, String processDefinitionId) {
+
+        Date startTime = new Date();
+        Date endTime = DateUtil.offset(startTime, DateField.YEAR, 10);
+        ScheduleParam scheduleParam = new ScheduleParam(startTime, endTime, CalendarUtil.calendar().getTimeZone().getID(), param.getSchedulerParam().getCron());
+        return CreateSchedulerParam.builder()
+                .accessUser(param.getAccessUser())
+                .processDefineId(processDefinitionId)
+                .schedule(scheduleParam)
+                .processInstancePriority(Priority.MEDIUM)
+                .projectCode(param.getOrdinaryParam().getProjectCode())
+                .failureStrategy(FailureStrategy.CONTINUE)
+                .warningType(WarningType.NONE)
+                .workerGroup("default")
+                .build();
     }
 }
