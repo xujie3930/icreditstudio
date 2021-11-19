@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DataSyncDispatchTaskPageResult;
+import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -19,4 +20,7 @@ public interface SyncTaskMapper extends BaseMapper<SyncTaskEntity> {
 
     List<DataSyncDispatchTaskPageResult> dispatchList(DataSyncDispatchTaskPageDTO dispatchPageDTO);
 
+    Boolean hasRunningTask(@Param("datasourceId") String datasourceId);
+
+    String getDatasourceId(@Param("taskId") String taskId);
 }

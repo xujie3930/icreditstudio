@@ -66,6 +66,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000050("60000050", "数据表不存在,请检查"),
         RESOURCE_CODE_60000051("60000051", "请检查识别条件"),
         RESOURCE_CODE_60000052("60000052", "任务执行失败"),
+        RESOURCE_CODE_60000053("60000053", "该数据源为禁用状态，禁止启用"),
         ;
 
         public final String code;

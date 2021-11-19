@@ -103,4 +103,23 @@
         ORDER BY last_update_time DESC
         limit #{pageNum},#{pageSize}
     </select>
+
+    <select id="hasRunningTask"  resultType="java.lang.Boolean">
+        select 1
+        from icredit_sync_task t
+        left join icredit_sync_widetable w
+        on t.id = w.sync_task_id
+        where w.datasource_id = #{datasourceId}
+        and t.task_status = '0'
+        limit 1
+    </select>
+
+    <select id="getDatasourceId"  resultType="java.lang.String">
+        select w.datasource_id
+        from icredit_sync_task t
+        left join icredit_sync_widetable w
+        on t.id = w.sync_task_id
+        where t.id = #{taskId}
+        limit 1
+    </select>
 </mapper>

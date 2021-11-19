@@ -3,14 +3,13 @@ package com.jinninghui.datasphere.icreditstudio.datasync.feign;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignDataSourcesRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DatasourceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DatasourceInfo;
+import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,4 +44,13 @@ public interface DatasourceFeign {
      */
     @GetMapping("/datasource/getDatasourceJdbcInfo")
     BusinessResult<MysqlReaderConfigParam> getDatasourceJdbcInfo(@RequestParam("id") String id);
+
+    /**
+     * 判断数据源状态
+     *
+     * @param id
+     * @return
+     */
+    @GetMapping("/datasource/info/{id}")
+    BusinessResult<DatasourceDetailResult> info(@PathVariable("id") String id);
 }

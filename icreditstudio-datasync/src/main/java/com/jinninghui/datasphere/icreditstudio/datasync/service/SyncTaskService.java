@@ -140,4 +140,8 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @return
      */
     String getProcessDefinitionIdById(String id);
+
+    Boolean hasRunningTask(String datasourceId);
+
+    String getDatasourceId(String taskId);
 }

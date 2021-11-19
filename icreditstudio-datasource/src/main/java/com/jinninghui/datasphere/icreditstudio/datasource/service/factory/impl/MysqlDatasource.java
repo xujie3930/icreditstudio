@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -23,7 +24,7 @@ public class MysqlDatasource implements DatasourceSync {
         String username = DatasourceSync.getUsername(uri);
         String password = DatasourceSync.getPassword(uri);
         Connection conn = DatasourceSync.getConn(type, uri, username, password);
-        if (!Objects.nonNull(conn)) {
+        if (Objects.isNull(conn)) {
             return map;
         }
         DatabaseMetaData metaData = conn.getMetaData();

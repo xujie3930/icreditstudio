@@ -57,6 +57,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.BeanUtils;
@@ -1058,5 +1059,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public String getProcessDefinitionIdById(String id) {
         SyncTaskEntity syncTask = syncTaskMapper.selectById(id);
         return syncTask == null ? null : syncTask.getScheduleId();
+    }
+
+    @Override
+    public Boolean hasRunningTask(String datasourceId) {
+        boolean hasRunning = BooleanUtils.isTrue(syncTaskMapper.hasRunningTask(datasourceId));
+        return hasRunning;
+    }
+
+    @Override
+    public String getDatasourceId(String taskId) {
+        return syncTaskMapper.getDatasourceId(taskId);
     }
 }

@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
+import com.jinninghui.datasphere.icreditstudio.datasource.feign.DatasyncFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.UserWorkspaceFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
@@ -86,6 +87,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     private UserWorkspaceFeignClient userWorkspaceFeignClient;
     @Autowired
     private IcreditDatasourceService icreditDatasourceService;
+    @Autowired
+    private DatasyncFeignClient datasyncFeignClient;
 
 
     @Override
@@ -104,6 +107,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
+        //删除数据源时候需要判断该数据源下是否有工作流
+        Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
+        if (hasRunningTask){
+            throw new AppException("70000012");
+        }
         if (DatasourceStatusEnum.ENABLE.getCode().equals(getById(param.getId()).getStatus())) {
             throw new AppException("70000009");
         }
