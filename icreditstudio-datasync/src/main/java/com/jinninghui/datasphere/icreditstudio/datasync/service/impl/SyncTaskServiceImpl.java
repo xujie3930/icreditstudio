@@ -100,7 +100,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
-
+        long start = System.currentTimeMillis();
         CronParam cronParam = param.getCronParam();
         if (Objects.nonNull(cronParam)) {
             String cron = cronParam.getCrons();
@@ -197,6 +197,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 cycleRun(taskId);
             }
         }
+        long end = System.currentTimeMillis();
+        log.info("=========================sync save执行时间============：" + (end - start) / 1000);
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
 
@@ -849,6 +851,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         String result = schedulerFeign.stopSyncTask(processDefinitionId);
         if ("true".equals(result)) {
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+            entity.setEnable(EnableStatusEnum.DISABLE.getCode());
             updateById(entity);
         }
         return BusinessResult.success(true);
