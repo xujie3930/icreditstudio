@@ -19,6 +19,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
+import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.cron.CronUtils;
@@ -49,6 +50,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     private ProcessInstanceMapper processInstanceMapper;
     @Resource
     private TaskInstanceMapper taskInstanceMapper;
+    @Resource
+    private ScheduleMapper scheduleMapper;
 
     @Override
     public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException {
@@ -265,8 +268,21 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
     public String stopSyncTask(String processDefinitionId) {
-        processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
-        schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
+        /*processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
+        schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);*/
+        ProcessDefinition processDefinition = processDefinitionMapper.selectById(processDefinitionId);
+        processDefinition.setReleaseState(ReleaseState.OFFLINE);
+        processDefinitionMapper.updateById(processDefinition);
+        List<Schedule> scheduleList = scheduleMapper.selectAllByProcessDefineArray(
+                new String[]{processDefinition.getId()}
+        );
+
+        for (Schedule schedule : scheduleList) {
+            // set status
+            schedule.setReleaseState(ReleaseState.OFFLINE);
+            scheduleMapper.updateById(schedule);
+            schedulerService.deleteSchedule("icredit", schedule.getId());
+        }
         //更新对应processDefinition表的updateTime
         processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
@@ -276,7 +292,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Transactional(rollbackFor = RuntimeException.class)
     public String deleteSyncTask(String processDefinitionId) {
         String result = processInstanceMapper.isRunningForSyncTask(processDefinitionId);
-        if(StringUtils.isNotEmpty(result)){//流程正在执行，不能删除
+        if (StringUtils.isNotEmpty(result)) {//流程正在执行，不能删除
             return "1";
         }
         taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
