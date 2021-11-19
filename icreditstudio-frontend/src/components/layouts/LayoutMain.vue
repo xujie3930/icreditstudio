@@ -78,7 +78,7 @@ export default {
 
   data() {
     return {
-      workspace: '工作空间',
+      workspace: '首页',
       curBreadcrumb: [],
       breadCrumbItems: []
     }
