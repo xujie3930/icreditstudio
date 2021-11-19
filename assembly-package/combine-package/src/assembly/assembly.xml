@@ -8,6 +8,43 @@
 
     <fileSets>
 
+        <!-- bin -->
+        <fileSet>
+            <directory>
+                ${project.basedir}/bin/
+            </directory>
+            <outputDirectory>bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+        <!-- sbin -->
+        <fileSet>
+            <directory>
+                ${project.basedir}/sbin/
+            </directory>
+            <outputDirectory>sbin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <fileMode>0777</fileMode>
+            <lineEnding>unix</lineEnding>
+        </fileSet>
+
+        <!-- db -->
+        <fileSet>
+            <directory>
+                ../../db/
+            </directory>
+            <outputDirectory>db</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
         <!-- backend service -->
         <fileSet>
             <directory>
