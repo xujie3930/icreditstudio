@@ -61,6 +61,13 @@
             </span>
           </template>
 
+          <!-- 是否启用 -->
+          <template #statusColumn="{row}">
+            <span :style="{ color: row.status ? '#ff4d4f' : '#52c41a' }">
+              {{ row.status ? '否' : '是' }}
+            </span>
+          </template>
+
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
             <div v-if="!row.status">

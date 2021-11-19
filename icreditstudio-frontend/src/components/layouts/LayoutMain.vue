@@ -107,17 +107,23 @@ export default {
   },
 
   // watch: {
-  //   '$route.path': {
+  //   $route: {
+  //     deep: true,
   //     immediate: true,
-  //     handler(nVal) {
-  //       console.log(nVal, 'val')
-  //       const rootMenu = Object.keys(rootMenuMapping)
-  //       console.log(rootMenu, 'kingMenu')
+  //     handler(route) {
+  //       console.log(route, 'val')
+  //       const canWatchMenu = Object.keys(rootMenuMapping)
+  //       // console.log(rootMenu, 'kingMenu')
+  //       // 设置需要watch的路由
+  //       if (canWatchMenu.includes(1)) {
+  //         console.log(1)
+  //       }
   //       // TODO
   //       // 设置当前菜单的当前激活菜单id
   //       // 设置二级菜单
   //       const menu = this.topModules.find(item => {
   //         console.log(item, 'item')
+  //         // item.redirectPath === rootMenuMapping[]
   //         return false
   //       })
   //       console.log(menu, 'menu')
