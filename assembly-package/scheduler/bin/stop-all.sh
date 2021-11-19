@@ -27,7 +27,7 @@ fi
 function stopApp(){
 echo "<-------------------------------->"
 echo "Begin to stop $SERVER_NAME"
-SERVER_BIN=${workDir}/scheduler/icreditstudio-${SERVER_NAME}/bin
+SERVER_BIN=${workDir}/icreditstudio-${SERVER_NAME}/bin
 SERVER_LOCAL_START_CMD="sh ${SERVER_BIN}/stop.sh"
 
 eval $SERVER_LOCAL_START_CMD
