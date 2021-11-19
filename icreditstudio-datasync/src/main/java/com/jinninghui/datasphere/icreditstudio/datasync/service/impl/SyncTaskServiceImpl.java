@@ -536,7 +536,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         String taskId = twoStepSave(param);
         TaskParamSaveParam saveParam = BeanCopyUtils.copyProperties(param, TaskParamSaveParam.class);
         saveParam.setTaskId(taskId);
-        saveParam.setSyncMode(SyncModeEnum.INC.getCode());
+        SyncCondition syncCondition = param.getSyncCondition();
+        if (Objects.nonNull(syncCondition)) {
+            if (StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
+                saveParam.setSyncMode(SyncModeEnum.INC.getCode());
+            } else {
+                saveParam.setSyncMode(SyncModeEnum.FULL.getCode());
+            }
+        }
         taskParamSave(saveParam);
         return taskId;
     }
