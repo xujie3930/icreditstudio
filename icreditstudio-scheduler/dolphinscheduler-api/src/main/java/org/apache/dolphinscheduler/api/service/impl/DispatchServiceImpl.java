@@ -58,19 +58,16 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> reStartOrStop(String processInstanceId, String taskId, String execType) {
+    public BusinessResult<Boolean> reStartOrStop(String processInstanceId, String execType) {
         // execType 执行类型 ：0 表示 重跑，1 表示 终止
         if(StringUtils.isEmpty(processInstanceId)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.message);
-        }
-        if(StringUtils.isEmpty(taskId)){
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000012.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000012.message);
         }
         if(StringUtils.isEmpty(execType)){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000005.message);
         }
         //processInstanceId , ExecuteType executeType
-        int execStatus = this.executeInstance(processInstanceId, taskId, execType);
+        int execStatus = this.executeInstance(processInstanceId, execType);
         if(execStatus == 0){
             return BusinessResult.success(true);
         }
@@ -83,7 +80,7 @@ public class DispatchServiceImpl implements DispatchService {
      * @param execType
      * @return  返回值为 0|1 ，0 表示成功 ，1 表示失败
      */
-    private int executeInstance(String instanceId, String taskInstanceId, String execType) {
+    private int executeInstance(String instanceId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
@@ -99,7 +96,6 @@ public class DispatchServiceImpl implements DispatchService {
             }
             handleProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
-//            taskInstanceMapper.deleteById(taskInstanceId);
         }
         return result;
     }
@@ -196,7 +192,6 @@ public class DispatchServiceImpl implements DispatchService {
             platformExecutorService.execSyncTask(definitionId);
             return BusinessResult.success(true);
         }
-//        String taskInstanceId = taskInstanceMapper.getLastTaskIdByProcessInstanceId(processInstance.getId());
         if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
@@ -204,7 +199,6 @@ public class DispatchServiceImpl implements DispatchService {
         handleProcessInstance(processInstance);
         int result = insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         if(0 == result){
-//            taskInstanceMapper.deleteById(taskInstanceId);
             return BusinessResult.success(true);
         }else{
             return BusinessResult.fail("","执行失败");

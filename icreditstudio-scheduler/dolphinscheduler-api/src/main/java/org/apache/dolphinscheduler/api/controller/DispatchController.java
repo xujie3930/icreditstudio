@@ -45,7 +45,7 @@ public class DispatchController {
      */
     @PostMapping("/execInstance")
     public BusinessResult<Boolean> reStartOrStop(@RequestBody ExecInstanceRequest request){
-        return dispatchService.reStartOrStop(request.getProcessInstanceId(), request.getTaskInstanceId(), request.getExecType());
+        return dispatchService.reStartOrStop(request.getProcessInstanceId(), request.getExecType());
     }
 
     /**
