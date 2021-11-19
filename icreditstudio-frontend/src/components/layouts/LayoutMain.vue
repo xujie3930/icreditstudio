@@ -66,7 +66,7 @@ import LayoutHeaderSidebar from './LayoutHeaderSiderbar'
 import LayoutMainSidebar from './LayoutMainSidebar'
 import LayoutMainFooter from './LayoutMainFooter'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-// import { rootMenuMapping } from '@/config/menu'
+// import { rootMenuMapping, secondMenuMapping } from '@/config/menu'
 import {
   SET_ACTIVE_MODULE_ID,
   SET_ACTIVE_MODULE_NAME
@@ -112,21 +112,24 @@ export default {
   //     immediate: true,
   //     handler(route) {
   //       console.log(route, 'val')
-  //       const canWatchMenu = Object.keys(rootMenuMapping)
-  //       // console.log(rootMenu, 'kingMenu')
+  //       const canWatchMenu = [
+  //         ...Object.keys(rootMenuMapping),
+  //         ...Object.keys(secondMenuMapping)
+  //       ]
+  //       console.log(canWatchMenu, 'kingMenu')
   //       // 设置需要watch的路由
-  //       if (canWatchMenu.includes(1)) {
+  //       if (canWatchMenu.includes(route.path)) {
   //         console.log(1)
+  //         // TODO
+  //         // 设置当前菜单的当前激活菜单id
+  //         // 设置二级菜单
+  //         const menu = this.topModules.find(item => {
+  //           console.log(item, 'item')
+  //           // item.redirectPath === rootMenuMapping[]
+  //           return false
+  //         })
+  //         console.log(menu, 'menu')
   //       }
-  //       // TODO
-  //       // 设置当前菜单的当前激活菜单id
-  //       // 设置二级菜单
-  //       const menu = this.topModules.find(item => {
-  //         console.log(item, 'item')
-  //         // item.redirectPath === rootMenuMapping[]
-  //         return false
-  //       })
-  //       console.log(menu, 'menu')
   //     }
   //   }
   // },
