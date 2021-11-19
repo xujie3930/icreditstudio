@@ -280,7 +280,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         for (Schedule schedule : scheduleList) {
             // set status
             schedule.setReleaseState(ReleaseState.OFFLINE);
-            scheduleMapper.updateById(schedule);
+//            scheduleMapper.updateById(schedule);
+            scheduleMapper.deleteById(schedule.getId());
             schedulerService.deleteSchedule("icredit", schedule.getId());
         }
         //更新对应processDefinition表的updateTime
