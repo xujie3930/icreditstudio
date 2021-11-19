@@ -709,6 +709,21 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    public BusinessResult<TaskDefineInfo> taskDetailInfo(DataSyncDetailParam param) {
+        SyncTaskEntity byId = getById(param.getTaskId());
+        TaskDefineInfo info = null;
+        if (Objects.nonNull(byId)) {
+            info = new TaskDefineInfo();
+            BeanCopyUtils.copyProperties(byId, info);
+            info.setEnable(byId.getTaskStatus());
+            info.setTaskId(byId.getId());
+            info.setTaskDescribe(byId.getTaskDescribe());
+            info.setCreateMode(byId.getCreateMode());
+        }
+        return BusinessResult.success(info);
+    }
+
+    @Override
     @BusinessParamsValidate
     public BusinessResult<TaskBuildInfo> taskBuildInfo(DataSyncDetailParam param) {
         SyncTaskEntity byId = getById(param.getTaskId());
