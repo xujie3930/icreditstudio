@@ -20,7 +20,7 @@
               size="mini"
               :loading="searchLoading"
               :remote-method="getFluzzyTableName"
-              @clear="tableNameOptions = []"
+              @clear="handleClearTableName"
               @change="handleChangeTableName"
             >
               <el-option
@@ -54,13 +54,15 @@
               highlight-current
               check-on-click-node
               class="tree"
+              ref="tree"
               node-key="idx"
               empty-text="暂无数据"
               :data="treeData"
               :props="{ label: 'name', children: 'content' }"
-              :current-node-key="curNodeKey"
+              :default-expanded-keys="defalutExpandKey"
               v-loading="treeLoading"
             >
+              <!-- :current-node-key="curNodeKey" -->
               <div
                 :id="node.id"
                 :draggable="node.level > 1 && opType !== 'edit'"
@@ -447,6 +449,7 @@ export default {
       radioBtnOption,
       tableConfiguration: tableConfiguration(this),
       treeData: [],
+      defalutExpandKey: [],
       zoningOptions: [],
       increFieldsOptions: [],
       tableNameOptions: [],
@@ -529,9 +532,22 @@ export default {
       }
     },
 
-    // TODO
+    handleClearTableName() {
+      this.tableNameOptions = []
+      this.defalutExpandKey = []
+      this.$refs.tree.setCurrentKey()
+    },
+
     handleChangeTableName(name) {
-      console.log(name)
+      console.log(name, this.treeData)
+      if (name) {
+        const allTreeNode = []
+        this.treeData.forEach(({ content }) => allTreeNode.push(...content))
+        const { idx } = allTreeNode.find(item => item.name === name)
+        console.log(allTreeNode, idx, 'node')
+        this.defalutExpandKey = [idx]
+        this.$refs.tree.setCurrentKey(idx)
+      }
     },
 
     handleIncrementFieldChange(value) {

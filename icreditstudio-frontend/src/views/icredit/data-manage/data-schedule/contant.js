@@ -93,7 +93,7 @@ export const scheduleTaskOptions = {
 
   xAxis: {
     type: 'category',
-    name: '2021',
+    // name: '2021',
     boundaryGap: false,
     data: [],
     axisLabel: {
