@@ -3,7 +3,13 @@
     <div class="home-left">
       <div class="home-left-gif">
         <div class="title">一站式大数据开发与治理平台</div>
-        <div class="img"><img src="../assets/home.gif" /></div>
+        <div class="img">
+          <img src="../assets/home.gif" />
+          <div>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
       </div>
       <div class="home-left-func">
         <div class="title">
@@ -96,13 +102,6 @@
           >
             <j-svg class="jsvg icon" name="home-book" />
             <span class="label">用户手册</span>
-            <!-- <a
-              href="../../static/intro.pdf"
-              class="label"
-              :download="filename"
-              target="_blank"
-              >用户手册</a
-            > -->
           </div>
         </div>
       </section>
@@ -147,7 +146,7 @@ export default {
         },
         {
           icon: 'menu-govern-black',
-          name: '数据治理',
+          name: '数据质检',
           path: '',
           isHover: false
         },
@@ -195,10 +194,10 @@ export default {
 
       // 工作台
       statiscticsData: [
-        { key: 'notRun', label: '未运行任务', value: '' },
-        { key: 'running', label: '正在执行', value: '' },
-        { key: 'failure', label: '运行失败', value: '' },
-        { key: 'success', label: '运行成功', value: '' }
+        { key: 'notRun', label: '未运行任务', value: 0 },
+        { key: 'running', label: '正在执行', value: 0 },
+        { key: 'failure', label: '运行失败', value: 0 },
+        { key: 'success', label: '运行成功', value: 0 }
       ]
     }
   },

@@ -1,4 +1,5 @@
 import LayoutMain from '@/components/layouts/LayoutMain'
+import { sm4Config } from '@/config/index'
 
 /**
  * @desc deepClone
@@ -380,9 +381,14 @@ export const uriSplit = (uri, dataSource) => {
 
   // 处理查询参数
   const newAfterStr = afterStr.replaceAll('|', '&')
+  console.log(newAfterStr, 'newAfterStr')
   newAfterStr.split('&').forEach(item => {
-    const [key, val] = item.split('=')
-    paramsObj[key] = val
+    if (item.includes('password=')) {
+      paramsObj.password = decrypt(item.split('password=')[1])
+    } else {
+      const [key, val] = item.split('=')
+      paramsObj[key] = val
+    }
   })
 
   // 处理uri类型以及IP以及端口号
@@ -428,4 +434,17 @@ export const unique = arr => {
 
     return flag
   })
+}
+
+const SM4 = require('gm-crypt').sm4
+// 解密
+export const encrypt = str => {
+  const sm4 = new SM4(sm4Config)
+  return sm4.encrypt(str)
+}
+// 解密
+export const decrypt = str => {
+  const sm4 = new SM4(sm4Config)
+  const plianStr = str ? sm4.decrypt(str) : null
+  return plianStr
 }

@@ -92,7 +92,6 @@ export async function theme(val) {
 
   styles.forEach(style => {
     const { innerText } = style
-    console.log(innerText, 'styles')
     if (typeof innerText !== 'string') return
     style.innerText = updateStyle(innerText, originalCluster, themeCluster)
   })
