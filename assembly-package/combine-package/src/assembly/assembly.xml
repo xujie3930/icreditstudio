@@ -34,6 +34,17 @@
             <lineEnding>unix</lineEnding>
         </fileSet>
 
+        <!-- db -->
+        <fileSet>
+            <directory>
+                ../../db/
+            </directory>
+            <outputDirectory>db</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
         <!-- backend service -->
         <fileSet>
             <directory>
