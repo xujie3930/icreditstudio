@@ -39,6 +39,9 @@ public class PlatformTaskOrdinaryParam {
         if (enable == null) {
             return ReleaseState.OFFLINE;
         }
-        return ReleaseState.getEnum(enable);
+        if (enable == 0) {
+            return ReleaseState.ONLINE;
+        }
+        return ReleaseState.OFFLINE;
     }
 }

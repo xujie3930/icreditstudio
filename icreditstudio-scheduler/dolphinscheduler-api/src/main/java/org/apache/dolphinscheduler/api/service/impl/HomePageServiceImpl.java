@@ -52,8 +52,10 @@ public class HomePageServiceImpl implements HomePageService {
     private static final String PRETASKCOUNT= SCHEDULER + "taskCount";
     private static final String PRERUNTIMERANK= SCHEDULER + "runtimeRank";
     private static final String PRERUNERRORRANK= SCHEDULER + "runErrorRank";
+    private static final String WORKBENCH= SCHEDULER + "workbench";
 
     private static final long FIVE_MINUTE_TIME = 5 * 60L;
+    private static final long ONE_HOUR_TIME = 60 * 60L;
 
     static List<TaskSituationResult> situationZeroList = new ArrayList<>();
     static final String[] units = new String[]{"B", "KB", "MB", "GB", "TB", "PB"};
@@ -68,7 +70,8 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Override
     public BusinessResult<TaskRoughResult> rough(SchedulerHomepageRequest request) {
-//        TaskRoughResult result = (TaskRoughResult) RedisUtils.get(PREROUGH + request.getWorkspaceId());
+//        String redisKey = PREROUGH + request.getWorkspaceId();
+//        TaskRoughResult result = (TaskRoughResult) RedisUtils.get(redisKey);
 //        if (null != result){
 //            return BusinessResult.success(result);
 //        }
@@ -90,7 +93,7 @@ public class HomePageServiceImpl implements HomePageService {
         Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), startTime, endTime);
         taskRoughResult.setNewlyDataSize(getDataSize(newlyDataSize));
         taskRoughResult.setUnit(getDataSizeUnit(newlyDataSize));
-//        RedisUtils.set(PREROUGH + request.getWorkspaceId(), taskRoughResult, ONE_DAY_TIME);
+//        RedisUtils.set(redisKey, taskRoughResult, ONE_DAY_TIME);
         return BusinessResult.success(taskRoughResult);
     }
 
@@ -112,7 +115,8 @@ public class HomePageServiceImpl implements HomePageService {
 
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String workspaceId) {
-//        List<TaskSituationResult> list = (List<TaskSituationResult>) RedisUtils.get(PRESITUATION + workspaceId);
+//        String redisKey = PRESITUATION + workspaceId;
+//        List<TaskSituationResult> list = (List<TaskSituationResult>) RedisUtils.get(redisKey);
 //        if (!CollectionUtils.isEmpty(list)){
 //            return BusinessResult.success(list);
 //        }
@@ -125,24 +129,26 @@ public class HomePageServiceImpl implements HomePageService {
         Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(),
                 ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
-//        RedisUtils.set(PRESITUATION + workspaceId,taskSituationResultList, FIVE_MINUTE_TIME);
+//        RedisUtils.set(redisKey,taskSituationResultList, FIVE_MINUTE_TIME);
         return BusinessResult.success(taskSituationResultList);
     }
 
     @Override
     public BusinessResult<List<TaskCountResult>> taskCount(SchedulerHomepageRequest request) {
-//        List<TaskCountResult> list = (List<TaskCountResult>) RedisUtils.get(PRETASKCOUNT + request.getWorkspaceId());
+//        String redisKey = PRETASKCOUNT + request.getWorkspaceId();
+//        List<TaskCountResult> list = (List<TaskCountResult>) RedisUtils.get(redisKey);
 //        if (!CollectionUtils.isEmpty(list)){
 //            return BusinessResult.success(list);
 //        }
         List<TaskCountResult> resultList = taskInstanceService.countByDay(request);
-//        RedisUtils.set(PRETASKCOUNT + request.getWorkspaceId(), resultList, ONE_DAY_TIME);
+//        RedisUtils.set(redisKey, resultList, ONE_DAY_TIME);
         return BusinessResult.success(resultList);
     }
 
     @Override
     public BusinessResult<List<RuntimeRankResult>> runtimeRank(SchedulerHomepageRequest request) {
-//        List<RuntimeRankResult> list = (List<RuntimeRankResult>) RedisUtils.get(PRERUNTIMERANK + request.getWorkspaceId());
+//        String redisKey = PRERUNTIMERANK + request.getWorkspaceId();
+//        List<RuntimeRankResult> list = (List<RuntimeRankResult>) RedisUtils.get(redisKey);
 //        if (!CollectionUtils.isEmpty(list)){
 //            return BusinessResult.success(list);
 //        }
@@ -157,13 +163,14 @@ public class HomePageServiceImpl implements HomePageService {
         }
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
-//        RedisUtils.set(PRERUNTIMERANK + request.getWorkspaceId(), runtimeRankResultList, ONE_DAY_TIME);
+//        RedisUtils.set(redisKey, runtimeRankResultList, ONE_DAY_TIME);
         return BusinessResult.success(runtimeRankResultList);
     }
 
     @Override
     public BusinessResult<List<RunErrorRankResult>> runErrorRank(SchedulerHomepageRequest request) {
-//        List<RunErrorRankResult> list = (List<RunErrorRankResult>) RedisUtils.get(PRERUNERRORRANK + request.getWorkspaceId());
+//        String redisKey = PRERUNERRORRANK + request.getWorkspaceId();
+//        List<RunErrorRankResult> list = (List<RunErrorRankResult>) RedisUtils.get(redisKey);
 //        if (!CollectionUtils.isEmpty(list)){
 //            return BusinessResult.success(list);
 //        }
@@ -180,8 +187,32 @@ public class HomePageServiceImpl implements HomePageService {
         runErrorRankList = runErrorRankList.parallelStream().filter(runErrorRank -> "0".equals(runErrorRank.getErrorNum())).sorted(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed()).collect(Collectors.toList());
         runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);
 
-//        RedisUtils.set(PRERUNERRORRANK + request.getWorkspaceId(), runErrorRankList, ONE_DAY_TIME);
+//        RedisUtils.set(redisKey, runErrorRankList, ONE_DAY_TIME);
         return BusinessResult.success(runErrorRankList);
+    }
+
+    @Override
+    public WorkBenchResult workbench(String userId, String id) {
+//        String redisKey = WORKBENCH + userId + id;
+//        WorkBenchResult redisCache = (WorkBenchResult) RedisUtils.get(redisKey);
+//        if (null != redisCache){
+//            return redisCache;
+//        }
+        WorkBenchResult result = new WorkBenchResult();
+        List<Map<String, Object>> list = taskInstanceService.selectByWorkspaceIdAndUserId(userId, id);
+        //正在执行
+        Map<Integer, Long> state = list.stream().collect(
+                Collectors.groupingBy(org -> (int)org.get("state"), Collectors.counting()));
+        Long success = state.get(ExecutionStatus.SUCCESS.getCode()) == null? 0L : state.get(ExecutionStatus.SUCCESS.getCode());
+        result.setSuccess(success);
+        Long failure = state.get(ExecutionStatus.FAILURE.getCode()) == null? 0L: state.get(ExecutionStatus.FAILURE.getCode());
+        result.setFailure(failure);
+        Long running = state.get(ExecutionStatus.RUNNING_EXECUTION.getCode()) == null? 0L : state.get(ExecutionStatus.RUNNING_EXECUTION.getCode());
+        result.setRunning(running);
+        Long notRun = list.size() - success - failure - running;
+        result.setNotRun(notRun);
+//        RedisUtils.set(redisKey, result, ONE_HOUR_TIME);
+        return result;
     }
 
     private List<TaskSituationResult> getTaskSituationList(Long...args) {

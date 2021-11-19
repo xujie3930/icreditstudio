@@ -39,18 +39,21 @@ public class HDFSUtils {
         String storePath = "/datasource/" + destPath + ".txt";
         OutputStream os = fs.create(new Path(storePath));
         IOUtils.copyBytes(fis, os, 4096, true);
+        os.close();
         return storePath;
     }
 
     public static String getStringFromHDFS(String destPath) throws Exception{
 
-        StringBuffer stringBuffer = new StringBuffer();;
+        StringBuffer stringBuffer = new StringBuffer();
         FSDataInputStream in =fs.open(new Path(destPath));
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
         String lineTxt ;
         while ((lineTxt = bufferedReader.readLine()) != null) {
             stringBuffer.append(lineTxt);
         }
+        bufferedReader.close();
+        in.close();
         return stringBuffer.toString();
     }
 
@@ -67,7 +70,6 @@ public class HDFSUtils {
         System.out.println(stringFromHDFS.length());
         System.out.println(stringFromHDFS);*/
         delFileFromHDFS("/datasource/891684917153370112.txt");
-        String stringFromHDFS = getStringFromHDFS("/datasource/891684917153370112.txt");
     }
 
 }

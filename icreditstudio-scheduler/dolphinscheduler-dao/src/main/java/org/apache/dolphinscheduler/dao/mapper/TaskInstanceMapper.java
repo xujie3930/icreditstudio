@@ -92,5 +92,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     long countTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("taskStatus") Integer taskStatus,
                                         @Param("execTimeStart") Date execTimeStart, @Param("execTimeEnd") Date execTimeEnd);
 
+    List<Map<String, Object>> selectByWorkspaceIdAndUserId(@Param("userId")String userId, @Param("id")String id);
+
     String getLastTaskIdByProcessInstanceId(@Param("processInstanceId") String processInstanceId);
 }

@@ -31,7 +31,7 @@ const dataScheduleSyncList = params =>
 
 // 同步任务调度-重跑或终止
 const dataScheduleSyncOperate = params =>
-  getAction('/dolphinscheduler/dispatch/execInstance', params)
+  postAction('/dolphinscheduler/dispatch/execInstance', params)
 
 // 同步任务调度-历史日志
 const dataScheduleSyncHistoryLog = params =>

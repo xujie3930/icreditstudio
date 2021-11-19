@@ -14,6 +14,7 @@
             class="func-wrap-item"
             v-for="item in funcConfigs"
             :key="item.name"
+            @click="handleFuncClick(item)"
           >
             <j-svg class="jsvg" :name="item.icon" />
             <span class="text">{{ item.name }}</span>
@@ -24,138 +25,286 @@
 
     <aside class="home-right">
       <header class="home-right-user">
-        <h3 class="user">大聪明</h3>
-        <div class="user-admin">
-          <j-svg class="jsvg" name="menu-datasource" />
+        <h3 class="user">{{ userInfo.userName }}</h3>
+        <div class="user-admin" v-if="workspaceCreateAuth">
+          <j-svg class="jsvg" name="home-diamond" />
           <span class="text">超级管理员</span>
         </div>
       </header>
 
+      <!-- 工作台 -->
       <section class="home-right-section">
         <div class="title-wrap">
           <span class="left">工作台</span>
           <div class="right">
-            <i class="el-icon-refresh icon"></i>
-            <span class="text">455分钟</span>
+            <i class="el-icon-refresh icon" @click="getStatisticsData"></i>
+            <span class="text" v-show="refreshTime >= 0"
+              >{{ refreshTime }}分钟前</span
+            >
           </div>
         </div>
 
-        <div class="container">
-          <div class="container-item">
+        <div class="container" v-loading="dataLoading">
+          <div
+            class="container-item"
+            v-for="item in statiscticsData"
+            :key="item.key"
+          >
             <div class="count-wrap">
-              <span class="count">25</span>
+              <span class="count">{{ item.value }}</span>
               <span class="unit">个</span>
             </div>
-            <div class="label">未运行任务</div>
-          </div>
-          <div class="container-item">
-            <div class="count-wrap">
-              <span class="count">25</span>
-              <span class="unit">个</span>
-            </div>
-            <div class="label">正在执行</div>
-          </div>
-          <div class="container-item">
-            <div class="count-wrap">
-              <span class="count">25</span>
-              <span class="unit">个</span>
-            </div>
-            <div class="label">运行失败</div>
-          </div>
-          <div class="container-item">
-            <div class="count-wrap">
-              <span class="count">25</span>
-              <span class="unit">个</span>
-            </div>
-            <div class="label">运行成功</div>
+            <div class="label">{{ item.label }}</div>
           </div>
         </div>
 
         <el-divider class="divider"></el-divider>
       </section>
 
+      <!-- 菜单 -->
       <section class="home-right-section">
         <div class="title-wrap">
           <span class="left">菜单</span>
         </div>
 
         <div class="container">
-          <div class="container-item container-row">
-            <i class="el-icon-user-solid icon"></i>
-            <span class="label">个人中心</span>
-          </div>
-          <div class="container-item container-row">
-            <i class="el-icon-s-tools icon"></i>
-            <span class="label">个性化设置</span>
-          </div>
-          <div class="container-item container-row">
-            <i class="el-icon-lock icon"></i>
-            <span class="label">修改密码</span>
-          </div>
-          <div class="container-item container-row">
-            <i class="el-icon-s-promotion icon"></i>
-            <span class="label">退出登录</span>
+          <div
+            class="container-item container-row"
+            v-for="item in menuConfigs"
+            :key="item.iconName"
+            @click="handleJumpClick(item.path)"
+          >
+            <j-svg class="jsvg icon" :name="item.iconName" />
+            <span class="label">{{ item.label }}</span>
           </div>
         </div>
 
         <el-divider class="divider"></el-divider>
       </section>
 
+      <!-- 实践教程 -->
       <section class="home-right-section">
         <div class="title-wrap">
           <span class="left">实践教程</span>
         </div>
 
         <div class="container">
-          <div class="container-item container-row">
-            <i class="el-icon-collection icon"></i>
+          <div
+            class="container-item container-row"
+            v-loading="downloadLoading"
+            @click="handleDownload"
+          >
+            <j-svg class="jsvg icon" name="home-book" />
             <span class="label">用户手册</span>
+            <!-- <a
+              href="../../static/intro.pdf"
+              class="label"
+              :download="filename"
+              target="_blank"
+              >用户手册</a
+            > -->
           </div>
         </div>
-
-        <!-- <el-divider class="divider"></el-divider> -->
       </section>
     </aside>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex'
+import workspace from '@/mixins/workspace'
+import API from '@/api/icredit'
+import { deepClone } from '@/utils/util'
+
 export default {
   name: 'Home',
 
+  mixins: [workspace],
+
   data() {
     return {
+      lastRefreshTime: null,
+      curRefreshTime: null,
+      dataLoading: false,
+      downloadLoading: false,
+      filename: '一站式大数据开发与治理平台（iCredit）用户手册V0.0.1版本.pdf',
+
       // 功能演示
       funcConfigs: [
         {
-          icon: 'menu-space-active',
-          name: '工作空间'
+          icon: 'menu-workspace-setting-black',
+          iconActive: 'menu-space-active',
+          name: '工作空间',
+          path: '/workspace/space-setting',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: '数据管理'
+          icon: 'menu-data-manage-black',
+          iconActive: 'menu-data-active',
+          name: '数据管理',
+          path: '/workspace/datasource',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: '数据治理'
+          icon: 'menu-govern-black',
+          name: '数据治理',
+          path: '',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: '资产管理'
+          icon: 'menu-assets-manage-black',
+          name: '资产管理',
+          path: '',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: 'BI可视化'
+          icon: 'menu-bi-black',
+          name: 'BI可视化',
+          path: '',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: '数据服务'
+          icon: 'menu-data-service-black',
+          name: '数据服务',
+          path: '',
+          isHover: false
         },
         {
-          icon: 'menu-space-active',
-          name: '运维&安全'
+          icon: 'menu-depovs-black',
+          name: '运维&安全',
+          path: '',
+          isHover: false
         }
+      ],
+
+      // 菜单
+      menuConfigs: [
+        { path: '/manage/userinfo', iconName: 'home-user', label: '个人中心' },
+        {
+          path: '/manage/personalized',
+          iconName: 'home-setting',
+          label: '个性化设置'
+        },
+        {
+          path: '/manage/changepassword',
+          iconName: 'home-lock',
+          label: '修改密码'
+        },
+        { path: '/login', iconName: 'home-exit', label: '退出登录' }
+      ],
+
+      // 工作台
+      statiscticsData: [
+        { key: 'notRun', label: '未运行任务', value: '' },
+        { key: 'running', label: '正在执行', value: '' },
+        { key: 'failure', label: '运行失败', value: '' },
+        { key: 'success', label: '运行成功', value: '' }
       ]
+    }
+  },
+
+  computed: {
+    ...mapGetters('user', ['userInfo', 'workspaceCreateAuth']),
+    refreshTime() {
+      const min = (this.curRefreshTime - this.lastRefreshTime) / 60000
+      return Math.floor(min)
+    }
+  },
+
+  watch: {
+    refreshTime(nVal) {
+      // 工作台的显示数据，默认一个小时更新一次
+      if (nVal >= 60) {
+        this.getStatisticsData()
+      }
+    }
+  },
+
+  created() {
+    this.getStatisticsData()
+    this.updateRefreshTime()
+  },
+
+  methods: {
+    ...mapActions('user', ['logoutAction']),
+
+    mixinChangeWorkspaceId() {
+      this.getStatisticsData()
+    },
+
+    handleJumpClick(path) {
+      if (path === '/login') {
+        this.$confirm('是否退出登录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.logoutAction()
+            .then(() => {
+              this.$router.replace('/login')
+            })
+            .catch(() => {})
+        })
+      } else {
+        this.$router.push(path)
+      }
+    },
+
+    handleFuncClick(item) {
+      const { path } = item
+      if (path) {
+        this.$router.push(path)
+      } else {
+        this.$message.info('该模块功能暂未上线， 敬请期待！')
+      }
+    },
+
+    handleDownload() {
+      this.downloadLoading = true
+      const filename =
+        '一站式大数据开发与治理平台（iCredit）用户手册V0.0.1版本.pdf'
+      const url = '../../static/intro.pdf'
+      const link = document.createElement('a')
+      link.href = url
+      link.download = filename
+      link.target = '_blank'
+      document.body.appendChild(link)
+      // link.click()
+      window.open(link.href)
+      document.body.removeChild(link)
+
+      setTimeout(() => {
+        this.downloadLoading = false
+      }, 500)
+    },
+
+    updateRefreshTime() {
+      this.timerId = setInterval(() => {
+        this.curRefreshTime = new Date().getTime()
+      }, 1000)
+    },
+
+    // 获取工作台统计信息
+    getStatisticsData() {
+      this.dataLoading = true
+      this.lastRefreshTime = new Date().getTime()
+      API.getHomeSpaceInfo({ id: this.workspaceId })
+        .then(({ success, data }) => {
+          if (success) {
+            this.statiscticsData = deepClone(this.statiscticsData).map(
+              ({ key, label }) => {
+                return {
+                  key,
+                  label,
+                  value: data[key]
+                }
+              }
+            )
+          }
+        })
+        .finally(() => {
+          this.dataLoading = false
+        })
     }
   }
 }
@@ -242,12 +391,14 @@ export default {
           margin-right: 20px;
 
           .jsvg {
-            width: 20px;
-            height: 20px;
+            width: 34px;
+            height: 34px;
           }
 
           .text {
-            margin-left: 10px;
+            margin-left: 5px;
+            height: 34px;
+            line-height: 34px;
           }
 
           &:hover {

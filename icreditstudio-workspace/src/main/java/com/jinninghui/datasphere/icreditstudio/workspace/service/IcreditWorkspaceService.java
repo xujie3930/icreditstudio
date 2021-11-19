@@ -7,6 +7,7 @@ import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWo
 import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWorkspaceUpdateParam;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.WorkspaceHasExistRequest;
+import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkBenchResult;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkspaceDetailResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -32,4 +33,6 @@ public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity
     WorkspaceDetailResult getDetailById(String id);
 
     BusinessResult<Boolean> updateWorkSpaceAndMember(IcreditWorkspaceUpdateParam param);
+
+    WorkBenchResult workbench(String userId, String id);
 }

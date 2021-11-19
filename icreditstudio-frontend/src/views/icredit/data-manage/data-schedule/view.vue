@@ -158,8 +158,8 @@ export default {
     },
 
     // 重跑
-    handleReRuningTask({ processInstanceId }) {
-      const params = { processInstanceId, execType: 0 }
+    handleReRuningTask({ processInstanceId, taskInstanceId }) {
+      const params = { processInstanceId, taskInstanceId, execType: 0 }
       API.dataScheduleSyncOperate(params).then(({ success, data }) => {
         if (success && data) {
           this.$message.success({
@@ -189,7 +189,8 @@ export default {
 
     // 终止操作弹窗提示回调
     handleMessageCallback(type, row) {
-      const params = { processInstanceId: row.processInstanceId, execType: 1 }
+      const { taskInstanceId, processInstanceId } = row
+      const params = { processInstanceId, taskInstanceId, execType: 1 }
       API.dataScheduleSyncOperate(params)
         .then(({ success }) => {
           if (success) {

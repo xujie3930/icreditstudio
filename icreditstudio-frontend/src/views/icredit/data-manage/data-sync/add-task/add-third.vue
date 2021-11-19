@@ -31,10 +31,12 @@
             v-model="taskForm.maxThread"
             placeholder="请选择最大并发数"
           >
-            <el-option label="2" :value="2"></el-option>
-            <el-option label="3" :value="3"></el-option>
-            <el-option label="4" :value="4"></el-option>
-            <el-option label="5" :value="5"></el-option>
+            <el-option
+              :label="item + 1"
+              :value="item + 1"
+              :key="item"
+              v-for="item in 4"
+            />
           </el-select>
         </el-form-item>
 
@@ -118,7 +120,6 @@
 
 <script>
 import HeaderStepBar from './header-step-bar'
-// import CronSelect from '@/views/icredit/components/cron-select'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { deepClone } from '@/utils/util'
@@ -139,11 +140,17 @@ export default {
       detailLoading: false,
       settingBtnLoading: false,
       publishLoading: false,
-      selectCron: {},
+      selectCron: {
+        month: undefined,
+        day: undefined,
+        hour: undefined,
+        minute: undefined,
+        second: undefined
+      },
 
       taskForm: {
         maxThread: 2,
-        limitRate: undefined,
+        limitRate: 0,
         syncRate: 1,
         scheduleType: 1,
         cron: '',
@@ -197,24 +204,21 @@ export default {
       this.taskForm.taskId && this.getDetailData()
     },
 
-    // 打开选择CRON表达式的弹窗
-    handleOpenCron() {
-      this.$refs.cron.open()
-    },
-
     // 渲染周期同步任务下拉框的值
-    handleRenderCron() {
+    handleRenderCron(cronParam) {
+      console.log(cronParam)
       const { taskId } = this.taskForm
-      const { moment, type } = this.taskForm.cronParam
+      const { moment, type } = cronParam
+
       if (taskId && type && moment.length) {
-        console.log(1111, taskId, type, moment)
+        this.taskForm.cronParam.type = type
+        this.taskForm.cronParam.moment = moment
         moment.forEach(item => {
-          for (const [key, value] of item) {
+          for (const [key, value] of Object.entries(item)) {
             this.selectCron[key] = value
           }
         })
       } else {
-        console.log(2222)
         this.selectCron = this.$ls.get('selectCron') || {}
         this.taskForm.cronParam.type = this.$ls.get('cronType')
       }
@@ -222,66 +226,14 @@ export default {
 
     // 同步任务周期类型更改
     handleChangeType(type) {
-      const month = undefined
-      const day = undefined
-      const hour = undefined
-      const minute = undefined
-      const second = undefined
-
       this.taskForm.cronParam.type = type
-      this.taskForm.cronParam.moment = []
-
-      switch (type) {
-        case 'year':
-          this.selectCron = { month, day, hour, minute, second }
-          break
-
-        case 'month':
-          this.selectCron = { day, hour, minute, second }
-          break
-
-        case 'day':
-          this.selectCron = { hour, minute, second }
-          break
-
-        case 'hour':
-          this.selectCron = { minute, second }
-          break
-
-        default:
-          this.selectCron = {}
-          break
-      }
     },
 
     // 时、分、秒、天、月下拉框值更改
     handleChangeCron(cron) {
       const moment = []
-      let newCron = {}
-      const { day, hour, minute, second } = cron
-      switch (this.selectValue) {
-        case 'year':
-          newCron = cron
-          break
-
-        case 'month':
-          newCron = { day, hour, minute, second }
-          break
-
-        case 'day':
-          newCron = { hour, minute, second }
-          break
-
-        case 'hour':
-          newCron = { minute, second }
-          break
-
-        default:
-          newCron = cron
-          break
-      }
-
-      for (const [key, value] of Object.entries(newCron)) {
+      this.selectCron = cron
+      for (const [key, value] of Object.entries(cron)) {
         if (value !== undefined && value !== null) {
           moment.push({ [key]: value })
         }
@@ -301,12 +253,14 @@ export default {
 
     // 周期同步任务Cron字段校验
     handleVerifyCronField() {
-      const { type } = this.taskForm.cronParam
-      const { selectcronForm } = this.$refs.selectDate.$refs
+      const { scheduleType, cronParam } = this.taskForm
+      const { type } = cronParam
       const verifyFieldArr = Object.keys(this.selectCron)
       const msgArr = []
 
+      if (scheduleType) return true
       if (type) {
+        const { selectcronForm } = this.$refs.selectDate.$refs
         selectcronForm.validateField(verifyFieldArr, msg => {
           Boolean(msg) && msgArr.push(msg)
         })
@@ -314,13 +268,36 @@ export default {
       return !msgArr.length
     },
 
+    handleSaveParam() {
+      const { type } = this.taskForm.cronParam
+      const {
+        month: mon,
+        day: d,
+        hour: h,
+        minute: min,
+        second: sec
+      } = this.selectCron
+      const hour = [{ minute: min }, { second: sec }]
+      const day = [{ hour: h }, ...hour]
+      const month = [{ day: d }, ...day]
+      const year = [{ month: mon }, ...month]
+      const momentMapping = { hour, day, month, year }
+
+      return {
+        type,
+        moment: momentMapping[type]
+      }
+    },
+
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
+      const { cronParam, callStep: s, ...restForm } = this.taskForm
       const params = {
+        ...restForm,
+        callStep,
         workspaceId: this.workspaceId,
-        ...this.taskForm
+        cronParam: this.handleSaveParam()
       }
-      params.callStep = callStep
       this.$refs.taskForm.validate(valid => {
         if (valid && this.handleVerifyCronField()) {
           this[loading] = true
@@ -355,13 +332,14 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             for (const [key, value] of Object.entries(data)) {
-              this.taskForm[key] = value
+              key === 'cronParam'
+                ? this.handleRenderCron(value)
+                : (this.taskForm[key] = value)
             }
           }
         })
         .finally(() => {
           this.detailLoading = false
-          this.handleRenderCron()
         })
     }
   }

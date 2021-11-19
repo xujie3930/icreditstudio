@@ -140,7 +140,7 @@ export default {
 
 <style lang="scss">
 .container {
-  margin: 16px 24px;
+  // margin: 16px 24px;
   padding: 20px;
   background-color: #ffffff;
   .center-ruleForm {

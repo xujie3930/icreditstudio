@@ -4,13 +4,20 @@
  * @Date: 2021-08-25
  */
 import API from '@/api/icredit'
+import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
     return { detailLoading: false }
   },
 
+  computed: {
+    ...mapState('user', ['workspaceId'])
+  },
+
   methods: {
+    ...mapActions('user', ['getPermissionListAction', 'setWorkspaceId']),
+
     // 删除操作
     handleDeleteClick(methodName, params, dialogName) {
       API[methodName](params)
@@ -21,6 +28,9 @@ export default {
               title: '操作结果',
               message: '删除成功！'
             })
+            this.$ls.remove('workspaceId')
+            this.setWorkspaceId('0')
+            this.getPermissionListAction()
             this.mixinRetrieveTableData()
           }
         })

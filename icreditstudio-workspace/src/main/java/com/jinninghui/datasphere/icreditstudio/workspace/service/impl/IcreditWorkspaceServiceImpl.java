@@ -15,6 +15,7 @@ import com.jinninghui.datasphere.icreditstudio.workspace.common.enums.WorkspaceS
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.DatasourceFeignClient;
+import com.jinninghui.datasphere.icreditstudio.workspace.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.SystemFeignClient;
 import com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreditstudio.workspace.service.IcreditWorkspaceService;
@@ -25,6 +26,7 @@ import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWo
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.IcreditWorkspaceEntityPageRequest;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.WorkspaceHasExistRequest;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.request.WorkspaceMember;
+import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkBenchResult;
 import com.jinninghui.datasphere.icreditstudio.workspace.web.result.WorkspaceDetailResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -60,6 +62,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     private SystemFeignClient systemFeignClient;
     @Autowired
     private DatasourceFeignClient datasourceFeignClient;
+    @Autowired
+    private SchedulerFeign schedulerFeign;
     private static final String DEFAULT_WORKSPACEID = "0";
 
     @Override
@@ -203,5 +207,10 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             workspaceUserService.save(newMember);
         }
         return BusinessResult.success(true);
+    }
+
+    @Override
+    public WorkBenchResult workbench(String userId, String id) {
+        return schedulerFeign.workbench(userId, id);
     }
 }

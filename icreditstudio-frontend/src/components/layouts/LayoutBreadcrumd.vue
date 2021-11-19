@@ -35,7 +35,18 @@ export default {
   data() {
     return {
       // 需要返回的页面
-      canBackPages
+      canBackPages,
+      backPathMapping: {
+        '/data-manage/data-schedule/dag': '/data-shcedule/cycle-task',
+        '/workspace/data-model/add': '/workspace/data-model',
+        '/data-quality/rule-category/add-rules':
+          '/data-quality/rule-category/quality-rules'
+      },
+      backHome: [
+        '/manage/userinfo',
+        '/manage/personalized',
+        '/manage/changepassword'
+      ]
     }
   },
 
@@ -73,6 +84,8 @@ export default {
         this.$router.replace('/workspace/data-model')
       } else if (path === '/data-quality/rule-category/add-rules') {
         this.$router.replace('/data-quality/rule-category/quality-rules')
+      } else if (this.backHome.includes(path)) {
+        this.$router.replace('/home')
       } else {
         this.$ls.remove('taskForm')
         this.$ls.remove('selectedTable')

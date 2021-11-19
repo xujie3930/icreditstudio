@@ -8,6 +8,7 @@
 
     <fileSets>
 
+        <!-- backend service -->
         <fileSet>
             <directory>
                 ${project.parent.basedir}/backend-microservices/target/jnh-datasphere-icreditstudio-services-${project.version}-bin
@@ -18,11 +19,23 @@
             </includes>
         </fileSet>
 
+        <!-- scheduler -->
         <fileSet>
             <directory>
                 ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin
             </directory>
             <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <!-- frontend -->
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/frontend/target/jnh-datasphere-icreditstudio-frontend-${project.version}-bin
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-frontend-bin</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>

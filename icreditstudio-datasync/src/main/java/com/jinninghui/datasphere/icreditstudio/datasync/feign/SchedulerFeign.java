@@ -26,6 +26,16 @@ public interface SchedulerFeign {
     @PostMapping(value = "/dolphinscheduler/platform/task/create")
     BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
 
+
+    /**
+     * 周期执行
+     *
+     * @param processDefinitionId
+     * @return
+     */
+    @GetMapping("/dolphinscheduler/platform/exec/execCycle")
+    BusinessResult<Boolean> execCycle(@RequestParam("processDefinitionId") String processDefinitionId);
+
     /**
      * 执行任务
      *
@@ -62,9 +72,9 @@ public interface SchedulerFeign {
     @PostMapping("/dolphinscheduler/platform/task/update")
     BusinessResult<Boolean> update(@RequestBody FeignUpdatePlatformProcessDefinitionRequest request);
 
-    @GetMapping(value = "/dolphinscheduler/platform/exec/enableSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
+    @GetMapping(value = "/dolphinscheduler/platform/exec/enableSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     String enableSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 
-    @GetMapping(value = "/dolphinscheduler/platform/exec/ceaseSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
+    @GetMapping(value = "/dolphinscheduler/platform/exec/ceaseSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     String ceaseSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 }

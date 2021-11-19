@@ -22,6 +22,13 @@ public interface PlatformExecutorService {
     BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException;
 
     /**
+     * 上线周期任务
+     * @param processDefinitionId
+     * @return
+     */
+    BusinessResult<Boolean> execCycle(String processDefinitionId);
+
+    /**
      * check whether the process definition can be executed
      *
      * @param processDefinition process definition

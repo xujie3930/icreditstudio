@@ -24,11 +24,15 @@ const verifyWorkspaceName = params => postAction('/workspace/hasExist', params)
 const getUserFluzzyQuery = params =>
   postAction('/system/user/user/queryUserRoleByLikeName', params)
 
+// 首页工作台统计情况
+const getHomeSpaceInfo = params => postAction('/workspace/workbench', params)
+
 export default {
   workspaceAdd,
   workspaceDelete,
   workspaceUpdate,
   workspaceDetail,
   verifyWorkspaceName,
-  getUserFluzzyQuery
+  getUserFluzzyQuery,
+  getHomeSpaceInfo
 }

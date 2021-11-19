@@ -27,8 +27,8 @@
 
         <el-form-item label="任务启用" prop="enable">
           <el-radio-group v-model="taskForm.enable">
-            <el-radio :label="1">是</el-radio>
-            <el-radio :label="0">否</el-radio>
+            <el-radio :label="0">是</el-radio>
+            <el-radio :label="1">否</el-radio>
           </el-radio-group>
         </el-form-item>
 

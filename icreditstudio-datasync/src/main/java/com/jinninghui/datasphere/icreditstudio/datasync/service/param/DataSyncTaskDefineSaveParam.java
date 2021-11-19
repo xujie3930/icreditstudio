@@ -27,7 +27,7 @@ public class DataSyncTaskDefineSaveParam {
     @NotBlank(message = "60000009")
     private String taskName;
     /**
-     * 【0：未启用，1：启用】
+     * 【0：启用，1：未启用】
      */
     @Range(max = 1, message = "")
     @NotNull(message = "60000010")

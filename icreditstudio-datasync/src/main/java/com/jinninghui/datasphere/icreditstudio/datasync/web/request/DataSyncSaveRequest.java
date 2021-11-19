@@ -31,10 +31,10 @@ public class  DataSyncSaveRequest {
      * 任务名称
      */
     @NotBlank(message = "60000009")
-    @Length(max = 15, message = "60000022")
+    @Length(max = 50, message = "60000022")
     private String taskName;
     /**
-     * 【0：未启用，1：启用】
+     * 【0：启用，1：停用】
      */
     @Range(max = 1, message = "")
     @NotNull(message = "60000010")
