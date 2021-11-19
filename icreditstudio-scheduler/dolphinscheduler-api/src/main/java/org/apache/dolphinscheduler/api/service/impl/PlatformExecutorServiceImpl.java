@@ -267,6 +267,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     public String stopSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.OFFLINE.getCode());//定义下线
         schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
+        //更新对应processDefinition表的updateTime
+        processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
     }
 
@@ -274,7 +276,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Transactional(rollbackFor = RuntimeException.class)
     public String deleteSyncTask(String processDefinitionId) {
         String result = processInstanceMapper.isRunningForSyncTask(processDefinitionId);
-        if (StringUtils.isNotEmpty(result)) {//流程正在执行，不能删除
+        if(StringUtils.isNotEmpty(result)){//流程正在执行，不能删除
             return "1";
         }
         taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
@@ -288,12 +290,16 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     public String enableSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.ONLINE.getCode());
         schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
+        //更新对应processDefinition表的updateTime
+        processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
     }
 
     @Override
     public String ceaseSyncTask(String processDefinitionId) {
         schedulerService.setScheduleState(processDefinitionId, ReleaseState.OFFLINE);
+        //更新对应processDefinition表的updateTime
+        processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
     }
 }
