@@ -108,15 +108,15 @@
         </fileSet>
 
         <!-- frontend -->
-        <fileSet>
-            <directory>
-                ${project.parent.basedir}/frontend/target/jnh-datasphere-icreditstudio-frontend-${project.version}-bin
-            </directory>
-            <outputDirectory>jnh-datasphere-icreditstudio-frontend-bin</outputDirectory>
-            <includes>
-                <include>**/*</include>
-            </includes>
-        </fileSet>
+<!--        <fileSet>-->
+<!--            <directory>-->
+<!--                ${project.parent.basedir}/frontend/target/jnh-datasphere-icreditstudio-frontend-${project.version}-bin-->
+<!--            </directory>-->
+<!--            <outputDirectory>jnh-datasphere-icreditstudio-frontend-bin</outputDirectory>-->
+<!--            <includes>-->
+<!--                <include>**/*</include>-->
+<!--            </includes>-->
+<!--        </fileSet>-->
 
     </fileSets>
 

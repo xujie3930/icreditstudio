@@ -53,7 +53,7 @@ export default {
       formatter: ({ uri }) => uri.split('?')[0]
     },
     {
-      type: 'text',
+      type: 'slot',
       label: '是否启用',
       prop: 'status',
       width: 80,

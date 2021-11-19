@@ -146,7 +146,7 @@
 
     <modules>
         <module>icreditstudio-datasync</module>
-        <module>icreditstudio-frontend</module>
+<!--        <module>icreditstudio-frontend</module>-->
         <module>icreditstudio-scheduler</module>
         <module>icreditstudio-datadev</module>
         <module>icreditstudio-gateway</module>

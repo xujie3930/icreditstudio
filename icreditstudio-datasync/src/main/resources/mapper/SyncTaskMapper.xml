@@ -50,7 +50,7 @@
             AND task_status = #{taskStatus}
         </if>
         <if test="taskStatus == null">
-            AND task_status IN(0,2)
+            AND task_status IN(0,1)
         </if>
         <if test="dispatchStatus != null">
             AND exec_status = #{dispatchStatus}
