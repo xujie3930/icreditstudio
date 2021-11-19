@@ -14,8 +14,7 @@
 
 // 验证是否是中文
 export const validStrZh = str => {
-  const pattern = /[^\u4E00-\u9FA5]/g
-  return pattern.test(str)
+  return escape(str).indexOf('%u') < 0
 }
 
 // 验证特殊字符
