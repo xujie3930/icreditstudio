@@ -37,7 +37,7 @@ public interface PlatformExecutorService {
      */
     Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId);
 
-    String execSyncTask(String processDefinitionId, int execType);
+    String execSyncTask(String processDefinitionId);
 
     String stopSyncTask(String processDefinitionId);
 

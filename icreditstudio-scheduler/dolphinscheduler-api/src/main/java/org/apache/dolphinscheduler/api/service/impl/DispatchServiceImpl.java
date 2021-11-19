@@ -18,6 +18,7 @@ import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
+import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,8 @@ public class DispatchServiceImpl implements DispatchService {
     private DataSyncDispatchTaskFeignClient dataSyncDispatchTaskFeignClient;
     @Autowired
     private ProcessService processService;
+    @Autowired
+    private ProcessInstanceMapper processInstanceMapper;
     @Autowired
     private TaskInstanceMapper taskInstanceMapper;
 
@@ -77,7 +80,7 @@ public class DispatchServiceImpl implements DispatchService {
      * @param execType
      * @return  返回值为 0|1 ，0 表示成功 ，1 表示失败
      */
-    private int executeInstance(String instanceId, String taskId, String execType) {
+    private int executeInstance(String instanceId, String taskInstanceId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
@@ -87,40 +90,45 @@ public class DispatchServiceImpl implements DispatchService {
             }
             result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
         }else{
-            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION) {//该任务正在 【执行中】中，不能重跑
+            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
+                    processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
-            //设置 writemode 为truncate，清理之前的文件内容，但需要注意 filename 的值（慎重）
-            String oldFileName = parseJson(processInstance.getProcessInstanceJson());
-            StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
-            target.append(oldFileName).append("\\\"");
-            StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
-            replaceStr.append(processInstance.getFileName()).append("\\\"");
-            String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"truncate\\\"")
-                    .replace(target, replaceStr);
-            processInstance.setProcessInstanceJson(instanceJson);
-            processService.saveProcessInstance(processInstance);
+            handleProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
-            taskInstanceMapper.deleteById(taskId);
+            taskInstanceMapper.deleteById(taskInstanceId);
         }
         return result;
     }
 
-    private String parseJson(String processInstanceJson) {
-        JSONObject obj = JSONObject.parseObject(processInstanceJson);
+    /**
+     *  处理 processInstance 并保存
+     * @param processInstance
+     */
+    private void handleProcessInstance(ProcessInstance processInstance) {
+        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
         JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
         JSONObject paramObj = taskObj.getJSONObject("params");
         if(!"1".equals(paramObj.getString("customConfig"))){
-            return null;
+            return ;
         }
         JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
         JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
         JSONObject writer = content.getJSONObject("writer");
         if(!"hdfswriter".equals(writer.getString("name"))){
-            return null;
+            return ;
         }
         JSONObject parameter = writer.getJSONObject("parameter");
-        return parameter.getString("fileName");
+        String oldFileName = parameter.getString("fileName");
+        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
+        target.append(oldFileName).append("\\\"");
+        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
+        replaceStr.append(processInstance.getFileName()).append("\\\"");
+        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
+        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
+                .replace(target, replaceStr);
+        processInstance.setProcessInstanceJson(instanceJson);
+        processService.saveProcessInstance(processInstance);
     }
 
     private int updateProcessInstancePrepare(ProcessInstance processInstance, CommandType commandType, ExecutionStatus executionStatus) {
@@ -174,5 +182,25 @@ public class DispatchServiceImpl implements DispatchService {
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
         return BusinessResult.success(BusinessPageResult.build(logVOList, param, countLog));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public BusinessResult<Boolean> nowRun(String taskId) {
+        String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
+        ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
+        String taskInstanceId = taskInstanceMapper.getLastTaskIdByProcessInstanceId(processInstance.getId());
+        if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
+                processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
+        }
+        handleProcessInstance(processInstance);
+        int result = insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
+        if(0 == result){
+            taskInstanceMapper.deleteById(taskInstanceId);
+            return BusinessResult.success(true);
+        }else{
+            return BusinessResult.fail("","执行失败");
+        }
     }
 }

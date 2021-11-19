@@ -42,7 +42,6 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000025("60000025", "未匹配到合适数据源"),
         RESOURCE_CODE_60000026("60000026", "未找到合适的格式化器"),
         RESOURCE_CODE_60000027("60000027", "sql语法有误,请检查"),
-        RESOURCE_CODE_60000028("60000028", "任务调度类型只能为0、1"),
         RESOURCE_CODE_60000029("60000029", "获取字典列表失败"),
         RESOURCE_CODE_60000030("60000030", "未找到款表信息"),
         RESOURCE_CODE_60000031("60000031", "hive配置信息获取失败"),

@@ -48,6 +48,17 @@ public class DispatchController {
         return dispatchService.reStartOrStop(request.getProcessInstanceId(), request.getTaskInstanceId(), request.getExecType());
     }
 
+    /**
+     * 同步任务调度 -- 立即执行
+     *
+     * @param taskId 数据同步任务ID
+     * @return
+     */
+    @GetMapping("/schedule/nowRun")
+    public BusinessResult<Boolean> nowRun(@RequestParam("taskId") String taskId) {
+        return dispatchService.nowRun(taskId);
+    }
+
     @PostMapping("/log/page")
     public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(@RequestBody LogPageRequest request){
         LogPageParam param = new LogPageParam();

@@ -191,8 +191,8 @@
         DELETE FROM t_ds_process_instance WHERE process_definition_id=#{processDefinitionId}
     </delete>
 
-    <select id="getIdByProcessDefinitionId" resultType="java.lang.String">
-        SELECT id
+    <select id="getLastInstanceByDefinitionId" resultType="org.apache.dolphinscheduler.dao.entity.ProcessInstance">
+        select *
         FROM t_ds_process_instance
         WHERE process_definition_id = #{processDefinitionId}
         ORDER BY command_start_time DESC

@@ -891,9 +891,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (entity != null && TaskStatusEnum.ENABLE.getCode() != entity.getTaskStatus()) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.message);
         }
-        if (0 != param.getExecType() && 1 != param.getExecType()) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000028.message);
-        }
 
         if (ExecStatusEnum.EXEC.getCode() == entity.getExecStatus()) {//“执行中” 状态
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
@@ -905,7 +902,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);//执行中
 
-        String result = schedulerFeign.execSyncTask(processDefinitionId, param.getExecType());
+        String result = schedulerFeign.execSyncTask(processDefinitionId);
         if ("true".equals(result)) {//成功
             return BusinessResult.success(true);
         } else {//失败

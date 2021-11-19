@@ -254,4 +254,12 @@
             </if>
         </where>
     </select>
+
+    <select id="getLastTaskIdByProcessInstanceId" resultType="java.lang.String">
+        SELECT ID
+        FROM t_ds_task_instance
+        WHERE process_instance_id = #{processInstanceId}
+        ORDER BY submit_time DESC
+        limit 1
+    </select>
 </mapper>
