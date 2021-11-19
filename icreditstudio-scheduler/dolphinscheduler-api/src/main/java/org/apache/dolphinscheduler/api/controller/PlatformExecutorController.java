@@ -31,8 +31,8 @@ public class PlatformExecutorController {
     }
 
     @GetMapping(value = "/execSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
-    public String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType) {
-        return platformExecutorService.execSyncTask(processDefinitionId, execType);
+    public String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId) {
+        return platformExecutorService.execSyncTask(processDefinitionId);
     }
 
     @GetMapping(value = "/stopSyncTask",produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")

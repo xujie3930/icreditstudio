@@ -239,18 +239,14 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
 
     @Override
     @Transactional(rollbackFor = RuntimeException.class)
-    public String execSyncTask(String processDefinitionId, int execType) {
+    public String execSyncTask(String processDefinitionId) {
         String execResult = "false";
         try{
-            if(0 == execType){//手动执行
-                ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
-                param.setWorkerGroup("default");
-                param.setTimeout(86400);
-                param.setProcessDefinitionId(processDefinitionId);
-                manualExecSyncTask(param);
-            }else{//周期执行
-                schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
-            }
+            ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
+            param.setWorkerGroup("default");
+            param.setTimeout(86400);
+            param.setProcessDefinitionId(processDefinitionId);
+            manualExecSyncTask(param);
             execResult = "true";
         }catch (Exception e){
             e.printStackTrace();
@@ -283,6 +279,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     public String enableSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.ONLINE.getCode());
+        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
         return "true";
     }
 

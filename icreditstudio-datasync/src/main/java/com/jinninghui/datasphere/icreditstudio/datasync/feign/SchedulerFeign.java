@@ -30,11 +30,10 @@ public interface SchedulerFeign {
      * 执行任务
      *
      * @param processDefinitionId
-     * @param execType            0 -- 手动任务 ， 1 -- 周期任务
      * @return
      */
     @GetMapping(value = "/dolphinscheduler/platform/exec/execSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
-    String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("execType") int execType);
+    String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 停止任务
