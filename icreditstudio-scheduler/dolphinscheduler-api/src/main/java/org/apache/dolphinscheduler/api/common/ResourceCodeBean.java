@@ -24,7 +24,6 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000009("60000009", "该任务正在【执行中】，不能进行重跑"),
         RESOURCE_CODE_60000010("60000010", "工作空间ID不能为空"),
         RESOURCE_CODE_60000011("60000011", "当前登陆用户ID不能为空"),
-        RESOURCE_CODE_60000012("60000012", "日志ID不能为空"),
         RESOURCE_CODE_60000013("60000013", "该任务正在【执行中】，不能执行")
         ;
 
