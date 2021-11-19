@@ -65,7 +65,12 @@ import LayoutBreadcrumd from './LayoutBreadcrumd'
 import LayoutHeaderSidebar from './LayoutHeaderSiderbar'
 import LayoutMainSidebar from './LayoutMainSidebar'
 import LayoutMainFooter from './LayoutMainFooter'
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+// import { rootMenuMapping } from '@/config/menu'
+import {
+  SET_ACTIVE_MODULE_ID,
+  SET_ACTIVE_MODULE_NAME
+} from '@/store/mutation-types'
 
 export default {
   components: {
@@ -101,6 +106,25 @@ export default {
     }
   },
 
+  // watch: {
+  //   '$route.path': {
+  //     immediate: true,
+  //     handler(nVal) {
+  //       console.log(nVal, 'val')
+  //       const rootMenu = Object.keys(rootMenuMapping)
+  //       console.log(rootMenu, 'kingMenu')
+  //       // TODO
+  //       // 设置当前菜单的当前激活菜单id
+  //       // 设置二级菜单
+  //       const menu = this.topModules.find(item => {
+  //         console.log(item, 'item')
+  //         return false
+  //       })
+  //       console.log(menu, 'menu')
+  //     }
+  //   }
+  // },
+
   created() {
     this.initPage()
     // this.initBreadCrumbItems(this.$route)
@@ -108,6 +132,10 @@ export default {
 
   methods: {
     ...mapActions('user', ['setWorkspaceId']),
+    ...mapMutations('permission', {
+      setActinveMenuId: SET_ACTIVE_MODULE_ID,
+      setActinveMenuName: SET_ACTIVE_MODULE_NAME
+    }),
 
     initPage() {
       this.curBreadcrumb.push(this.topModules[1])
