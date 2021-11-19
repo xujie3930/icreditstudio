@@ -8,15 +8,15 @@ import org.apache.dolphinscheduler.api.service.result.*;
 import java.util.List;
 
 public interface HomePageService {
-    BusinessResult<TaskRoughResult> rough(SchedulerHomepageRequest request);
+    BusinessResult<TaskRoughResult> rough(String userId, SchedulerHomepageRequest request);
 
-    BusinessResult<List<TaskSituationResult>> situation(String workspaceId);
+    BusinessResult<List<TaskSituationResult>> situation(String userId, String workspaceId);
 
-    BusinessResult<List<TaskCountResult>> taskCount(SchedulerHomepageRequest request);
+    BusinessResult<List<TaskCountResult>> taskCount(String userId, SchedulerHomepageRequest request);
 
-    BusinessResult<List<RuntimeRankResult>> runtimeRank(SchedulerHomepageRequest request);
+    BusinessResult<List<RuntimeRankResult>> runtimeRank(String userId, SchedulerHomepageRequest request);
 
-    BusinessResult<List<RunErrorRankResult>> runErrorRank(SchedulerHomepageRequest request);
+    BusinessResult<List<RunErrorRankResult>> runErrorRank(String userId, SchedulerHomepageRequest request);
 
     WorkBenchResult workbench(String userId, String id);
 }

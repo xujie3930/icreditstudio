@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.AbstractConnectionSourceParser;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.sm4.SM4Utils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -63,7 +64,8 @@ public class MysqlConnectionSourceParser extends AbstractConnectionSourceParser 
             } else {
                 password = temp.substring(0, temp.indexOf(SEPARATOR));
             }
-            return password;
+            SM4Utils sm4 = new SM4Utils();
+            return sm4.decryptData_ECB(password);
         }
     }
 }

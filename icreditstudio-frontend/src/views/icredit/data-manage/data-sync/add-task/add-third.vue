@@ -153,7 +153,7 @@ export default {
 
       taskForm: {
         maxThread: 2,
-        limitRate: 0,
+        limitRate: 100000,
         syncRate: 1,
         scheduleType: 1,
         syncCondition: { incrementalField: undefined },

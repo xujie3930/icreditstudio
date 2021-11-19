@@ -3,7 +3,33 @@
     <div class="home-left">
       <div class="home-left-gif">
         <div class="title">一站式大数据开发与治理平台</div>
-        <div class="img"><img src="../assets/home.gif" /></div>
+        <div class="img-banner">
+          <img class="img" src="../assets/home.gif" />
+          <span
+            @click="handleFuncClick({ path: '/workspace/space-setting' })"
+            class="btn btn-space"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '/workspace/datasource' })"
+            class="btn btn-manage"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-test"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-assets"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-bi"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-serive"
+          ></span>
+        </div>
       </div>
       <div class="home-left-func">
         <div class="title">
@@ -16,7 +42,12 @@
             :key="item.name"
             @click="handleFuncClick(item)"
           >
-            <j-svg class="jsvg" :name="item.icon" />
+            <!-- @mouseover="handleChangeIcon(idx, true)"
+            @mouseleave="handleChangeIcon(idx, false)" -->
+            <j-svg
+              class="jsvg"
+              :name="item.isHover ? item.iconName : item.icon"
+            />
             <span class="text">{{ item.name }}</span>
           </div>
         </div>
@@ -96,13 +127,6 @@
           >
             <j-svg class="jsvg icon" name="home-book" />
             <span class="label">用户手册</span>
-            <!-- <a
-              href="../../static/intro.pdf"
-              class="label"
-              :download="filename"
-              target="_blank"
-              >用户手册</a
-            > -->
           </div>
         </div>
       </section>
@@ -133,44 +157,49 @@ export default {
       funcConfigs: [
         {
           icon: 'menu-workspace-setting-black',
-          iconActive: 'menu-space-active',
+          iconActive: 'menu-workspace-setting-active',
           name: '工作空间',
           path: '/workspace/space-setting',
           isHover: false
         },
         {
           icon: 'menu-data-manage-black',
-          iconActive: 'menu-data-active',
+          iconActive: 'menu-data-manage-active',
           name: '数据管理',
           path: '/workspace/datasource',
           isHover: false
         },
         {
           icon: 'menu-govern-black',
-          name: '数据治理',
+          iconActive: 'menu-govern-active',
+          name: '数据质检',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-assets-manage-black',
+          iconActive: 'menu-assets-manage-active',
           name: '资产管理',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-bi-black',
+          iconActive: 'menu-bi-view-active',
           name: 'BI可视化',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-data-service-black',
+          iconActive: 'menu-data-service-active',
           name: '数据服务',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-depovs-black',
+          iconActive: 'menu-depovs-active',
           name: '运维&安全',
           path: '',
           isHover: false
@@ -195,10 +224,10 @@ export default {
 
       // 工作台
       statiscticsData: [
-        { key: 'notRun', label: '未运行任务', value: '' },
-        { key: 'running', label: '正在执行', value: '' },
-        { key: 'failure', label: '运行失败', value: '' },
-        { key: 'success', label: '运行成功', value: '' }
+        { key: 'notRun', label: '未运行任务', value: 0 },
+        { key: 'running', label: '正在执行', value: 0 },
+        { key: 'failure', label: '运行失败', value: 0 },
+        { key: 'success', label: '运行成功', value: 0 }
       ]
     }
   },
@@ -232,6 +261,11 @@ export default {
       this.getStatisticsData()
     },
 
+    handleChangeIcon(idx, isHover) {
+      console.log(idx, 'lplp')
+      this.menuConfigs[idx].isHover = isHover
+    },
+
     handleJumpClick(path) {
       if (path === '/login') {
         this.$confirm('是否退出登录?', '提示', {
@@ -255,7 +289,12 @@ export default {
       if (path) {
         this.$router.push(path)
       } else {
-        this.$message.info('该模块功能暂未上线， 敬请期待！')
+        // this.$message.info('该模块功能暂未上线， 敬请期待！')
+        this.$message({
+          showClose: true,
+          message: '该模块功能暂未上线， 敬请期待！',
+          type: 'info'
+        })
       }
     },
 
@@ -337,11 +376,57 @@ export default {
         color: #333;
         line-height: 40px;
         margin: 24px;
+        margin-bottom: 14px;
       }
 
-      .img {
+      .img-banner {
         @include flex;
+        position: relative;
         height: 100%;
+        padding-bottom: 40px;
+
+        // .img {
+        //   width: 100%;
+        //   height: auto;
+        // }
+
+        .btn {
+          position: absolute;
+          width: 100px;
+          height: 30px;
+          border-radius: 15px;
+          cursor: pointer;
+        }
+
+        .btn-space {
+          top: 175px;
+          left: 352px;
+        }
+
+        .btn-manage {
+          top: 175px;
+          left: 760px;
+        }
+
+        .btn-test {
+          top: 175px;
+          left: 1135px;
+        }
+
+        .btn-assets {
+          bottom: 42px;
+          left: 356px;
+        }
+
+        .btn-bi {
+          bottom: 42px;
+          left: 765px;
+        }
+
+        .btn-serive {
+          bottom: 42px;
+          right: 348px;
+        }
       }
     }
 

@@ -215,6 +215,7 @@
 import { mapState } from 'vuex'
 import { uriSplit } from '@/utils/util'
 import { validStrSpecial, validIpAddress } from '@/utils/validate'
+import { sm4Config } from '@/config/index'
 import BaseDialog from '@/views/icredit/components/dialog'
 import API from '@/api/icredit'
 
@@ -298,7 +299,6 @@ export default {
 
   methods: {
     open(type, name) {
-      console.log(name, 'name')
       const portMapping = {
         mysql: 3306,
         oracle: 1521
@@ -327,7 +327,10 @@ export default {
     completeUri() {
       const databaseType = this.databaseType || 'mysql'
       const { ip, port, databaseName, username, password } = this.dataSourceForm
-      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${password}`
+      const SM4 = require('gm-crypt').sm4
+      const sm4 = new SM4(sm4Config)
+      const pwd = sm4.encrypt(password)
+      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${pwd}`
     },
 
     // 验证是否已经存在数据源名称
@@ -390,7 +393,6 @@ export default {
           API.datasourceTestLink(params)
             .then(({ success, data }) => {
               if (success && data) {
-                console.log(data)
                 this.$message.success('测试连接成功')
               } else {
                 this.$message.error(data)

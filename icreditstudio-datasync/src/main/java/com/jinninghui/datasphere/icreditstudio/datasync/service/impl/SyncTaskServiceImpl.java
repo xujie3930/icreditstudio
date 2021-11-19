@@ -100,7 +100,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
         String taskId = null;
-
+        long start = System.currentTimeMillis();
         CronParam cronParam = param.getCronParam();
         if (Objects.nonNull(cronParam)) {
             String cron = cronParam.getCrons();
@@ -197,6 +197,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 cycleRun(taskId);
             }
         }
+        long end = System.currentTimeMillis();
+        log.info("=========================sync save执行时间============：" + (end - start) / 1000);
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
 
@@ -295,6 +297,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
 
         MysqlReaderConfigParam readerConfigParam = findReaderConfigParam(taskId, sql);
+        log.info("==============mysqlReader参数信息==========：" + JSONObject.toJSONString(readerConfigParam));
         MySqlReader mySqlReader = new MySqlReader(transferColumnsByTaskId, dictInfos, readerConfigParam);
 
         HdfsWriterConfigParam hdfsWriterConfigParam = findHdfsWriterConfigParam(taskId);
@@ -707,6 +710,21 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    public BusinessResult<TaskDefineInfo> taskDetailInfo(DataSyncDetailParam param) {
+        SyncTaskEntity byId = getById(param.getTaskId());
+        TaskDefineInfo info = null;
+        if (Objects.nonNull(byId)) {
+            info = new TaskDefineInfo();
+            BeanCopyUtils.copyProperties(byId, info);
+            info.setEnable(byId.getTaskStatus());
+            info.setTaskId(byId.getId());
+            info.setTaskDescribe(byId.getTaskDescribe());
+            info.setCreateMode(byId.getCreateMode());
+        }
+        return BusinessResult.success(info);
+    }
+
+    @Override
     @BusinessParamsValidate
     public BusinessResult<TaskBuildInfo> taskBuildInfo(DataSyncDetailParam param) {
         SyncTaskEntity byId = getById(param.getTaskId());
@@ -849,6 +867,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         String result = schedulerFeign.stopSyncTask(processDefinitionId);
         if ("true".equals(result)) {
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+            entity.setEnable(EnableStatusEnum.DISABLE.getCode());
             updateById(entity);
         }
         return BusinessResult.success(true);

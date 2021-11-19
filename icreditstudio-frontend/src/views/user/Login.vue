@@ -116,14 +116,6 @@ export default {
       this.loginData = Object.assign(this.loginData, _loginInfo)
       this.isSavePassword = true
     }
-
-    // 背景定时器
-    const timeInterval = setInterval(() => {
-      this.refreshTime()
-    }, 1000)
-    this.$once('hook:beforeDestroy', () => {
-      clearInterval(timeInterval)
-    })
   },
 
   methods: {

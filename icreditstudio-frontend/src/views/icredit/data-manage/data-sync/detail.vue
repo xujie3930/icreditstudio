@@ -17,7 +17,7 @@
       v-loading="detailLoading"
       @tab-click="handleTabClick"
     >
-      <el-tab-pane label="任务详情" name="DefineDetial">
+      <el-tab-pane label="任务详情" name="TaskDetial">
         <div class="tab-wrap">
           <div class="tab-wrap__title">任务详情</div>
           <div class="tab-wrap__content">
@@ -195,7 +195,7 @@ export default {
     return {
       row: {},
       detailLoading: false,
-      activeName: 'DefineDetial',
+      activeName: 'TaskDetial',
       radioBtnOption,
 
       // 表格
@@ -223,11 +223,11 @@ export default {
 
   methods: {
     open({ row }) {
-      this.activeName = 'DefineDetial'
+      this.activeName = 'TaskDetial'
       this.row = row
       this.initData()
       this.$refs.taskDialog.open()
-      this.getDetailData('dataSyncDefineDetial', { taskId: row.taskId })
+      this.getDetailData('dataSyncTaskDetial', { taskId: row.taskId })
     },
 
     initData() {
@@ -249,7 +249,7 @@ export default {
 
     // 接口-详情数据返回值处理
     handleFilterData(data) {
-      if (this.activeName === 'DefineDetial') {
+      if (this.activeName === 'TaskDetial') {
         this.taskDetailInfo = deepClone(this.taskDetailInfo).map(
           ({ key, label }) => {
             let value = ''
@@ -276,7 +276,6 @@ export default {
       API[methodName](params)
         .then(({ success, data }) => {
           if (success && data) {
-            console.log(data, 'data')
             this.handleFilterData(data)
           }
         })

@@ -138,7 +138,7 @@ public class  DataSyncSaveRequest {
 
     public Integer getLimitRate() {
         if (limitRate == null) {
-            return 100;
+            return 100000;
         }
         return limitRate;
     }

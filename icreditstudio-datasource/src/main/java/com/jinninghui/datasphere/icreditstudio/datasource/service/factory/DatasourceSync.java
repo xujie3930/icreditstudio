@@ -5,13 +5,14 @@ package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.SecretUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.sm4.SM4Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -59,7 +60,8 @@ public interface DatasourceSync {
         } else {
             password = temp.substring(0, temp.indexOf(SEPARATOR));
         }
-        return password;
+        SM4Utils sm4 = new SM4Utils();
+        return sm4.decryptData_ECB(password);
     }
 
     /**
@@ -88,6 +90,7 @@ public interface DatasourceSync {
     }
 
     default String testConn(Integer type, String uri) {
+        Connection conn = null;
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         String username = getUsername(uri);
         String password = getPassword(uri);
@@ -96,12 +99,17 @@ public interface DatasourceSync {
             Class.forName(driver);
             //超时时间由默认30s改为5秒
             DriverManager.setLoginTimeout(5);
-            Connection conn = DriverManager.getConnection(jdbcUri, username, password);
-            conn.close();
+            conn = DriverManager.getConnection(jdbcUri, username, password);
             return "测试连接成功";
         } catch (Exception e) {
             logger.error("异常信息:{},异常打印:{}", e.getMessage(), e.toString());
             throw new AppException("70000007");
+        }finally {
+            try {
+                conn.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 

@@ -23,28 +23,28 @@ public class HomePageController {
     private HomePageService homePageService;
 
     @PostMapping(value = "/rough")
-    public BusinessResult<TaskRoughResult> rough(@RequestBody SchedulerHomepageRequest request) {
-        return homePageService.rough(request);
+    public BusinessResult<TaskRoughResult> rough(@RequestHeader(value = "x-userid") String userId, @RequestBody SchedulerHomepageRequest request) {
+        return homePageService.rough(userId, request);
     }
 
     @PostMapping(value = "/situation")
-    public BusinessResult<List<TaskSituationResult>> situation(@RequestBody SchedulerHomepageRequest request) {
-        return homePageService.situation(request.getWorkspaceId());
+    public BusinessResult<List<TaskSituationResult>> situation(@RequestHeader(value = "x-userid") String userId, @RequestBody SchedulerHomepageRequest request) {
+        return homePageService.situation(userId, request.getWorkspaceId());
     }
 
     @PostMapping(value = "/taskCount")
-    public BusinessResult<List<TaskCountResult>> taskCount(@RequestBody SchedulerHomepageRequest request) {
-        return homePageService.taskCount(request);
+    public BusinessResult<List<TaskCountResult>> taskCount(@RequestHeader(value = "x-userid") String userId, @RequestBody SchedulerHomepageRequest request) {
+        return homePageService.taskCount(userId, request);
     }
 
     @PostMapping(value = "/runtimeRank")
-    public BusinessResult<List<RuntimeRankResult>> runtimeRank(@RequestBody SchedulerHomepageRequest request) {
-        return homePageService.runtimeRank(request);
+    public BusinessResult<List<RuntimeRankResult>> runtimeRank(@RequestHeader(value = "x-userid") String userId, @RequestBody SchedulerHomepageRequest request) {
+        return homePageService.runtimeRank(userId, request);
     }
 
     @PostMapping(value = "/runErrorRank")
-    public BusinessResult<List<RunErrorRankResult>> runErrorRank(@RequestBody SchedulerHomepageRequest request) {
-        return homePageService.runErrorRank(request);
+    public BusinessResult<List<RunErrorRankResult>> runErrorRank(@RequestHeader(value = "x-userid") String userId, @RequestBody SchedulerHomepageRequest request) {
+        return homePageService.runErrorRank(userId, request);
     }
 
     @GetMapping(value = "/workbench")
