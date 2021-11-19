@@ -125,10 +125,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         wrapper.eq(IcreditDatasourceEntity.DEL_FLAG, DatasourceDelFlagEnum.N);
         if (StringUtils.isNotBlank(pageRequest.getSpaceId())) {
             wrapper.eq(IcreditDatasourceEntity.SPACE_ID, pageRequest.getSpaceId());
-        }else {
+        } else {
             //根据userId查询所有的空间id
             BusinessResult<Boolean> result = systemFeignClient.isAdmin();
-            if (result.isSuccess() && result.getData()){
+            if (result.isSuccess() && result.getData()) {
                 log.info("当前用户为管理员，拥有全部空间权限");
                 userId = "";
             }
@@ -221,7 +221,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         return BusinessResult.success(result);
     }
 
-    @Transactional(propagation =Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateDatasourceById(IcreditDatasourceEntity dataEntity) {
         datasourceMapper.updateById(dataEntity);
     }
@@ -235,10 +235,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         Integer del = 0;
         Integer delCloumns = 0;
         Integer update = 0;
-        if (StringUtils.isBlank(oldColumnsInfo)){
+        if (StringUtils.isBlank(oldColumnsInfo)) {
             newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
             for (TableSyncInfo tableSyncInfo : newStructure) {
-                add ++;
+                add++;
                 addCloumns += tableSyncInfo.getColumnList().size();
             }
             return String.format("同步成功，新增 %s 张表,共 %s 个字段 ", add, addCloumns);
@@ -249,23 +249,23 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         for (TableSyncInfo tableSyncInfo : oldStructure) {
             if (newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
                     !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList())))
-                update ++ ;
-            else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))){
-                del ++ ;
+                update++;
+            else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
+                del++;
                 delCloumns += tableSyncInfo.getColumnList().size();
             }
         }
 
         for (TableSyncInfo tableSyncInfo : newStructure) {
-            if (!oldStructure.parallelStream().anyMatch(o -> o.getTableName().equals(tableSyncInfo.getTableName()))){
-                add ++ ;
+            if (!oldStructure.parallelStream().anyMatch(o -> o.getTableName().equals(tableSyncInfo.getTableName()))) {
+                add++;
                 addCloumns += tableSyncInfo.getColumnList().size();
             }
         }
-        if (add > 0 && addCloumns > 0){
+        if (add > 0 && addCloumns > 0) {
             builder.append(String.format(",新增 %s 张表,共 %s 个字段", add, addCloumns));
         }
-        if (del > 0 && delCloumns > 0){
+        if (del > 0 && delCloumns > 0) {
             builder.append(String.format(",删除 %s 张表,共 %s 个字段", del, delCloumns));
         }
         return builder.toString();
@@ -505,6 +505,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             result.setUsername(DatasourceSync.getUsername(uri));
             result.setPassword(DatasourceSync.getPassword(uri));
         }
+        log.info("数据源信息:" + JSONObject.toJSONString(result));
         return BusinessResult.success(result);
     }
 

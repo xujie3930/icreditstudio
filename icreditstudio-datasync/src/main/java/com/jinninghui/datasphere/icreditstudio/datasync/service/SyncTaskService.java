@@ -46,6 +46,14 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     BusinessResult<TaskDefineInfo> taskDefineInfo(DataSyncDetailParam param);
 
     /**
+     * 同步任务详情
+     *
+     * @param param
+     * @return
+     */
+    BusinessResult<TaskDefineInfo> taskDetailInfo(DataSyncDetailParam param);
+
+    /**
      * 同步任务构建信息
      *
      * @param param
@@ -119,6 +127,7 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
 
     /**
      * 同步任务调度列表
+     *
      * @param param
      * @return
      */
@@ -126,6 +135,7 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
 
     /**
      * 获取流程定义ID
+     *
      * @param id
      * @return
      */
