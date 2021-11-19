@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
 
@@ -89,6 +90,7 @@ public interface DatasourceSync {
     }
 
     default String testConn(Integer type, String uri) {
+        Connection conn = null;
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         String username = getUsername(uri);
         String password = getPassword(uri);
@@ -97,12 +99,17 @@ public interface DatasourceSync {
             Class.forName(driver);
             //超时时间由默认30s改为5秒
             DriverManager.setLoginTimeout(5);
-            Connection conn = DriverManager.getConnection(jdbcUri, username, password);
-            conn.close();
+            conn = DriverManager.getConnection(jdbcUri, username, password);
             return "测试连接成功";
         } catch (Exception e) {
             logger.error("异常信息:{},异常打印:{}", e.getMessage(), e.toString());
             throw new AppException("70000007");
+        }finally {
+            try {
+                conn.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
     }
 
