@@ -9,6 +9,7 @@ import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
+import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
@@ -40,6 +41,8 @@ public class DispatchServiceImpl implements DispatchService {
     private ProcessInstanceMapper processInstanceMapper;
     @Autowired
     private TaskInstanceMapper taskInstanceMapper;
+    @Autowired
+    private PlatformExecutorService platformExecutorService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -189,6 +192,10 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<Boolean> nowRun(String taskId) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
+        if(null == processInstance){//第一次执行，
+            platformExecutorService.execSyncTask(definitionId);
+            return BusinessResult.success(true);
+        }
         String taskInstanceId = taskInstanceMapper.getLastTaskIdByProcessInstanceId(processInstance.getId());
         if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行

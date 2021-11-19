@@ -59,7 +59,7 @@ public interface DatasourceSync {
         } else {
             password = temp.substring(0, temp.indexOf(SEPARATOR));
         }
-        return SecretUtils.desEncrypt(password);
+        return password;
     }
 
     /**

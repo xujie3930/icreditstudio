@@ -81,7 +81,7 @@
               停用
             </el-button>
             <el-button
-              v-if="row.taskStatus === 2"
+              v-if="row.taskStatus === 1"
               type="text"
               @click="handleEnabledBtnClick(row, 'Enabled')"
             >
@@ -89,14 +89,14 @@
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && row.execStatus !== 2"
+              v-if="row.taskStatus === 0 && row.execStatus !== 1"
               @click="handleRunBtnClick(row, 'Run')"
             >
               {{ row.execMode ? '执行' : '立即执行' }}
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && row.execStatus === 2"
+              v-if="row.taskStatus === 0 && row.execStatus === 1"
               @click="handleStopBtnClick(row, 'Stop')"
             >
               停止执行
@@ -218,8 +218,8 @@ export default {
 
     // 执行
     handleRunBtnClick(row) {
-      const { taskId, execMode } = row
-      const params = { taskId, execType: execMode }
+      const { taskId } = row
+      const params = { taskId }
       API.dataSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({
