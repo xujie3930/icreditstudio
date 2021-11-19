@@ -65,7 +65,7 @@
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
             <el-button
-              v-if="row.taskStatus === 0"
+              :disabled="row.taskStatus !== 0"
               type="text"
               @click="handleRunBtnClick(row, 'Run')"
             >

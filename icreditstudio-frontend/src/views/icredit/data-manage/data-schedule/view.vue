@@ -71,7 +71,12 @@
               >
                 终止
               </el-button>
-              <el-button v-else type="text" @click="handleReRuningTask(row)">
+              <el-button
+                v-else
+                :disabled="taskRow.taskStatus === 0"
+                type="text"
+                @click="handleReRuningTask(row)"
+              >
                 重跑
               </el-button>
               <el-button type="text" @click="handleViewLogDetail(row)">
@@ -112,6 +117,7 @@ export default {
 
   data() {
     return {
+      taskRow: {},
       execStatusMapping,
       title: '历史执行情况',
       taskId: null,
@@ -136,6 +142,8 @@ export default {
 
   methods: {
     open(row) {
+      console.log(row, 'row')
+      this.taskRow = row
       this.titleName = row.taskName
       this.logDetail = ''
       this.taskId = row.taskId
