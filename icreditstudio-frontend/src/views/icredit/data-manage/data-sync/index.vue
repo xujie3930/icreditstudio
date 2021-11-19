@@ -89,14 +89,14 @@
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && row.execStatus !== 1"
+              v-if="row.taskStatus === 0 && row.execStatus !== 2"
               @click="handleRunBtnClick(row, 'Run')"
             >
               {{ row.execMode ? '执行' : '立即执行' }}
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && row.execStatus === 1"
+              v-if="row.taskStatus === 0 && row.execStatus === 2"
               @click="handleStopBtnClick(row, 'Stop')"
             >
               停止执行
