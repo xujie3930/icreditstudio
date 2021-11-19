@@ -297,6 +297,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
 
         MysqlReaderConfigParam readerConfigParam = findReaderConfigParam(taskId, sql);
+        log.info("==============mysqlReader参数信息==========：" + JSONObject.toJSONString(readerConfigParam));
         MySqlReader mySqlReader = new MySqlReader(transferColumnsByTaskId, dictInfos, readerConfigParam);
 
         HdfsWriterConfigParam hdfsWriterConfigParam = findHdfsWriterConfigParam(taskId);
