@@ -3,12 +3,32 @@
     <div class="home-left">
       <div class="home-left-gif">
         <div class="title">一站式大数据开发与治理平台</div>
-        <div class="img">
-          <img src="../assets/home.gif" />
-          <div>
-            <span></span>
-            <span></span>
-          </div>
+        <div class="img-banner">
+          <img class="img" src="../assets/home.gif" />
+          <span
+            @click="handleFuncClick({ path: '/workspace/space-setting' })"
+            class="btn btn-space"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '/workspace/datasource' })"
+            class="btn btn-manage"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-test"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-assets"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-bi"
+          ></span>
+          <span
+            @click="handleFuncClick({ path: '' })"
+            class="btn btn-serive"
+          ></span>
         </div>
       </div>
       <div class="home-left-func">
@@ -254,7 +274,12 @@ export default {
       if (path) {
         this.$router.push(path)
       } else {
-        this.$message.info('该模块功能暂未上线， 敬请期待！')
+        // this.$message.info('该模块功能暂未上线， 敬请期待！')
+        this.$message({
+          showClose: true,
+          message: '该模块功能暂未上线， 敬请期待！',
+          type: 'info'
+        })
       }
     },
 
@@ -336,11 +361,57 @@ export default {
         color: #333;
         line-height: 40px;
         margin: 24px;
+        margin-bottom: 14px;
       }
 
-      .img {
+      .img-banner {
         @include flex;
+        position: relative;
         height: 100%;
+        padding-bottom: 40px;
+
+        // .img {
+        //   width: 100%;
+        //   height: auto;
+        // }
+
+        .btn {
+          position: absolute;
+          width: 100px;
+          height: 30px;
+          border-radius: 15px;
+          cursor: pointer;
+        }
+
+        .btn-space {
+          top: 175px;
+          left: 352px;
+        }
+
+        .btn-manage {
+          top: 175px;
+          left: 760px;
+        }
+
+        .btn-test {
+          top: 175px;
+          left: 1135px;
+        }
+
+        .btn-assets {
+          bottom: 42px;
+          left: 356px;
+        }
+
+        .btn-bi {
+          bottom: 42px;
+          left: 765px;
+        }
+
+        .btn-serive {
+          bottom: 42px;
+          right: 348px;
+        }
       }
     }
 
