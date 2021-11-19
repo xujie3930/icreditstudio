@@ -73,7 +73,7 @@
               </el-button>
               <el-button
                 v-else
-                :disabled="taskRow.taskStatus === 0"
+                :disabled="taskRow.taskStatus !== 0"
                 type="text"
                 @click="handleReRuningTask(row)"
               >
