@@ -64,7 +64,11 @@
 
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
-            <el-button type="text" @click="handleRunBtnClick(row, 'Run')">
+            <el-button
+              v-if="row.taskStatus === 0"
+              type="text"
+              @click="handleRunBtnClick(row, 'Run')"
+            >
               立即执行
             </el-button>
             <el-button type="text" @click="handleViewLog(row, 'historyLog')">
