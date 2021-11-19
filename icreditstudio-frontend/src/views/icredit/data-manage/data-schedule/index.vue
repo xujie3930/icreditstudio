@@ -276,10 +276,10 @@ export default {
             this.yesterdayRight = dayjs(
               new Date().getTime() - 24 * 60 * 60 * 1000
             ).format('YYYY-MM-DD')
-            const name = dayjs(data[data.length - 1].date).format('YYYY')
+            // const name = dayjs(data[data.length - 1].date).format('YYYY')
             this.chartInstance.setOption({
               xAxis: {
-                name,
+                // name,
                 data: data.map(({ date: d }) => dayjs(d).format('YYYY.MM.DD'))
               },
               series: [{ data: data.map(({ value }) => value) }],
