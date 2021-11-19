@@ -28,6 +28,10 @@ const dataSyncStop = params => postAction('/datasync/cease', params)
 const dataSyncDefineDetial = params =>
   postAction('/datasync/taskDefineInfo', params)
 
+// 同步任务详情
+const dataSyncTaskDetial = params =>
+  postAction('/datasync/taskDetailInfo', params)
+
 // 同步任务构建详情
 const dataSyncBuildDetial = params =>
   postAction('/datasync/taskBuildInfo', params)
@@ -80,5 +84,6 @@ export default {
   dataSyncTargetSource,
   dataSyncGenerateTable,
   dataSyncLinkType,
-  dataSyncFieldSearch
+  dataSyncFieldSearch,
+  dataSyncTaskDetial
 }

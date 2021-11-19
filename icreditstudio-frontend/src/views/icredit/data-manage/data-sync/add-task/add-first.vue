@@ -99,7 +99,7 @@ export default {
       taskForm: {
         taskId: undefined,
         taskName: '',
-        enable: 1,
+        enable: 0,
         createMode: 0,
         taskDescribe: ''
       },

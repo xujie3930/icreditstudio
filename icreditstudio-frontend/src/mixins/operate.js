@@ -28,9 +28,12 @@ export default {
               title: '操作结果',
               message: '删除成功！'
             })
-            this.$ls.remove('workspaceId')
-            this.setWorkspaceId('0')
-            this.getPermissionListAction()
+
+            if (this.$route.path === '/workspace/space-setting') {
+              this.$ls.remove('workspaceId')
+              this.setWorkspaceId('0')
+              this.getPermissionListAction()
+            }
             this.mixinRetrieveTableData()
           }
         })

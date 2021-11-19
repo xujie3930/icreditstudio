@@ -9,8 +9,14 @@
       />
 
       <div
-        :style="{ marginLeft: $route.path === '/home' ? 0 : '160px' }"
-        :class="['layout-container', isCollapse ? 'layout-collapse' : '']"
+        :class="[
+          'layout-container',
+          $route.path === '/home'
+            ? 'hide-home-siderbar'
+            : isCollapse
+            ? 'layout-collapse'
+            : 'layout-bar-expand'
+        ]"
       >
         <transition v-if="isHeaderCollapse" name="fade">
           <!-- 一级菜单 -->
@@ -72,7 +78,7 @@ export default {
 
   data() {
     return {
-      workspace: '工作空间',
+      workspace: '首页',
       curBreadcrumb: [],
       breadCrumbItems: []
     }
@@ -176,12 +182,19 @@ export default {
   .layout-container {
     display: flex;
     margin-top: 64px;
-    // margin-left: 160px;
     transition: all 0.5s ease 0s;
+  }
+
+  .layout-bar-expand {
+    margin-left: 160px;
   }
 
   .layout-collapse {
     margin-left: 64px;
+  }
+
+  .hide-home-siderbar {
+    margin-left: 0;
   }
 
   .container-wrap {

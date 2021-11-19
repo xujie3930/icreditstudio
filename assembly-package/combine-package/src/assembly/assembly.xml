@@ -59,9 +59,49 @@
         <!-- scheduler -->
         <fileSet>
             <directory>
-                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin/bin
             </directory>
-            <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin</outputDirectory>
+            <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin/bin</outputDirectory>
+            <includes>
+                <include>*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin/scheduler/icreditstudio-scheduler-api
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin/icreditstudio-scheduler-api</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin/scheduler/icreditstudio-scheduler-master-server
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-scheduler-bin/icreditstudio-scheduler-master-server</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin/scheduler/worker/icreditstudio-scheduler-log-server
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-worker-bin/icreditstudio-scheduler-log-server</outputDirectory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>
+                ${project.parent.basedir}/scheduler/target/jnh-datasphere-icreditstudio-scheduler-${project.version}-bin/scheduler/worker/icreditstudio-scheduler-worker-server
+            </directory>
+            <outputDirectory>jnh-datasphere-icreditstudio-worker-bin/icreditstudio-scheduler-worker-server</outputDirectory>
             <includes>
                 <include>**/*</include>
             </includes>

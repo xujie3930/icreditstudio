@@ -171,13 +171,13 @@ export default {
 
   computed: {
     hidePassword() {
-      const { showPassword, password } = this.detailData
+      const { showPassword, password: pwd } = this.detailData
       const getHideIcon = num =>
         Array(num)
           .fill('*')
           .join('')
 
-      return showPassword ? password : getHideIcon(String(password).length)
+      return showPassword ? pwd : getHideIcon(pwd ? String(pwd).length : 0)
     }
   },
 
@@ -209,7 +209,6 @@ export default {
     },
 
     handleTableSelectChange() {
-      console.log(this.tableName, 'komhi')
       this.tableLoading = true
       clearTimeout(this.timerId)
       if (this.tableName) {

@@ -272,10 +272,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         String processDefinitionId = entity.getScheduleId();
 
-        entity = new SyncTaskEntity();
-        entity.setId(taskId);
-        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
-        updateById(entity);//执行中
+//        entity = new SyncTaskEntity();
+//        entity.setId(taskId);
+//        entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
+//        updateById(entity);//执行中
         BusinessResult<Boolean> result = schedulerFeign.execCycle(processDefinitionId);
         if (!result.isSuccess()) {
             throw new AppException("60000052");
@@ -297,6 +297,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
 
         MysqlReaderConfigParam readerConfigParam = findReaderConfigParam(taskId, sql);
+        log.info("==============mysqlReader参数信息==========：" + JSONObject.toJSONString(readerConfigParam));
         MySqlReader mySqlReader = new MySqlReader(transferColumnsByTaskId, dictInfos, readerConfigParam);
 
         HdfsWriterConfigParam hdfsWriterConfigParam = findHdfsWriterConfigParam(taskId);

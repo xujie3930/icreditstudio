@@ -43,7 +43,7 @@ const dataScheduleSyncLogDetail = params =>
 
 // 同步任务调度-立即执行
 const dataScheduleSyncRun = params =>
-  getAction('/dispatch/schedule/nowRun', params)
+  getAction('/dolphinscheduler/dispatch/schedule/nowRun', params)
 
 export default {
   dataScheduleHomeRough,
