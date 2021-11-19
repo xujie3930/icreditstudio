@@ -2,7 +2,7 @@
 cd `dirname $0`
 cd ..
 HOME=`pwd`
-
+PROFILE=$1
 export ICREDIT_STUDIO_LOG_PATH=$HOME/logs
 export SERVER_CLASS=org.apache.dolphinscheduler.api.SchedulerApplication
 
@@ -26,7 +26,7 @@ if [[ -f "${SERVER_PID}" ]]; then
     fi
 fi
 
-nohup java $SERVER_JAVA_OPTS  -Duser.timezone=Asia/Shanghai -cp $HOME/conf:$HOME/lib/* $SERVER_CLASS  2>&1 > $HOME/bin/nohup.out &
+nohup java $SERVER_JAVA_OPTS  -Duser.timezone=Asia/Shanghai -cp $HOME/conf:$HOME/lib/* $SERVER_CLASS --spring.profiles.active=$PROFILE 2>&1 > $HOME/bin/nohup.out &
 
 pid=$!
 if [[ -z "${pid}" ]]; then

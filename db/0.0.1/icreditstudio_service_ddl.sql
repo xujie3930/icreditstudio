@@ -15,6 +15,8 @@ Date: 2021-11-18 18:01:33
 
 SET FOREIGN_KEY_CHECKS=0;
 
+CREATE DATABASE IF NOT EXISTS datasource DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
 -- ----------------------------
 -- Table structure for icredit_datasource
 -- ----------------------------
@@ -76,6 +78,7 @@ Date: 2021-11-18 18:03:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+CREATE DATABASE IF NOT EXISTS datasync DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
 -- ----------------------------
 -- Table structure for icredit_sync_task
@@ -274,6 +277,8 @@ Date: 2021-11-18 18:09:53
 
 SET FOREIGN_KEY_CHECKS=0;
 
+CREATE DATABASE IF NOT EXISTS workspace DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+
 -- ----------------------------
 -- Table structure for icredit_workspace
 -- ----------------------------
@@ -332,6 +337,8 @@ Date: 2021-11-18 18:09:15
 */
 
 SET FOREIGN_KEY_CHECKS=0;
+
+CREATE DATABASE IF NOT EXISTS icdstuiframe DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
 -- ----------------------------
 -- Table structure for ge_audit_log

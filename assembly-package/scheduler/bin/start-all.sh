@@ -7,7 +7,7 @@ echo ${info}
 #Actively load user env
 source /etc/profile
 source ~/.bash_profile
-
+profile=$1
 shellDir=`dirname $0`
 workDir=`cd ${shellDir}/..;pwd`
 
@@ -27,7 +27,7 @@ function startApp(){
 echo "<-------------------------------->"
 echo "Begin to start $SERVER_NAME"
 SERVER_BIN=${workDir}/scheduler/icreditstudio-${SERVER_NAME}/bin
-SERVER_LOCAL_START_CMD="sh ${SERVER_BIN}/startup.sh"
+SERVER_LOCAL_START_CMD="sh ${SERVER_BIN}/startup.sh $profile"
 
 eval $SERVER_LOCAL_START_CMD
 
