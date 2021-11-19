@@ -73,8 +73,11 @@
 
         <el-form-item label-width="35%" label="调度类型" prop="scheduleType">
           <el-radio-group v-model="taskForm.scheduleType">
-            <el-radio :label="1">周期执行</el-radio>
-            <el-radio :label="0">手动执行</el-radio>
+            <el-radio v-if="taskForm.syncCondition.incrementalField" :label="1">
+              周期执行
+            </el-radio>
+
+            <el-radio v-else :label="0">手动执行</el-radio>
           </el-radio-group>
         </el-form-item>
 
@@ -153,7 +156,7 @@ export default {
         limitRate: 0,
         syncRate: 1,
         scheduleType: 1,
-        cron: '',
+        syncCondition: { incrementalField: undefined },
         cronParam: {
           type: undefined,
           moment: []
@@ -200,6 +203,9 @@ export default {
       this.opType = this.$route.query?.opType || 'add'
       const beforeStepForm = this.$ls.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
+      this.taskForm.scheduleType = this.taskForm.syncCondition.incrementalField
+        ? 1
+        : 0
       // 编辑
       this.taskForm.taskId && this.getDetailData()
     },
@@ -340,6 +346,10 @@ export default {
         })
         .finally(() => {
           this.detailLoading = false
+          this.taskForm.scheduleType = this.taskForm.syncCondition
+            .incrementalField
+            ? 1
+            : 0
         })
     }
   }

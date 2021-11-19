@@ -183,12 +183,12 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     }
 
     @Override
-    public Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray) {
-        return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, startTime, endTime, statusArray);
+    public Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray) {
+        return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, statusArray);
     }
 
     @Override
-    public List<TaskCountResult> countByDay(SchedulerHomepageRequest request) {
+    public List<TaskCountResult> countByDay(String userId, SchedulerHomepageRequest request) {
         Date startTime;
         Date endTime;
         //默认统计前七天的数据
@@ -201,7 +201,7 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
         }
 
         //TODO:数据量大后t_ds_task_instance表加覆盖索引
-        List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), request.getScheduleType(), startTime, endTime,  new int[]{});
+        List<Map<String, Object>> countByDay = taskInstanceMapper.countByDay(request.getWorkspaceId(), userId, request.getScheduleType(), startTime, endTime,  new int[]{});
         List<TaskCountResult> list = getDaysCount(startTime, endTime, countByDay);
         return list;
     }
@@ -232,23 +232,23 @@ public class TaskInstanceServiceImpl extends BaseServiceImpl implements TaskInst
     }
 
     @Override
-    public Double runtimeTotalByDefinition(String definitionId, int[] statusArray) {
-        return taskInstanceMapper.runtimeTotalByDefinition(definitionId, statusArray);
+    public List<Map<String, Object>> runtimeTotalByDefinition(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime) {
+        return taskInstanceMapper.runtimeTotalByDefinition(workspaceId, userId, statusArray, startTime, endTime);
     }
 
     @Override
-    public Long getCountByByDefinitionAndStates(String definitionId, int[] statusArray) {
-        return taskInstanceMapper.getCountByByDefinitionAndStates(definitionId, statusArray);
+    public List<Map<String, Object>>  getCountByByDefinitionAndStates(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime) {
+        return taskInstanceMapper.getCountByByDefinitionAndStates(workspaceId, userId, statusArray, startTime, endTime);
     }
 
     @Override
-    public Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime) {
-        return taskInstanceMapper.totalRecordsByWorkspaceIdAndTime(workspaceId, startTime, endTime);
+    public Long totalRecordsByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime) {
+        return taskInstanceMapper.totalRecordsByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime);
     }
 
     @Override
-    public Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime) {
-        return taskInstanceMapper.totalBytesByWorkspaceIdAndTime(workspaceId, startTime, endTime);
+    public Long totalBytesByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime) {
+        return taskInstanceMapper.totalBytesByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime);
     }
 
     @Override

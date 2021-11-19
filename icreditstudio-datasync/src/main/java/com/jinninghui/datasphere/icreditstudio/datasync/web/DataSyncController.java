@@ -96,6 +96,20 @@ public class DataSyncController {
     }
 
     /**
+     * 查看任务详情
+     *
+     * @param request
+     * @return
+     */
+    @Logable
+    @PostMapping("/taskDetailInfo")
+    public BusinessResult<TaskDefineInfo> taskDetailInfo(@RequestBody DataSyncDetailRequest request) {
+        DataSyncDetailParam param = new DataSyncDetailParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.taskDetailInfo(param);
+    }
+
+    /**
      * 同步任务构建信息
      *
      * @return

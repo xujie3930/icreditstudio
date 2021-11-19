@@ -70,22 +70,22 @@ public interface TaskInstanceService {
      * @param statusArray
      * @return
      */
-    Long countByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime, int[] statusArray);
+    Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray);
 
     /**
      * 统计task数量/天
      * @param request
      * @return
      */
-    List<TaskCountResult> countByDay(SchedulerHomepageRequest request);
+    List<TaskCountResult> countByDay(String userId, SchedulerHomepageRequest request);
 
-    Double runtimeTotalByDefinition(String definitionId, int[] statusArray);
+    List<Map<String, Object>> runtimeTotalByDefinition(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime);
 
-    Long getCountByByDefinitionAndStates(String definitionId, int[] statusArray);
+    List<Map<String, Object>>  getCountByByDefinitionAndStates(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime);
 
-    Long totalRecordsByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
+    Long totalRecordsByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime);
 
-    Long totalBytesByWorkspaceIdAndTime(String workspaceId, Date startTime, Date endTime);
+    Long totalBytesByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime);
 
     List<Map<String, Object>> selectByWorkspaceIdAndUserId(String userId, String id);
 }

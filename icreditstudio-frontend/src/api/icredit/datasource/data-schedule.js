@@ -41,6 +41,10 @@ const dataScheduleSyncHistoryLog = params =>
 const dataScheduleSyncLogDetail = params =>
   getAction('/dolphinscheduler/log/detail', params)
 
+// 同步任务调度-立即执行
+const dataScheduleSyncRun = params =>
+  getAction('/dispatch/schedule/nowRun', params)
+
 export default {
   dataScheduleHomeRough,
   dataScheduleHomeRuntime,
@@ -51,5 +55,6 @@ export default {
   dataScheduleSyncList,
   dataScheduleSyncOperate,
   dataScheduleSyncLogDetail,
-  dataScheduleSyncHistoryLog
+  dataScheduleSyncHistoryLog,
+  dataScheduleSyncRun
 }

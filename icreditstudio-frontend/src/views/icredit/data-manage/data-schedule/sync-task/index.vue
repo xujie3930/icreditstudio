@@ -137,8 +137,8 @@ export default {
     // 立即执行
     handleRunBtnClick(row) {
       const { taskId } = row
-      const params = { taskId, execType: 0 }
-      API.dataSyncRun(params).then(({ success, data }) => {
+      const params = { taskId }
+      API.dataScheduleSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({
             title: '操作结果',
