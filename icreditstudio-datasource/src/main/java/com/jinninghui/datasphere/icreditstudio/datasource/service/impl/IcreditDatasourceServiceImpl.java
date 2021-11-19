@@ -107,11 +107,6 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> deleteById(IcreditDatasourceDelParam param) {
-        //删除数据源时候需要判断该数据源下是否有工作流
-        Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
-        if (hasRunningTask){
-            throw new AppException("70000012");
-        }
         if (DatasourceStatusEnum.ENABLE.getCode().equals(getById(param.getId()).getStatus())) {
             throw new AppException("70000009");
         }
@@ -478,6 +473,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param) {
+        //删除数据源时候需要判断该数据源下是否有工作流
+        if (DatasourceStatusEnum.DISABLE.getCode() == param.getStatus()){
+            Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
+            if (hasRunningTask){
+                throw new AppException("70000012");
+            }
+        }
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         //若数据源发生改动，则需要判断uri是否正确
         if (StringUtils.isNotBlank(param.getUri())) {
