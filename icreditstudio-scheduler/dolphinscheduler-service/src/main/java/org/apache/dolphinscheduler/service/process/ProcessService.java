@@ -1190,10 +1190,12 @@ public class ProcessService {
             Connection con = DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
 
             PreparedStatement pstmt = con.prepareStatement(this.sql);
-            pstmt.setInt(1, 7 == state ? 0 : 1);
+            int status = (7 == state) ? 0 : 1;
+            pstmt.setInt(1, status);
             pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
             pstmt.execute();
+            logger.info(sql + " status:" + status + ",processDefinitionId:" + processDefinitionId);
             if (null != con) {
                 con.close();
             }
