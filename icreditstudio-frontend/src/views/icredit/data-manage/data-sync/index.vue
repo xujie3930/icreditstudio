@@ -89,7 +89,11 @@
             </el-button>
             <el-button
               type="text"
-              v-if="row.taskStatus === 0 && row.execMode === 0"
+              v-if="
+                row.taskStatus === 0 &&
+                  row.execMode === 0 &&
+                  row.execStatus !== 2
+              "
               @click="handleRunBtnClick(row, 'Run')"
             >
               立即执行

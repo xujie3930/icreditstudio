@@ -119,15 +119,12 @@ export default {
   //       console.log(canWatchMenu, 'kingMenu')
   //       // 设置需要watch的路由
   //       if (canWatchMenu.includes(route.path)) {
-  //         console.log(1)
-  //         // TODO
   //         // 设置当前菜单的当前激活菜单id
   //         // 设置二级菜单
-  //         const menu = this.topModules.find(item => {
-  //           console.log(item, 'item')
-  //           // item.redirectPath === rootMenuMapping[]
-  //           return false
-  //         })
+  //         const menu = this.topModules.find(
+  //           item => item.redirectPath === route.path
+  //         )
+  //         this.changeMenu(menu)
   //         console.log(menu, 'menu')
   //       }
   //     }
