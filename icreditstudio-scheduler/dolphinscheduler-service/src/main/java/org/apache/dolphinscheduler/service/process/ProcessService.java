@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.apache.dolphinscheduler.common.Constants.*;
+import static org.apache.dolphinscheduler.common.enums.CommandType.REPEAT_RUNNING;
 
 /**
  * process relative dao that some mappers in this.
@@ -60,7 +61,8 @@ public class ProcessService {
     private String mysqlUrl;
     private String pwd;
     private String userName;
-    private String sql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
+    private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
+    private String getWideTableInfoSql = "SELECT sync_condition FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
 
     {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
@@ -81,9 +83,6 @@ public class ProcessService {
 
     @Resource
     private ProcessInstanceMapper processInstanceMapper;
-
-    @Resource
-    private ProcessInstanceMapMapper processInstanceMapMapper;
 
     @Resource
     private TaskInstanceMapper taskInstanceMapper;
@@ -208,7 +207,7 @@ public class ProcessService {
     public Boolean verifyIsNeedCreateCommand(Command command) {
         Boolean isNeedCreate = true;
         Map<CommandType, Integer> cmdTypeMap = new HashMap<CommandType, Integer>();
-        cmdTypeMap.put(CommandType.REPEAT_RUNNING, 1);
+        cmdTypeMap.put(REPEAT_RUNNING, 1);
         cmdTypeMap.put(CommandType.RECOVER_SUSPENDED_PROCESS, 1);
         cmdTypeMap.put(CommandType.START_FAILURE_TASK_PROCESS, 1);
         CommandType commandType = command.getCommandType();
@@ -444,6 +443,8 @@ public class ProcessService {
             }
         }
 
+        processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
+
         if (cmdParam != null) {
             String processInstanceId = null;
             // recover from failure or pause tasks
@@ -487,7 +488,30 @@ public class ProcessService {
             if (cmdParam.containsKey(Constants.CMDPARAM_SUB_PROCESS)) {
                 processInstance.setCommandParam(command.getCommandParam());
             }
-        } else {
+        }else if(null != processInstance){
+            Connection con = getConnection();
+            String cronInfo = null;
+            try {
+                PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
+                pstmt.setString(1, processDefinition.getId());
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()){
+                    cronInfo = rs.getString(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }finally {
+                closeConn(con);
+            }
+            JSONObject cronObj = JSONObject.parseObject(cronInfo);
+            String n = cronObj.getString("n");//T + n 中 n 的值
+            String partition = cronObj.getString("partition");// 每年|每月|每日|每时
+            boolean isNeed = checkNeedOverride(n, partition, processInstance.getCommandStartTime());
+            if(isNeed){
+                commandType = REPEAT_RUNNING;
+                handleProcessInstance(processInstance);
+            }
+        }else {
             // generate one new process instance
             processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
         }
@@ -500,7 +524,6 @@ public class ProcessService {
             processInstance.setScheduleTime(command.getScheduleTime());
         }
         processInstance.setHost(host);
-
         ExecutionStatus runStatus = ExecutionStatus.RUNNING_EXECUTION;
         int runTime = processInstance.getRunTimes();
         switch (commandType) {
@@ -557,10 +580,10 @@ public class ProcessService {
                 break;
             case REPEAT_RUNNING:
                 // delete the recover task names from command parameter
-                if (cmdParam.containsKey(Constants.CMDPARAM_RECOVERY_START_NODE_STRING)) {
-                    cmdParam.remove(Constants.CMDPARAM_RECOVERY_START_NODE_STRING);
-                    processInstance.setCommandParam(JSONUtils.toJson(cmdParam));
-                }
+//                if (cmdParam.containsKey(Constants.CMDPARAM_RECOVERY_START_NODE_STRING)) {
+//                    cmdParam.remove(Constants.CMDPARAM_RECOVERY_START_NODE_STRING);
+//                    processInstance.setCommandParam(JSONUtils.toJson(cmdParam));
+//                }
                 // delete all the valid tasks when repeat running
                 List<TaskInstance> validTaskList = findValidTaskListByProcessId(processInstance.getId());
                 for (TaskInstance taskInstance : validTaskList) {
@@ -579,6 +602,122 @@ public class ProcessService {
         }
         processInstance.setState(runStatus);
         return processInstance;
+    }
+
+    /**
+     *  处理 processInstance 并保存
+     * @param processInstance
+     */
+    private void handleProcessInstance(ProcessInstance processInstance) {
+        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
+        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
+        JSONObject paramObj = taskObj.getJSONObject("params");
+        if(!"1".equals(paramObj.getString("customConfig"))){
+            return ;
+        }
+        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
+        JSONObject writer = content.getJSONObject("writer");
+        if(!"hdfswriter".equals(writer.getString("name"))){
+            return ;
+        }
+        JSONObject parameter = writer.getJSONObject("parameter");
+        String oldFileName = parameter.getString("fileName");
+        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
+        target.append(oldFileName).append("\\\"");
+        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
+        replaceStr.append(processInstance.getFileName()).append("\\\"");
+        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
+        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
+                .replace(target, replaceStr);
+        processInstance.setProcessInstanceJson(instanceJson);
+        processInstanceMapper.updateById(processInstance);
+    }
+
+    private static boolean checkNeedOverride(String n, String partition, Date commandStartTime) {
+        boolean isNeed = false;
+        int nn = 0 - Integer.parseInt(n);
+        Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
+        Date nowDate = new Date();
+        calendar.setTime(nowDate);
+        String nowDateStr = DateUtils.dateToString(nowDate);
+        StringBuffer endDatePrefix = new StringBuffer();
+        StringBuffer startDatePrefix = new StringBuffer();
+        if(partition.contains("year")){//获取前 n 年
+            endDatePrefix.append(calendar.get(Calendar.YEAR));
+            calendar.add(Calendar.YEAR, nn);
+            startDatePrefix.append(calendar.get(Calendar.YEAR));
+        }else if(partition.contains("month")){
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                endDatePrefix.append("0");
+            }
+            endDatePrefix.append(month);
+            calendar.add(Calendar.MONTH, nn);
+            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                startDatePrefix.append("0");
+            }
+            startDatePrefix.append(month);
+        }else if(partition.contains("day")){
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                endDatePrefix.append("0");
+            }
+            endDatePrefix.append(month).append("-");
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                endDatePrefix.append("0");
+            }
+            endDatePrefix.append(day).append(" ");
+            calendar.add(Calendar.DAY_OF_MONTH, nn);
+            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                startDatePrefix.append("0");
+            }
+            startDatePrefix.append(month).append("-");
+            day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                startDatePrefix.append("0");
+            }
+            startDatePrefix.append(day).append(" ");
+        }else if(partition.contains("hour")){
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                endDatePrefix.append("0");
+            }
+            endDatePrefix.append(month).append("-");
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                endDatePrefix.append("0");
+            }
+            endDatePrefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+
+            calendar.add(Calendar.HOUR, nn);
+            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            if(month.length() <= 1){
+                startDatePrefix.append("0");
+            }
+            startDatePrefix.append(month).append("-");
+            day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                startDatePrefix.append("0");
+            }
+            startDatePrefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+        }
+        int prefixLen = startDatePrefix.length();
+        Date startDate = DateUtils.stringToDate(startDatePrefix + nowDateStr.substring(prefixLen));
+        Date endDate = DateUtils.stringToDate(endDatePrefix + nowDateStr.substring(prefixLen));
+        if(commandStartTime.after(startDate) && commandStartTime.before(endDate)){
+            isNeed = true;
+        }
+        return isNeed;
     }
 
     /**
@@ -1185,24 +1324,42 @@ public class ProcessService {
     }
 
     public void updateTaskByScheduleId(String processDefinitionId, int state, Date nowDate) {
+        Connection con = getConnection();;
         try {
-            Class.forName(this.driverStr);
-            Connection con = DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
-
-            PreparedStatement pstmt = con.prepareStatement(this.sql);
+            PreparedStatement pstmt = con.prepareStatement(this.statusBackWritSql);
             int status = (7 == state) ? 0 : 1;
             pstmt.setInt(1, status);
             pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
             pstmt.execute();
-            logger.info(sql + " status:" + status + ",processDefinitionId:" + processDefinitionId);
-            if (null != con) {
-                con.close();
-            }
+            logger.info(statusBackWritSql + " status:" + status + ",processDefinitionId:" + processDefinitionId);
         } catch (SQLException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        }finally {
+            closeConn(con);
         }
     }
+
+    private Connection getConnection(){
+        try {
+            Class.forName(this.driverStr);
+            return DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void closeConn(Connection con){
+        if (null != con) {
+            try {
+                con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
