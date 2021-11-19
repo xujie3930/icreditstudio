@@ -42,7 +42,12 @@
             :key="item.name"
             @click="handleFuncClick(item)"
           >
-            <j-svg class="jsvg" :name="item.icon" />
+            <!-- @mouseover="handleChangeIcon(idx, true)"
+            @mouseleave="handleChangeIcon(idx, false)" -->
+            <j-svg
+              class="jsvg"
+              :name="item.isHover ? item.iconName : item.icon"
+            />
             <span class="text">{{ item.name }}</span>
           </div>
         </div>
@@ -152,44 +157,49 @@ export default {
       funcConfigs: [
         {
           icon: 'menu-workspace-setting-black',
-          iconActive: 'menu-space-active',
+          iconActive: 'menu-workspace-setting-active',
           name: '工作空间',
           path: '/workspace/space-setting',
           isHover: false
         },
         {
           icon: 'menu-data-manage-black',
-          iconActive: 'menu-data-active',
+          iconActive: 'menu-data-manage-active',
           name: '数据管理',
           path: '/workspace/datasource',
           isHover: false
         },
         {
           icon: 'menu-govern-black',
+          iconActive: 'menu-govern-active',
           name: '数据质检',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-assets-manage-black',
+          iconActive: 'menu-assets-manage-active',
           name: '资产管理',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-bi-black',
+          iconActive: 'menu-bi-view-active',
           name: 'BI可视化',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-data-service-black',
+          iconActive: 'menu-data-service-active',
           name: '数据服务',
           path: '',
           isHover: false
         },
         {
           icon: 'menu-depovs-black',
+          iconActive: 'menu-depovs-active',
           name: '运维&安全',
           path: '',
           isHover: false
@@ -249,6 +259,11 @@ export default {
 
     mixinChangeWorkspaceId() {
       this.getStatisticsData()
+    },
+
+    handleChangeIcon(idx, isHover) {
+      console.log(idx, 'lplp')
+      this.menuConfigs[idx].isHover = isHover
     },
 
     handleJumpClick(path) {
