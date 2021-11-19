@@ -177,6 +177,7 @@ export default {
             message: '重跑任务已提交，稍后请在日志中查看执行结果!'
           })
         }
+        this.mixinRetrieveTableData()
       })
     },
 
