@@ -65,7 +65,7 @@
           <!-- 操作按钮 -->
           <template #operationColumn="{row}">
             <el-button
-              :disabled="row.taskStatus !== 0"
+              :disabled="row.dispatchStatus === 2 || row.taskStatus !== 0"
               type="text"
               @click="handleRunBtnClick(row, 'Run')"
             >
