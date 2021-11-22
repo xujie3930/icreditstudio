@@ -234,4 +234,9 @@ public class DataSyncController {
         return syncTaskService.hasRunningTask(datasourceId);
     }
 
+    @GetMapping("/updateExecStatusByScheduleId")
+    public Boolean updateTaskStatusByScheduleId(@RequestParam("scheduleId") String scheduleId){
+        return syncTaskService.updateExecStatusByScheduleId(scheduleId);
+    }
+
 }
