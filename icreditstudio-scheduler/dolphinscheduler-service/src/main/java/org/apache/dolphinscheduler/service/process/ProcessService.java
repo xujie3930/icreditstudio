@@ -658,8 +658,8 @@ public class ProcessService {
                 prefix.append("0");
             }
             prefix.append(month);
+            startDateStr.append(prefix).append("-01 00:00:00");
             if("2".equals(month)){
-                startDateStr.append(prefix).append("-01 00:00:00");
                 if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {//闰年
                     endDateStr.append(prefix).append("-29 23:59:59");
                 }else{
