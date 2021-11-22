@@ -1072,4 +1072,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public String getDatasourceId(String taskId) {
         return syncTaskMapper.getDatasourceId(taskId);
     }
+
+    @Override
+    public Boolean updateTaskStatusByScheduleId(String scheduleId) {
+        syncTaskMapper.updateTaskStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
+        return true;
+    }
 }

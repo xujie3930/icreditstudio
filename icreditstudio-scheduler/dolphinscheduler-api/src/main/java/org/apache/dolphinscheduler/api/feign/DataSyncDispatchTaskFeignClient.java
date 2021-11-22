@@ -28,4 +28,10 @@ public interface DataSyncDispatchTaskFeignClient {
      */
     @GetMapping("/datasync/getProcessDefinitionId")
     String getProcessDefinitionIdByTaskId(@RequestParam("taskId") String taskId);
+
+    /**
+     * 获取任务中的 流程定义ID
+     */
+    @GetMapping("/datasync/updateTaskStatusByScheduleId")
+    boolean updateTaskStatusByScheduleId(@RequestParam("scheduleId") String scheduleId);
 }

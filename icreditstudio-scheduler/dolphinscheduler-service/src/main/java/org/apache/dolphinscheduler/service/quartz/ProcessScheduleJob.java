@@ -102,6 +102,7 @@ public class ProcessScheduleJob implements Job {
             logger.warn("定时任务是下线状态，不能创建command, projectId:{}, processId:{}", projectId, scheduleId);
             return;
         }
+
         //根据分区条件确定是否创建分区路径和添加同步过滤条件
         String partitionParam = processDefinition.getPartitionParam();
         if (StringUtils.isNotBlank(partitionParam)) {
