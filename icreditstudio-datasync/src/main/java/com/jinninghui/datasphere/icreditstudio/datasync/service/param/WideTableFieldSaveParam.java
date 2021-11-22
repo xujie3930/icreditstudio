@@ -50,4 +50,8 @@ public class WideTableFieldSaveParam {
      * 备注
      */
     private String remark;
+    /**
+     * 数据库
+     */
+    private String databaseName;
 }

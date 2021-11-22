@@ -205,6 +205,7 @@ CREATE TABLE `datasync`.`icredit_sync_widetable_field` (
                                                            `source` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
                                                            `chinese` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
                                                            `dict_key` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+                                                           `database_name` varchar(200) COLLATE utf8mb4_bin DEFAULT NULL,
                                                            `version` int(11) DEFAULT NULL,
                                                            `remark` varchar(255) COLLATE utf8mb4_bin DEFAULT NULL,
                                                            `create_time` datetime DEFAULT NULL,
