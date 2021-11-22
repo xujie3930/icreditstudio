@@ -895,6 +895,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> enable(DataSyncExecParam param) {
+        //根据taskId查找数据源id
+        String datasourceId = getDatasourceId(param.getTaskId());
+        BusinessResult<DatasourceDetailResult> info = datasourceFeign.info(datasourceId);
+        if (info.isSuccess() && info.getData() != null && EnableStatusEnum.DISABLE.getCode().equals(info.getData().getStatus())){
+            throw new AppException("60000053");
+        }
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
         if (entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()) {
