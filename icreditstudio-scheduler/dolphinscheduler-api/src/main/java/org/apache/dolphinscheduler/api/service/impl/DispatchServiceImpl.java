@@ -189,15 +189,15 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<Boolean> nowRun(String taskId) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
+        if(null == processInstance){//第一次执行，
+            platformExecutorService.execSyncTask(definitionId);
+            return BusinessResult.success(true);
+        }
         if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        if(null == processInstance){//第一次执行，
-            platformExecutorService.execSyncTask(definitionId);
-            return BusinessResult.success(true);
-        }
         handleProcessInstance(processInstance);
         int result = insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         if(0 == result){
