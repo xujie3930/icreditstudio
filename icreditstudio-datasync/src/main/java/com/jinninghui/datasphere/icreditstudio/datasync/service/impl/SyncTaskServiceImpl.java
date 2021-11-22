@@ -616,6 +616,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         saveParam.setName(info.getFieldName());
                         saveParam.setDictKey(info.getAssociateDict());
                         saveParam.setType(info.getFieldType());
+                        saveParam.setDatabaseName(info.getDatabaseName());
                         return saveParam;
                     }).collect(Collectors.toList());
             wideTableFieldSave(saveParams);
