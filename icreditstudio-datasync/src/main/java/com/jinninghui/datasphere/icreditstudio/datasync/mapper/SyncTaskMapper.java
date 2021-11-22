@@ -24,5 +24,5 @@ public interface SyncTaskMapper extends BaseMapper<SyncTaskEntity> {
 
     String getDatasourceId(@Param("taskId") String taskId);
 
-    void updateTaskStatusByScheduleId(@Param("scheduleId") String scheduleId, @Param("execState") int execState);
+    void updateExecStatusByScheduleId(@Param("scheduleId") String scheduleId, @Param("execState") int execState);
 }

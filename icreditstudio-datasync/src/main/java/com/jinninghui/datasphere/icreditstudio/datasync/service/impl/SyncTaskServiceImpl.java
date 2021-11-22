@@ -1080,8 +1080,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
-    public Boolean updateTaskStatusByScheduleId(String scheduleId) {
-        syncTaskMapper.updateTaskStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
+    public Boolean updateExecStatusByScheduleId(String scheduleId) {
+        syncTaskMapper.updateExecStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
         return true;
     }
 }

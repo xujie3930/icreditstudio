@@ -94,7 +94,7 @@ public class DispatchServiceImpl implements DispatchService {
                     processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
-            dataSyncDispatchTaskFeignClient.updateTaskStatusByScheduleId(processDefinition.getId());
+            dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
             handleProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
         }
@@ -193,7 +193,7 @@ public class DispatchServiceImpl implements DispatchService {
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
-        dataSyncDispatchTaskFeignClient.updateTaskStatusByScheduleId(definitionId);
+        dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
         if(null == processInstance){//第一次执行，
             platformExecutorService.execSyncTask(definitionId);
             return BusinessResult.success(true);
