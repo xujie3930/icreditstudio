@@ -126,10 +126,9 @@ public class HomePageServiceImpl implements HomePageService {
         Date startTime = DateUtils.getStartOfDay(date);
         Date endTime = DateUtils.getEndOfDay((date));
         Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
-        Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode()});
-        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.RUNNING_EXECUTION.getCode()});
-        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(),
-                ExecutionStatus.WAITTING_DEPEND.getCode()});
+        Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.STOP.getCode(), ExecutionStatus.READY_STOP.getCode()});
+        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
+        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
 //        RedisUtils.set(redisKey,taskSituationResultList, FIVE_MINUTE_TIME);
         return BusinessResult.success(taskSituationResultList);
@@ -208,6 +207,9 @@ public class HomePageServiceImpl implements HomePageService {
 //        if (null != redisCache){
 //            return redisCache;
 //        }
+        if (!DEFAULT_WORKSPACEID.equals(id)){
+            userId = "";
+        }
         WorkBenchResult result = new WorkBenchResult();
         List<Map<String, Object>> list = taskInstanceService.selectByWorkspaceIdAndUserId(userId, id);
         //正在执行
