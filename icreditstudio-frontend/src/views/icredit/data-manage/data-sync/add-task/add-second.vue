@@ -448,6 +448,7 @@ export default {
       fieldTypeOptions,
       radioBtnOption,
       tableConfiguration: tableConfiguration(this),
+      originTreeData: [],
       treeData: [],
       defalutExpandKey: [],
       zoningOptions: [],
@@ -536,15 +537,19 @@ export default {
       this.tableNameOptions = []
       this.defalutExpandKey = []
       this.$refs.tree.setCurrentKey()
+      this.treeData = this.originTreeData
     },
 
     handleChangeTableName(name) {
       console.log(name, this.treeData)
+      const { content, ...rest } = this.originTreeData[0]
       if (name) {
         const allTreeNode = []
-        this.treeData.forEach(({ content }) => allTreeNode.push(...content))
-        const { idx } = allTreeNode.find(item => item.name === name)
-        console.log(allTreeNode, idx, 'node')
+        this.treeData.forEach(({ content: con }) => allTreeNode.push(...con))
+        const filterTreeData = allTreeNode.filter(item => item.name === name)
+        console.log(allTreeNode, filterTreeData, 'node')
+        const idx = filterTreeData[0]?.idx || null
+        this.treeData = [{ content: filterTreeData, ...rest }]
         this.defalutExpandKey = [idx]
         this.$refs.tree.setCurrentKey(idx)
       }
@@ -1255,6 +1260,7 @@ export default {
                 ...rest
               }
             })
+            this.originTreeData = this.treeData
           }
         })
         .finally(() => {
