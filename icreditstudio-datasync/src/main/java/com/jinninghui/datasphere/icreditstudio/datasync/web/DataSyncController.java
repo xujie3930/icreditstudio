@@ -1,13 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncTaskService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.*;
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -28,8 +26,6 @@ import java.util.Date;
 public class DataSyncController {
     @Resource
     private SyncTaskService syncTaskService;
-    @Resource
-    private DatasourceFeign datasourceFeign;
 
     /**
      * 同步任务定义、同步任务构建、同步任务调度保存
@@ -172,12 +168,6 @@ public class DataSyncController {
      */
     @PostMapping("/enable")
     public BusinessResult<Boolean> enable(@RequestBody DataSyncExecRequest request) {
-        //根据taskId查找数据源id
-        String datasourceId = syncTaskService.getDatasourceId(request.getTaskId());
-        BusinessResult<DatasourceDetailResult> info = datasourceFeign.info(datasourceId);
-        if (info.isSuccess() && info.getData() != null && info.getData().getStatus() == 1){
-            throw new AppException("60000053");
-        }
         DataSyncExecParam param = new DataSyncExecParam();
         BeanCopyUtils.copyProperties(request, param);
         return syncTaskService.enable(param);
