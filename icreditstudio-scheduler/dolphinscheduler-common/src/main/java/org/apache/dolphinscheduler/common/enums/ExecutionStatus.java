@@ -41,15 +41,19 @@ public enum ExecutionStatus {
      */
     SUBMITTED_SUCCESS(0, "submit success"),
     RUNNING_EXECUTION(1, "running"),
+    //无此状态
     READY_PAUSE(2, "ready pause"),
+    //无此状态
     PAUSE(3, "pause"),
     READY_STOP(4, "ready stop"),
     STOP(5, "stop"),
     FAILURE(6, "failure"),
     SUCCESS(7, "success"),
     NEED_FAULT_TOLERANCE(8, "need fault tolerance"),
+    //最终会成为STOP状态
     KILL(9, "kill"),
     WAITTING_THREAD(10, "waiting thread"),
+    //无此状态
     WAITTING_DEPEND(11, "waiting depend node complete");
 
     ExecutionStatus(int code, String descp) {

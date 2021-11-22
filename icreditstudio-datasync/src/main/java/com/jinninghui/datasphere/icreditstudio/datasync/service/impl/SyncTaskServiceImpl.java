@@ -616,6 +616,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         saveParam.setName(info.getFieldName());
                         saveParam.setDictKey(info.getAssociateDict());
                         saveParam.setType(info.getFieldType());
+                        saveParam.setDatabaseName(info.getDatabaseName());
                         return saveParam;
                     }).collect(Collectors.toList());
             wideTableFieldSave(saveParams);
@@ -894,6 +895,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> enable(DataSyncExecParam param) {
+        //根据taskId查找数据源id
+        String datasourceId = getDatasourceId(param.getTaskId());
+        BusinessResult<DatasourceDetailResult> info = datasourceFeign.info(datasourceId);
+        if (info.isSuccess() && info.getData() != null && EnableStatusEnum.DISABLE.getCode().equals(info.getData().getStatus())){
+            throw new AppException("60000053");
+        }
         checkTaskId(param.getTaskId());
         SyncTaskEntity entity = syncTaskMapper.selectById(param.getTaskId());
         if (entity != null && TaskStatusEnum.DISABLE.getCode() != entity.getTaskStatus()) {
@@ -1070,5 +1077,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Override
     public String getDatasourceId(String taskId) {
         return syncTaskMapper.getDatasourceId(taskId);
+    }
+
+    @Override
+    public Boolean updateExecStatusByScheduleId(String scheduleId) {
+        syncTaskMapper.updateExecStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
+        return true;
     }
 }

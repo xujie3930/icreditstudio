@@ -122,4 +122,8 @@
         where t.id = #{taskId}
         limit 1
     </select>
+
+    <update id="updateExecStatusByScheduleId">
+        UPDATE icredit_sync_task SET exec_status = #{execState} WHERE schedule_id = #{scheduleId}
+    </update>
 </mapper>

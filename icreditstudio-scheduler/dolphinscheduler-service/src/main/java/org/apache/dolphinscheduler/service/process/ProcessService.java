@@ -506,10 +506,12 @@ public class ProcessService {
             JSONObject cronObj = JSONObject.parseObject(cronInfo);
             String n = cronObj.getString("n");//T + n 中 n 的值
             String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-            boolean isNeed = checkNeedOverride(n, partition, processInstance.getCommandStartTime());
-            if(isNeed){
+            boolean isNeedOverride = checkNeedOverride(n, partition, processInstance.getCommandStartTime());
+            if(isNeedOverride){
                 commandType = REPEAT_RUNNING;
                 handleProcessInstance(processInstance);
+            }else{
+                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
         }else {
             // generate one new process instance
@@ -638,82 +640,74 @@ public class ProcessService {
         boolean isNeed = false;
         int nn = 0 - Integer.parseInt(n);
         Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
-        Date nowDate = new Date();
-        calendar.setTime(nowDate);
-        String nowDateStr = DateUtils.dateToString(nowDate);
-        StringBuffer endDatePrefix = new StringBuffer();
-        StringBuffer startDatePrefix = new StringBuffer();
+        calendar.setTime(new Date());
+        StringBuffer prefix = new StringBuffer();
+        StringBuffer startDateStr = new StringBuffer();
+        StringBuffer endDateStr = new StringBuffer();
         if(partition.contains("year")){//获取前 n 年
-            endDatePrefix.append(calendar.get(Calendar.YEAR));
             calendar.add(Calendar.YEAR, nn);
-            startDatePrefix.append(calendar.get(Calendar.YEAR));
+            prefix.append(calendar.get(Calendar.YEAR));
+            startDateStr.append(prefix).append("-01-01 00:00:00");
+            endDateStr.append(prefix).append("-12-31 23:59:59");
         }else if(partition.contains("month")){
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
-            if(month.length() <= 1){
-                endDatePrefix.append("0");
-            }
-            endDatePrefix.append(month);
             calendar.add(Calendar.MONTH, nn);
-            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             if(month.length() <= 1){
-                startDatePrefix.append("0");
+                prefix.append("0");
             }
-            startDatePrefix.append(month);
+            prefix.append(month);
+            startDateStr.append(prefix).append("-01 00:00:00");
+            if("2".equals(month)){
+                if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {//闰年
+                    endDateStr.append(prefix).append("-29 23:59:59");
+                }else{
+                    endDateStr.append(prefix).append("-28 23:59:59");
+                }
+            }else if("4".equals(month) || "6".equals(month) || "9".equals(month) || "11".equals(month)){
+                endDateStr.append(prefix).append("-30 23:59:59");
+            }else {
+                endDateStr.append(prefix).append("-31 23:59:59");
+            }
         }else if(partition.contains("day")){
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
-            if(month.length() <= 1){
-                endDatePrefix.append("0");
-            }
-            endDatePrefix.append(month).append("-");
-            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            if(day.length() <= 1){
-                endDatePrefix.append("0");
-            }
-            endDatePrefix.append(day).append(" ");
             calendar.add(Calendar.DAY_OF_MONTH, nn);
-            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
-            if(month.length() <= 1){
-                startDatePrefix.append("0");
-            }
-            startDatePrefix.append(month).append("-");
-            day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            if(day.length() <= 1){
-                startDatePrefix.append("0");
-            }
-            startDatePrefix.append(day).append(" ");
-        }else if(partition.contains("hour")){
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
             String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            endDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
             if(month.length() <= 1){
-                endDatePrefix.append("0");
+                prefix.append("0");
             }
-            endDatePrefix.append(month).append("-");
+            prefix.append(month).append("-");
             String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
             if(day.length() <= 1){
-                endDatePrefix.append("0");
+                startDateStr.append("0");
             }
-            endDatePrefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+            prefix.append(day);
 
+            startDateStr.append(prefix).append(" 00:00:00");
+            endDateStr.append(prefix).append(" 23:59:59");
+        }else if(partition.contains("hour")){
             calendar.add(Calendar.HOUR, nn);
-            month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            startDatePrefix.append(calendar.get(Calendar.YEAR)).append("-");
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
             if(month.length() <= 1){
-                startDatePrefix.append("0");
+                prefix.append("0");
             }
-            startDatePrefix.append(month).append("-");
-            day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            prefix.append(month).append("-");
+
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
             if(day.length() <= 1){
-                startDatePrefix.append("0");
+                prefix.append("0");
             }
-            startDatePrefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+            prefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+
+            startDateStr.append(prefix).append(":00:00");
+            endDateStr.append(prefix).append(":59:59");
         }
-        int prefixLen = startDatePrefix.length();
-        Date startDate = DateUtils.stringToDate(startDatePrefix + nowDateStr.substring(prefixLen));
-        Date endDate = DateUtils.stringToDate(endDatePrefix + nowDateStr.substring(prefixLen));
+        Date startDate = DateUtils.stringToDate(String.valueOf(startDateStr));
+        Date endDate = DateUtils.stringToDate(String.valueOf(endDateStr));
         if(commandStartTime.after(startDate) && commandStartTime.before(endDate)){
             isNeed = true;
         }
