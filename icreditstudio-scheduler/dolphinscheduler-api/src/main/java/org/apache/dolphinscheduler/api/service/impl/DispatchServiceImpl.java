@@ -236,15 +236,14 @@ public class DispatchServiceImpl implements DispatchService {
         JSONObject parameter = writer.getJSONObject("parameter");
 
         JSONObject connObj = (JSONObject) parameter.getJSONArray("connection").get(0);
-        StringBuffer querySql = new StringBuffer(connObj.getString("querySql"));
-        querySql.append(" WHERE ").append(whereField).append(" < ").append(dateStr);
         //替换 definitionJson 中的 querySql
         StringBuilder target = new StringBuilder("\\\"querySql\\\":\\\"");
         target.append(connObj.getString("querySql")).append("\\\"");
+
         StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":\\\"");
-        replaceStr.append(querySql).append("\\\"");
-        String instanceJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
-        definition.setProcessDefinitionJson(instanceJson);
+        replaceStr.append(connObj.getString("querySql")).append(" WHERE ").append(whereField).append(" < '").append(dateStr).append("'\\\"");
+        String definitionJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
+        definition.setProcessDefinitionJson(definitionJson);
     }
 
     private String getDateStr(String n, String partition) {
