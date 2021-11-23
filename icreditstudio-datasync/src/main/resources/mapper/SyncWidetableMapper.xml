@@ -30,6 +30,6 @@
     </sql>
 
     <select id="getWideTableInfoByTaskId" resultType="java.lang.String">
-        SELECT sync_condition FROM icredit_sync_widetable WHERE icredit_sync_widetable = #{taskId}
+        SELECT sync_condition FROM icredit_sync_widetable WHERE sync_task_id = #{taskId}
     </select>
 </mapper>
