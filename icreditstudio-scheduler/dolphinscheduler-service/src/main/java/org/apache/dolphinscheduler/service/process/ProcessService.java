@@ -1361,4 +1361,7 @@ public class ProcessService {
         }
     }
 
+    public void saveProcessDefinition(ProcessDefinition definition) {
+        processDefineMapper.updateById(definition);
+    }
 }

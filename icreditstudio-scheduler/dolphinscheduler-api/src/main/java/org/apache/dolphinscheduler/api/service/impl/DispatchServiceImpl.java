@@ -220,6 +220,7 @@ public class DispatchServiceImpl implements DispatchService {
         String whereField = cronObj.getString("incrementalField");// 每年|每月|每日|每时
         String dateStr = getDateStr(n, partition);
         handleProcessDefinition(definition, whereField, dateStr);
+        processService.saveProcessDefinition(definition);
     }
 
     private void handleProcessDefinition(ProcessDefinition definition, String whereField, String dateStr) {
