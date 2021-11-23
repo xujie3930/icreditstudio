@@ -701,7 +701,12 @@ public class ProcessService {
             if(day.length() <= 1){
                 prefix.append("0");
             }
-            prefix.append(day).append(" ").append(calendar.get(Calendar.HOUR_OF_DAY));
+            prefix.append(day).append(" ");
+            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+            if(hour.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(hour);
 
             startDateStr.append(prefix).append(":00:00");
             endDateStr.append(prefix).append(":59:59");
