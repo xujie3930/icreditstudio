@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #Actively load user env
 source ~/.bash_profile
 shellDir=$(dirname $0)
@@ -152,10 +153,10 @@ sed -i ${txt} "s#spring.redis.host.*#spring.redis.host: $REDIS_HOST#g" $SCHEDULE
 sed -i ${txt} "s#spring.redis.port.*#spring.redis.port: $REDIS_PORT#g" $SCHEDULER_API_CONF/application-$PROFILE.yml
 sed -i ${txt} "s#fs.defaultFS.*#fs.defaultFS=$defaultFS#g" $SCHEDULER_API_CONF/common.properties
 sed -i ${txt} "s#hdfs.root.user.*#hdfs.root.user=$HDFS_ROOT_USER#g" $SCHEDULER_API_CONF/common.properties
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?useUnicode=true&characterEncoding=UTF-8&useSSL=false#g" $SCHEDULER_API_CONF/datasource.properties
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?characterEncoding=UTF-8#g" $SCHEDULER_API_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username=$MYSQL_USER#g" $SCHEDULER_API_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_API_CONF/datasource.properties
-sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?useSSL=false&useUnicode=true&characterEncoding=utf8#g" $SCHEDULER_API_CONF/task.properties
+sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?characterEncoding=utf8#g" $SCHEDULER_API_CONF/task.properties
 sed -i ${txt} "s#task.datasource.username.*#task.datasource.username=$MYSQL_USER#g" $SCHEDULER_API_CONF/task.properties
 sed -i ${txt} "s#task.datasource.password.*#task.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_API_CONF/task.properties
 sed -i ${txt} "s#zookeeper.quorum.*#zookeeper.quorum=$ZOOKEEPER_QUORUM#g" $SCHEDULER_API_CONF/zookeeper.properties
@@ -165,10 +166,10 @@ SCHEDULER_MASTER_CONF=$ICREDITSTUDIO_HOME/jnh-datasphere-icreditstudio-scheduler
 
 sed -i ${txt} "s#fs.defaultFS.*#fs.defaultFS=$defaultFS#g" $SCHEDULER_MASTER_CONF/common.properties
 sed -i ${txt} "s#hdfs.root.user.*#hdfs.root.user=$HDFS_ROOT_USER#g" $SCHEDULER_MASTER_CONF/common.properties
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?useUnicode=true&characterEncoding=UTF-8&useSSL=false#g" $SCHEDULER_MASTER_CONF/datasource.properties
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?characterEncoding=UTF-8#g" $SCHEDULER_MASTER_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username=$MYSQL_USER#g" $SCHEDULER_MASTER_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_MASTER_CONF/datasource.properties
-sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?useSSL=false&useUnicode=true&characterEncoding=utf8#g" $SCHEDULER_MASTER_CONF/task.properties
+sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?characterEncoding=utf8#g" $SCHEDULER_MASTER_CONF/task.properties
 sed -i ${txt} "s#task.datasource.username.*#task.datasource.username=$MYSQL_USER#g" $SCHEDULER_MASTER_CONF/task.properties
 sed -i ${txt} "s#task.datasource.password.*#task.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_MASTER_CONF/task.properties
 sed -i ${txt} "s#zookeeper.quorum.*#zookeeper.quorum=$ZOOKEEPER_QUORUM#g" $SCHEDULER_MASTER_CONF/zookeeper.properties
@@ -179,10 +180,10 @@ SCHEDULER_WORKER_CONF=$ICREDITSTUDIO_HOME/jnh-datasphere-icreditstudio-worker-bi
 
 sed -i ${txt} "s#fs.defaultFS.*#fs.defaultFS=$defaultFS#g" $SCHEDULER_WORKER_CONF/common.properties
 sed -i ${txt} "s#hdfs.root.user.*#hdfs.root.user=$HDFS_ROOT_USER#g" $SCHEDULER_WORKER_CONF/common.properties
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?useUnicode=true&characterEncoding=UTF-8&useSSL=false#g" $SCHEDULER_WORKER_CONF/datasource.properties
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icreditdolphinscheduler?characterEncoding=UTF-8#g" $SCHEDULER_WORKER_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username=$MYSQL_USER#g" $SCHEDULER_WORKER_CONF/datasource.properties
 sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_WORKER_CONF/datasource.properties
-sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?useSSL=false&useUnicode=true&characterEncoding=utf8#g" $SCHEDULER_WORKER_CONF/task.properties
+sed -i ${txt} "s#task.datasource.url.*#task.datasource.url=jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?characterEncoding=utf8#g" $SCHEDULER_WORKER_CONF/task.properties
 sed -i ${txt} "s#task.datasource.username.*#task.datasource.username=$MYSQL_USER#g" $SCHEDULER_WORKER_CONF/task.properties
 sed -i ${txt} "s#task.datasource.password.*#task.datasource.password=$MYSQL_PASSWORD#g" $SCHEDULER_WORKER_CONF/task.properties
 sed -i ${txt} "s#zookeeper.quorum.*#zookeeper.quorum=$ZOOKEEPER_QUORUM#g" $SCHEDULER_WORKER_CONF/zookeeper.properties
@@ -222,23 +223,23 @@ sed -i ${txt} "s#spring.redis.port.*#spring.redis.port: $REDIS_PORT#g" $SERVICE_
 sed -i ${txt} "s#spring.redis.port.*#spring.redis.port: $REDIS_PORT#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
 sed -i ${txt} "s#spring.redis.port.*#spring.redis.port: $REDIS_PORT#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
 ##datasource url
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasource?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icdstuiframe?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&nullCatalogMeansCurrent=true#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasource?characterEncoding=utf8#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?characterEncoding=utf8#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/datasync?characterEncoding=utf8#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/icdstuiframe?characterEncoding=utf8#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.url.*#spring.datasource.url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/workspace?characterEncoding=utf8#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
 ##datasource user
-sed -i ${txt} "s#spring.datasource.username.*:#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.username.*:#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.username.*:#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.username.*:#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.username.*:#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.username.*#spring.datasource.username: $MYSQL_USER#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
 ##datasource password
-sed -i ${txt} "s#spring.datasource.password.*:#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.password.*:#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.password.*:#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.password.*:#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
-sed -i ${txt} "s#spring.datasource.password.*:#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-datasource/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-datasync/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-metadata/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-system/conf/bootstrap-$PROFILE.yml
+sed -i ${txt} "s#spring.datasource.password.*#spring.datasource.password: $MYSQL_PASSWORD#g" $SERVICE_CONF_BASE/icreditstudio-workspace/conf/bootstrap-$PROFILE.yml
 ##gateway
 sed -i ${txt} "s#server.port.*#server.port: $GATEWAY_PORT#g" $SERVICE_CONF_BASE/icreditstudio-gateway/conf/bootstrap-$PROFILE.yml
 ##metadata

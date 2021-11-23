@@ -18,7 +18,7 @@ REDIS_PORT=6379 ##redis端口
 GATEWAY_PORT=13249 ##网关的监听端口
 
 HIVE_HIVESERVER_USER=root ##hive的hiveserver2用户名
-HIVE_HIVESERVER_PWSSWORD=bd@0414##hive的hiveserver2密码
+HIVE_HIVESERVER_PWSSWORD=bd@0414 ##hive的hiveserver2密码
 HIVE_HIVESERVER_NODES=192.168.0.174:10000 ##hive的hiveserver2地址
 HIVE_WAREHOUSE=/user/hive/warehouse/ ##hive的存储地址
 defaultFS=192.168.0.174:8020 ##namenode地址

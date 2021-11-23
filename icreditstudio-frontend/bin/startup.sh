@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #Actively load user env
 source ~/.bash_profile
 shellDir=$(dirname $0)

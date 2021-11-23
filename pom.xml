@@ -154,9 +154,9 @@
         <module>icreditstudio-metadata</module>
         <module>icreditstudio-framework</module>
         <module>icreditstudio-datasource</module>
-        <module>auto-generator</module>
+<!--        <module>auto-generator</module>-->
         <module>assembly-package</module>
-        <module>icreditstudio-sparkx</module>
-        <module>icreditstudio-enginex</module>
+<!--        <module>icreditstudio-sparkx</module>-->
+<!--        <module>icreditstudio-enginex</module>-->
     </modules>
 </project>
