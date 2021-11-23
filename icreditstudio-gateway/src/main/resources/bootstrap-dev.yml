@@ -1,9 +1,18 @@
+spring.cloud.nacos.discovery.server-addr: 192.168.0.30:8848
+spring.cloud.nacos.discovery.namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
+
+spring.redis.host: 192.168.0.201
+spring.redis.port: 6379
+spring.redis.timeout: 20000
+spring.redis.lettuce:
+  pool:
+    max-active: 8
+    min-idle: 0
+    max-idle: 8
+    max-wait: -1
+#    password: 123456
 spring:
   cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.0.30:8848
-        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
     gateway:
       routes: # 路由可以有多个
         - id: workspace # 我们⾃定义的路由 ID，保持唯⼀
@@ -38,17 +47,6 @@ spring:
               - Path=/dolphinscheduler/**
   application:
     name: api-gateway
-  redis:
-    host: 192.168.0.201
-    port: 6379
-    timeout: 20000
-    lettuce:
-      pool:
-        max-active: 8
-        min-idle: 0
-        max-idle: 8
-        max-wait: -1
-#    password: 123456
   http:
     encoding:
       charset: UTF-8
@@ -82,5 +80,4 @@ ribbon:
   ReadTimeout: 50000
   SocketTimeout: 50000
   ConnectTimeout: 50000
-server:
-  port: 13249
+server.port: 13249
