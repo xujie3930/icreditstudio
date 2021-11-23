@@ -28,4 +28,8 @@
         create_time,create_by,update_time,
         update_by,del_flag
     </sql>
+
+    <select id="getWideTableInfoByTaskId" resultType="java.lang.String">
+        SELECT sync_condition FROM icredit_sync_widetable WHERE icredit_sync_widetable = #{taskId}
+    </select>
 </mapper>
