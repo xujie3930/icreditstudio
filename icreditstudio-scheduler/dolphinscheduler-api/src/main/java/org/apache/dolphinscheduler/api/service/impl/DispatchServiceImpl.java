@@ -26,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
@@ -189,7 +191,11 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<Boolean> nowRun(String taskId) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
-        if(null == processInstance){//第一次执行，
+        if(null == processInstance){//第一次执行
+            dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
+            ProcessDefinition definition = processService.findProcessDefineById(definitionId);
+            String cronStr = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
+            handleCronAndDefinition(definition, cronStr);
             platformExecutorService.execSyncTask(definitionId);
             return BusinessResult.success(true);
         }
@@ -206,4 +212,100 @@ public class DispatchServiceImpl implements DispatchService {
             return BusinessResult.fail("","执行失败");
         }
     }
+
+    private void handleCronAndDefinition(ProcessDefinition definition, String cronStr) {
+        JSONObject cronObj = JSONObject.parseObject(cronStr);
+        String n = cronObj.getString("n");//T + n 中 n 的值
+        String partition = cronObj.getString("partition");// 每年|每月|每日|每时
+        String whereField = cronObj.getString("incrementalField");// 每年|每月|每日|每时
+        String dateStr = getDateStr(n, partition);
+        handleProcessDefinition(definition, whereField, dateStr);
+        processService.saveProcessDefinition(definition);
+    }
+
+    private void handleProcessDefinition(ProcessDefinition definition, String whereField, String dateStr) {
+        JSONObject obj = JSONObject.parseObject(definition.getProcessDefinitionJson());
+        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
+        JSONObject paramObj = taskObj.getJSONObject("params");
+        if(!"1".equals(paramObj.getString("customConfig"))){
+            return ;
+        }
+        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
+        JSONObject writer = content.getJSONObject("reader");
+        JSONObject parameter = writer.getJSONObject("parameter");
+
+        JSONObject connObj = (JSONObject) parameter.getJSONArray("connection").get(0);
+        //替换 definitionJson 中的 querySql
+        StringBuilder target = new StringBuilder("\\\"querySql\\\":\\\"");
+        target.append(connObj.getString("querySql")).append("\\\"");
+
+        StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":\\\"");
+        replaceStr.append(connObj.getString("querySql")).append(" WHERE ").append(whereField).append(" < '").append(dateStr).append("'\\\"");
+        String definitionJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
+        definition.setProcessDefinitionJson(definitionJson);
+    }
+
+    private String getDateStr(String n, String partition) {
+        int nn = 0 - Integer.parseInt(n);
+        Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
+        calendar.setTime(new Date());
+        StringBuffer prefix = new StringBuffer();
+        StringBuffer dateStr = new StringBuffer();
+        if(partition.contains("year")){//获取前 n 年
+            calendar.add(Calendar.YEAR, nn);
+            prefix.append(calendar.get(Calendar.YEAR));
+            dateStr.append(prefix).append("-01-01 00:00:00");
+        }else if(partition.contains("month")){
+            calendar.add(Calendar.MONTH, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month);
+            dateStr.append(prefix).append("-01 00:00:00");
+        }else if(partition.contains("day")){
+            calendar.add(Calendar.DAY_OF_MONTH, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month).append("-");
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                dateStr.append("0");
+            }
+            prefix.append(day);
+
+            dateStr.append(prefix).append(" 00:00:00");
+        }else if(partition.contains("hour")){
+            calendar.add(Calendar.HOUR, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month).append("-");
+
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(day).append(" ");
+            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+            if(hour.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(hour);
+
+            dateStr.append(prefix).append(":00:00");
+        }
+        return String.valueOf(dateStr);
+    }
+
 }

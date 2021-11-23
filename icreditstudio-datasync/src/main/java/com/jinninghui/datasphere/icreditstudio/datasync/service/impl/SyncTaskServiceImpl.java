@@ -1084,4 +1084,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         syncTaskMapper.updateExecStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
         return true;
     }
+
+    @Override
+    public String getWideTableInfoByTaskId(String taskId) {
+        return syncWidetableService.getWideTableInfoByTaskId(taskId);
+    }
 }

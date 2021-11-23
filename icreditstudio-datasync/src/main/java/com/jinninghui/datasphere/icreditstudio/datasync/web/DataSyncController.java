@@ -239,4 +239,9 @@ public class DataSyncController {
         return syncTaskService.updateExecStatusByScheduleId(scheduleId);
     }
 
+    @GetMapping("/getWideTableInfoByTaskId")
+    public String getWideTableInfoByTaskId(@RequestParam("taskId") String taskId){
+        return syncTaskService.getWideTableInfoByTaskId(taskId);
+    }
+
 }
