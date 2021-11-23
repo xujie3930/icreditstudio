@@ -41,8 +41,5 @@ public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, S
         }
         return wrapper;
     }
+
 }
-
-
-
-

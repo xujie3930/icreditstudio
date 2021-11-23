@@ -11,11 +11,11 @@ import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.common.enums.CommandType;
+import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
-import org.apache.dolphinscheduler.common.enums.CommandType;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
@@ -189,15 +189,14 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<Boolean> nowRun(String taskId) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
+//        if(null == processInstance){
+//            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.message);
+//        }
         if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        if(null == processInstance){//第一次执行，
-            platformExecutorService.execSyncTask(definitionId);
-            return BusinessResult.success(true);
-        }
         handleProcessInstance(processInstance);
         int result = insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         if(0 == result){
@@ -206,4 +205,5 @@ public class DispatchServiceImpl implements DispatchService {
             return BusinessResult.fail("","执行失败");
         }
     }
+
 }

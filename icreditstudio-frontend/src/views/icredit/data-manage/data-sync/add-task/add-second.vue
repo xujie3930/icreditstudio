@@ -31,7 +31,7 @@
               >
               </el-option>
             </el-select>
-            <i class="search el-icon-search"></i>
+            <i class="search el-icon-search" @click="handleChangeTableName"></i>
           </div>
           <div class="content-aside-tree">
             <el-button-group class="btn-group">
@@ -62,7 +62,6 @@
               :default-expanded-keys="defalutExpandKey"
               v-loading="treeLoading"
             >
-              <!-- :current-node-key="curNodeKey" -->
               <div
                 :id="node.id"
                 :draggable="node.level > 1 && opType !== 'edit'"
@@ -71,7 +70,15 @@
                 @dragstart="e => handleDragClick(e, data, node)"
               >
                 <JSvg class="jsvg-icon" :name="data.icon"></JSvg>
-                <span>{{ data.name }}</span>
+                <el-tooltip
+                  v-if="data.name.length > 21 && node.level > 1"
+                  effect="dark"
+                  placement="top-start"
+                  :content="data.name"
+                >
+                  <span class="table-label">{{ data.name }}</span>
+                </el-tooltip>
+                <span v-else>{{ data.name }}</span>
               </div>
             </el-tree>
           </div>
@@ -340,13 +347,6 @@
         >
           上一步
         </el-button>
-        <!-- <el-button
-          class="btn"
-          :disabled="!secondTaskForm.sql && isCanSaveSetting"
-          :loading="saveSettingLoading"
-          @click="handleSaveSetting"
-          >保存设置</el-button
-        > -->
         <el-button
           class="btn"
           type="primary"
@@ -533,25 +533,34 @@ export default {
       }
     },
 
+    // 左侧数搜索-清空
     handleClearTableName() {
+      const { idx } = this.originTreeData[0]
       this.tableNameOptions = []
-      this.defalutExpandKey = []
-      this.$refs.tree.setCurrentKey()
+      this.defalutExpandKey = [idx]
       this.treeData = this.originTreeData
+      this.$nextTick(() => this.$refs.tree.setCurrentKey(idx))
     },
 
-    handleChangeTableName(name) {
-      console.log(name, this.treeData)
-      const { content, ...rest } = this.originTreeData[0]
-      if (name) {
-        const allTreeNode = []
-        this.treeData.forEach(({ content: con }) => allTreeNode.push(...con))
-        const filterTreeData = allTreeNode.filter(item => item.name === name)
-        console.log(allTreeNode, filterTreeData, 'node')
-        const idx = filterTreeData[0]?.idx || null
-        this.treeData = [{ content: filterTreeData, ...rest }]
+    // 左侧数搜索-更改
+    handleChangeTableName() {
+      const name = this.searchTableName
+      if (this.searchTableName) {
+        const filterTreeData = []
+        this.originTreeData.forEach(({ content: children, ...restItem }) => {
+          const childArr = children.filter(item => item.name.includes(name))
+          if (childArr.length) {
+            filterTreeData.push({
+              content: childArr,
+              ...restItem
+            })
+          }
+        })
+
+        const { idx } = filterTreeData[0].content[0]
+        this.treeData = filterTreeData
         this.defalutExpandKey = [idx]
-        this.$refs.tree.setCurrentKey(idx)
+        this.$nextTick(() => this.$refs.tree.setCurrentKey(idx))
       }
     },
 
@@ -1471,6 +1480,13 @@ export default {
             width: 14px;
             height: 14px;
             margin: 0 5px;
+          }
+
+          .table-label {
+            max-width: 184px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
         }
 

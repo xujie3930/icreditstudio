@@ -34,4 +34,5 @@ public interface DataSyncDispatchTaskFeignClient {
      */
     @GetMapping("/datasync/updateExecStatusByScheduleId")
     boolean updateExecStatusByScheduleId(@RequestParam("scheduleId") String scheduleId);
+
 }

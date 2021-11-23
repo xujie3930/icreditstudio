@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
+import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
 /**
@@ -10,7 +11,6 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface SyncWidetableMapper extends BaseMapper<SyncWidetableEntity> {
-
 }
 
 

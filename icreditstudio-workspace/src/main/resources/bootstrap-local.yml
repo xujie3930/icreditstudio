@@ -1,30 +1,27 @@
+spring.cloud.nacos.discovery.server-addr: 192.168.0.23:8848
+spring.cloud.nacos.discovery.namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
+spring.datasource.url: "jdbc:mysql://worker:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+spring.datasource.username: 'root'
+spring.datasource.password: 'root'
+spring.redis.host: 192.168.0.23
+spring.redis.port: 6379
+spring.redis.timeout: 20000
+#    cluster:
+#      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
+#      maxRedirects: 6
+spring.redis.lettuce:
+  pool:
+    max-active: 8
+    min-idle: 0
+    max-idle: 8
+    max-wait: -1
+#    password: 123456
+
+
+
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.0.23:8848
-        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
   application:
     name: workspace
-  datasource:
-    url: "jdbc:mysql://worker:3306/workspace?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
-    username: 'root'
-    password: 'root'
-    driver-class-name: com.mysql.jdbc.Driver
-  redis:
-    host: 192.168.0.23
-    port: 6379
-    timeout: 20000
-    #    cluster:
-    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
-    #      maxRedirects: 6
-    lettuce:
-      pool:
-        max-active: 8
-        min-idle: 0
-        max-idle: 8
-        max-wait: -1
-    password: 123456
   http:
     encoding:
       charset: UTF-8

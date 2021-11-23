@@ -127,7 +127,7 @@ public class HomePageServiceImpl implements HomePageService {
         Date endTime = DateUtils.getEndOfDay((date));
         Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
         Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.STOP.getCode(), ExecutionStatus.READY_STOP.getCode()});
-        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
+        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
         Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
 //        RedisUtils.set(redisKey,taskSituationResultList, FIVE_MINUTE_TIME);

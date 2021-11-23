@@ -283,12 +283,11 @@ export default {
         minute: min,
         second: sec
       } = this.selectCron
-      const minute = [{ second: sec }]
       const hour = [{ minute: min }, { second: sec }]
       const day = [{ hour: h }, ...hour]
       const month = [{ day: d }, ...day]
       const year = [{ month: mon }, ...month]
-      const momentMapping = { minute, hour, day, month, year }
+      const momentMapping = { hour, day, month, year }
 
       return {
         type,

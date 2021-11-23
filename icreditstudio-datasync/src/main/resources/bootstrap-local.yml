@@ -1,21 +1,12 @@
-spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 192.168.0.23:8848
-        namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
-  datasource:
-    url: "jdbc:mysql://worker:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
-    username: 'root'
-    password: 'root'
-  redis:
-    host: 192.168.0.23
-    port: 6379
-    timeout: 20000
-    #    cluster:
-    #      nodes: 192.168.0.32:7001,192.168.0.32:7002,192.168.0.32:7003,192.168.0.32:7004,192.168.0.32:7005
-    #      maxRedirects: 6
-    lettuce:
+spring.cloud.nacos.discovery.server-addr: 192.168.0.23:8848
+spring.cloud.nacos.discovery.namespace: d54e4b3c-99c0-4f90-b6bf-3c0242c71753
+spring.datasource.url: "jdbc:mysql://worker:3306/datasync?allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8&allowPublicKeyRetrieval=true"
+spring.datasource.username: 'root'
+spring.datasource.password: 'root'
+spring.redis.host: 192.168.0.23
+spring.redis.port: 6379
+spring.redis.timeout: 20000
+spring.redis.lettuce:
       pool:
         max-active: 8
         min-idle: 0
