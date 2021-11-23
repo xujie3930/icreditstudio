@@ -146,6 +146,4 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     String getDatasourceId(String taskId);
 
     Boolean updateExecStatusByScheduleId(String scheduleId);
-
-    String getWideTableInfoByTaskId(String taskId);
 }

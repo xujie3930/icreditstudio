@@ -10,7 +10,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,10 +18,6 @@ import java.util.Objects;
  */
 @Service
 public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, SyncWidetableEntity> implements SyncWidetableService {
-
-    @Resource
-    private SyncWidetableMapper syncWidetableMapper;
-
     @Override
     public SyncWidetableEntity getWideTableField(String taskId, Integer version) {
         SyncWideTableConditionParam build = SyncWideTableConditionParam.builder()
@@ -47,8 +42,4 @@ public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, S
         return wrapper;
     }
 
-    @Override
-    public String getWideTableInfoByTaskId(String taskId) {
-        return syncWidetableMapper.getWideTableInfoByTaskId(taskId);
-    }
 }
