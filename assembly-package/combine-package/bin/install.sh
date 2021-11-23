@@ -33,54 +33,6 @@ fi
 
 source ~/.bash_profile
 
-export local_host="$(hostname --fqdn)"
-
-ipaddr=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
-
-function checkPythonAndJava() {
-  python --version
-  isSuccess "execute python --version"
-  java -version
-  isSuccess "execute java --version"
-}
-
-function checkHadoopAndHive() {
-  hadoopVersion="$(hdfs version)"
-  defaultHadoopVersion="2.7"
-  checkversion "$hadoopVersion" $defaultHadoopVersion hadoop
-  checkversion "$(whereis hive)" "2.3" hive
-}
-
-function isSuccess() {
-  if [ $? -ne 0 ]; then
-    echo "Failed to " + $1
-    exit 1
-  else
-    echo "Succeed to" + $1
-  fi
-}
-
-function checkversion() {
-  versionStr=$1
-  defaultVersion=$2
-  module=$3
-
-  result=$(echo $versionStr | grep "$defaultVersion")
-  if [ -n "$result" ]; then
-    echo "$module version match"
-  else
-    echo "WARN: Your $module version is not $defaultVersion, there may be compatibility issues:"
-    echo " 1: Continue installation, there may be compatibility issues"
-    echo " 2: Exit installation"
-    echo ""
-    read -p "Please input the choice:" idx
-    if [[ '2' == "$idx" ]]; then
-      echo "You chose  Exit installation"
-      exit 1
-    fi
-  fi
-}
-
 say() {
   printf 'check command fail \n %s\n' "$1"
 }
@@ -99,6 +51,27 @@ need_cmd() {
     err "need '$1' (command not found)"
   fi
 }
+
+echo "<-----start to check used cmd---->"
+need_cmd yum
+need_cmd java
+need_cmd tar
+need_cmd sed
+need_cmd gawk
+echo "<-----end to check used cmd---->"
+
+
+ipaddr=$(ip addr | awk '/^[0-9]+: / {}; /inet.*global/ {print gensub(/(.*)\/(.*)/, "\\1", "g", $2)}')
+
+function isSuccess() {
+  if [ $? -ne 0 ]; then
+    echo "Failed to " + $1
+    exit 1
+  else
+    echo "Succeed to" + $1
+  fi
+}
+
 
 ##load config
 echo "step1:load config "
