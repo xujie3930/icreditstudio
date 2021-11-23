@@ -237,12 +237,15 @@ public class DispatchServiceImpl implements DispatchService {
 
         JSONObject connObj = (JSONObject) parameter.getJSONArray("connection").get(0);
         //替换 definitionJson 中的 querySql
-        StringBuilder target = new StringBuilder("\\\"querySql\\\":\\\"");
-        target.append(connObj.getString("querySql")).append("\\\"");
+        String querySql = connObj.getString("querySql");
+        querySql = querySql.substring(2, querySql.length() - 2);
+        StringBuilder target = new StringBuilder("\\\"querySql\\\":[\\\"");
+        target.append(querySql).append("\\\"]");
 
-        StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":\\\"");
-        replaceStr.append(connObj.getString("querySql")).append(" WHERE ").append(whereField).append(" < '").append(dateStr).append("'\\\"");
+        StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":[\\\"");
+        replaceStr.append(querySql).append(" WHERE ").append(whereField).append(" < '").append(dateStr).append("'\\\"]");
         String definitionJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
+
         definition.setProcessDefinitionJson(definitionJson);
     }
 
