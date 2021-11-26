@@ -203,6 +203,152 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
 
+    //===============================================================================add v0.0.2 start================================================================================
+
+    /**
+     * 同步任务第一步保存(新增/更新)
+     *
+     * @param param
+     * @return
+     */
+    private String stepOneSave(SyncStepOneParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setTaskName(param.getTaskName());
+        entity.setEnable(param.getEnable());
+        entity.setCreateMode(param.getCreateMode());
+        entity.setWorkspaceId(param.getWorkspaceId());
+        entity.setTaskDescribe(param.getTaskDescribe());
+        saveOrUpdate(entity);
+        return entity.getId();
+    }
+
+    /**
+     * 同步任务第二步保存(新增/更新)
+     *
+     * @param param
+     * @return
+     */
+    private void stepTwoSave(SyncStepTwoParam param) {
+        //同步任务新增/编辑前置参数校验
+        stepTwoPreValid(param);
+        SyncWidetableEntity widetableEntity = syncWidetableService.getWideTableByTaskId(param.getTaskId());
+        boolean isNew = true;
+        if (Objects.nonNull(widetableEntity)) {
+            isNew = false;
+            //TODO 复制到hi
+        }
+        SyncWidetableEntity entity = new SyncWidetableEntity();
+        if (!isNew) {
+            entity.setId(widetableEntity.getId());
+        }
+        entity.setSyncTaskId(param.getTaskId());
+        entity.setSqlStr(param.getSql());
+        entity.setViewJson(JSONObject.toJSONString(param.getView()));
+        //前置操作是识别宽表,dialect必然存在
+        entity.setDialect(param.getDialect());
+        //前置操作是识别宽表,datasourceId必然存在
+        entity.setDatasourceId(param.getDatasourceId());
+        entity.setTargetSource(param.getTargetSource());
+        entity.setSourceType(param.getSourceType());
+        entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
+        entity.setSyncCondition(JSONObject.toJSONString(param.getSyncCondition()));
+        entity.setName(param.getWideTableName());
+
+        SyncTaskEntity task = getById(param.getTaskId());
+        entity.setVersion(task.getVersion());
+
+        List<WideTableFieldRequest> fieldInfos = param.getFieldInfos();
+        if (CollectionUtils.isNotEmpty(fieldInfos)) {
+            if (!isNew) {
+                List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(widetableEntity.getId());
+                //TODO 复制到hi
+            } else {
+                List<WideTableFieldSaveParam> saveParams = fieldInfos.parallelStream()
+                        .filter(Objects::nonNull)
+                        .map(info -> {
+                            WideTableFieldSaveParam saveParam = new WideTableFieldSaveParam();
+                            BeanCopyUtils.copyProperties(info, saveParam);
+                            saveParam.setChineseName(info.getFieldChineseName());
+                            saveParam.setWideTableId(entity.getId());
+                            saveParam.setName(info.getFieldName());
+                            saveParam.setDictKey(info.getAssociateDict());
+                            saveParam.setType(info.getFieldType());
+                            saveParam.setDatabaseName(info.getDatabaseName());
+                            return saveParam;
+                        }).collect(Collectors.toList());
+                wideTableFieldSave(saveParams);
+            }
+        }
+    }
+
+    /**
+     * 同步任务新增/编辑前置参数校验
+     *
+     * @param param
+     */
+    private void stepTwoPreValid(SyncStepTwoParam param) {
+        if (StringUtils.isBlank(param.getTaskId())) {
+            //任务ID为空
+            throw new AppException("60000016");
+        }
+        if (StringUtils.isBlank(param.getWideTableName())) {
+            //宽表名称为空
+            throw new AppException("60000002");
+        }
+        if (StringUtils.isBlank(param.getTargetSource())) {
+            //目标库名称为空
+            throw new AppException("60000001");
+        }
+        if (CollectionUtils.isEmpty(param.getFieldInfos())) {
+            //宽表字段为空
+            throw new AppException("60000014");
+        }
+        if (StringUtils.isBlank(param.getSql())) {
+            //生成宽表sql为空
+            throw new AppException("60000024");
+        }
+        if (StringUtils.isBlank(param.getDialect())) {
+            //数据源方言为空
+            throw new AppException("60000004");
+        }
+        if (StringUtils.isBlank(param.getDatasourceId())) {
+            //数据源ID为空
+            throw new AppException("60000003");
+        }
+    }
+
+    /**
+     * 同步任务第三步保存/更新
+     *
+     * @param param
+     */
+    private void stepThreeSave(SyncStepThreeParam param) {
+        SyncTaskEntity entity = new SyncTaskEntity();
+        BeanCopyUtils.copyProperties(param, entity);
+        entity.setId(param.getTaskId());
+        entity.setCollectMode(param.getScheduleType());
+
+        SyncWidetableEntity wideTableEntity = syncWidetableService.getWideTableByTaskId(param.getTaskId());
+        String syncConditionJson = wideTableEntity.getSyncCondition();
+        SyncCondition syncCondition = null;
+        if (StringUtils.isNotBlank(syncConditionJson) && JSONUtil.isJson(syncConditionJson)) {
+            syncCondition = JSONObject.parseObject(syncConditionJson).toJavaObject(SyncCondition.class);
+        }
+        if (Objects.nonNull(syncCondition)) {
+            if (StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
+                entity.setSyncMode(SyncModeEnum.INC.getCode());
+            } else {
+                entity.setSyncMode(SyncModeEnum.FULL.getCode());
+            }
+        }
+        TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
+        entity.setTaskParamJson(JSONObject.toJSONString(info));
+        entity.setCronParam(JSONObject.toJSONString(param.getCronParam()));
+        saveOrUpdate(entity);
+    }
+
+    //=========================================================================add v0.0.2 end=================================================================================
+
     private List<QueryField> transferQueryField(List<WideTableFieldRequest> fieldInfos) {
         return Optional.ofNullable(fieldInfos).orElse(Lists.newArrayList())
                 .parallelStream()
@@ -898,7 +1044,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //根据taskId查找数据源id
         String datasourceId = getDatasourceId(param.getTaskId());
         BusinessResult<DatasourceDetailResult> info = datasourceFeign.info(datasourceId);
-        if (info.isSuccess() && info.getData() != null && EnableStatusEnum.DISABLE.getCode().equals(info.getData().getStatus())){
+        if (info.isSuccess() && info.getData() != null && EnableStatusEnum.DISABLE.getCode().equals(info.getData().getStatus())) {
             throw new AppException("60000053");
         }
         checkTaskId(param.getTaskId());
