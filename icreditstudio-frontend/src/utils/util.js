@@ -214,70 +214,6 @@ export function upperCaseFirst(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-export function changState(val) {
-  let result = ''
-  switch (val) {
-    case 'PASS':
-      result = '通过'
-      break
-    case 'NOPASS':
-      result = '不通过'
-      break
-    case 'RECALL':
-      result = '撤回'
-      break
-    case 'GOBACK':
-      result = '退回'
-      break
-    case 'SUBMIT':
-      result = '提交'
-      break
-    case 'RESUBMIT':
-      result = '重新提交'
-      break
-    case 'CLAIM':
-      result = '认领'
-      break
-    case 'UNCLAIM':
-      result = '取消认领'
-      break
-    case 'APPROVAL':
-      result = '审批'
-      break
-    case 'COMPLETE':
-      result = '完成'
-      break
-    case 'STAGING':
-      result = '暂存'
-      break
-    case 'ASSIGN':
-      result = '转办'
-      break
-    case 'DELEGATE':
-      result = '委派'
-      break
-    case 'TERMINATE':
-      result = '终止'
-      break
-    case 'COMMENT':
-      result = '评论'
-      break
-    case 'CARBONCOPY':
-      result = '抄送'
-      break
-    case 'TOAUDIT':
-      result = '待审核'
-      break
-    case 'INITIATOR':
-      result = '发起人'
-      break
-    default:
-      result = '-'
-      break
-  }
-  return result
-}
-
 /**
  * 一维数组转树结构
  * @param arr {[]} 数据源
@@ -376,6 +312,27 @@ export const base64UrlFilter = url => {
 
 // 数据库连接URI切割
 export const uriSplit = (uri, dataSource) => {
+  console.log(uri, dataSource)
+  let ds = {}
+  const { type } = dataSource
+
+  switch (type) {
+    case 1:
+      ds = mysqlUriSplit(uri, dataSource)
+      break
+    case 2:
+      ds = oracleUriSplit(uri, dataSource)
+      break
+    default:
+      ds = dataSource
+      break
+  }
+
+  return ds
+}
+
+// mySql数据库连接URI切割
+export const mysqlUriSplit = (uri, dataSource) => {
   const paramsObj = {}
   const [beforeStr, afterStr] = uri.split('?')
 
@@ -397,7 +354,6 @@ export const uriSplit = (uri, dataSource) => {
     .filter(item => item && item.trim())
 
   const [ip, port] = ipPort.split(':')
-
   const newDataSource = {
     databaseType,
     ip,
@@ -408,6 +364,29 @@ export const uriSplit = (uri, dataSource) => {
   }
 
   return newDataSource
+}
+
+// oracle数据库连接URI切割
+export const oracleUriSplit = (uri, dataSource) => {
+  const paramsObj = {}
+  const fieldArr = []
+  const [baseStr, nameStr, pwdStr] = uri.split('|')
+  const [, databaseType, , ip, port, databaseName] = baseStr.split(':')
+
+  fieldArr.concat([nameStr, pwdStr]).forEach(item => {
+    const [key, val] = item.split('=')
+    paramsObj[key] = val
+  })
+
+  console.log(baseStr, nameStr, pwdStr, paramsObj)
+  return {
+    ...dataSource,
+    ...paramsObj,
+    port,
+    databaseType,
+    databaseName,
+    ip: ip.split('@')[1]
+  }
 }
 
 // 生成从minNum到maxNum的随机数

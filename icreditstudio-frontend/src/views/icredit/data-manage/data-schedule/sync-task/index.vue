@@ -140,8 +140,8 @@ export default {
 
     // 立即执行
     handleRunBtnClick(row) {
-      const { taskId } = row
-      const params = { taskId }
+      const { taskId, dispatchType } = row
+      const params = { taskId, execType: dispatchType }
       API.dataScheduleSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({
