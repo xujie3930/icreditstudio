@@ -1,6 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.feign;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignCreatePlatformProcessDefinitionRequest;
+import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignPlatformProcessDefinitionRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignUpdatePlatformProcessDefinitionRequest;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -24,7 +24,7 @@ public interface SchedulerFeign {
      * @return
      */
     @PostMapping(value = "/dolphinscheduler/platform/task/create")
-    BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignCreatePlatformProcessDefinitionRequest request);
+    BusinessResult<CreatePlatformTaskResult> create(@RequestBody FeignPlatformProcessDefinitionRequest request);
 
 
     /**
@@ -70,7 +70,7 @@ public interface SchedulerFeign {
      * @return
      */
     @PostMapping("/dolphinscheduler/platform/task/update")
-    BusinessResult<Boolean> update(@RequestBody FeignUpdatePlatformProcessDefinitionRequest request);
+    BusinessResult<Boolean> update(@RequestBody FeignPlatformProcessDefinitionRequest request);
 
     @GetMapping(value = "/dolphinscheduler/platform/exec/enableSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     String enableSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);

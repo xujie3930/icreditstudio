@@ -12,6 +12,10 @@ public class SyncStepOneParam {
      */
     private String workspaceId;
     /**
+     * userId
+     */
+    private String userId;
+    /**
      * 任务ID
      */
     private String taskId;
@@ -31,4 +35,8 @@ public class SyncStepOneParam {
      * 任务描述
      */
     private String taskDescribe;
+    /**
+     * 任务状态
+     */
+    private Integer taskStatus;
 }
