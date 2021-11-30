@@ -408,7 +408,7 @@ import {
   fieldTypeOptions,
   iconMapping
 } from '../contant'
-import { randomNum, deepClone, uriSplit } from '@/utils/util'
+import { randomNum, deepClone, mysqlUriSplit } from '@/utils/util'
 import { validStrZh, validStrSpecial } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
 import EditTable from './edit-table'
@@ -597,7 +597,7 @@ export default {
         id: tableId,
         parent: { label: database }
       } = node
-      const { ip } = uriSplit(data.url)
+      const { ip } = mysqlUriSplit(data.url)
       const { sourceType } = this.secondTaskForm
       evt.dataTransfer.setData(
         'application/json',
