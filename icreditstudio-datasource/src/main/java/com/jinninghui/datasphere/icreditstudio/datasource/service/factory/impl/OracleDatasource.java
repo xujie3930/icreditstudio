@@ -65,8 +65,7 @@ public class OracleDatasource implements DatasourceSync {
     @Override
     public String getHost(String uri) {
         if (StringUtils.isNotBlank(uri)){
-            String host = uri.substring(uri.indexOf(":@"), uri.indexOf("1521") + 4);
-            return host;
+            return uri.substring(uri.indexOf(":@") + 2, uri.indexOf("1521") + 4);
         }
         return null;
     }
@@ -79,9 +78,9 @@ public class OracleDatasource implements DatasourceSync {
      */
     @Override
     public String getDatabaseName(String uri) {
-        String temp = uri.substring(uri.indexOf("username=") + "username=".length());
-        String username = temp.substring(0, temp.indexOf(SEPARATOR));
-        return username;
+        String oracleUri = uri.split("\\|")[0];
+        int index = oracleUri.lastIndexOf(":") + 1;
+        return oracleUri.substring(index);
     }
 
 }

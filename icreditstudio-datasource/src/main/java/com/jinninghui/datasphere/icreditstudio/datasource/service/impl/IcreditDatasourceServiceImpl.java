@@ -95,11 +95,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
-        defEntity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(defEntity.getType()).getDesc());
-        defEntity.setCreateTime(new Date());
-        defEntity.setCreateBy(userId);
-        defEntity.setId(sequenceService.nextValueString());
-        return BusinessResult.success(save(defEntity));
+        if(saveOrUpdate(userId, defEntity)){
+            return BusinessResult.success(true);
+        }else{
+            return BusinessResult.fail("", "操作失败");
+        }
     }
 
     @Override
@@ -486,9 +486,26 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, entity);
+        if(saveOrUpdate(userId, entity)){
+            return BusinessResult.success(true);
+        }else{
+            return BusinessResult.fail("", "操作失败");
+        }
+    }
+
+    private Boolean saveOrUpdate(String userId, IcreditDatasourceEntity entity){
+        DatasourceSync dataSource = DatasourceFactory.getDatasource(entity.getType());
+        entity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(entity.getType()).getDesc());
+        entity.setDatabaseName(dataSource.getDatabaseName(entity.getUri()));
+        entity.setHost(dataSource.getHost(entity.getUri()));
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
-        return BusinessResult.success(updateById(entity));
+        if(StringUtils.isEmpty(entity.getId())){
+            entity.setCreateTime(new Date());
+            entity.setCreateBy(userId);
+            entity.setId(sequenceService.nextValueString());
+        }
+        return saveOrUpdate(entity);
     }
 
     @Override

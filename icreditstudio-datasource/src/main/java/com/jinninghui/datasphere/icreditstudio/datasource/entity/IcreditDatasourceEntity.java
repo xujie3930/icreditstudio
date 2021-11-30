@@ -122,6 +122,16 @@ public class IcreditDatasourceEntity implements Serializable {
     private String dialect;
 
     /**
+     * 主机ip:port
+     */
+    private String host;
+
+    /**
+     * 数据库名
+     */
+    private String databaseName;
+
+    /**
      * 是否展示密码：0-隐藏，1-展示，默认0
      */
     private Integer showPassword;
