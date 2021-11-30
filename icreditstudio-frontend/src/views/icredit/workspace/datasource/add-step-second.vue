@@ -305,11 +305,11 @@ export default {
       }
       this.title = '新增数据源'
       this.opType = 'Add'
-      this.dataType = type
-      this.databaseType = name
-      this.dataSourceForm.port = portMapping[name] ?? undefined
       this.$refs.baseDialog.open()
       this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
+      this.dataSourceForm.port = portMapping[name] ?? undefined
+      this.dataType = type
+      this.databaseType = name
     },
 
     // 编辑状态下打开弹窗
@@ -320,7 +320,8 @@ export default {
       this.detailLoading = false
       this.dataSourceForm = uriSplit(data.uri, data)
       this.oldName = data.name
-      // this.$refs.baseDialog.open()
+      // TODO 待完善
+      this.databaseType = data.type === 1 ? 'mysql' : 'oracle'
     },
 
     // 拼凑成数据库驱动URI
@@ -330,7 +331,10 @@ export default {
       const SM4 = require('gm-crypt').sm4
       const sm4 = new SM4(sm4Config)
       const pwd = sm4.encrypt(password)
-      return `jdbc:${databaseType}://${ip}:${port}/${databaseName}?useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${pwd}`
+      const mysqlUri = `jdbc:${databaseType}://${ip}:${port}/${databaseName}?useSSL=false&useUnicode=true&characterEncoding=utf8|username=${username}|password=${pwd}`
+      const oracleUri = `jdbc:${databaseType}:thin:@${ip}:${port}:${databaseName}|username=${username}|password=${pwd}`
+      const uriMapping = { mysql: mysqlUri, oracle: oracleUri }
+      return uriMapping[databaseType]
     },
 
     // 验证是否已经存在数据源名称
@@ -344,7 +348,7 @@ export default {
           dataSourceForm: { name }
         } = this
         if (opType === 'Edit' && oldName === name) {
-          cb()
+          cb && cb()
           return
         }
         this.timerId = null

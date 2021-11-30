@@ -16,7 +16,6 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.result.Warehouse
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.hive.metastore.api.AlreadyExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,9 +45,11 @@ public class MetadataServiceImpl implements MetadataService {
         List<Database> results = Lists.newArrayList();
         Connection connection = this.connection.getConnection();
         String sql = "show databases";
+        Statement stmt = null;
+        ResultSet resultSet = null;
         try {
-            Statement stmt = connection.createStatement();
-            ResultSet resultSet = stmt.executeQuery(sql);
+            stmt = connection.createStatement();
+            resultSet = stmt.executeQuery(sql);
             while (resultSet.next()) {
                 Database db = new Database();
                 String database = resultSet.getString(1);
@@ -59,6 +60,10 @@ public class MetadataServiceImpl implements MetadataService {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new AppException("80000000", e.getMessage());
+        } finally {
+            IoUtil.close(resultSet);
+            IoUtil.close(stmt);
+            IoUtil.close(connection);
         }
         return results;
     }
@@ -97,6 +102,8 @@ public class MetadataServiceImpl implements MetadataService {
                 if (message.contains("AlreadyExistsException")) {
                     throw new AppException("80000003");
                 }
+            } finally {
+                IoUtil.close(stmt);
             }
             return true;
         });

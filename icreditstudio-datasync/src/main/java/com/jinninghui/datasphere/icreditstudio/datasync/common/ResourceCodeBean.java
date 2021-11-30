@@ -67,6 +67,13 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000051("60000051", "请检查识别条件"),
         RESOURCE_CODE_60000052("60000052", "任务执行失败"),
         RESOURCE_CODE_60000053("60000053", "该数据源为禁用状态，禁止启用"),
+        RESOURCE_CODE_60000054("60000054", "调度相关参数缺失"),
+        RESOURCE_CODE_60000055("60000055", "未找到任务宽表信息"),
+        RESOURCE_CODE_60000056("60000056", "任务增量信息缺失"),
+        RESOURCE_CODE_60000057("60000057", "周期执行任务实例为空，请检查"),
+        RESOURCE_CODE_60000058("60000058", "任务名称重复"),
+        RESOURCE_CODE_60000059("60000059", "可视化表信息列表为空"),
+        RESOURCE_CODE_60000060("60000060", "可视化关系列表为空"),
         ;
 
         public final String code;

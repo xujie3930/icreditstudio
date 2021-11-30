@@ -31,6 +31,18 @@ public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, S
         return null;
     }
 
+    @Override
+    public SyncWidetableEntity getWideTableByTaskId(String taskId) {
+        SyncWideTableConditionParam build = SyncWideTableConditionParam.builder()
+                .taskId(taskId)
+                .build();
+        List<SyncWidetableEntity> list = list(queryWrapper(build));
+        if (CollectionUtils.isNotEmpty(list)) {
+            return list.get(0);
+        }
+        return null;
+    }
+
     private QueryWrapper<SyncWidetableEntity> queryWrapper(SyncWideTableConditionParam param) {
         QueryWrapper<SyncWidetableEntity> wrapper = new QueryWrapper<>();
         if (StringUtils.isNotBlank(param.getTaskId())) {

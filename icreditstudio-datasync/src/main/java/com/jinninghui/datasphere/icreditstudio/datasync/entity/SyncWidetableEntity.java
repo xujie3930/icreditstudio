@@ -53,11 +53,6 @@ public class SyncWidetableEntity extends SyncBaseEntity implements Serializable 
      * 资源类型【0：外部数据库，1：本地文件，2：区块链】
      */
     private Integer sourceType;
-
-    /**
-     * 目标源地址
-     */
-    private String targetUrl;
     /**
      * 目标库名
      */

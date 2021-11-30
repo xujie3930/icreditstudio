@@ -13,6 +13,13 @@ import java.util.List;
 public class DataSyncGenerateWideTableRequest {
 
     /**
+     * 创建方式【0：可视化，1，SQL】
+     */
+    private Integer createMode;
+
+    private SqlInfo sqlInfo;
+
+    /**
      * 数据源ID
      */
     private String datasourceId;
@@ -20,12 +27,6 @@ public class DataSyncGenerateWideTableRequest {
      * 数据源方言
      */
     private String dialect;
-    /**
-     * 创建方式【0：可视化，1，SQL】
-     */
-    private Integer createMode;
-
-    private SqlInfo sqlInfo;
     /**
      * 连接表集合
      */
