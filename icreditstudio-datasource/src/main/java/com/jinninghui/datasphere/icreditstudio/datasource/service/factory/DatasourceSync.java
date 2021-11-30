@@ -1,12 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
-//import cn.hutool.core.util.StrUtil;
-
-import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.sm4.SM4Utils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,16 +74,7 @@ public interface DatasourceSync {
         return null;
     }
 
-    /**
-     * 取得数据库名称
-     *
-     * @param uri
-     * @return
-     */
-    static String getDatabaseName(String uri) {
-        String s = StrUtil.subBefore(uri, "?", false);
-        return StrUtil.subAfter(s, "/", true);
-    }
+    String getDatabaseName(String uri);
 
     default String testConn(Integer type, String uri) {
         Connection conn = null;
@@ -106,7 +93,9 @@ public interface DatasourceSync {
             throw new AppException("70000007");
         }finally {
             try {
-                conn.close();
+                if(null != conn) {
+                    conn.close();
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
@@ -126,13 +115,7 @@ public interface DatasourceSync {
         return connection;
     }
 
-    static String getHost(String uri) {
-        if (StringUtils.isNotBlank(uri)) {
-            String temp = StrUtil.subAfter(uri, "//", false);
-            return StrUtil.subBefore(temp, "/", false);
-        }
-        return null;
-    }
+    String getHost(String uri);
 
     Map<String, String> syncDDL(Integer type, String uri) throws Exception;
 }
