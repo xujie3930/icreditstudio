@@ -13,7 +13,9 @@ public interface DispatchService {
 
     BusinessResult<Boolean> reStartOrStop(String processInstanceId, String execType);
 
+    int executeInstance(String instanceId, String execType);
+
     BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(LogPageParam param);
 
-    BusinessResult<Boolean> nowRun(String taskId);
+    BusinessResult<Boolean> nowRun(String taskId, String execType);
 }

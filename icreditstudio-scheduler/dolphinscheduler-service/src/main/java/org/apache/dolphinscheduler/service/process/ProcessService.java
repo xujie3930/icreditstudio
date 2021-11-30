@@ -62,7 +62,7 @@ public class ProcessService {
     private String pwd;
     private String userName;
     private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
-//    private String getWideTableInfoSql = "SELECT sync_condition FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
+    private String getWideTableInfoSql = "SELECT sync_condition FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
 
     {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
@@ -443,7 +443,7 @@ public class ProcessService {
             }
         }
 
-//        processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
+        processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
 
         if (cmdParam != null) {
             String processInstanceId = null;
@@ -488,31 +488,37 @@ public class ProcessService {
             if (cmdParam.containsKey(Constants.CMDPARAM_SUB_PROCESS)) {
                 processInstance.setCommandParam(command.getCommandParam());
             }
-//        }else if(null != processInstance){
-//            Connection con = getConnection();
-//            String cronInfo = null;
-//            try {
-//                PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
-//                pstmt.setString(1, processDefinition.getId());
-//                ResultSet rs = pstmt.executeQuery();
-//                while(rs.next()){
-//                    cronInfo = rs.getString(1);
-//                }
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }finally {
-//                closeConn(con);
-//            }
-//            JSONObject cronObj = JSONObject.parseObject(cronInfo);
-//            String n = cronObj.getString("n");//T + n 中 n 的值
-//            String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-//            boolean isNeedOverride = checkNeedOverride(n, partition, processInstance.getCommandStartTime());
-//            if(isNeedOverride){
-//                commandType = REPEAT_RUNNING;
-//                handleProcessInstance(processInstance);
-//            }else{
-//                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
-//            }
+        }else if(null != processInstance){
+            Connection con = getConnection();
+            String cronInfo = null;
+            try {
+                PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
+                pstmt.setString(1, processDefinition.getId());
+                ResultSet rs = pstmt.executeQuery();
+                while(rs.next()){
+                    cronInfo = rs.getString(1);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }finally {
+                closeConn(con);
+            }
+            JSONObject cronObj = JSONObject.parseObject(cronInfo);
+            String n = cronObj.getString("n");//T + n 中 n 的值
+            String partition = cronObj.getString("partition");// 每年|每月|每日|每时
+            String whereField = cronObj.getString("incrementalField");// 增量字段
+            String sqlSuffix = getSqlSuffix(n, partition, whereField);
+            if(processInstance.getProcessInstanceJson().contains(sqlSuffix)){
+                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+                        ExecutionStatus.STOP == processInstance.getState()) {
+                    commandType = REPEAT_RUNNING;
+                    handleProcessInstance(processInstance);
+                }else{
+                    logger.info("本次数据增量同步正在手动执行中，这里跳过");
+                }
+            }else{
+                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
+            }
         }else {
             // generate one new process instance
             processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
@@ -610,114 +616,110 @@ public class ProcessService {
      *  处理 processInstance 并保存
      * @param processInstance
      */
-//    private void handleProcessInstance(ProcessInstance processInstance) {
-//        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
-//        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
-//        JSONObject paramObj = taskObj.getJSONObject("params");
-//        if(!"1".equals(paramObj.getString("customConfig"))){
-//            return ;
-//        }
-//        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
-//        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
-//        JSONObject writer = content.getJSONObject("writer");
-//        if(!"hdfswriter".equals(writer.getString("name"))){
-//            return ;
-//        }
-//        JSONObject parameter = writer.getJSONObject("parameter");
-//        String oldFileName = parameter.getString("fileName");
-//        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
-//        target.append(oldFileName).append("\\\"");
-//        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
-//        replaceStr.append(processInstance.getFileName()).append("\\\"");
-//        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
-//        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
-//                .replace(target, replaceStr);
-//        processInstance.setProcessInstanceJson(instanceJson);
-//        processInstanceMapper.updateById(processInstance);
-//    }
-//
-//    private static boolean checkNeedOverride(String n, String partition, Date commandStartTime) {
-//        boolean isNeed = false;
-//        int nn = 0 - Integer.parseInt(n);
-//        Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
-//        calendar.setTime(new Date());
-//        StringBuffer prefix = new StringBuffer();
-//        StringBuffer startDateStr = new StringBuffer();
-//        StringBuffer endDateStr = new StringBuffer();
-//        if(partition.contains("year")){//获取前 n 年
-//            calendar.add(Calendar.YEAR, nn);
-//            prefix.append(calendar.get(Calendar.YEAR));
-//            startDateStr.append(prefix).append("-01-01 00:00:00");
-//            endDateStr.append(prefix).append("-12-31 23:59:59");
-//        }else if(partition.contains("month")){
-//            calendar.add(Calendar.MONTH, nn);
-//            int year = calendar.get(Calendar.YEAR);
-//            prefix.append(year).append("-");
-//            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-//            if(month.length() <= 1){
-//                prefix.append("0");
-//            }
-//            prefix.append(month);
-//            startDateStr.append(prefix).append("-01 00:00:00");
-//            if("2".equals(month)){
-//                if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {//闰年
-//                    endDateStr.append(prefix).append("-29 23:59:59");
-//                }else{
-//                    endDateStr.append(prefix).append("-28 23:59:59");
-//                }
-//            }else if("4".equals(month) || "6".equals(month) || "9".equals(month) || "11".equals(month)){
-//                endDateStr.append(prefix).append("-30 23:59:59");
-//            }else {
-//                endDateStr.append(prefix).append("-31 23:59:59");
-//            }
-//        }else if(partition.contains("day")){
-//            calendar.add(Calendar.DAY_OF_MONTH, nn);
-//            int year = calendar.get(Calendar.YEAR);
-//            prefix.append(year).append("-");
-//            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-//            if(month.length() <= 1){
-//                prefix.append("0");
-//            }
-//            prefix.append(month).append("-");
-//            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-//            if(day.length() <= 1){
-//                startDateStr.append("0");
-//            }
-//            prefix.append(day);
-//
-//            startDateStr.append(prefix).append(" 00:00:00");
-//            endDateStr.append(prefix).append(" 23:59:59");
-//        }else if(partition.contains("hour")){
-//            calendar.add(Calendar.HOUR, nn);
-//            int year = calendar.get(Calendar.YEAR);
-//            prefix.append(year).append("-");
-//            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-//            if(month.length() <= 1){
-//                prefix.append("0");
-//            }
-//            prefix.append(month).append("-");
-//
-//            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-//            if(day.length() <= 1){
-//                prefix.append("0");
-//            }
-//            prefix.append(day).append(" ");
-//            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-//            if(hour.length() <= 1){
-//                prefix.append("0");
-//            }
-//            prefix.append(hour);
-//
-//            startDateStr.append(prefix).append(":00:00");
-//            endDateStr.append(prefix).append(":59:59");
-//        }
-//        Date startDate = DateUtils.stringToDate(String.valueOf(startDateStr));
-//        Date endDate = DateUtils.stringToDate(String.valueOf(endDateStr));
-//        if(commandStartTime.after(startDate) && commandStartTime.before(endDate)){
-//            isNeed = true;
-//        }
-//        return isNeed;
-//    }
+    public void handleProcessInstance(ProcessInstance processInstance) {
+        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
+        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
+        JSONObject paramObj = taskObj.getJSONObject("params");
+        if(!"1".equals(paramObj.getString("customConfig"))){
+            return ;
+        }
+        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
+        JSONObject writer = content.getJSONObject("writer");
+        if(!"hdfswriter".equals(writer.getString("name"))){
+            return ;
+        }
+        JSONObject parameter = writer.getJSONObject("parameter");
+        String oldFileName = parameter.getString("fileName");
+        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
+        target.append(oldFileName).append("\\\"");
+        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
+        replaceStr.append(processInstance.getFileName()).append("\\\"");
+        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
+        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
+                .replace(target, replaceStr);
+        processInstance.setProcessInstanceJson(instanceJson);
+        processInstanceMapper.updateById(processInstance);
+    }
+
+    public String getSqlSuffix(String n, String partition, String whereField) {
+        int nn = 0 - Integer.parseInt(n);
+        Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
+        calendar.setTime(new Date());
+        StringBuffer prefix = new StringBuffer();
+        StringBuffer startDateStr = new StringBuffer();
+        StringBuffer endDateStr = new StringBuffer();
+        if(partition.contains("year")){//获取前 n 年
+            calendar.add(Calendar.YEAR, nn);
+            prefix.append(calendar.get(Calendar.YEAR));
+            startDateStr.append(prefix).append("-01-01 00:00:00");
+            endDateStr.append(prefix).append("-12-31 23:59:59");
+        }else if(partition.contains("month")){
+            calendar.add(Calendar.MONTH, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month);
+            startDateStr.append(prefix).append("-01 00:00:00");
+            if("2".equals(month)){
+                if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {//闰年
+                    endDateStr.append(prefix).append("-29 23:59:59");
+                }else{
+                    endDateStr.append(prefix).append("-28 23:59:59");
+                }
+            }else if("4".equals(month) || "6".equals(month) || "9".equals(month) || "11".equals(month)){
+                endDateStr.append(prefix).append("-30 23:59:59");
+            }else {
+                endDateStr.append(prefix).append("-31 23:59:59");
+            }
+        }else if(partition.contains("day")){
+            calendar.add(Calendar.DAY_OF_MONTH, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month).append("-");
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(day);
+
+            startDateStr.append(prefix).append(" 00:00:00");
+            endDateStr.append(prefix).append(" 23:59:59");
+        }else if(partition.contains("hour")){
+            calendar.add(Calendar.HOUR, nn);
+            int year = calendar.get(Calendar.YEAR);
+            prefix.append(year).append("-");
+            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+            if(month.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(month).append("-");
+
+            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+            if(day.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(day).append(" ");
+            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
+            if(hour.length() <= 1){
+                prefix.append("0");
+            }
+            prefix.append(hour);
+
+            startDateStr.append(prefix).append(":00:00");
+            endDateStr.append(prefix).append(":59:59");
+        }
+        StringBuffer sqlSuffix = new StringBuffer();
+        sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+        return String.valueOf(sqlSuffix);
+    }
 
     /**
      * return complement data if the process start with complement data

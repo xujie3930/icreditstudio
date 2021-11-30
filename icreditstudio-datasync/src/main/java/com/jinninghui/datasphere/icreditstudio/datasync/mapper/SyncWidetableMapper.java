@@ -11,6 +11,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface SyncWidetableMapper extends BaseMapper<SyncWidetableEntity> {
+    String getWideTableInfoByTaskId(@Param("taskId") String taskId);
 }
 
 

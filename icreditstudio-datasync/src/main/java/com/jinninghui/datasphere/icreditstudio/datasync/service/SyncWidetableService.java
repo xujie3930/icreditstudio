@@ -19,6 +19,7 @@ public interface SyncWidetableService extends IService<SyncWidetableEntity> {
      */
     SyncWidetableEntity getWideTableField(String taskId, Integer version);
 
+    String getWideTableInfoByTaskId(String taskId);
     /**
      * 通过任务ID取得宽表信息
      *

@@ -1406,9 +1406,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<BusinessPageResult<DataSyncDispatchTaskPageResult>> dispatchPage(DataSyncDispatchTaskPageParam param) {
         DataSyncDispatchTaskPageDTO dispatchPageDTO = new DataSyncDispatchTaskPageDTO();
         BeanUtils.copyProperties(param, dispatchPageDTO);
-        if ("0".equals(dispatchPageDTO.getWorkspaceId())) {//默认工作空间
-            dispatchPageDTO.setWorkspaceId(null);
-        } else {
+        if (!"0".equals(dispatchPageDTO.getWorkspaceId())) {
             dispatchPageDTO.setCurrLoginUserId(null);
         }
         dispatchPageDTO.setPageNum((dispatchPageDTO.getPageNum() - 1) * dispatchPageDTO.getPageSize());
@@ -1447,5 +1445,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public Boolean updateExecStatusByScheduleId(String scheduleId) {
         syncTaskMapper.updateExecStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
         return true;
+    }
+
+    @Override
+    public String getWideTableInfoByTaskId(String taskId) {
+        return syncWidetableService.getWideTableInfoByTaskId(taskId);
     }
 }

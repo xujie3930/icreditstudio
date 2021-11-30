@@ -25,7 +25,6 @@ import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
@@ -80,7 +79,8 @@ public class DispatchServiceImpl implements DispatchService {
      * @param execType
      * @return  返回值为 0|1 ，0 表示成功 ，1 表示失败
      */
-    private int executeInstance(String instanceId, String execType) {
+    @Override
+    public int executeInstance(String instanceId, String execType) {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
@@ -95,40 +95,10 @@ public class DispatchServiceImpl implements DispatchService {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
             dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
-            handleProcessInstance(processInstance);
+            processService.handleProcessInstance(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
         }
         return result;
-    }
-
-    /**
-     *  处理 processInstance 并保存
-     * @param processInstance
-     */
-    private void handleProcessInstance(ProcessInstance processInstance) {
-        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
-        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
-        JSONObject paramObj = taskObj.getJSONObject("params");
-        if(!"1".equals(paramObj.getString("customConfig"))){
-            return ;
-        }
-        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
-        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
-        JSONObject writer = content.getJSONObject("writer");
-        if(!"hdfswriter".equals(writer.getString("name"))){
-            return ;
-        }
-        JSONObject parameter = writer.getJSONObject("parameter");
-        String oldFileName = parameter.getString("fileName");
-        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
-        target.append(oldFileName).append("\\\"");
-        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
-        replaceStr.append(processInstance.getFileName()).append("\\\"");
-        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
-        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
-                .replace(target, replaceStr);
-        processInstance.setProcessInstanceJson(instanceJson);
-        processService.saveProcessInstance(processInstance);
     }
 
     private int updateProcessInstancePrepare(ProcessInstance processInstance, CommandType commandType, ExecutionStatus executionStatus) {
@@ -186,24 +156,71 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> nowRun(String taskId) {
+    public BusinessResult<Boolean> nowRun(String taskId, String execType) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
+        if("0".equals(execType)){//手动任务
+            platformExecutorService.execSyncTask(definitionId);
+            return BusinessResult.success(true);
+        }
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
-//        if(null == processInstance){
-//            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.message);
-//        }
-        if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
-                processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能执行
+        ProcessDefinition definition = processService.findProcessDefineById(definitionId);
+        String cronStr = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
+        String sqlSuffix = handleCronAndDefinition(definition, cronStr);
+        if (null != processInstance && processInstance.getProcessInstanceJson().contains(sqlSuffix) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
+                processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        handleProcessInstance(processInstance);
-        int result = insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
-        if(0 == result){
-            return BusinessResult.success(true);
-        }else{
-            return BusinessResult.fail("","执行失败");
+        if(null == processInstance){
+            platformExecutorService.execSyncTask(definitionId);
+        }else if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+                ExecutionStatus.STOP == processInstance.getState()){
+            processService.handleProcessInstance(processInstance);
+            insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
+        return BusinessResult.success(true);
+    }
+
+    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr) {
+        JSONObject cronObj = JSONObject.parseObject(cronStr);
+        String n = cronObj.getString("n");//T + n 中 n 的值
+        String partition = cronObj.getString("partition");// 每年|每月|每日|每时
+        String whereField = cronObj.getString("incrementalField");// 增量字段
+        String sqlSuffix = processService.getSqlSuffix(n, partition, whereField);
+        handleProcessDefinition(definition, sqlSuffix);
+        processService.saveProcessDefinition(definition);
+        return sqlSuffix;
+    }
+
+    private void handleProcessDefinition(ProcessDefinition definition, String sqlSuffix) {
+        JSONObject obj = JSONObject.parseObject(definition.getProcessDefinitionJson());
+        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
+        JSONObject paramObj = taskObj.getJSONObject("params");
+        if(!"1".equals(paramObj.getString("customConfig"))){
+            return ;
+        }
+        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
+        JSONObject writer = content.getJSONObject("reader");
+        JSONObject parameter = writer.getJSONObject("parameter");
+
+        JSONObject connObj = (JSONObject) parameter.getJSONArray("connection").get(0);
+        //替换 definitionJson 中的 querySql
+        String querySql = connObj.getString("querySql");
+        querySql = querySql.substring(2, querySql.length() - 2);
+        StringBuilder target = new StringBuilder("\\\"querySql\\\":[\\\"");
+        target.append(querySql).append("\\\"]");
+
+        int index = querySql.indexOf(" where");
+        if(-1 != index){
+            querySql = querySql.substring(0, index);
+        }
+
+        StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":[\\\"");
+        replaceStr.append(querySql).append(sqlSuffix).append("\\\"]");
+        String definitionJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
+
+        definition.setProcessDefinitionJson(definitionJson);
     }
 
 }

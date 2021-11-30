@@ -4,6 +4,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.MonitorService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.SchedulerService;
@@ -16,6 +17,7 @@ import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
+import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
@@ -46,6 +48,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     private ProcessService processService;
     @Resource
     private SchedulerService schedulerService;
+    @Resource
+    private DispatchService dispatchService;
     @Resource
     private ProcessInstanceMapper processInstanceMapper;
     @Resource
@@ -251,11 +255,16 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     public String execSyncTask(String processDefinitionId) {
         String execResult = "false";
         try {
-            ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
-            param.setWorkerGroup("default");
-            param.setTimeout(86400);
-            param.setProcessDefinitionId(processDefinitionId);
-            manualExecSyncTask(param);
+            ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinitionId);
+            if(null == processInstance){//第一次执行
+                ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
+                param.setWorkerGroup("default");
+                param.setTimeout(86400);
+                param.setProcessDefinitionId(processDefinitionId);
+                manualExecSyncTask(param);
+            }else{//后面的执行，相当于重跑
+                dispatchService.executeInstance(processInstance.getId(), "0");
+            }
             //更新对应processDefinition表的updateTime
             processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
             execResult = "true";
