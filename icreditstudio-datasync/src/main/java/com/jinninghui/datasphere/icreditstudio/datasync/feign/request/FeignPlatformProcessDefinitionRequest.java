@@ -13,7 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeignCreatePlatformProcessDefinitionRequest {
+public class FeignPlatformProcessDefinitionRequest {
+    /**
+     * 工作流定义ID
+     */
+    private String processDefinitionId;
     /**
      * 访问用户
      */

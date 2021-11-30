@@ -52,11 +52,12 @@ public class DispatchController {
      * 同步任务调度 -- 立即执行
      *
      * @param taskId 数据同步任务ID
+     * @param execType 0 - 手动，1 - 周期
      * @return
      */
     @GetMapping("/schedule/nowRun")
-    public BusinessResult<Boolean> nowRun(@RequestParam("taskId") String taskId) {
-        return dispatchService.nowRun(taskId);
+    public BusinessResult<Boolean> nowRun(@RequestParam("taskId") String taskId, @RequestParam("execType") String execType) {
+        return dispatchService.nowRun(taskId, execType);
     }
 
     @PostMapping("/log/page")

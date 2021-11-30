@@ -86,10 +86,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Autowired
     private UserWorkspaceFeignClient userWorkspaceFeignClient;
     @Autowired
-    private IcreditDatasourceService icreditDatasourceService;
-    @Autowired
     private DatasyncFeignClient datasyncFeignClient;
-
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -98,9 +95,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
-        defEntity.setId(sequenceService.nextValueString());
+        defEntity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(defEntity.getType()).getDesc());
         defEntity.setCreateTime(new Date());
         defEntity.setCreateBy(userId);
+        defEntity.setId(sequenceService.nextValueString());
         return BusinessResult.success(save(defEntity));
     }
 
@@ -178,8 +176,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         Date date = new Date();
         //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
-        IcreditDatasourceEntity dataEntity;
-        dataEntity = datasourceMapper.selectById(id);
+        IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null) {
             log.error("没有找到该数据源:{}", id);
             throw new AppException("70000003");
@@ -350,12 +347,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        catalogue.setName(DatasourceSync.getDatabaseName(icreditDatasourceEntity.getUri()));
+                        DatasourceSync datasource = DatasourceFactory.getDatasource(icreditDatasourceEntity.getType());
+                        catalogue.setName(datasource.getDatabaseName(icreditDatasourceEntity.getUri()));
                         if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }
                         catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
-                        catalogue.setHost(DatasourceSync.getHost(icreditDatasourceEntity.getUri()));
+                        catalogue.setHost(datasource.getHost(icreditDatasourceEntity.getUri()));
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());

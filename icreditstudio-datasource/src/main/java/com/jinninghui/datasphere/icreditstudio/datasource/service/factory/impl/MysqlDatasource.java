@@ -1,10 +1,11 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
-import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -60,4 +61,26 @@ public class MysqlDatasource implements DatasourceSync {
         conn.close();
         return map;
     }
+
+    @Override
+    public String getHost(String uri) {
+        if (StringUtils.isNotBlank(uri)) {
+            String temp = StrUtil.subAfter(uri, "//", false);
+            return StrUtil.subBefore(temp, "/", false);
+        }
+        return null;
+    }
+
+    /**
+     * 取得数据库名称
+     *
+     * @param uri
+     * @return
+     */
+    @Override
+    public String getDatabaseName(String uri) {
+        String s = StrUtil.subBefore(uri, "?", false);
+        return StrUtil.subAfter(s, "/", true);
+    }
+
 }

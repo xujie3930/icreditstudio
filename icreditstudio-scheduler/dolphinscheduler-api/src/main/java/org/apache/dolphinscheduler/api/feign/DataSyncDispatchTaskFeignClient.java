@@ -35,4 +35,9 @@ public interface DataSyncDispatchTaskFeignClient {
     @GetMapping("/datasync/updateExecStatusByScheduleId")
     boolean updateExecStatusByScheduleId(@RequestParam("scheduleId") String scheduleId);
 
+    /**
+     * 通过taskId来获取宽表中的cron信息
+     */
+    @GetMapping("/datasync/getWideTableInfoByTaskId")
+    String getWideTableInfoByTaskId(@RequestParam("taskId") String taskId);
 }
