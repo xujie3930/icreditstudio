@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -60,14 +59,6 @@ public class OracleDatasource implements DatasourceSync {
         map.put("datasourceInfo", JSONObject.toJSONString(tableList));
         map.put("tablesCount", tablesCount.toString());
         return map;
-    }
-
-    @Override
-    public String getHost(String uri) {
-        if (StringUtils.isNotBlank(uri)){
-            return uri.substring(uri.indexOf(":@") + 2, uri.indexOf("1521") + 4);
-        }
-        return null;
     }
 
     /**

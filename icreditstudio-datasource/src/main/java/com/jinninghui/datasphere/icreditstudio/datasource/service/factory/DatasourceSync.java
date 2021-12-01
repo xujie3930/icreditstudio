@@ -11,6 +11,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public interface DatasourceSync {
 
@@ -115,7 +117,14 @@ public interface DatasourceSync {
         return connection;
     }
 
-    String getHost(String uri);
+    static String getHost(String uri){
+        Pattern p = Pattern.compile("(\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5})");
+        Matcher matcher = p.matcher(uri);
+        if (matcher.find()) {
+            return matcher.group();
+        }
+        return null;
+    }
 
     Map<String, String> syncDDL(Integer type, String uri) throws Exception;
 }

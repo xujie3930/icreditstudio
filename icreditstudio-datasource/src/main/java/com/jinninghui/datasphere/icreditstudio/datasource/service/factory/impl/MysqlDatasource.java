@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
-import org.apache.commons.lang3.StringUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -60,15 +59,6 @@ public class MysqlDatasource implements DatasourceSync {
         map.put("tablesCount", tablesCount.toString());
         conn.close();
         return map;
-    }
-
-    @Override
-    public String getHost(String uri) {
-        if (StringUtils.isNotBlank(uri)) {
-            String temp = StrUtil.subAfter(uri, "//", false);
-            return StrUtil.subBefore(temp, "/", false);
-        }
-        return null;
     }
 
     /**

@@ -353,7 +353,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }
                         catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
-                        catalogue.setHost(datasource.getHost(icreditDatasourceEntity.getUri()));
+                        catalogue.setHost(DatasourceSync.getHost(icreditDatasourceEntity.getUri()));
                         catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
                         return catalogue;
                     }).collect(Collectors.toList());
@@ -497,7 +497,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         DatasourceSync dataSource = DatasourceFactory.getDatasource(entity.getType());
         entity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(entity.getType()).getDesc());
         entity.setDatabaseName(dataSource.getDatabaseName(entity.getUri()));
-        entity.setHost(dataSource.getHost(entity.getUri()));
+        entity.setHost(DatasourceSync.getHost(entity.getUri()));
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
         if(StringUtils.isEmpty(entity.getId())){
