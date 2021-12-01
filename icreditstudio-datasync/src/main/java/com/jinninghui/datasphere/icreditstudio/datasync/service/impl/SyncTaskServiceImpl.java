@@ -12,13 +12,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.GenerateWideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.GenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.QueryField;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.QueryStatementParseContainer;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.QueryStatementParseHandler;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.outside.OutsideGenerateWideTable;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.outside.OutsideGenerateWideTableContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
@@ -45,7 +46,6 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.TimeInterval;
 import com.jinninghui.datasphere.icreditstudio.datasync.web.request.CronParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -199,6 +199,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         log.info("=========================sync save执行时间============：" + (end - start) / 1000);
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }*/
+    //===============================================================================add v0.0.2 start================================================================================
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -229,8 +230,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         return BusinessResult.success(new ImmutablePair("taskId", taskId));
     }
-
-    //===============================================================================add v0.0.2 start================================================================================
 
     /**
      * 同步任务第一步保存(新增/更新)
@@ -521,6 +520,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     //=========================================================================add v0.0.2 end=================================================================================
+/*
 
     private List<QueryField> transferQueryField(List<WideTableFieldRequest> fieldInfos) {
         return Optional.ofNullable(fieldInfos).orElse(Lists.newArrayList())
@@ -534,6 +534,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     return queryField;
                 }).collect(Collectors.toList());
     }
+*/
+/*
 
     private void updateVersion(String taskId, OperatorTypeEnum operatorType) {
         SyncTaskEntity byId = getById(taskId);
@@ -552,6 +554,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             updateById(byId);
         }
     }
+*/
 
     /**
      * 根据用户ID查询用户信息
@@ -845,13 +848,13 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
     }
 
-    //第一步保存
+/*    //第一步保存
     private String oneStepSave(DataSyncSaveParam param) {
         DataSyncTaskDefineSaveParam defineSaveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskDefineSaveParam.class);
         return syncTaskDefineSave(defineSaveParam);
-    }
+    }*/
 
-    //第二部保存
+/*    //第二部保存
     private String twoStepSave(DataSyncSaveParam param) {
         String taskId = oneStepSave(param);
         DataSyncTaskBuildSaveParam saveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskBuildSaveParam.class);
@@ -861,9 +864,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         saveParam.setDialect(param.getDialect());
         syncTaskBuildSave(saveParam);
         return taskId;
-    }
+    }*/
 
-    //第三步保存
+  /*  //第三步保存
     private String threeStepSave(DataSyncSaveParam param) {
         String taskId = twoStepSave(param);
         TaskParamSaveParam saveParam = BeanCopyUtils.copyProperties(param, TaskParamSaveParam.class);
@@ -878,7 +881,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         taskParamSave(saveParam);
         return taskId;
-    }
+    }*/
 
     @Override
     @BusinessParamsValidate
@@ -892,7 +895,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return entity.getId();
     }
 
-    @BusinessParamsValidate
+ /*   @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public void syncTaskBuildSave(DataSyncTaskBuildSaveParam param) {
         if (StringUtils.isBlank(param.getWideTableName())) {
@@ -949,7 +952,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     }).collect(Collectors.toList());
             wideTableFieldSave(saveParams);
         }
-    }
+    }*/
 
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
@@ -972,7 +975,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
     }
 
-    @BusinessParamsValidate
+/*    @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public void taskParamSave(TaskParamSaveParam param) {
         SyncTaskEntity entity = new SyncTaskEntity();
@@ -983,7 +986,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setTaskParamJson(JSONObject.toJSONString(info));
         entity.setCronParam(JSONObject.toJSONString(param.getCronParam()));
         saveOrUpdate(entity);
-    }
+    }*/
 
     @Override
     @BusinessParamsValidate
@@ -1120,48 +1123,119 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
+    public BusinessResult<PreSqlPositionDataSourceResult> preSqlPositionDataSource(PreSqlPositionDataSourceParam param) {
+        if (Objects.isNull(param.getSourceType())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000062.getCode());
+        }
+        if (StringUtils.isBlank(param.getSql())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000063.getCode());
+        }
+        QueryStatementParseHandler handler = QueryStatementParseContainer.get(param.getSql());
+        List<PreSqlPositionDataSourceResult.DatabaseInfo> dataSourceInfo = handler.getDataSourceInfo(param.getSourceType(), param.getSql());
+        if (CollectionUtils.isEmpty(dataSourceInfo)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000064.getCode());
+        }
+        preSqlPositionDataSourceValid(dataSourceInfo);
+        PreSqlPositionDataSourceResult result = new PreSqlPositionDataSourceResult();
+        if (dataSourceInfo.size() > 1) {
+            result.setShowWindow(true);
+        }
+        result.setSameNameDataBase(dataSourceInfo);
+        return BusinessResult.success(result);
+    }
+
+    /**
+     * 校验sql匹配的数据源信息
+     *
+     * @param dataSourceInfo
+     */
+    private void preSqlPositionDataSourceValid(List<PreSqlPositionDataSourceResult.DatabaseInfo> dataSourceInfo) {
+        for (PreSqlPositionDataSourceResult.DatabaseInfo info : dataSourceInfo) {
+            if (StringUtils.isBlank(info.getDialect())) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000065.getCode());
+            }
+            if (StringUtils.isBlank(info.getDatabaseName())) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000066.getCode());
+            }
+            if (StringUtils.isBlank(info.getHost())) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000067.getCode());
+            }
+            if (StringUtils.isBlank(info.getDatasourceId())) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000068.getCode());
+            }
+        }
+    }
+
+    @Override
     @BusinessParamsValidate
     public BusinessResult<WideTable> generateWideTable(DataSyncGenerateWideTableParam param) {
+        //参数前置校验
+        generateWideTablePreValid(param);
 
+        WideTable wideTable = null;
         log.info("生成宽表请求参数:" + JSONObject.toJSONString(param));
-        //根据参数确定源库类型
-        GenerateWideTable generateWideTable = GenerateWideTableContainer.find(param);
-        if (Objects.isNull(generateWideTable)) {
-            throw new AppException("60000025");
+        if (SourceTypeEnum.EXTERNAL_DATABASE.getCode().equals(param.getSourceType())) {
+            OutsideSourceWideTableParam tableParam = new OutsideSourceWideTableParam();
+            BeanCopyUtils.copyProperties(param, tableParam);
+            wideTable = outsideSourceGenerateWideTable(tableParam);
         }
-        //取得宽表sql
-        String wideTableSql = generateWideTable.getWideTableSql(param);
-        log.info("取得宽表的sql语句", wideTableSql);
-        //校验sql语法
-        generateWideTable.verifySql(wideTableSql, param);
-
-        WideTable wideTable = new WideTable();
-        if (CreateModeEnum.SQL == CreateModeEnum.find(param.getCreateMode()) && CollectionUtils.isEmpty(param.getSqlInfo().getDatabaseHost())) {
-            List<DataSyncGenerateWideTableRequest.DatabaseInfo> databaseInfos = generateWideTable.checkDatabaseFromSql(wideTableSql);
-            log.info("相同数据库信息", JSONObject.toJSONString(databaseInfos));
-            //如何不同主机有相同数据库则返回给用户选择
-            if (CollectionUtils.isNotEmpty(databaseInfos)) {
-                wideTable.setSameNameDataBase(databaseInfos);
-                wideTable.setSql(wideTableSql);
-            } else {
-                //取得数据源ID
-                String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
-                log.info("数据源ID", dataSourceId);
-                //生成宽表数据列
-                try {
-                    wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
-                } catch (Exception e) {
-                    throw new AppException("60000027");
-                }
-            }
-        } else {
-            //取得数据源ID
-            String dataSourceId = generateWideTable.getDataSourceId(wideTableSql, param);
-            log.info("数据源ID", dataSourceId);
-            //生成宽表数据列
-            wideTable = generateWideTable.generate(wideTableSql, dataSourceId);
+        if (SourceTypeEnum.LOCAL_FILE.getCode().equals(param.getSourceType())) {
+            //TODO
+        }
+        if (SourceTypeEnum.BLOCK_CHAIN.getCode().equals(param.getSourceType())) {
+            //TODO
+        }
+        if (Objects.nonNull(wideTable)) {
+            wideTable.setSourceDialect(param.getDialect());
+            wideTable.setDatasourceId(param.getDatasourceId());
         }
         return BusinessResult.success(wideTable);
+    }
+
+    /**
+     * 外部数据源识别宽表
+     *
+     * @param param
+     * @return
+     */
+    private WideTable outsideSourceGenerateWideTable(OutsideSourceWideTableParam param) {
+        //根据参数确定源库类型
+        OutsideGenerateWideTable outsideGenerateWideTable = OutsideGenerateWideTableContainer.find(param);
+        //未匹配到合适的类型处理器
+        if (Objects.isNull(outsideGenerateWideTable)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000025.getCode());
+        }
+        //取得宽表sql
+        String wideTableSql = outsideGenerateWideTable.getWideTableSql(param);
+        log.info("取得宽表的sql语句", wideTableSql);
+        //取得数据源ID
+        String dataSourceId = outsideGenerateWideTable.getDataSourceId(wideTableSql, param);
+        log.info("数据源ID", dataSourceId);
+        //生成宽表数据列
+        WideTable wideTable = outsideGenerateWideTable.generate(wideTableSql, dataSourceId);
+        return wideTable;
+    }
+
+    /**
+     * 本地数据源识别宽表
+     *
+     * @param param
+     * @return
+     */
+    private WideTable localSourceGenerateWideTable(LocalSourceWideTableParam param) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * 区块链数据源识别宽表
+     *
+     * @param param
+     * @return
+     */
+    private WideTable blockchainSourceGenerateWideTable(BlockchainSourceWideTableParam param) {
+        //TODO
+        return null;
     }
 
     /**
@@ -1170,6 +1244,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
      * @param param
      */
     private void generateWideTablePreValid(DataSyncGenerateWideTableParam param) {
+        if (Objects.isNull(param.getSourceType())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000062.getCode());
+        }
         //创建方式不能为空
         if (Objects.isNull(param.getCreateMode())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000011.getCode());
@@ -1177,26 +1254,26 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         if (CreateModeEnum.SQL.getCode().equals(param.getCreateMode())) {
             //sql创建方式，校验sql信息
-            if (Objects.isNull(param.getSqlInfo()) || StringUtils.isBlank(param.getSqlInfo().getSql())) {
+            if (StringUtils.isBlank(param.getSql())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000024.getCode());
             }
         } else {//可视化传参方式
-            //数据源ID不能为空
-            if (StringUtils.isBlank(param.getDatasourceId())) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000003.getCode());
-            }
-            //数据库方言不能为空
-            if (StringUtils.isBlank(param.getDialect())) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.getCode());
-            }
             //可视化表信息列表为空
             if (CollectionUtils.isEmpty(param.getSourceTables())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000059.getCode());
             }
-            //可视化关系列表为空
-            if (CollectionUtils.isEmpty(param.getView())) {
+            //大于一张表可视化关系列表不能为空
+            if (CollectionUtils.size(param.getSourceTables()) > 1 && CollectionUtils.isEmpty(param.getView())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000060.getCode());
             }
+        }
+        //数据源ID不能为空
+        if (StringUtils.isBlank(param.getDatasourceId())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000003.getCode());
+        }
+        //数据库方言不能为空
+        if (StringUtils.isBlank(param.getDialect())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000004.getCode());
         }
     }
 

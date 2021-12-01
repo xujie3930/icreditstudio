@@ -39,7 +39,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000022("60000022", "任务名称不大于50个字符"),
         RESOURCE_CODE_60000023("60000023", "任务描述不大于255个字符"),
         RESOURCE_CODE_60000024("60000024", "生成宽表sql为空"),
-        RESOURCE_CODE_60000025("60000025", "未匹配到合适数据源"),
+        RESOURCE_CODE_60000025("60000025", "未匹配到合适的类型处理器"),
         RESOURCE_CODE_60000026("60000026", "未找到合适的格式化器"),
         RESOURCE_CODE_60000027("60000027", "sql语法有误,请检查"),
         RESOURCE_CODE_60000029("60000029", "获取字典列表失败"),
@@ -74,6 +74,15 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000058("60000058", "任务名称重复"),
         RESOURCE_CODE_60000059("60000059", "可视化表信息列表为空"),
         RESOURCE_CODE_60000060("60000060", "可视化关系列表为空"),
+        RESOURCE_CODE_60000061("60000061", "识别宽表方言参数为空"),
+        RESOURCE_CODE_60000062("60000062", "资源类型不能为空"),
+        RESOURCE_CODE_60000063("60000063", "查询语句为空"),
+        RESOURCE_CODE_60000064("60000064", "未找到数据源，请检查sql语句"),
+        RESOURCE_CODE_60000065("60000065", "根据sql匹配数据源时,方言信息为空"),
+        RESOURCE_CODE_60000066("60000066", "根据sql匹配数据源时,数据库名信息为空"),
+        RESOURCE_CODE_60000067("60000067", "根据sql匹配数据源时,host信息为空"),
+        RESOURCE_CODE_60000068("60000068", "根据sql匹配数据源时,数据源ID信息为空"),
+        RESOURCE_CODE_60000069("60000069", "根据sql匹配数据源时,数据源ID信息为空"),
         ;
 
         public final String code;

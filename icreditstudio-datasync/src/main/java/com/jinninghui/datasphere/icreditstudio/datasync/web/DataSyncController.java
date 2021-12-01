@@ -57,6 +57,21 @@ public class DataSyncController {
     }
 
     /**
+     * 通过sql语句定位数据源
+     * 如果创建方式是sql方式则需要前置调用
+     *
+     * @param request
+     * @return
+     */
+    @Logable
+    @PostMapping("/preSqlPositionDataSource")
+    public BusinessResult<PreSqlPositionDataSourceResult> preSqlPositionDataSource(@RequestBody PreSqlPositionDataSourceRequest request) {
+        PreSqlPositionDataSourceParam param = new PreSqlPositionDataSourceParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.preSqlPositionDataSource(param);
+    }
+
+    /**
      * 生成宽表
      *
      * @return
@@ -235,7 +250,7 @@ public class DataSyncController {
     }
 
     @GetMapping("/updateExecStatusByScheduleId")
-    public Boolean updateTaskStatusByScheduleId(@RequestParam("scheduleId") String scheduleId){
+    public Boolean updateTaskStatusByScheduleId(@RequestParam("scheduleId") String scheduleId) {
         return syncTaskService.updateExecStatusByScheduleId(scheduleId);
     }
 
