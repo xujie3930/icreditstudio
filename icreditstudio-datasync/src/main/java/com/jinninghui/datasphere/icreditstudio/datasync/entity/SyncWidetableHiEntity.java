@@ -3,11 +3,9 @@ package com.jinninghui.datasphere.icreditstudio.datasync.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 数据同步目标表结构信息表
@@ -17,14 +15,18 @@ import java.util.Date;
  */
 @TableName(value = "icredit_sync_widetable_hi")
 @Data
-@Builder
 public class SyncWidetableHiEntity implements Serializable {
+
+    public static final String SYNC_TASK_ID = "sync_task_id";
+    public static final String VERSION = "version";
     /**
      * 主键
      */
     @TableId
     private String id;
 
+
+    private String widetableId;
     /**
      * 任务ID
      */
@@ -36,22 +38,38 @@ public class SyncWidetableHiEntity implements Serializable {
     private String sqlStr;
 
     /**
+     * 关联关系json
+     */
+    private String viewJson;
+    /**
+     * 数据库方言
+     */
+    private String dialect;
+
+    /**
      * 数据源ID
      */
     private String datasourceId;
-
     /**
-     * 目标源地址
+     * 资源类型【0：外部数据库，1：本地文件，2：区块链】
      */
-    private String targetUrl;
+    private Integer sourceType;
+    /**
+     * 目标库名
+     */
+    private String targetSource;
 
     /**
      * 分区字段
      */
-    private String partitionStr;
+    private String syncCondition;
+    /**
+     * 可视化创建的表信息
+     */
+    private String sourceTables;
 
     /**
-     *
+     * 表名称
      */
     private String name;
 
@@ -59,36 +77,6 @@ public class SyncWidetableHiEntity implements Serializable {
      * 版本号
      */
     private Integer version;
-
-    /**
-     *
-     */
-    private String remark;
-
-    /**
-     *
-     */
-    private Date createTime;
-
-    /**
-     *
-     */
-    private String createBy;
-
-    /**
-     *
-     */
-    private Date updateTime;
-
-    /**
-     *
-     */
-    private String updateBy;
-
-    /**
-     * 删除标识【0：未删除，1：已删除】
-     */
-    private Boolean delFlag;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
