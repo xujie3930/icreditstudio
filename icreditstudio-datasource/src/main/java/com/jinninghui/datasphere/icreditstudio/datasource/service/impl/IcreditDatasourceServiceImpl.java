@@ -461,7 +461,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @BusinessParamsValidate
     public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
-                .uri(param.getDatabaseName())
+//                .uri(param.getDatabaseName())
+                .databaseName(param.getDatabaseName())
                 .datasourceId(param.getDatasourceId())
                 .category(param.getCategory())
                 .status(DatasourceStatusEnum.ENABLE.getCode())
@@ -586,6 +587,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (StringUtils.isNotBlank(param.getUri())) {
             wrapper.like(IcreditDatasourceEntity.URI, param.getUri());
+        }
+        if (StringUtils.isNotBlank(param.getDatabaseName())) {
+            wrapper.eq(IcreditDatasourceEntity.DATABASE_NAME, param.getDatabaseName());
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());

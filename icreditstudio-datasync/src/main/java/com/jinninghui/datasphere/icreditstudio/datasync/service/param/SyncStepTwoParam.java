@@ -21,6 +21,10 @@ public class SyncStepTwoParam {
      */
     private String taskId;
     /**
+     * 用户ID
+     */
+    private String userId;
+    /**
      * 目标库名
      */
     private String targetSource;

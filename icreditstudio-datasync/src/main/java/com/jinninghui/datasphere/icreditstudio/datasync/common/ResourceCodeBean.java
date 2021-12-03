@@ -78,11 +78,16 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000062("60000062", "资源类型不能为空"),
         RESOURCE_CODE_60000063("60000063", "查询语句为空"),
         RESOURCE_CODE_60000064("60000064", "未找到数据源，请检查sql语句"),
-        RESOURCE_CODE_60000065("60000065", "根据sql匹配数据源时,方言信息为空"),
-        RESOURCE_CODE_60000066("60000066", "根据sql匹配数据源时,数据库名信息为空"),
-        RESOURCE_CODE_60000067("60000067", "根据sql匹配数据源时,host信息为空"),
-        RESOURCE_CODE_60000068("60000068", "根据sql匹配数据源时,数据源ID信息为空"),
+        RESOURCE_CODE_60000065("60000065", "根据sql匹配的数据源,缺少方言信息"),
+        RESOURCE_CODE_60000066("60000066", "根据sql匹配的数据源,缺少数据库名信息"),
+        RESOURCE_CODE_60000067("60000067", "根据sql匹配的数据源,缺少host信息"),
+        RESOURCE_CODE_60000068("60000068", "根据sql匹配的数据源,缺少数据源ID信息"),
         RESOURCE_CODE_60000069("60000069", "根据sql匹配数据源时,数据源ID信息为空"),
+        RESOURCE_CODE_60000070("60000070", "最大并发数为空"),
+        RESOURCE_CODE_60000071("60000071", "限流类型为空"),
+        RESOURCE_CODE_60000072("60000072", "调度类型为空"),
+        RESOURCE_CODE_60000073("60000073", "周期执行调度时间为空"),
+        RESOURCE_CODE_60000074("60000074", "限流大小不能为空"),
         ;
 
         public final String code;

@@ -35,7 +35,7 @@ public class CronParam {
     private List<Map<String, Integer>> moment;
 
 
-    public String getCrons() {
+    public String getCron() {
         if (CollectionUtils.isEmpty(moment)) {
             return "";
         }
