@@ -1,7 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -35,8 +34,8 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MySqlReader;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql.MysqlReaderConfigParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.DataxReader;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.DataxReaderContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterConfigParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.writer.hdfs.HdfsWriterEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.time.SyncTimeInterval;
@@ -99,114 +98,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Resource
     private ThreadPoolExecutor executor;
 
-    /*@Override
-    @BusinessParamsValidate
-    @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
-        String taskId = null;
-        long start = System.currentTimeMillis();
-        CronParam cronParam = param.getCronParam();
-        if (Objects.nonNull(cronParam)) {
-            String cron = cronParam.getCrons();
-            log.info("cron表达式:" + cron);
-            param.setCron(cron);
-
-            SyncCondition syncCondition = param.getSyncCondition();
-            if (Objects.nonNull(syncCondition) && StringUtils.isNotBlank(cron)) {
-                IncrementUtil.getSyncCondition(syncCondition, cron);
-            }
-        }
-        if (CallStepEnum.ONE == CallStepEnum.find(param.getCallStep())) {
-            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
-            taskId = oneStepSave(param);
-        }
-        if (CallStepEnum.TWO == CallStepEnum.find(param.getCallStep())) {
-            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
-            taskId = twoStepSave(param);
-        }
-        if (CallStepEnum.THREE == CallStepEnum.find(param.getCallStep())) {
-            param.setTaskStatus(TaskStatusEnum.DRAFT.getCode());
-            taskId = threeStepSave(param);
-        }
-        //发布
-        if (CallStepEnum.FOUR == CallStepEnum.find(param.getCallStep())) {
-            param.setTaskStatus(TaskStatusEnum.find(EnableStatusEnum.find(param.getEnable())).getCode());
-            List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
-            DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
-            String querySql = matching.querySql(queryFields, param.getSql());
-            param.setSql(querySql);
-
-            taskId = threeStepSave(param);
-            //查询访问用户信息
-            User user = getSystemUserByUserId(param.getUserId());
-            //执行发布任务时，taskId一定不为空，查询
-            SyncTaskEntity syncTaskEntity = getSyncTaskEntityById(taskId);
-
-            if (StringUtils.isBlank(syncTaskEntity.getScheduleId())) {
-                CreateWideTableParam wideTableParam = BeanCopyUtils.copyProperties(param, CreateWideTableParam.class);
-                if (Objects.nonNull(param.getSyncCondition())) {
-                    wideTableParam.setPartition(param.getSyncCondition().getPartition());
-                }
-                FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
-                        .accessUser(user)
-                        .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
-                        .partitionParam(param.getSyncCondition())
-                        .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                        .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, querySql), 0))
-                        .build();
-                BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(build);
-                if (businessResult.isSuccess() && businessResult.getData() != null) {
-                    CreatePlatformTaskResult data = businessResult.getData();
-                    SyncTaskEntity updateEntity = new SyncTaskEntity();
-                    updateEntity.setId(taskId);
-                    updateEntity.setScheduleId(data.getProcessDefinitionId());
-                    syncTaskMapper.updateById(updateEntity);
-                } else {
-                    throw new AppException("60000037");
-                }
-                updateVersion(taskId, OperatorTypeEnum.INSERT);
-                //创建宽表
-                createWideTable(wideTableParam);
-            } else {
-                String taskIdR = param.getTaskId();
-                SyncTaskEntity entity = syncTaskMapper.selectById(taskIdR);
-                if (Objects.isNull(entity)) {
-                    throw new AppException("60000039");
-                }
-                if (!TaskStatusEnum.DRAFT.getCode().equals(param.getTaskStatus())) {
-                    if (StringUtils.isBlank(entity.getScheduleId())) {
-                        throw new AppException("60000040");
-                    }
-                    FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
-                            .processDefinitionId(entity.getScheduleId())
-                            .accessUser(user)
-                            .channelControl(new ChannelControlParam(param.getMaxThread(), param.isLimit(), param.getLimitRate()))
-                            .schedulerParam(new SchedulerParam(param.getScheduleType(), param.getCron()))
-                            .ordinaryParam(new PlatformTaskOrdinaryParam(param.getWorkspaceId(), param.getEnable(), param.getTaskName(), "icredit", taskId, buildTaskJson(taskId, param.getSql()), 0))
-                            .build();
-                    schedulerFeign.update(build);
-                    updateVersion(taskId, OperatorTypeEnum.EDIT);
-                }
-            }
-            //执行
-            SyncTaskEntity byId = getById(taskId);
-            if (byId == null) {
-                throw new AppException("60000052");
-            }
-            SyncCondition syncCondition = param.getSyncCondition();
-            if (Objects.nonNull(byId.getEnable())
-                    && Objects.nonNull(syncCondition)
-                    && EnableStatusEnum.ENABLE.getCode().equals(byId.getEnable())
-                    && StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
-                cycleRun(byId);
-            }
-        }
-        long end = System.currentTimeMillis();
-        log.info("=========================sync save执行时间============：" + (end - start) / 1000);
-        return BusinessResult.success(new ImmutablePair("taskId", taskId));
-    }*/
-    //===============================================================================add v0.0.2 start================================================================================
-
+    /**
+     * 同步任务  新增/编辑
+     *
+     * @param param
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<ImmutablePair<String, String>> save(DataSyncSaveParam param) {
@@ -247,6 +144,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         stepOnePreValid(param);
 
         SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(param.getTaskId());
         entity.setTaskName(param.getTaskName());
         entity.setEnable(param.getEnable());
         entity.setCreateMode(param.getCreateMode());
@@ -260,7 +158,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setLastUpdateUserId(param.getUserId());
         if (StringUtils.isNotBlank(param.getTaskId())) {
             SyncTaskEntity taskEntity = getSyncTaskEntityById(param.getTaskId());
-            entity.setVersion(taskEntity.getVersion() + 1);
+            if (!TaskStatusEnum.DRAFT.getCode().equals(taskEntity.getTaskStatus())) {
+                entity.setVersion(taskEntity.getVersion() + 1);
+            }
         }
         saveOrUpdate(entity);
         return entity.getId();
@@ -275,12 +175,14 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (StringUtils.isBlank(param.getTaskName())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.getCode());
         }
-        //同工作空间下任务名称不能重复
-        QueryWrapper<SyncTaskEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq(SyncTaskEntity.WORKSPACE_ID, param.getWorkspaceId());
-        wrapper.eq(SyncTaskEntity.TASK_NAME, param.getTaskName());
-        if (CollectionUtils.isNotEmpty(list(wrapper))) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000058.getCode());
+        if (StringUtils.isBlank(param.getTaskId())) {
+            //同工作空间下任务名称不能重复
+            QueryWrapper<SyncTaskEntity> wrapper = new QueryWrapper<>();
+            wrapper.eq(SyncTaskEntity.WORKSPACE_ID, param.getWorkspaceId());
+            wrapper.eq(SyncTaskEntity.TASK_NAME, param.getTaskName());
+            if (CollectionUtils.isNotEmpty(list(wrapper))) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000058.getCode());
+            }
         }
         //启用状态不能为空
         if (Objects.isNull(param.getEnable())) {
@@ -502,11 +404,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 .channelControl(new ChannelControlParam(info.getMaxThread(), info.isLimit(), info.getLimitRate()))
                 .partitionParam(condition)
                 .schedulerParam(new SchedulerParam(info.getScheduleType(), info.getCronParam().getCron()))
-                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildTaskJson(taskId, wideTableEntity.getSqlStr()), 0))
+                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
                 .build();
         String scheduleId = taskEntity.getScheduleId();
         if (StringUtils.isBlank(scheduleId)) {
             //如果创建hive成功但接口异常可考虑删除该hive表
+            //创建流程定义并回写到任务记录中
             createDefinitionAndWriteBackId(taskId, build);
 
             List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTableEntity.getId());
@@ -531,6 +434,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 && StringUtils.isNotBlank(condition.getIncrementalField())) {
             cycleRun(taskEntity);
         }
+        //更新状态为启用
+        SyncTaskEntity entity = new SyncTaskEntity();
+        entity.setId(taskId);
+        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        updateById(entity);
         //同步历史数据
         syncHiRecord(taskId);
     }
@@ -624,43 +532,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
     }
 
-    //=========================================================================add v0.0.2 end=================================================================================
-/*
-
-    private List<QueryField> transferQueryField(List<WideTableFieldRequest> fieldInfos) {
-        return Optional.ofNullable(fieldInfos).orElse(Lists.newArrayList())
-                .parallelStream()
-                .filter(Objects::nonNull)
-                .map(field -> {
-                    QueryField queryField = new QueryField();
-                    queryField.setFieldName(field.getFieldName());
-                    queryField.setDatabaseName(field.getDatabaseName());
-                    queryField.setSourceTable(field.getSourceTable());
-                    return queryField;
-                }).collect(Collectors.toList());
-    }
-*/
-/*
-
-    private void updateVersion(String taskId, OperatorTypeEnum operatorType) {
-        SyncTaskEntity byId = getById(taskId);
-        if (Objects.nonNull(byId)) {
-            if (OperatorTypeEnum.INSERT == operatorType) {
-                byId.setVersion(1);
-            }
-            if (OperatorTypeEnum.EDIT == operatorType) {
-                Integer version = byId.getVersion();
-                if (version == null) {
-                    byId.setVersion(1);
-                } else {
-                    byId.setVersion(version + 1);
-                }
-            }
-            updateById(byId);
-        }
-    }
-*/
-
     /**
      * 根据用户ID查询用户信息
      *
@@ -708,7 +579,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (!TaskStatusEnum.ENABLE.getCode().equals(entity.getEnable())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000044.message);
         }
-        if (ExecStatusEnum.EXEC.getCode().equals(entity.getExecStatus())) {//“执行中” 状态
+        //“执行中” 状态
+        if (ExecStatusEnum.EXEC.getCode().equals(entity.getExecStatus())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
         }
         String processDefinitionId = entity.getScheduleId();
@@ -720,75 +592,55 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     /**
-     * 构建dataxjson
+     * 构建datax执行json
      *
      * @param taskId
      * @return
      */
-    private String buildTaskJson(String taskId, String sql) {
+    private String buildDataxJson(String taskId) {
+        //查找配置了字典的列
         Map<String, String> transferColumnsByTaskId = findTransferColumnsByTaskId(taskId);
         List<DictInfo> dictInfos = null;
         if (MapUtil.isNotEmpty(transferColumnsByTaskId)) {
             Collection<String> values = transferColumnsByTaskId.values();
+            //根据字典KEY查找字典信息
             dictInfos = findDictInfos(values);
         }
-
-        MysqlReaderConfigParam readerConfigParam = findReaderConfigParam(taskId, sql);
-        log.info("==============mysqlReader参数信息==========：" + JSONObject.toJSONString(readerConfigParam));
-        MySqlReader mySqlReader = new MySqlReader(transferColumnsByTaskId, dictInfos, readerConfigParam);
+        SyncTaskEntity taskEntity = getById(taskId);
+        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId);
+        String taskParamJson = taskEntity.getTaskParamJson();
+        TaskScheduleInfo parse = taskScheduleInfoParser.parse(taskParamJson);
+        //根据dialect取得reader插件处理器
+        DataxReader dataxReader = DataxReaderContainer.get(wideTableField.getDialect());
+        dataxReader.setNeedTransferColumns(transferColumnsByTaskId);
+        dataxReader.setTransferDict(dictInfos);
+        dataxReader.preSetConfigParam(wideTableField);
 
         HdfsWriterConfigParam hdfsWriterConfigParam = findHdfsWriterConfigParam(taskId);
         List<Column> wideTableColumns = getWideTableColumns(taskId);
-
+        //hdfs写插件处理器
         HdfsWriterEntity hdfsWriterEntity = new HdfsWriterEntity(wideTableColumns, hdfsWriterConfigParam);
-
-        SyncTaskEntity byId = getById(taskId);
-        String taskParamJson = null;
-        if (Objects.nonNull(byId)) {
-            taskParamJson = byId.getTaskParamJson();
-        }
         Map<String, Object> taskConfig = DataxJsonEntity.builder()
-                .reader(mySqlReader)
+                .reader(dataxReader)
                 .writer(hdfsWriterEntity)
-                .setting(getDataxSetting(taskParamJson))
-                .core(getDataxCore(taskParamJson))
+                .setting(getDataxSetting(parse.getMaxThread()))
+                .core(getDataxCore(parse.getMaxThread(), parse.getSyncRate()))
                 .build().buildDataxJson();
         return JSONObject.toJSONString(taskConfig);
     }
 
-    private String findDataSourceByDatabaseName(String database) {
-        String dataSourceId = null;
-        FeignDataSourcesRequest feignRequest = new FeignDataSourcesRequest();
-        feignRequest.setDatabaseName(database);
-        BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(feignRequest);
-        if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
-            dataSourceId = dataSources.getData().get(0).getId();
-        }
-        return dataSourceId;
-    }
-
-    private String parseDatabaseNameFromSql(String sql) {
-        String from = StrUtil.subAfter(sql, "from", true);
-        String databaseTable = StrUtil.subBefore(StrUtil.trim(from), " ", false);
-        String database = StrUtil.subBefore(databaseTable, ".", false);
-        return database;
-    }
-
-    private Map<String, Object> getDataxCore(String taskParamJson) {
+    private Map<String, Object> getDataxCore(Integer ch, Integer record) {
         Map<String, Object> core = new HashMap<>(1);
         Map<String, Object> transport = new HashMap<>(1);
         Map<String, Object> channel = new HashMap<>(1);
         Map<String, Integer> speed = new HashMap<>(2);
 
-        if (StringUtils.isNotBlank(taskParamJson)) {
-            TaskScheduleInfo parse = taskScheduleInfoParser.parse(taskParamJson);
-            Integer ch = parse.getMaxThread() == null ? 1 : parse.getMaxThread();
-            Integer rate = parse.getLimitRate() == null ? 20000 : parse.getLimitRate();
+        if (Objects.nonNull(ch) && Objects.nonNull(record)) {
             speed.put("channel", ch);
-            speed.put("record", rate);
+            speed.put("record", record);
         } else {
             speed.put("channel", 1);
-            speed.put("record", 20000);
+            speed.put("record", 100000);
         }
         channel.put("speed", speed);
         transport.put("channel", channel);
@@ -796,12 +648,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return core;
     }
 
-    private Map<String, Object> getDataxSetting(String taskParamJson) {
+    private Map<String, Object> getDataxSetting(Integer channel) {
         Map<String, Object> result = Maps.newHashMap();
         Map<String, Object> speed = Maps.newHashMap();
-        if (StringUtils.isNotBlank(taskParamJson)) {
-            TaskScheduleInfo parse = taskScheduleInfoParser.parse(taskParamJson);
-            Integer channel = parse.getMaxThread() == null ? 1 : parse.getMaxThread();
+        if (Objects.nonNull(channel)) {
             speed.put("channel", channel);
         } else {
             speed.put("channel", 1);
@@ -811,7 +661,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     private List<Column> getWideTableColumns(String taskId) {
-        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId, null);
+        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId);
         if (Objects.isNull(wideTableField)) {
             throw new AppException("60000030");
         }
@@ -833,7 +683,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private HdfsWriterConfigParam findHdfsWriterConfigParam(String taskId) {
         HdfsWriterConfigParam param = new HdfsWriterConfigParam();
         BusinessResult<WarehouseInfo> warehouseInfo = metadataFeign.getWarehouseInfo();
-        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId, null);
+        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId);
         if (Objects.isNull(wideTableField)) {
             log.error("未找到宽表信息" + taskId);
             throw new AppException("60000032");
@@ -885,36 +735,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         return sb.toString();
     }
 
-    private MysqlReaderConfigParam findReaderConfigParam(String taskId, String sql) {
-        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId, null);
-        if (Objects.isNull(wideTableField)) {
-            throw new AppException("60000030");
-        }
-        String datasourceId = wideTableField.getDatasourceId();
-        if (StringUtils.isBlank(datasourceId)) {
-            String database = parseDatabaseNameFromSql(sql);
-            if (StringUtils.isBlank(database)) {
-                throw new AppException("60000033");
-            }
-            datasourceId = findDataSourceByDatabaseName(database);
-        }
-        if (StringUtils.isBlank(datasourceId)) {
-            throw new AppException("60000033");
-        }
-        BusinessResult<MysqlReaderConfigParam> datasourceJdbcInfo = datasourceFeign.getDatasourceJdbcInfo(datasourceId);
-        MysqlReaderConfigParam data = null;
-        if (datasourceJdbcInfo.isSuccess()) {
-
-            String dialect = wideTableField.getDialect();
-            String syncCondition = wideTableField.getSyncCondition();
-            SyncCondition parse = syncConditionParser.parse(syncCondition);
-//            IncrementUtil.getTimeIncQueryStatement(wideTableField.getSqlStr(),dialect,parse.getIncrementalField(),);
-            data = datasourceJdbcInfo.getData();
-            data.setQuerySql(wideTableField.getSqlStr());
-        }
-        return Optional.ofNullable(data).orElse(new MysqlReaderConfigParam());
-    }
-
     /**
      * 查询配置字典的列
      *
@@ -923,7 +743,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
      */
     private Map<String, String> findTransferColumnsByTaskId(String taskId) {
         Map<String, String> results = Maps.newConcurrentMap();
-        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId, null);
+        SyncWidetableEntity wideTableField = syncWidetableService.getWideTableField(taskId);
         if (Objects.nonNull(wideTableField)) {
             List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTableField.getId());
             if (CollectionUtils.isNotEmpty(wideTableFields)) {
@@ -953,41 +773,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
     }
 
-/*    //第一步保存
-    private String oneStepSave(DataSyncSaveParam param) {
-        DataSyncTaskDefineSaveParam defineSaveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskDefineSaveParam.class);
-        return syncTaskDefineSave(defineSaveParam);
-    }*/
-
-/*    //第二部保存
-    private String twoStepSave(DataSyncSaveParam param) {
-        String taskId = oneStepSave(param);
-        DataSyncTaskBuildSaveParam saveParam = BeanCopyUtils.copyProperties(param, DataSyncTaskBuildSaveParam.class);
-        saveParam.setTaskId(taskId);
-        saveParam.setWideTableSql(param.getSql());
-        saveParam.setSourceType(param.getSourceType());
-        saveParam.setDialect(param.getDialect());
-        syncTaskBuildSave(saveParam);
-        return taskId;
-    }*/
-
-  /*  //第三步保存
-    private String threeStepSave(DataSyncSaveParam param) {
-        String taskId = twoStepSave(param);
-        TaskParamSaveParam saveParam = BeanCopyUtils.copyProperties(param, TaskParamSaveParam.class);
-        saveParam.setTaskId(taskId);
-        SyncCondition syncCondition = param.getSyncCondition();
-        if (Objects.nonNull(syncCondition)) {
-            if (StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
-                saveParam.setSyncMode(SyncModeEnum.INC.getCode());
-            } else {
-                saveParam.setSyncMode(SyncModeEnum.FULL.getCode());
-            }
-        }
-        taskParamSave(saveParam);
-        return taskId;
-    }*/
-
     @Override
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
@@ -999,65 +784,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         saveOrUpdate(entity);
         return entity.getId();
     }
-
- /*   @BusinessParamsValidate
-    @Transactional(rollbackFor = Exception.class)
-    public void syncTaskBuildSave(DataSyncTaskBuildSaveParam param) {
-        if (StringUtils.isBlank(param.getWideTableName())) {
-            throw new AppException("60000002");
-        }
-        if (StringUtils.isBlank(param.getTargetSource())) {
-            throw new AppException("60000001");
-        }
-        if (CollectionUtils.isEmpty(param.getFieldInfos())) {
-            throw new AppException("60000014");
-        }
-        SyncWidetableEntity entity = new SyncWidetableEntity();
-        entity.setSyncTaskId(param.getTaskId());
-        entity.setName(param.getWideTableName());
-        entity.setTargetSource(param.getTargetSource());
-        entity.setSyncCondition(JSONObject.toJSONString(param.getSyncCondition()));
-        entity.setSqlStr(param.getWideTableSql());
-        entity.setViewJson(JSONObject.toJSONString(param.getView()));
-        entity.setVersion(param.getVersion());
-        entity.setSourceType(param.getSourceType());
-        entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
-        entity.setDialect(param.getDialect());
-
-        List<TableInfo> sourceTables = param.getSourceTables();
-        if (CollectionUtils.isNotEmpty(sourceTables)) {
-            TableInfo tableInfo = sourceTables.get(0);
-            entity.setDatasourceId(tableInfo.getDatasourceId());
-        }
-        if (StringUtils.isNotBlank(param.getTaskId())) {
-            Map<String, Object> columnMap = Maps.newHashMap();
-            columnMap.put(SyncWidetableEntity.SYNC_TASK_ID, param.getTaskId());
-            List<SyncWidetableEntity> entities = (List<SyncWidetableEntity>) syncWidetableService.listByMap(columnMap);
-            if (CollectionUtils.isNotEmpty(entities)) {
-                SyncWidetableEntity entity1 = entities.get(0);
-                entity.setId(entity1.getId());
-            }
-        }
-        syncWidetableService.saveOrUpdate(entity);
-
-        List<WideTableFieldRequest> fieldInfos = param.getFieldInfos();
-        if (CollectionUtils.isNotEmpty(fieldInfos)) {
-            List<WideTableFieldSaveParam> saveParams = fieldInfos.parallelStream()
-                    .filter(Objects::nonNull)
-                    .map(info -> {
-                        WideTableFieldSaveParam saveParam = new WideTableFieldSaveParam();
-                        BeanCopyUtils.copyProperties(info, saveParam);
-                        saveParam.setChineseName(info.getFieldChineseName());
-                        saveParam.setWideTableId(entity.getId());
-                        saveParam.setName(info.getFieldName());
-                        saveParam.setDictKey(info.getAssociateDict());
-                        saveParam.setType(info.getFieldType());
-                        saveParam.setDatabaseName(info.getDatabaseName());
-                        return saveParam;
-                    }).collect(Collectors.toList());
-            wideTableFieldSave(saveParams);
-        }
-    }*/
 
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
@@ -1081,19 +807,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             syncWidetableFieldService.saveOrUpdateBatch(collect);
         }
     }
-
-/*    @BusinessParamsValidate
-    @Transactional(rollbackFor = Exception.class)
-    public void taskParamSave(TaskParamSaveParam param) {
-        SyncTaskEntity entity = new SyncTaskEntity();
-        BeanCopyUtils.copyProperties(param, entity);
-        entity.setId(param.getTaskId());
-        entity.setCollectMode(param.getScheduleType());
-        TaskScheduleInfo info = BeanCopyUtils.copyProperties(param, TaskScheduleInfo.class);
-        entity.setTaskParamJson(JSONObject.toJSONString(info));
-        entity.setCronParam(JSONObject.toJSONString(param.getCronParam()));
-        saveOrUpdate(entity);
-    }*/
 
     @Override
     @BusinessParamsValidate
@@ -1172,7 +885,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (Objects.nonNull(byId)) {
             String id = byId.getId();
             Integer version = byId.getVersion();
-            SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id, null);
+            SyncWidetableEntity wideTable = syncWidetableService.getWideTableField(id);
             if (Objects.nonNull(wideTable)) {
                 info = new TaskBuildInfo();
                 info.setDatasourceId(wideTable.getDatasourceId());

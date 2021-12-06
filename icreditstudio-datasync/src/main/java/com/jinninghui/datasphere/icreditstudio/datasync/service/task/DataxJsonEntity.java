@@ -25,7 +25,7 @@ public final class DataxJsonEntity {
     public Map<String, Object> buildDataxJson() {
         Map<String, Object> job = new HashMap<>(2);
         List<Map<String, Object>> contents = new ArrayList<>();
-        Map<String, Object> content = new HashMap<>();
+        Map<String, Object> content = new HashMap<>(2);
         content.put("reader", reader.getReaderEntity());
         content.put("writer", writer.getWriterEntity());
         contents.add(content);

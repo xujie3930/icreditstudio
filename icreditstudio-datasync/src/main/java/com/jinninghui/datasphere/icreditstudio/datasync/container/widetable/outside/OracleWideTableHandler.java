@@ -39,18 +39,19 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class MySqlWideTableHandler extends AbstractOutsideWideTableHandler {
+public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
+
     @Resource
     private DatasourceFeign datasourceFeign;
 
     @Override
-    public boolean isCurrentTypeHandler(OutsideSourceWideTableParam param) {
-        return getDialect().equals(param.getDialect());
+    public String getDialect() {
+        return DialectEnum.ORACLE.getDialect();
     }
 
     @Override
-    public String getDialect() {
-        return DialectEnum.MYSQL.getDialect();
+    public boolean isCurrentTypeHandler(OutsideSourceWideTableParam param) {
+        return getDialect().equals(param.getDialect());
     }
 
     @Override
