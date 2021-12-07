@@ -95,9 +95,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
-        if(saveOrUpdate(userId, defEntity)){
+        if (saveOrUpdate(userId, defEntity)) {
             return BusinessResult.success(true);
-        }else{
+        } else {
             return BusinessResult.fail("", "操作失败");
         }
     }
@@ -250,7 +250,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             if (newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
                     !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList()))) {
                 update++;
-            }else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
+            } else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
                 del++;
                 delCloumns += tableSyncInfo.getColumnList().size();
             }
@@ -461,8 +461,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @BusinessParamsValidate
     public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
-                .uri(param.getDatabaseName())
+//                .uri(param.getDatabaseName())
+                .databaseName(param.getDatabaseName())
                 .datasourceId(param.getDatasourceId())
+                .category(param.getCategory())
+                .status(DatasourceStatusEnum.ENABLE.getCode())
                 .build();
         QueryWrapper<IcreditDatasourceEntity> wrapper = queryWrapper(build);
         List<IcreditDatasourceEntity> list = list(wrapper);
@@ -472,9 +475,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     public BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param) {
         //删除数据源时候需要判断该数据源下是否有工作流
-        if (DatasourceStatusEnum.DISABLE.getCode() == param.getStatus()){
+        if (DatasourceStatusEnum.DISABLE.getCode() == param.getStatus()) {
             Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
-            if (hasRunningTask){
+            if (hasRunningTask) {
                 throw new AppException("70000012");
             }
         }
@@ -486,21 +489,21 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         IcreditDatasourceEntity entity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, entity);
-        if(saveOrUpdate(userId, entity)){
+        if (saveOrUpdate(userId, entity)) {
             return BusinessResult.success(true);
-        }else{
+        } else {
             return BusinessResult.fail("", "操作失败");
         }
     }
 
-    private Boolean saveOrUpdate(String userId, IcreditDatasourceEntity entity){
+    private Boolean saveOrUpdate(String userId, IcreditDatasourceEntity entity) {
         DatasourceSync dataSource = DatasourceFactory.getDatasource(entity.getType());
         entity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(entity.getType()).getDesc());
         entity.setDatabaseName(dataSource.getDatabaseName(entity.getUri()));
         entity.setHost(DatasourceSync.getHost(entity.getUri()));
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());
-        if(StringUtils.isEmpty(entity.getId())){
+        if (StringUtils.isEmpty(entity.getId())) {
             entity.setCreateTime(new Date());
             entity.setCreateBy(userId);
             entity.setId(sequenceService.nextValueString());
@@ -584,6 +587,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         if (StringUtils.isNotBlank(param.getUri())) {
             wrapper.like(IcreditDatasourceEntity.URI, param.getUri());
+        }
+        if (StringUtils.isNotBlank(param.getDatabaseName())) {
+            wrapper.eq(IcreditDatasourceEntity.DATABASE_NAME, param.getDatabaseName());
         }
         if (StringUtils.isNotBlank(param.getDatasourceId())) {
             wrapper.eq(IcreditDatasourceEntity.ID, param.getDatasourceId());

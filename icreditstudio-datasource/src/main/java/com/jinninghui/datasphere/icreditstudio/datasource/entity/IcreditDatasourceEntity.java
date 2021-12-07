@@ -33,6 +33,7 @@ public class IcreditDatasourceEntity implements Serializable {
     public static final String DEL_FLAG = "DEL_FLAG";
     public static final String URI = "uri";
     public static final String LAST_SYNC_TIME = "LAST_SYNC_TIME";
+    public static final String DATABASE_NAME = "DATABASE_NAME";
 
     /**
      * 主键id

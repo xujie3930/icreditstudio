@@ -112,5 +112,18 @@ public class DatasourceInfo implements Serializable {
      */
     private String remark;
 
+    /**
+     * 方言类别
+     */
+    private String dialect;
 
+    /**
+     * 主机ip:port
+     */
+    private String host;
+
+    /**
+     * 数据库名
+     */
+    private String databaseName;
 }

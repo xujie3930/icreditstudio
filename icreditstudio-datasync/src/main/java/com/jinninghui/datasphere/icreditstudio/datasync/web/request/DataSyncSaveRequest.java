@@ -16,7 +16,7 @@ import java.util.List;
  * @author Peng
  */
 @Data
-public class  DataSyncSaveRequest {
+public class DataSyncSaveRequest {
     /**
      * 工作空间id
      */
@@ -39,13 +39,6 @@ public class  DataSyncSaveRequest {
     @Range(max = 1, message = "")
     @NotNull(message = "60000010")
     private Integer enable;
-
-    public Integer getEnable() {
-        if (enable == null) {
-            return 1;
-        }
-        return enable;
-    }
 
     /**
      * 【0：可视化，1：sql】
@@ -88,7 +81,10 @@ public class  DataSyncSaveRequest {
      * 识别宽表的sql
      */
     private String sql;
-
+    /**
+     * 数据源ID
+     */
+    private String datasourceId;
     /**
      * 连接表集合
      */
@@ -108,58 +104,23 @@ public class  DataSyncSaveRequest {
      */
     private Integer maxThread;
 
-    public Integer getMaxThread() {
-        if (maxThread == null) {
-            return 1;
-        }
-        return maxThread;
-    }
-
     /**
      * 同步速率【0：限流，1：不限流】
      */
     private Integer syncRate;
-
-    public Integer getSyncRate() {
-        if (syncRate == null) {
-            return 1;
-        }
-        return syncRate;
-    }
-
-    public boolean isLimit() {
-        return getSyncRate().equals(0);
-    }
 
     /**
      * 限流速率 XXX条/s
      */
     private Integer limitRate;
 
-    public Integer getLimitRate() {
-        if (limitRate == null) {
-            return 100000;
-        }
-        return limitRate;
-    }
-
     /**
      * 调度类型【0：周期，1：手动】
      */
     private Integer scheduleType;
-
-    public Integer getScheduleType() {
-        if (scheduleType == null) {
-            return 1;
-        }
-        return scheduleType;
-    }
-
     /**
-     * cron表达式
+     * 调度时间参数
      */
-    private String cron;
-
     private CronParam cronParam;
     //==============end==================
 }

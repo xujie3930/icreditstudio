@@ -13,6 +13,8 @@ public class WideTableFieldSaveParam {
      * 主键ID
      */
     private String id;
+
+    private String userId;
     /**
      * 宽表ID
      */

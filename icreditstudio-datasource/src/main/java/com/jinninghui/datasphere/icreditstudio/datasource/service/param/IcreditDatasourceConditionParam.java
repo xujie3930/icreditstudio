@@ -31,4 +31,8 @@ public class IcreditDatasourceConditionParam {
      * 0：启用，1：停用
      */
     private Integer status;
+    /**
+     * 数据库名称
+     */
+    private String databaseName;
 }

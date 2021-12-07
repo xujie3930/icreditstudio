@@ -12,6 +12,8 @@ public class SyncStepThreeParam {
      * 任务ID
      */
     private String taskId;
+
+    private String userId;
     /**
      * 最大并发数
      */
@@ -25,13 +27,9 @@ public class SyncStepThreeParam {
      */
     private Integer limitRate;
     /**
-     * 调度类型【0：周期，1：手动】
+     * 调度类型【0：手动，1：周期】
      */
     private Integer scheduleType;
-    /**
-     * 同步方式【0：增量同步，1：全量同步】
-     */
-    private Integer syncMode;
     /**
      * 定时参数
      */

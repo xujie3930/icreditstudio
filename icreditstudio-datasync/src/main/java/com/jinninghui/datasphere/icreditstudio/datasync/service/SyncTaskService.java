@@ -78,6 +78,15 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     BusinessResult<Associated> dialectAssociatedSupport(DataSyncDialectSupportParam param);
 
     /**
+     * 通过sql语句定位数据源
+     * 如果创建方式是sql方式则需要前置调用
+     *
+     * @param param
+     * @return
+     */
+    BusinessResult<PreSqlPositionDataSourceResult> preSqlPositionDataSource(PreSqlPositionDataSourceParam param);
+
+    /**
      * 生成宽表
      *
      * @param param
