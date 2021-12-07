@@ -1238,7 +1238,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         SyncTaskEntity entity = syncTaskMapper.selectById(taskId);
         if(null == entity){
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000061.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000061.message);
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000075.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000075.message);
         }
         return entity;
     }
