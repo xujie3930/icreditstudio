@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableInfoResult;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public interface SyncWidetableService extends IService<SyncWidetableEntity> {
      */
     SyncWidetableEntity getWideTableField(String taskId, Integer version);
 
-    String getWideTableInfoByTaskId(String taskId);
+    WideTableInfoResult getWideTableInfoByTaskId(String taskId);
     /**
      * 通过任务ID取得宽表信息
      *

@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableInfoResult;
 import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
 
@@ -11,7 +12,7 @@ import org.mapstruct.Mapper;
  */
 @Mapper
 public interface SyncWidetableMapper extends BaseMapper<SyncWidetableEntity> {
-    String getWideTableInfoByTaskId(@Param("taskId") String taskId);
+    WideTableInfoResult getWideTableInfoByTaskId(@Param("taskId") String taskId);
 }
 
 

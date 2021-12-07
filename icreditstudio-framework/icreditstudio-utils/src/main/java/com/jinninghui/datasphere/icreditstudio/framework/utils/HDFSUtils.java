@@ -27,33 +27,63 @@ public class HDFSUtils {
         //hadoop的hdfs-site.xml文件,也要配置该impl参数
         conf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
         try {
-            fs=FileSystem.get(URI.create(HDFSUtils.HDFS_URL),conf,"root");
+            fs = FileSystem.get(URI.create(HDFSUtils.HDFS_URL),conf,"root");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static String copyStringToHDFS(String str, String destPath) throws Exception{
+    public static String copyStringToHDFS(String str, String destPath){
 
         InputStream fis = new ByteArrayInputStream(str.getBytes());
         String storePath = "/datasource/" + destPath + ".txt";
-        OutputStream os = fs.create(new Path(storePath));
-        IOUtils.copyBytes(fis, os, 4096, true);
-        os.close();
+        OutputStream os = null;
+        try {
+            os = fs.create(new Path(storePath));
+            IOUtils.copyBytes(fis, os, 4096, true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if(null != os){
+                    os.close();
+                }
+                if(null != fis){
+                    fis.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return storePath;
     }
 
-    public static String getStringFromHDFS(String destPath) throws Exception{
+    public static String getStringFromHDFS(String destPath){
 
         StringBuffer stringBuffer = new StringBuffer();
-        FSDataInputStream in =fs.open(new Path(destPath));
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-        String lineTxt ;
-        while ((lineTxt = bufferedReader.readLine()) != null) {
-            stringBuffer.append(lineTxt);
+        FSDataInputStream in = null;
+        BufferedReader bufferedReader = null;
+        try {
+            in = fs.open(new Path(destPath));
+            bufferedReader = new BufferedReader(new InputStreamReader(in));
+            String lineTxt ;
+            while ((lineTxt = bufferedReader.readLine()) != null) {
+                stringBuffer.append(lineTxt);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if(null != bufferedReader){
+                    bufferedReader.close();
+                }
+                if(null != in){
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        bufferedReader.close();
-        in.close();
         return stringBuffer.toString();
     }
 

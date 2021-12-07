@@ -6,6 +6,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncWidetableEnti
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncWidetableMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.SyncWidetableService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.SyncWideTableConditionParam;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableInfoResult;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -60,7 +61,7 @@ public class SyncWidetableServiceImpl extends ServiceImpl<SyncWidetableMapper, S
     }
 
     @Override
-    public String getWideTableInfoByTaskId(String taskId) {
+    public WideTableInfoResult getWideTableInfoByTaskId(String taskId) {
         return syncWidetableMapper.getWideTableInfoByTaskId(taskId);
     }
 

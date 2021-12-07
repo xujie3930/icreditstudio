@@ -58,8 +58,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     private ScheduleMapper scheduleMapper;
 
     @Override
-    public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException {
-        if (param.getTimeout() == null) {
+    public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) {
+        if (null == param.getTimeout()) {
             param.setTimeout(Constants.MAX_TASK_TIMEOUT);
         }
         Map<String, Object> result = new HashMap<>(5);
@@ -98,10 +98,10 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     public Map<String, Object> checkProcessDefinitionValid(ProcessDefinition processDefinition, String processDefineId) {
         Map<String, Object> result = new HashMap<>(5);
-        if (processDefinition == null) {
+        if (null == processDefinition) {
             // check process definition exists
             putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, processDefineId);
-        } else if (processDefinition.getReleaseState() != ReleaseState.ONLINE) {
+        } else if (ReleaseState.ONLINE != processDefinition.getReleaseState()) {
             // check process definition online
             putMsg(result, Status.PROCESS_DEFINE_NOT_RELEASE, processDefineId);
         } else {
@@ -121,7 +121,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         List<Server> masterServers = monitorService.getServerListFromZK(true);
 
         // no master
-        if (masterServers.size() == 0) {
+        if (0 == masterServers.size()) {
             putMsg(result, Status.MASTER_NOT_EXISTS);
             return false;
         }
@@ -150,7 +150,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
                               TaskDependType nodeDep, FailureStrategy failureStrategy,
                               String startNodeList, String schedule, WarningType warningType,
                               String executorId, String warningGroupId,
-                              RunMode runMode, Priority processInstancePriority, String workerGroup) throws ParseException {
+                              RunMode runMode, Priority processInstancePriority, String workerGroup) {
 
         /**
          * instantiate command schedule instance
@@ -244,7 +244,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         return 0;
     }
 
-    private void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) throws ParseException {
+    private void manualExecSyncTask(ExecPlatformProcessDefinitionParam param) {
         this.createCommand(param.getCommandType(), param.getProcessDefinitionId(),
                 param.getTaskDependType(), param.getFailureStrategy(), param.getStartNodeList(), param.getCronTime(), param.getWarningType(),
                 "", param.getWarningGroupId(), param.getRunMode(), param.getProcessInstancePriority(), param.getWorkerGroup());

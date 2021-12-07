@@ -240,7 +240,7 @@ public class DataSyncController {
     }
 
     @GetMapping("/getWideTableInfoByTaskId")
-    public String getWideTableInfoByTaskId(@RequestParam("taskId") String taskId){
+    public WideTableInfoResult getWideTableInfoByTaskId(@RequestParam("taskId") String taskId){
         return syncTaskService.getWideTableInfoByTaskId(taskId);
     }
 

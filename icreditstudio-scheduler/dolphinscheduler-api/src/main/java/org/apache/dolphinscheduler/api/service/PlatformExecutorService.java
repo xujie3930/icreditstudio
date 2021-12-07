@@ -19,7 +19,7 @@ public interface PlatformExecutorService {
      * @return
      * @throws ParseException
      */
-    BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) throws ParseException;
+    BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param);
 
     /**
      * 上线周期任务

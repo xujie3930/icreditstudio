@@ -74,6 +74,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000058("60000058", "任务名称重复"),
         RESOURCE_CODE_60000059("60000059", "可视化表信息列表为空"),
         RESOURCE_CODE_60000060("60000060", "可视化关系列表为空"),
+        RESOURCE_CODE_60000061("60000061", "taskId有误，不能找到对应的数据同步任务")
         ;
 
         public final String code;

@@ -62,7 +62,7 @@ public class ProcessService {
     private String pwd;
     private String userName;
     private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
-    private String getWideTableInfoSql = "SELECT sync_condition FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
+    private String getWideTableInfoSql = "SELECT sync_condition,dialect FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
 
     {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
@@ -421,6 +421,29 @@ public class ProcessService {
         return true;
     }
 
+    public Map<String, String> getWideTableInfo(String definitionId){
+        Map<String, String> result = new HashMap<>();
+        Connection con = getConnection();
+        String cronInfo = null;
+        String dialect = null;
+        try {
+            PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
+            pstmt.setString(1, definitionId);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                cronInfo = rs.getString(1);
+                dialect = rs.getString(2);
+            }
+            result.put("cronInfo", cronInfo);
+            result.put("dialect", dialect);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            closeConn(con);
+        }
+        return result;
+    }
+
     /**
      * construct process instance according to one command.
      *
@@ -489,25 +512,14 @@ public class ProcessService {
                 processInstance.setCommandParam(command.getCommandParam());
             }
         }else if(null != processInstance){
-            Connection con = getConnection();
-            String cronInfo = null;
-            try {
-                PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
-                pstmt.setString(1, processDefinition.getId());
-                ResultSet rs = pstmt.executeQuery();
-                while(rs.next()){
-                    cronInfo = rs.getString(1);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }finally {
-                closeConn(con);
-            }
+            Map<String, String> wideTableInfoMap = getWideTableInfo(processDefinition.getId());
+            String cronInfo = wideTableInfoMap.get("cronInfo");
+            String dialect = wideTableInfoMap.get("dialect");
             JSONObject cronObj = JSONObject.parseObject(cronInfo);
             String n = cronObj.getString("n");//T + n 中 n 的值
             String partition = cronObj.getString("partition");// 每年|每月|每日|每时
             String whereField = cronObj.getString("incrementalField");// 增量字段
-            String sqlSuffix = getSqlSuffix(n, partition, whereField);
+            String sqlSuffix = getSqlSuffix(n, partition, whereField, dialect);
             if(processInstance.getProcessInstanceJson().contains(sqlSuffix)){
                 if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
                         ExecutionStatus.STOP == processInstance.getState()) {
@@ -642,7 +654,7 @@ public class ProcessService {
         processInstanceMapper.updateById(processInstance);
     }
 
-    public String getSqlSuffix(String n, String partition, String whereField) {
+    public String getSqlSuffix(String n, String partition, String whereField, String dialect) {
         int nn = 0 - Integer.parseInt(n);
         Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
         calendar.setTime(new Date());
@@ -717,7 +729,12 @@ public class ProcessService {
             endDateStr.append(prefix).append(":59:59");
         }
         StringBuffer sqlSuffix = new StringBuffer();
-        sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+        if(-1 != dialect.indexOf("mysql")){
+            sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+        }
+        if(-1 != dialect.indexOf("oracle")){
+            sqlSuffix.append(" where ").append(whereField).append(" between to_date('").append(startDateStr).append("','YYYY-MM-DD HH24:MI:SS') and to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
+        }
         return String.valueOf(sqlSuffix);
     }
 

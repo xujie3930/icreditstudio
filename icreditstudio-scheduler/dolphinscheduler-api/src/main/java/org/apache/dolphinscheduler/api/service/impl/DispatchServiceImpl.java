@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -11,6 +12,7 @@ import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.api.vo.WideTableInfoVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -164,42 +166,45 @@ public class DispatchServiceImpl implements DispatchService {
         }
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
         ProcessDefinition definition = processService.findProcessDefineById(definitionId);
-        String cronStr = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
-        String sqlSuffix = handleCronAndDefinition(definition, cronStr);
+        WideTableInfoVO wideTableInfo = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
+        String cronStr = wideTableInfo.getCronInfo();
+        String dialect = wideTableInfo.getDialect();
+        String sqlSuffix = handleCronAndDefinition(definition, cronStr, dialect);
         if (null != processInstance && processInstance.getProcessInstanceJson().contains(sqlSuffix) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
                 processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {//该任务正在 【执行中】中，不能执行
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        if(null == processInstance){
-            platformExecutorService.execSyncTask(definitionId);
-        }else if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+        if(processInstance.getProcessInstanceJson().contains(sqlSuffix) && ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
                 ExecutionStatus.STOP == processInstance.getState()){
             processService.handleProcessInstance(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
+        if(!processInstance.getProcessInstanceJson().contains(sqlSuffix)){
+            platformExecutorService.execSyncTask(definitionId);
+        }
         return BusinessResult.success(true);
     }
 
-    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr) {
-        JSONObject cronObj = JSONObject.parseObject(cronStr);
+    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr, String dialect) {
+        JSONObject cronObj = JSON.parseObject(cronStr);
         String n = cronObj.getString("n");//T + n 中 n 的值
         String partition = cronObj.getString("partition");// 每年|每月|每日|每时
         String whereField = cronObj.getString("incrementalField");// 增量字段
-        String sqlSuffix = processService.getSqlSuffix(n, partition, whereField);
+        String sqlSuffix = processService.getSqlSuffix(n, partition, whereField, dialect);
         handleProcessDefinition(definition, sqlSuffix);
         processService.saveProcessDefinition(definition);
         return sqlSuffix;
     }
 
     private void handleProcessDefinition(ProcessDefinition definition, String sqlSuffix) {
-        JSONObject obj = JSONObject.parseObject(definition.getProcessDefinitionJson());
+        JSONObject obj = JSON.parseObject(definition.getProcessDefinitionJson());
         JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
         JSONObject paramObj = taskObj.getJSONObject("params");
         if(!"1".equals(paramObj.getString("customConfig"))){
             return ;
         }
-        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject jsonObj = JSON.parseObject(paramObj.getString("json"));
         JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
         JSONObject writer = content.getJSONObject("reader");
         JSONObject parameter = writer.getJSONObject("parameter");
