@@ -18,7 +18,6 @@
 package org.apache.dolphinscheduler.service.quartz;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -29,10 +28,10 @@ import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
+import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandler;
+import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandlerContainer;
 import org.apache.dolphinscheduler.service.increment.IncrementUtil;
 import org.apache.dolphinscheduler.service.process.ProcessService;
-import org.apache.dolphinscheduler.service.time.SyncTimeInterval;
-import org.apache.dolphinscheduler.service.time.TimeInterval;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -42,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Date;
-import java.util.Objects;
 
 /**
  * process schedule job
@@ -107,40 +105,18 @@ public class ProcessScheduleJob implements Job {
         String partitionParam = processDefinition.getPartitionParam();
         if (StringUtils.isNotBlank(partitionParam)) {
             PlatformPartitionParam platformPartitionParam = IncrementUtil.parseSyncConditionJson(partitionParam);
-//            PlatformPartitionParam platformPartitionParam = JSONObject.parseObject(partitionParam).toJavaObject(PlatformPartitionParam.class);
             //增量字段不为空，则增量同步
             if (platformPartitionParam != null && StringUtils.isNotBlank(platformPartitionParam.getIncrementalField())) {
+                String dialect = platformPartitionParam.getDialect();
+                if (StringUtils.isBlank(dialect)) {
+                    logger.warn("周期定时任务方言类型为空 dialect{}", dialect);
+                    return;
+                }
                 String processDefinitionJson = processDefinition.getProcessDefinitionJson();
-                TimeInterval interval = new TimeInterval();
-                SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(platformPartitionParam, n -> true);
-                //增量存储开启则创建分区
-                String partitionDir = null;
-                if (platformPartitionParam.getInc()) {
-                    Object value = getValue(processDefinitionJson, PATH);
-                    log.info("路径:" + JSONObject.toJSONString(value));
-                    if (Objects.nonNull(value)) {
-                        String timeFormat = syncTimeInterval.getTimeFormat();
-                        String dataxHdfsPath = IncrementUtil.getDataxHdfsPath(value.toString(), timeFormat);
-                        log.info("处理后路径:" + dataxHdfsPath);
-                        partitionDir = dataxHdfsPath;
-                    }
-                }
-                Object value = getValue(processDefinitionJson, QUERY_SQL);
-                log.info("查询SQL:" + JSONObject.toJSONString(value));
-                if (Objects.nonNull(value)) {
-                    String startTime = syncTimeInterval.formatStartTime();
-                    String endTime = syncTimeInterval.formatEndTime();
-                    //TODO 只处理mysql类型，后续增加
-                    String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "mysql", platformPartitionParam.getIncrementalField(), startTime, endTime);
-                    //替换查询语句
-                    Configuration configuration = setValue(processDefinitionJson, QUERY_SQL, mysql);
-                    //分区不为空给,替换path
-                    if (StringUtils.isNotBlank(partitionDir)) {
-                        configuration = setValue(configuration.toJSON(), PATH, partitionDir);
-                    }
-                    log.info("处理后的json语句:" + configuration.toJSON());
-                    getProcessService().updateProcessDefinitionById(processDefinition.getId(), configuration.toJSON());
-                }
+                ProcessDefinitionJsonHandler handler = ProcessDefinitionJsonHandlerContainer.get(dialect);
+                String handStatement = handler.handler(platformPartitionParam, processDefinitionJson);
+                log.info("处理后的json语句:{}", handStatement);
+                getProcessService().updateProcessDefinitionById(processDefinition.getId(), handStatement);
             }
         }
         Command command = new Command();

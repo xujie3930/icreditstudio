@@ -1,11 +1,12 @@
 package org.apache.dolphinscheduler.service.handler;
 
+import org.apache.dolphinscheduler.service.DialectKeyRegister;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 
 /**
  * @author Peng
  */
-public interface ProcessDefinitionJsonHandler {
+public interface ProcessDefinitionJsonHandler  extends DialectKeyRegister {
 
     /**
      * 处理processDefinitionJson字符串数据

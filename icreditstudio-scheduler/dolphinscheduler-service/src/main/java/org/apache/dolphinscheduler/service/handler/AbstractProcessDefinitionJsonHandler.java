@@ -8,6 +8,11 @@ import org.apache.dolphinscheduler.common.model.Configuration;
  */
 public abstract class AbstractProcessDefinitionJsonHandler implements ProcessDefinitionJsonHandler {
 
+    @Override
+    public void register() {
+        ProcessDefinitionJsonHandlerContainer.getInstance().put(getDialect(), this);
+    }
+
     public Object getValue(String json, String path) {
         Configuration from = Configuration.from(json);
         Object js = from.get("tasks[0].params.json");

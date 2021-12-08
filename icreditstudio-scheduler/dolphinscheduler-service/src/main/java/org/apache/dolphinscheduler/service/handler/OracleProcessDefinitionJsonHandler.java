@@ -24,6 +24,11 @@ public class OracleProcessDefinitionJsonHandler extends AbstractProcessDefinitio
     private static final String PATH = "content[0].writer.parameter.path";
 
     @Override
+    public String getDialect() {
+        return "oracle";
+    }
+
+    @Override
     public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson) {
         String result = null;
         TimeInterval interval = new TimeInterval();

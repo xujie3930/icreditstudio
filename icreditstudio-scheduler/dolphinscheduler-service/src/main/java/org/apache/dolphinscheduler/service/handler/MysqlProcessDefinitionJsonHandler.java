@@ -24,6 +24,11 @@ public class MysqlProcessDefinitionJsonHandler extends AbstractProcessDefinition
     private static final String PATH = "content[0].writer.parameter.path";
 
     @Override
+    public String getDialect() {
+        return "mysql";
+    }
+
+    @Override
     public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson) {
         String result = null;
         TimeInterval interval = new TimeInterval();
