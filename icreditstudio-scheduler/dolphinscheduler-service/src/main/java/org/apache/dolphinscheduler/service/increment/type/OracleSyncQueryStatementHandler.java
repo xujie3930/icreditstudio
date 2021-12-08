@@ -9,6 +9,9 @@ import java.util.StringJoiner;
  */
 @Component
 public class OracleSyncQueryStatementHandler extends AbstractSyncQueryStatement {
+
+    private final static String FORMAT_STR = "yyyy-mm-dd hh24:mi:ss";
+
     @Override
     public String getDialect() {
         return "oracle";
@@ -28,4 +31,17 @@ public class OracleSyncQueryStatementHandler extends AbstractSyncQueryStatement 
         return super.splitJointSql(oldStatement, condition);
     }
 
+    public String queryStatement(String oldStatement, String field, String startTime, String endTime) {
+        StringBuilder condition = new StringBuilder(field)
+                .append(" between")
+                .append(" to_date(").append("\'" + startTime + "\'").append(",").append("\'" + FORMAT_STR + "\'").append(")")
+                .append(" and")
+                .append(" to_date(").append("\'" + endTime + "\'").append(",").append("\'" + FORMAT_STR + "\'").append(")");
+        if (StringUtils.contains(oldStatement, "where")) {
+            List<String> where = StrUtil.split(oldStatement, "where");
+            return new StringJoiner(" ").add(where.get(0).trim()).add("where").add(condition).toString();
+        } else {
+            return new StringJoiner(" ").add(oldStatement).add("where").add(condition).toString();
+        }
+    }
 }
