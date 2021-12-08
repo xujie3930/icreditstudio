@@ -12,9 +12,10 @@ public interface SyncQueryStatement extends DialectKeyRegister {
      *
      * @param oldStatement
      * @param field
+     * @param isFirstFull
      * @param startTime
      * @param endTime
      * @return
      */
-    String queryStatement(String oldStatement, String field, String startTime, String endTime);
+    String queryStatement(String oldStatement, String field, boolean isFirstFull, String startTime, String endTime);
 }

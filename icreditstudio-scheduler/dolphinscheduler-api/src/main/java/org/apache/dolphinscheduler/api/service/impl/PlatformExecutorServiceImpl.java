@@ -257,10 +257,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         try {
             ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinitionId);
             if(null == processInstance){//第一次执行
-                ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
-                param.setWorkerGroup("default");
-                param.setTimeout(86400);
-                param.setProcessDefinitionId(processDefinitionId);
+                ExecPlatformProcessDefinitionParam param = createExecParam(processDefinitionId);
                 manualExecSyncTask(param);
             }else{//后面的执行，相当于重跑
                 dispatchService.executeInstance(processInstance.getId(), "0");
@@ -272,6 +269,21 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
             e.printStackTrace();
         }
         return execResult;
+    }
+
+    private ExecPlatformProcessDefinitionParam createExecParam(String processDefinitionId){
+        ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
+        param.setWorkerGroup("default");
+        param.setTimeout(86400);
+        param.setProcessDefinitionId(processDefinitionId);
+        return param;
+    }
+
+    @Override
+    public void manualExecCycleSyncTask(String processDefinitionId){
+        ExecPlatformProcessDefinitionParam param = createExecParam(processDefinitionId);
+        manualExecSyncTask(param);
+
     }
 
     @Override

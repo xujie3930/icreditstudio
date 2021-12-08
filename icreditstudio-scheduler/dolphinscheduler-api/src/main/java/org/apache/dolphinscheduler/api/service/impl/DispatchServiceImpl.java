@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
 
@@ -169,32 +170,37 @@ public class DispatchServiceImpl implements DispatchService {
         WideTableInfoVO wideTableInfo = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
         String cronStr = wideTableInfo.getCronInfo();
         String dialect = wideTableInfo.getDialect();
-        String sqlSuffix = handleCronAndDefinition(definition, cronStr, dialect);
-        if (null != processInstance && processInstance.getProcessInstanceJson().contains(sqlSuffix) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
-                processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {//该任务正在 【执行中】中，不能执行
+        String endTime = handleCronAndDefinition(definition, cronStr, dialect, null == processInstance);
+        //增量时间区间重叠，并且该任务正在 【执行中】中，不能执行
+        if (null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION
+                || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS || processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        if(processInstance.getProcessInstanceJson().contains(sqlSuffix) && ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
-                ExecutionStatus.STOP == processInstance.getState()){
+        //增量时间区间重叠， 重跑
+        if(null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+                ExecutionStatus.STOP == processInstance.getState())){
             processService.handleProcessInstance(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
-        if(!processInstance.getProcessInstanceJson().contains(sqlSuffix)){
-            platformExecutorService.execSyncTask(definitionId);
+        //增量时间区间不重叠，增量同步
+        if(null == processInstance || !processInstance.getProcessInstanceJson().contains(endTime)){
+            platformExecutorService.manualExecCycleSyncTask(definitionId);
         }
         return BusinessResult.success(true);
     }
 
-    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr, String dialect) {
+    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr, String dialect, boolean isFirstFull) {
         JSONObject cronObj = JSON.parseObject(cronStr);
         String n = cronObj.getString("n");//T + n 中 n 的值
         String partition = cronObj.getString("partition");// 每年|每月|每日|每时
         String whereField = cronObj.getString("incrementalField");// 增量字段
-        String sqlSuffix = processService.getSqlSuffix(n, partition, whereField, dialect);
+        isFirstFull = isFirstFull && cronObj.getBooleanValue("firstFull");// 周期任务手动执行 第一次 是否需要全量同步
+        Map<String, String> dateMap = processService.getDateMap(n, partition);
+        String sqlSuffix = processService.getSqlSuffix(whereField, dialect, isFirstFull, dateMap.get("startTime"), dateMap.get("endTime"));
         handleProcessDefinition(definition, sqlSuffix);
         processService.saveProcessDefinition(definition);
-        return sqlSuffix;
+        return dateMap.get("endTime");
     }
 
     private void handleProcessDefinition(ProcessDefinition definition, String sqlSuffix) {

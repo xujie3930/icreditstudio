@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -131,9 +132,15 @@ public class ProcessScheduleJob implements Job {
                     String startTime = syncTimeInterval.formatStartTime();
                     String endTime = syncTimeInterval.formatEndTime();
                     //TODO 只处理mysql类型，后续增加
-                    String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "mysql", platformPartitionParam.getIncrementalField(), startTime, endTime);
+                    Map<String, String> wideTableInfoMap = getProcessService().getWideTableInfo(processDefinition.getId());
+                    String cronInfo = wideTableInfoMap.get("cronInfo");
+                    JSONObject cronObj = JSONObject.parseObject(cronInfo);
+                    //勾选了增量同步第一次全同步，并且 没有流程实例（是第一次同步），为 true；否则为 false
+                    boolean isFirstFull = cronObj.getBoolean("firstFull") && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId());
+                    String dialect = wideTableInfoMap.get("dialect");// mysql | oracle
+                    String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), dialect, isFirstFull, platformPartitionParam.getIncrementalField(), startTime, endTime);
                     //替换查询语句
-                    Configuration configuration = setValue(processDefinitionJson, QUERY_SQL, mysql);
+                    Configuration configuration = setValue(processDefinitionJson, QUERY_SQL, querySql);
                     //分区不为空给,替换path
                     if (StringUtils.isNotBlank(partitionDir)) {
                         configuration = setValue(configuration.toJSON(), PATH, partitionDir);

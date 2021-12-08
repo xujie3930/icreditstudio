@@ -467,7 +467,6 @@ public class ProcessService {
         }
 
         processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
-
         if (cmdParam != null) {
             String processInstanceId = null;
             // recover from failure or pause tasks
@@ -511,29 +510,28 @@ public class ProcessService {
             if (cmdParam.containsKey(Constants.CMDPARAM_SUB_PROCESS)) {
                 processInstance.setCommandParam(command.getCommandParam());
             }
-        }else if(null != processInstance){
+        }else {
             Map<String, String> wideTableInfoMap = getWideTableInfo(processDefinition.getId());
             String cronInfo = wideTableInfoMap.get("cronInfo");
-            String dialect = wideTableInfoMap.get("dialect");
             JSONObject cronObj = JSONObject.parseObject(cronInfo);
             String n = cronObj.getString("n");//T + n 中 n 的值
             String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-            String whereField = cronObj.getString("incrementalField");// 增量字段
-            String sqlSuffix = getSqlSuffix(n, partition, whereField, dialect);
-            if(processInstance.getProcessInstanceJson().contains(sqlSuffix)){
-                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
-                        ExecutionStatus.STOP == processInstance.getState()) {
+            Map<String, String> dateMap = getDateMap(n, partition);
+            //首次执行（没有点击过“立即执行”），根据流程定义创建流程实例直接执行
+            if(null == processInstance){
+                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
+            }else if(processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围重叠
+                //该流程实例已执行完成（失败|成功），重跑
+                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
+                        || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() || ExecutionStatus.STOP == processInstance.getState()) {
                     commandType = REPEAT_RUNNING;
                     handleProcessInstance(processInstance);
-                }else{
+                }else{//说明流程实例正在执行，本次周期增量同步跳过
                     logger.info("本次数据增量同步正在手动执行中，这里跳过");
                 }
-            }else{
+            }else if(!processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围不重叠，根据流程定义创建流程实例直接执行
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
-        }else {
-            // generate one new process instance
-            processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
         }
         if (!checkCmdParam(command, cmdParam)) {
             logger.error("command parameter check failed!");
@@ -654,7 +652,8 @@ public class ProcessService {
         processInstanceMapper.updateById(processInstance);
     }
 
-    public String getSqlSuffix(String n, String partition, String whereField, String dialect) {
+    public Map<String, String> getDateMap(String n, String partition) {
+        Map<String, String> result = new HashMap<>();
         int nn = 0 - Integer.parseInt(n);
         Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
         calendar.setTime(new Date());
@@ -728,12 +727,26 @@ public class ProcessService {
             startDateStr.append(prefix).append(":00:00");
             endDateStr.append(prefix).append(":59:59");
         }
+        result.put("startTime", String.valueOf(startDateStr));
+        result.put("endTime", String.valueOf(endDateStr));
+        return result;
+    }
+
+    public String getSqlSuffix(String whereField, String dialect, boolean isFirstFull, String startDateStr, String endDateStr){
         StringBuffer sqlSuffix = new StringBuffer();
         if(-1 != dialect.indexOf("mysql")){
-            sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+            if(isFirstFull){
+                sqlSuffix.append(" where ").append(whereField).append(" <= '").append(endDateStr).append("'");
+            }else{
+                sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+            }
         }
         if(-1 != dialect.indexOf("oracle")){
-            sqlSuffix.append(" where ").append(whereField).append(" between to_date('").append(startDateStr).append("','YYYY-MM-DD HH24:MI:SS') and to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
+            if(isFirstFull) {
+                sqlSuffix.append(" where ").append(whereField).append(" <= to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
+            }else{
+                sqlSuffix.append(" where ").append(whereField).append(" between to_date('").append(startDateStr).append("','YYYY-MM-DD HH24:MI:SS') and to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
+            }
         }
         return String.valueOf(sqlSuffix);
     }
@@ -1382,5 +1395,9 @@ public class ProcessService {
 
     public void saveProcessDefinition(ProcessDefinition definition) {
         processDefineMapper.updateById(definition);
+    }
+
+    public ProcessInstance getLastInstanceByDefinitionId(String definitionId){
+        return processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
     }
 }
