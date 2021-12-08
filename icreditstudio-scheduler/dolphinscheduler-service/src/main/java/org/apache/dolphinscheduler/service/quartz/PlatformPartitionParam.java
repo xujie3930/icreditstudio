@@ -15,8 +15,26 @@ public class PlatformPartitionParam {
      * 分区类型
      */
     private String partition;
-
+    /**
+     * 是否增量存储
+     */
     private Boolean inc;
+    /**
+     * 数据源方言
+     */
+    private String dialect;
+
+    /**
+     * 周期首次是否同步以前数据
+     */
+    private Boolean firstFull;
+
+    public Boolean getFirstFull() {
+        if (firstFull == null) {
+            return false;
+        }
+        return firstFull;
+    }
 
     public Boolean getInc() {
         if (inc == null) {
@@ -24,6 +42,7 @@ public class PlatformPartitionParam {
         }
         return inc;
     }
+
     /**
      * 时间T+n
      */
