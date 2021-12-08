@@ -62,7 +62,7 @@ public class OracleDatasource implements DatasourceSync {
     }
 
     /**
-     * 取得用户名称
+     * 取得数据库名称
      *
      * @param uri
      * @return

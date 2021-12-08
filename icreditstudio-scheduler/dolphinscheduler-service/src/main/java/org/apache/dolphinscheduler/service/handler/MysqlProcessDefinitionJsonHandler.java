@@ -29,7 +29,7 @@ public class MysqlProcessDefinitionJsonHandler extends AbstractProcessDefinition
     }
 
     @Override
-    public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson) {
+    public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson, boolean isFirstFull) {
         String result = null;
         TimeInterval interval = new TimeInterval();
         SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(partitionParam, n -> true);
@@ -50,7 +50,7 @@ public class MysqlProcessDefinitionJsonHandler extends AbstractProcessDefinition
         if (Objects.nonNull(value)) {
             String startTime = syncTimeInterval.formatStartTime();
             String endTime = syncTimeInterval.formatEndTime();
-            String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "mysql", partitionParam.getIncrementalField(), startTime, endTime);
+            String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "mysql", isFirstFull, partitionParam.getIncrementalField(), startTime, endTime);
             //替换查询语句
             Configuration configuration = setValue(processDefinitionJson, QUERY_SQL, mysql);
             //分区不为空给,替换path

@@ -13,7 +13,8 @@ public interface ProcessDefinitionJsonHandler  extends DialectKeyRegister {
      *
      * @param partitionParam        处理条件
      * @param processDefinitionJson 流程定义json字符串
+     * @param isFirstFull
      * @return
      */
-    String handler(PlatformPartitionParam partitionParam, String processDefinitionJson);
+    String handler(PlatformPartitionParam partitionParam, String processDefinitionJson, boolean isFirstFull);
 }

@@ -347,8 +347,9 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     .map(icreditDatasourceEntity -> {
                         DatasourceCatalogue catalogue = new DatasourceCatalogue();
                         catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        DatasourceSync datasource = DatasourceFactory.getDatasource(icreditDatasourceEntity.getType());
-                        catalogue.setName(datasource.getDatabaseName(icreditDatasourceEntity.getUri()));
+//                        DatasourceSync datasource = DatasourceFactory.getDatasource(icreditDatasourceEntity.getType());
+//                        catalogue.setName(datasource.getDatabaseName(icreditDatasourceEntity.getUri()));
+                        catalogue.setName(DatasourceSync.getUsername(icreditDatasourceEntity.getUri()));
                         if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
                             catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
                         }
@@ -497,9 +498,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     private Boolean saveOrUpdate(String userId, IcreditDatasourceEntity entity) {
-        DatasourceSync dataSource = DatasourceFactory.getDatasource(entity.getType());
+//        DatasourceSync dataSource = DatasourceFactory.getDatasource(entity.getType());
+//        entity.setDatabaseName(dataSource.getDatabaseName(entity.getUri()));
+        entity.setDatabaseName(DatasourceSync.getUsername(entity.getUri()));
         entity.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(entity.getType()).getDesc());
-        entity.setDatabaseName(dataSource.getDatabaseName(entity.getUri()));
         entity.setHost(DatasourceSync.getHost(entity.getUri()));
         entity.setUpdateBy(userId);
         entity.setUpdateTime(new Date());

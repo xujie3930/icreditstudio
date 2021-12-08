@@ -18,6 +18,7 @@
 package org.apache.dolphinscheduler.service.quartz;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -28,6 +29,8 @@ import org.apache.dolphinscheduler.dao.entity.Command;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.Schedule;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
+import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandler;
+import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandlerContainer;
 import org.apache.dolphinscheduler.service.increment.IncrementUtil;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.quartz.Job;
@@ -113,8 +116,13 @@ public class ProcessScheduleJob implements Job {
                     return;
                 }
                 String processDefinitionJson = processDefinition.getProcessDefinitionJson();
+                Map<String, String> wideTableInfoMap = getProcessService().getWideTableInfo(processDefinition.getId());
+                String cronInfo = wideTableInfoMap.get("cronInfo");
+                JSONObject cronObj = JSONObject.parseObject(cronInfo);
+                //勾选了增量同步第一次全同步，并且 没有流程实例（是第一次同步），为 true；否则为 false
+                boolean isFirstFull = cronObj.getBoolean("firstFull") && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId());
                 ProcessDefinitionJsonHandler handler = ProcessDefinitionJsonHandlerContainer.get(dialect);
-                String handStatement = handler.handler(platformPartitionParam, processDefinitionJson);
+                String handStatement = handler.handler(platformPartitionParam, processDefinitionJson, isFirstFull);
                 log.info("处理后的json语句:{}", handStatement);
                 getProcessService().updateProcessDefinitionById(processDefinition.getId(), handStatement);
             }
