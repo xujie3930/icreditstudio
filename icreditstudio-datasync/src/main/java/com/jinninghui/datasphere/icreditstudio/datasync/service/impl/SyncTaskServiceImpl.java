@@ -222,6 +222,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setTargetSource(param.getTargetSource());
         entity.setSourceType(param.getSourceType());
         entity.setSourceTables(JSONObject.toJSONString(param.getSourceTables()));
+
+        SyncCondition syncCondition = param.getSyncCondition();
+        syncCondition.setDialect(param.getDialect());
         entity.setSyncCondition(JSONObject.toJSONString(param.getSyncCondition()));
         entity.setName(param.getWideTableName());
         if (StringUtils.isBlank(entity.getId())) {
