@@ -43,7 +43,6 @@ import org.springframework.util.Assert;
 
 import java.util.Date;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * process schedule job
@@ -116,13 +115,10 @@ public class ProcessScheduleJob implements Job {
                     return;
                 }
                 String processDefinitionJson = processDefinition.getProcessDefinitionJson();
-                Map<String, String> wideTableInfoMap = getProcessService().getWideTableInfo(processDefinition.getId());
-                String cronInfo = wideTableInfoMap.get("cronInfo");
-                JSONObject cronObj = JSONObject.parseObject(cronInfo);
                 //勾选了增量同步第一次全同步，并且 没有流程实例（是第一次同步），为 true；否则为 false
-                boolean isFirstFull = cronObj.getBoolean("firstFull") && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId());
+                platformPartitionParam.setFirstFull(platformPartitionParam.getFirstFull() && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId()));
                 ProcessDefinitionJsonHandler handler = ProcessDefinitionJsonHandlerContainer.get(dialect);
-                String handStatement = handler.handler(platformPartitionParam, processDefinitionJson, isFirstFull);
+                String handStatement = handler.handler(platformPartitionParam, processDefinitionJson);
                 log.info("处理后的json语句:{}", handStatement);
                 getProcessService().updateProcessDefinitionById(processDefinition.getId(), handStatement);
             }

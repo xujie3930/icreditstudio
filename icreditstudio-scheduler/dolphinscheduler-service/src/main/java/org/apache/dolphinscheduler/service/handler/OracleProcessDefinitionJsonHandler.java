@@ -29,7 +29,7 @@ public class OracleProcessDefinitionJsonHandler extends AbstractProcessDefinitio
     }
 
     @Override
-    public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson, boolean isFirstFull) {
+    public String handler(PlatformPartitionParam partitionParam, String processDefinitionJson) {
         String result = null;
         TimeInterval interval = new TimeInterval();
         SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(partitionParam, n -> true);
@@ -50,7 +50,7 @@ public class OracleProcessDefinitionJsonHandler extends AbstractProcessDefinitio
         if (Objects.nonNull(value)) {
             String startTime = syncTimeInterval.formatStartTime();
             String endTime = syncTimeInterval.formatEndTime();
-            String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "oracle", isFirstFull, partitionParam.getIncrementalField(), startTime, endTime);
+            String mysql = IncrementUtil.getTimeIncQueryStatement(value.toString(), "oracle", partitionParam.getFirstFull(), partitionParam.getIncrementalField(), startTime, endTime);
             //替换查询语句
             Configuration configuration = setValue(processDefinitionJson, QUERY_SQL, mysql);
             //分区不为空给,替换path
