@@ -88,7 +88,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000072("60000072", "调度类型为空"),
         RESOURCE_CODE_60000073("60000073", "周期执行调度时间为空"),
         RESOURCE_CODE_60000074("60000074", "限流大小不能为空"),
-        RESOURCE_CODE_60000075("60000075", "taskId有误，不能找到对应的数据同步任务")
+        RESOURCE_CODE_60000075("60000075", "taskId有误，不能找到对应的数据同步任务"),
+        RESOURCE_CODE_60000076("60000076", "流程定义返回为空"),
         ;
 
         public final String code;

@@ -410,7 +410,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (StringUtils.isBlank(scheduleId)) {
             //如果创建hive成功但接口异常可考虑删除该hive表
             //创建流程定义并回写到任务记录中
-            createDefinitionAndWriteBackId(taskId, build);
+            String processDefinitionId = createDefinitionAndWriteBackId(taskId, build);
+            taskEntity.setScheduleId(processDefinitionId);
 
             List<SyncWidetableFieldEntity> wideTableFields = syncWidetableFieldService.getWideTableFields(wideTableEntity.getId());
             List<WideTableFieldRequest> wideTableFieldRequests = wideTableFieldEntityTransferToRequest(wideTableFields);
@@ -519,17 +520,23 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     /**
      * 创建流程定义并回写定义ID到task中
      */
-    private void createDefinitionAndWriteBackId(String taskId, FeignPlatformProcessDefinitionRequest request) {
+    private String createDefinitionAndWriteBackId(String taskId, FeignPlatformProcessDefinitionRequest request) {
         BusinessResult<CreatePlatformTaskResult> businessResult = schedulerFeign.create(request);
+        String processDefinitionId = null;
         if (businessResult.isSuccess() && businessResult.getData() != null) {
             CreatePlatformTaskResult data = businessResult.getData();
             SyncTaskEntity updateEntity = new SyncTaskEntity();
             updateEntity.setId(taskId);
             updateEntity.setScheduleId(data.getProcessDefinitionId());
             syncTaskMapper.updateById(updateEntity);
+            processDefinitionId = data.getProcessDefinitionId();
         } else {
-            throw new AppException("60000037");
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000037.getCode());
         }
+        if (StringUtils.isBlank(processDefinitionId)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000076.getCode());
+        }
+        return processDefinitionId;
     }
 
     /**
@@ -1237,7 +1244,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000016.message);
         }
         SyncTaskEntity entity = syncTaskMapper.selectById(taskId);
-        if(null == entity){
+        if (null == entity) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000075.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000075.message);
         }
         return entity;

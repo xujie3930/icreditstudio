@@ -1,4 +1,4 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.mysql;
+package com.jinninghui.datasphere.icreditstudio.datasync.service.task.reader.oracle;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 @Data
 @Component
-public class MySqlReader extends AbstractDataxReaderHandler {
+public class OracleSqlReader extends AbstractDataxReaderHandler {
     /**
      * 需要字典转换的列
      */
@@ -38,17 +38,22 @@ public class MySqlReader extends AbstractDataxReaderHandler {
      */
     private List<DictInfo> transferDict;
     /**
-     * mysqlreader配置信息
+     * oracle reader配置信息
      */
-    private MysqlReaderConfigParam configParam;
+    private OracleReaderConfigParam configParam;
 
     @Resource
     private DatasourceFeign datasourceFeign;
 
     @Override
+    public String getDialect() {
+        return DialectEnum.ORACLE.getDialect();
+    }
+
+    @Override
     public Map<String, Object> getReaderEntity() {
         Map<String, Object> reader = new HashMap<>();
-        reader.put("name", "mysqlreader");
+        reader.put("name", "oraclereader");
 
         Map<String, Object> parameter = new HashMap<>();
         parameter.put("needTransferColumns", getNeedTransferColumns());
@@ -67,21 +72,16 @@ public class MySqlReader extends AbstractDataxReaderHandler {
     }
 
     @Override
-    public String getDialect() {
-        return DialectEnum.MYSQL.getDialect();
-    }
-
-    @Override
     public void preSetConfigParam(SyncWidetableEntity widetableEntity) {
         String datasourceId = widetableEntity.getDatasourceId();
         if (StringUtils.isBlank(datasourceId)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000003.getCode());
         }
         BusinessResult<ReaderConfigParam> datasourceJdbcInfo = datasourceFeign.getDatasourceJdbcInfo(datasourceId);
-        MysqlReaderConfigParam data = null;
+        OracleReaderConfigParam data = null;
         if (datasourceJdbcInfo.isSuccess()) {
-//            data = (MysqlReaderConfigParam) datasourceJdbcInfo.getData();
-            data = BeanCopyUtils.copyProperties(datasourceJdbcInfo, MysqlReaderConfigParam.class);
+//            data = (OracleReaderConfigParam) datasourceJdbcInfo.getData();
+            data = BeanCopyUtils.copyProperties(datasourceJdbcInfo.getData(), OracleReaderConfigParam.class);
             data.setQuerySql(widetableEntity.getSqlStr());
         }
         configParam = data;
@@ -100,4 +100,5 @@ public class MySqlReader extends AbstractDataxReaderHandler {
         }
         return transferDict;
     }
+
 }
