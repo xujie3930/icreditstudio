@@ -18,7 +18,7 @@ public class OracleSyncQueryStatementHandler extends AbstractSyncQueryStatement 
     }
 
     @Override
-    public String queryStatement(String oldStatement, String field, boolean isFirstFull, String startTime, String endTime) {
+    public StringJoiner getSqlWhere(String field, boolean isFirstFull, String startTime, String endTime){
         StringJoiner condition = new StringJoiner(" ").add(field);
         if(isFirstFull){
             condition.add("<=")
@@ -28,7 +28,7 @@ public class OracleSyncQueryStatementHandler extends AbstractSyncQueryStatement 
                     .add("to_date(\'" + startTime + "\'")
                     .add(",\'" + FORMAT_STR + "\') and to_date(\'" + endTime + "\',\'" + FORMAT_STR + "\')");
         }
-        return super.splitJointSql(oldStatement, condition);
+        return condition;
     }
 
 }

@@ -28,6 +28,8 @@ import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
+import org.apache.dolphinscheduler.service.increment.SyncQueryStatement;
+import org.apache.dolphinscheduler.service.increment.SyncQueryStatementContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -733,21 +735,9 @@ public class ProcessService {
     }
 
     public String getSqlSuffix(String whereField, String dialect, boolean isFirstFull, String startDateStr, String endDateStr){
-        StringBuffer sqlSuffix = new StringBuffer();
-        if(-1 != dialect.indexOf("mysql")){
-            if(isFirstFull){
-                sqlSuffix.append(" where ").append(whereField).append(" <= '").append(endDateStr).append("'");
-            }else{
-                sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
-            }
-        }
-        if(-1 != dialect.indexOf("oracle")){
-            if(isFirstFull) {
-                sqlSuffix.append(" where ").append(whereField).append(" <= to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
-            }else{
-                sqlSuffix.append(" where ").append(whereField).append(" between to_date('").append(startDateStr).append("','YYYY-MM-DD HH24:MI:SS') and to_date('").append(endDateStr).append("','YYYY-MM-DD HH24:MI:SS')");
-            }
-        }
+        SyncQueryStatement syncQueryStatement = SyncQueryStatementContainer.getInstance().find(dialect);
+        StringBuffer sqlSuffix = new StringBuffer(" where ");
+        sqlSuffix.append(syncQueryStatement.getSqlWhere(whereField, isFirstFull, startDateStr, endDateStr));
         return String.valueOf(sqlSuffix);
     }
 

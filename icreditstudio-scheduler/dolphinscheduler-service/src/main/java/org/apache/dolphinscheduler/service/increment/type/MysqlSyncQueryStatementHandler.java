@@ -15,8 +15,7 @@ public class MysqlSyncQueryStatementHandler extends AbstractSyncQueryStatement {
     }
 
     @Override
-    public String queryStatement(String oldStatement, String field, boolean isFirstFull, String startTime, String endTime) {
-        // select * from aaa
+    public StringJoiner getSqlWhere(String field, boolean isFirstFull, String startTime, String endTime){
         StringJoiner condition = new StringJoiner(" ").add(field);
         if(isFirstFull){
             condition.add("<=")
@@ -27,6 +26,7 @@ public class MysqlSyncQueryStatementHandler extends AbstractSyncQueryStatement {
                     .add("and")
                     .add("\'" + endTime + "\'");
         }
-        return super.splitJointSql(oldStatement, condition);
+        return condition;
     }
+
 }

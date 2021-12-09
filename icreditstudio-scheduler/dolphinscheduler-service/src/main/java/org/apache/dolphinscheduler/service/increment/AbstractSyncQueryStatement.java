@@ -20,7 +20,9 @@ public abstract class AbstractSyncQueryStatement implements SyncQueryStatement {
         SyncQueryStatementContainer.getInstance().put(getDialect(), this);
     }
 
-    protected String splitJointSql(String oldStatement, StringJoiner condition){
+    @Override
+    public String queryStatement(String oldStatement, String field, boolean isFirstFull, String startTime, String endTime) {
+        StringJoiner condition = this.getSqlWhere(field, isFirstFull, startTime, endTime);
         if (StringUtils.contains(oldStatement, "where")) {
             List<String> where = StrUtil.split(oldStatement, "where");
             return new StringJoiner(" ").add(where.get(0).trim()).add("where").merge(condition).toString();
@@ -28,4 +30,5 @@ public abstract class AbstractSyncQueryStatement implements SyncQueryStatement {
             return new StringJoiner(" ").add(oldStatement).add("where").merge(condition).toString();
         }
     }
+
 }
