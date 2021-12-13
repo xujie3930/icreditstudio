@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
-@RequestMapping("/dict")
+@RequestMapping("/datasync/dict")
 public class DictController {
 
     @Autowired

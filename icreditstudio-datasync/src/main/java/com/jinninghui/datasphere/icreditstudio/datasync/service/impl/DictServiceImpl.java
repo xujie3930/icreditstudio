@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.DeleteFlagEnum;
@@ -13,9 +14,11 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictSavePa
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictColumnResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictQueryResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictResult;
+import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,9 +49,16 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "保存失败");
     }
 
+    private void checkDictId(String id){
+        if(StringUtils.isEmpty(id)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000080.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000080.message);
+        }
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> del(String id) {
+        checkDictId(id);
         dictColumnService.delBatchByDictId(DeleteFlagEnum.DELETED.getCode(), id);
         boolean isRemoved = dictMapper.delById(DeleteFlagEnum.DELETED.getCode(), id);
         return isRemoved ? BusinessResult.success(isRemoved) : BusinessResult.fail("", "删除失败");
@@ -62,6 +72,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     }
 
     private List<DictColumnResult> getColumnList(String dictId){
+        checkDictId(dictId);
         return dictColumnService.getColumnListByDictId(dictId);
     }
 
@@ -82,6 +93,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> update(DictSaveParam param) {
+        checkDictId(param.getId());
         DictEntity dict = new DictEntity();
         BeanCopyUtils.copyProperties(param, dict);
         dictColumnService.truthDelBatchByDictId(param.getId());
