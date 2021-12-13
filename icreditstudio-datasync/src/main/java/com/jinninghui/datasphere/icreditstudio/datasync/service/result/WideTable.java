@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,9 +11,13 @@ import java.util.List;
 @Data
 public class WideTable {
     /**
-     * 宽表名称
+     * 数据源ID
      */
-    private String tableName;
+    private String datasourceId;
+    /**
+     * 数据来源表方言
+     */
+    private String sourceDialect;
     /**
      * 字段列表
      */
@@ -27,10 +30,6 @@ public class WideTable {
      * 增量字段
      */
     private List<WideTable.Select> incrementalFields;
-    /**
-     * 不同主机的同名数据库
-     */
-    private List<DataSyncGenerateWideTableRequest.DatabaseInfo> sameNameDataBase;
     /**
      * 生成宽表sql
      */

@@ -80,17 +80,18 @@ public class IncrementUtil {
      *
      * @param oldStatement
      * @param dialect
+     * @param isFirstFull
      * @param field
      * @param startTime
      * @param endTime
      * @return
      */
-    public static String getTimeIncQueryStatement(String oldStatement, String dialect, String field, String startTime, String endTime) {
+    public static String getTimeIncQueryStatement(String oldStatement, String dialect, boolean isFirstFull, String field, String startTime, String endTime) {
         SyncQueryStatement syncQueryStatement = SyncQueryStatementContainer.getInstance().find(dialect);
         if (Objects.isNull(syncQueryStatement)) {
             throw new RuntimeException("60000048");
         }
-        return syncQueryStatement.queryStatement(oldStatement, field, startTime, endTime);
+        return syncQueryStatement.queryStatement(oldStatement, field, isFirstFull, startTime, endTime);
     }
 
     public static void main(String[] args) {
@@ -106,7 +107,7 @@ public class IncrementUtil {
         String field = "create_time";
         String startTime = "2021-09-23 00:00:00";
         String endTime = "2021-09-23 23:59:59";
-        String timeIncQueryStatement = getTimeIncQueryStatement(oldStatement, dialect, field, startTime, endTime);
+        String timeIncQueryStatement = getTimeIncQueryStatement(oldStatement, dialect, true, field, startTime, endTime);
         System.out.println(timeIncQueryStatement);
     }
 }

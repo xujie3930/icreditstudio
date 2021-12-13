@@ -1,30 +1,25 @@
-package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
+package com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.outside;
 
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
-import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractWideTableHandler;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.ConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.AssociatedFormatterVo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.ConnectionInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.CreateModeEnum;
-import com.jinninghui.datasphere.icreditstudio.datasync.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.HiveMapJdbcTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.PartitionTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.DatasourceFeign;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignConnectionInfoRequest;
-import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.FeignDataSourcesRequest;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DataSyncGenerateWideTableParam;
-import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DatasourceInfo;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.param.OutsideSourceWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTable;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableFieldResult;
-import com.jinninghui.datasphere.icreditstudio.datasync.web.request.DataSyncGenerateWideTableRequest;
+import com.jinninghui.datasphere.icreditstudio.framework.common.enums.DialectEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
@@ -44,49 +39,22 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class MySqlWideTableHandler extends AbstractWideTableHandler {
+public class MySqlWideTableHandler extends AbstractOutsideWideTableHandler {
     @Resource
     private DatasourceFeign datasourceFeign;
 
     @Override
-    public boolean isCurrentWideTable(DataSyncGenerateWideTableParam param) {
-        //可视化创建方式直接判断dialect
-        if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
-            return getDialect().equals(param.getDialect());
-        } else {//sql创建方式
-            //不同主机相同数据库情况，选择了host
-            if (Objects.nonNull(param.getSqlInfo()) && CollectionUtils.isNotEmpty(param.getSqlInfo().getDatabaseHost())) {
-                String datasourceId = param.getSqlInfo().getDatabaseHost().get(0).getDatasourceId();
-
-                FeignDataSourcesRequest request = new FeignDataSourcesRequest();
-                request.setDatasourceId(datasourceId);
-                return isSameDialect(request, getDialect());
-            } else {//没选择host,根据数据库名称定位数据源类型
-                String sql = param.getSqlInfo().getSql();
-                String database = parseDatabaseNameFromSql(sql);
-                FeignDataSourcesRequest request = new FeignDataSourcesRequest();
-                request.setDatabaseName(database);
-                return isSameDialect(request, getDialect());
-            }
-        }
-    }
-
-    private boolean isSameDialect(FeignDataSourcesRequest request, String dialect) {
-        BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(request);
-        if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
-            DatasourceInfo datasourceInfo = dataSources.getData().get(0);
-            return DatasourceTypeEnum.findDatasourceTypeByType(datasourceInfo.getType()).getDesc().equals(dialect);
-        }
-        return false;
+    public boolean isCurrentTypeHandler(OutsideSourceWideTableParam param) {
+        return getDialect().equals(param.getDialect());
     }
 
     @Override
     public String getDialect() {
-        return "mysql";
+        return DialectEnum.MYSQL.getDialect();
     }
 
     @Override
-    public String getWideTableSql(DataSyncGenerateWideTableParam param) {
+    public String getWideTableSql(OutsideSourceWideTableParam param) {
         String sql = null;
         if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
             AssociatedFormatterVo vo = new AssociatedFormatterVo();
@@ -95,82 +63,16 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
             vo.setAssoc(param.getView());
             sql = AssociatedUtil.wideTableSql(vo);
         } else {
-            if (Objects.nonNull(param.getSqlInfo())) {
-                sql = param.getSqlInfo().getSql();
+            if (StringUtils.isNotBlank(param.getSql())) {
+                sql = param.getSql();
             }
         }
         return sql;
     }
 
     @Override
-    public boolean verifySql(String sql, DataSyncGenerateWideTableParam param) {
-        if (StringUtils.isBlank(sql)) {
-            throw new AppException("60000024");
-        }
-        return true;
-    }
-
-    @Override
-    public List<DataSyncGenerateWideTableRequest.DatabaseInfo> checkDatabaseFromSql(String sql) {
-        List<DataSyncGenerateWideTableRequest.DatabaseInfo> results = Lists.newArrayList();
-        String database = parseDatabaseNameFromSql(sql);
-        FeignDataSourcesRequest request = new FeignDataSourcesRequest();
-        request.setDatabaseName(database);
-        BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(request);
-        if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
-            List<DatasourceInfo> data = dataSources.getData();
-            Map<String, List<DataSyncGenerateWideTableRequest.DatabaseInfo>> collect = data.stream()
-                    .filter(Objects::nonNull)
-                    .map(info -> {
-                        DataSyncGenerateWideTableRequest.DatabaseInfo databaseInfo = new DataSyncGenerateWideTableRequest.DatabaseInfo();
-                        databaseInfo.setDatasourceId(info.getId());
-                        databaseInfo.setDatabaseName(database);
-                        String uri = info.getUri();
-                        String prefix = StrUtil.subBefore(uri, "?", false);
-                        String temp = StrUtil.subBefore(prefix, ":", true);
-                        String host = StrUtil.subAfter(temp, "//", true);
-                        databaseInfo.setHost(host);
-                        return databaseInfo;
-                    }).collect(Collectors.groupingBy(DataSyncGenerateWideTableRequest.DatabaseInfo::getHost));
-            if (collect.size() > 1) {
-                collect.forEach((k, v) -> {
-                    results.add(v.get(0));
-                });
-            }
-        }
-        return results;
-    }
-
-    @Override
-    public String getDataSourceId(String sql, DataSyncGenerateWideTableParam param) {
-        String dataSourceId = null;
-        if (CreateModeEnum.VISUAL == CreateModeEnum.find(param.getCreateMode())) {
-            dataSourceId = param.getDatasourceId();
-        } else {
-            if (Objects.nonNull(param.getSqlInfo()) && CollectionUtils.isNotEmpty(param.getSqlInfo().getDatabaseHost())) {
-                dataSourceId = param.getSqlInfo().getDatabaseHost().get(0).getDatasourceId();
-            } else {
-                //从查询sql中解析数据库名称
-                String database = parseDatabaseNameFromSql(sql);
-                FeignDataSourcesRequest feignRequest = new FeignDataSourcesRequest();
-                feignRequest.setDatabaseName(database);
-                BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(feignRequest);
-                if (dataSources.isSuccess() && CollectionUtils.isNotEmpty(dataSources.getData())) {
-                    dataSourceId = dataSources.getData().get(0).getId();
-                }
-            }
-        }
-        if (StringUtils.isBlank(dataSourceId)) {
-            throw new AppException("60000025");
-        }
-        return dataSourceId;
-    }
-
-    private String parseDatabaseNameFromSql(String sql) {
-        String from = StrUtil.subAfter(sql, "from", true);
-        String databaseTable = StrUtil.subBefore(StrUtil.trim(from), " ", false);
-        String database = StrUtil.subBefore(databaseTable, ".", false);
-        return database;
+    public String getDataSourceId(String sql, OutsideSourceWideTableParam param) {
+        return param.getDatasourceId();
     }
 
     @Override
@@ -223,7 +125,6 @@ public class MySqlWideTableHandler extends AbstractWideTableHandler {
                 throw new AppException("60000051", ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000051.getMessage());
             }
             WideTable wideTable = new WideTable();
-            wideTable.setTableName(null);
             wideTable.setSql(sql);
             wideTable.setIncrementalFields(fieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
             wideTable.setFields(fieldInfos);

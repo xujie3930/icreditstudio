@@ -11,13 +11,18 @@ import java.util.List;
  */
 @Data
 public class DataSyncGenerateWideTableRequest {
-
+    /**
+     * 【0：外部数据库，1：本地文件，2：区块链数据】
+     */
+    private Integer sourceType;
     /**
      * 创建方式【0：可视化，1，SQL】
      */
     private Integer createMode;
-
-    private SqlInfo sqlInfo;
+    /**
+     * 查询语句
+     */
+    private String sql;
 
     /**
      * 数据源ID
@@ -35,12 +40,6 @@ public class DataSyncGenerateWideTableRequest {
      * 关联关系
      */
     private List<AssociatedData> view;
-
-    @Data
-    public static class SqlInfo {
-        private String sql;
-        private List<DatabaseInfo> databaseHost;
-    }
 
     @Data
     public static class DatabaseInfo {

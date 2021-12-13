@@ -28,6 +28,8 @@ import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
+import org.apache.dolphinscheduler.service.increment.SyncQueryStatement;
+import org.apache.dolphinscheduler.service.increment.SyncQueryStatementContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -62,7 +64,7 @@ public class ProcessService {
     private String pwd;
     private String userName;
     private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
-    private String getWideTableInfoSql = "SELECT sync_condition FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
+    private String getWideTableInfoSql = "SELECT sync_condition,dialect FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
 
     {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
@@ -421,6 +423,29 @@ public class ProcessService {
         return true;
     }
 
+    public Map<String, String> getWideTableInfo(String definitionId){
+        Map<String, String> result = new HashMap<>();
+        Connection con = getConnection();
+        String cronInfo = null;
+        String dialect = null;
+        try {
+            PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
+            pstmt.setString(1, definitionId);
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()){
+                cronInfo = rs.getString(1);
+                dialect = rs.getString(2);
+            }
+            result.put("cronInfo", cronInfo);
+            result.put("dialect", dialect);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }finally {
+            closeConn(con);
+        }
+        return result;
+    }
+
     /**
      * construct process instance according to one command.
      *
@@ -444,7 +469,6 @@ public class ProcessService {
         }
 
         processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
-
         if (cmdParam != null) {
             String processInstanceId = null;
             // recover from failure or pause tasks
@@ -488,40 +512,28 @@ public class ProcessService {
             if (cmdParam.containsKey(Constants.CMDPARAM_SUB_PROCESS)) {
                 processInstance.setCommandParam(command.getCommandParam());
             }
-        }else if(null != processInstance){
-            Connection con = getConnection();
-            String cronInfo = null;
-            try {
-                PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
-                pstmt.setString(1, processDefinition.getId());
-                ResultSet rs = pstmt.executeQuery();
-                while(rs.next()){
-                    cronInfo = rs.getString(1);
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }finally {
-                closeConn(con);
-            }
+        }else {
+            Map<String, String> wideTableInfoMap = getWideTableInfo(processDefinition.getId());
+            String cronInfo = wideTableInfoMap.get("cronInfo");
             JSONObject cronObj = JSONObject.parseObject(cronInfo);
             String n = cronObj.getString("n");//T + n 中 n 的值
             String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-            String whereField = cronObj.getString("incrementalField");// 增量字段
-            String sqlSuffix = getSqlSuffix(n, partition, whereField);
-            if(processInstance.getProcessInstanceJson().contains(sqlSuffix)){
-                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
-                        ExecutionStatus.STOP == processInstance.getState()) {
+            Map<String, String> dateMap = getDateMap(n, partition);
+            //首次执行（没有点击过“立即执行”），根据流程定义创建流程实例直接执行
+            if(null == processInstance){
+                processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
+            }else if(processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围重叠
+                //该流程实例已执行完成（失败|成功），重跑
+                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
+                        || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() || ExecutionStatus.STOP == processInstance.getState()) {
                     commandType = REPEAT_RUNNING;
                     handleProcessInstance(processInstance);
-                }else{
+                }else{//说明流程实例正在执行，本次周期增量同步跳过
                     logger.info("本次数据增量同步正在手动执行中，这里跳过");
                 }
-            }else{
+            }else if(!processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围不重叠，根据流程定义创建流程实例直接执行
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
-        }else {
-            // generate one new process instance
-            processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
         }
         if (!checkCmdParam(command, cmdParam)) {
             logger.error("command parameter check failed!");
@@ -642,7 +654,8 @@ public class ProcessService {
         processInstanceMapper.updateById(processInstance);
     }
 
-    public String getSqlSuffix(String n, String partition, String whereField) {
+    public Map<String, String> getDateMap(String n, String partition) {
+        Map<String, String> result = new HashMap<>();
         int nn = 0 - Integer.parseInt(n);
         Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
         calendar.setTime(new Date());
@@ -716,8 +729,15 @@ public class ProcessService {
             startDateStr.append(prefix).append(":00:00");
             endDateStr.append(prefix).append(":59:59");
         }
-        StringBuffer sqlSuffix = new StringBuffer();
-        sqlSuffix.append(" where ").append(whereField).append(" between '").append(startDateStr).append("' and '").append(endDateStr).append("'");
+        result.put("startTime", String.valueOf(startDateStr));
+        result.put("endTime", String.valueOf(endDateStr));
+        return result;
+    }
+
+    public String getSqlSuffix(String whereField, String dialect, boolean isFirstFull, String startDateStr, String endDateStr){
+        SyncQueryStatement syncQueryStatement = SyncQueryStatementContainer.getInstance().find(dialect);
+        StringBuffer sqlSuffix = new StringBuffer(" where ");
+        sqlSuffix.append(syncQueryStatement.getSqlWhere(whereField, isFirstFull, startDateStr, endDateStr));
         return String.valueOf(sqlSuffix);
     }
 
@@ -1365,5 +1385,9 @@ public class ProcessService {
 
     public void saveProcessDefinition(ProcessDefinition definition) {
         processDefineMapper.updateById(definition);
+    }
+
+    public ProcessInstance getLastInstanceByDefinitionId(String definitionId){
+        return processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
     }
 }

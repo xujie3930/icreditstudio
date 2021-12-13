@@ -24,7 +24,7 @@ public class PlatformExecutorController {
     private PlatformExecutorService platformExecutorService;
 
     @PostMapping("/execProcessInstance")
-    public BusinessResult<Boolean> execProcessInstance(@RequestBody ExecPlatformProcessDefinitionRequest request) throws ParseException {
+    public BusinessResult<Boolean> execProcessInstance(@RequestBody ExecPlatformProcessDefinitionRequest request){
         ExecPlatformProcessDefinitionParam param = new ExecPlatformProcessDefinitionParam();
         BeanCopyUtils.copyProperties(request, param);
         return platformExecutorService.execProcessInstance(param);

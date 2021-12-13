@@ -10,7 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FeignDataSourcesRequest {
 
+    /**
+     * 资源类型
+     */
+    private Integer sourceType;
+    /**
+     * 数据库名称
+     */
     private String databaseName;
-
+    /**
+     * 数据源ID
+     */
     private String datasourceId;
 }

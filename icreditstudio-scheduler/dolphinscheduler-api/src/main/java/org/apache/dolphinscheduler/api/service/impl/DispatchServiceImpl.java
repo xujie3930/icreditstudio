@@ -1,5 +1,6 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -11,6 +12,7 @@ import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
+import org.apache.dolphinscheduler.api.vo.WideTableInfoVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
 
@@ -164,42 +167,50 @@ public class DispatchServiceImpl implements DispatchService {
         }
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
         ProcessDefinition definition = processService.findProcessDefineById(definitionId);
-        String cronStr = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
-        String sqlSuffix = handleCronAndDefinition(definition, cronStr);
-        if (null != processInstance && processInstance.getProcessInstanceJson().contains(sqlSuffix) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
-                processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {//该任务正在 【执行中】中，不能执行
+        WideTableInfoVO wideTableInfo = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
+        String cronStr = wideTableInfo.getCronInfo();
+        String dialect = wideTableInfo.getDialect();
+        String endTime = handleCronAndDefinition(definition, cronStr, dialect, null == processInstance);
+        //增量时间区间重叠，并且该任务正在 【执行中】中，不能执行
+        if (null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION
+                || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS || processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
-        if(null == processInstance){
-            platformExecutorService.execSyncTask(definitionId);
-        }else if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
-                ExecutionStatus.STOP == processInstance.getState()){
+        //增量时间区间重叠， 重跑
+        if(null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+                ExecutionStatus.STOP == processInstance.getState())){
             processService.handleProcessInstance(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
+        }
+        //增量时间区间不重叠，增量同步
+        if(null == processInstance || !processInstance.getProcessInstanceJson().contains(endTime)){
+            platformExecutorService.manualExecCycleSyncTask(definitionId);
         }
         return BusinessResult.success(true);
     }
 
-    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr) {
-        JSONObject cronObj = JSONObject.parseObject(cronStr);
+    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr, String dialect, boolean isFirstFull) {
+        JSONObject cronObj = JSON.parseObject(cronStr);
         String n = cronObj.getString("n");//T + n 中 n 的值
         String partition = cronObj.getString("partition");// 每年|每月|每日|每时
         String whereField = cronObj.getString("incrementalField");// 增量字段
-        String sqlSuffix = processService.getSqlSuffix(n, partition, whereField);
+        isFirstFull = isFirstFull && cronObj.getBooleanValue("firstFull");// 周期任务手动执行 第一次 是否需要全量同步
+        Map<String, String> dateMap = processService.getDateMap(n, partition);
+        String sqlSuffix = processService.getSqlSuffix(whereField, dialect, isFirstFull, dateMap.get("startTime"), dateMap.get("endTime"));
         handleProcessDefinition(definition, sqlSuffix);
         processService.saveProcessDefinition(definition);
-        return sqlSuffix;
+        return dateMap.get("endTime");
     }
 
     private void handleProcessDefinition(ProcessDefinition definition, String sqlSuffix) {
-        JSONObject obj = JSONObject.parseObject(definition.getProcessDefinitionJson());
+        JSONObject obj = JSON.parseObject(definition.getProcessDefinitionJson());
         JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
         JSONObject paramObj = taskObj.getJSONObject("params");
         if(!"1".equals(paramObj.getString("customConfig"))){
             return ;
         }
-        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
+        JSONObject jsonObj = JSON.parseObject(paramObj.getString("json"));
         JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
         JSONObject writer = content.getJSONObject("reader");
         JSONObject parameter = writer.getJSONObject("parameter");

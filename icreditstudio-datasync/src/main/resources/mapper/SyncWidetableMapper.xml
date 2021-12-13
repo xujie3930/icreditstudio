@@ -22,7 +22,7 @@
         update_by,del_flag
     </sql>
 
-    <select id="getWideTableInfoByTaskId" resultType="java.lang.String">
-        SELECT sync_condition FROM icredit_sync_widetable WHERE sync_task_id = #{taskId}
+    <select id="getWideTableInfoByTaskId" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableInfoResult">
+        SELECT sync_condition AS cronInfo,dialect FROM icredit_sync_widetable WHERE sync_task_id = #{taskId}
     </select>
 </mapper>
