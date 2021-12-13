@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.DictService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictQueryParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictSaveParam;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -61,6 +63,11 @@ public class DictController {
     @PostMapping("/lookInfo")
     public BusinessResult<List<DictColumnResult>> lookInfo(@RequestBody DictRequest request){
         return dictService.lookInfo(request.getId());
+    }
+
+    @PostMapping("/importDict")
+    public BusinessResult<Boolean> importDict(HttpServletRequest request){
+        return dictService.importDict(request);
     }
 
 }

@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -88,5 +89,11 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         dictColumnService.saveBatch(param.getId(), saveParams);
         boolean isUpdated = updateById(dict);
         return isUpdated ? BusinessResult.success(isUpdated) : BusinessResult.fail("", "更新失败");
+    }
+
+    @Override
+    public BusinessResult<Boolean> importDict(HttpServletRequest request) {
+
+        return null;
     }
 }

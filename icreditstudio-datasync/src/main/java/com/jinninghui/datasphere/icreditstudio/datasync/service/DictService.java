@@ -8,6 +8,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictResul
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface DictService {
@@ -23,4 +24,6 @@ public interface DictService {
     BusinessResult<Boolean> update(DictSaveParam param);
 
     BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param);
+
+    BusinessResult<Boolean> importDict(HttpServletRequest request);
 }

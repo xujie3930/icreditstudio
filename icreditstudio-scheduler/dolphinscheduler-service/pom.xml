@@ -103,6 +103,15 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.hashtech.businessframework</groupId>
+            <artifactId>business-exception</artifactId>
+            <version>FRAMEWORK-1.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jinninghui.datasphere</groupId>
+            <artifactId>icreditstudio-common</artifactId>
+        </dependency>
 
 
     </dependencies>

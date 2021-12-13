@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
@@ -98,7 +99,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (saveOrUpdate(userId, defEntity)) {
             return BusinessResult.success(true);
         } else {
-            return BusinessResult.fail("", "操作失败");
+            return BusinessResult.fail("", "保存失败");
         }
     }
 
@@ -475,13 +476,6 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param) {
-        //删除数据源时候需要判断该数据源下是否有工作流
-        if (DatasourceStatusEnum.DISABLE.getCode() == param.getStatus()) {
-            Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
-            if (hasRunningTask) {
-                throw new AppException("70000012");
-            }
-        }
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         //若数据源发生改动，则需要判断uri是否正确
         if (StringUtils.isNotBlank(param.getUri())) {
@@ -511,6 +505,27 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             entity.setId(sequenceService.nextValueString());
         }
         return saveOrUpdate(entity);
+    }
+
+    @Override
+    public BusinessResult<Boolean> updateStatusById(IcreditDatasourceUpdateStatusParam param){
+        if(StringUtils.isEmpty(param.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000002.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000002.message);
+        }
+        if(!DatasourceStatusEnum.ENABLE.getCode().equals(param.getDatasourceStatus()) && !DatasourceStatusEnum.DISABLE.getCode().equals(param.getDatasourceStatus())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000013.message);
+        }
+        //删除数据源时候需要判断该数据源下是否有工作流
+        if (DatasourceStatusEnum.DISABLE.getCode().equals(param.getDatasourceStatus())) {
+            Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
+            if (hasRunningTask) {
+                throw new AppException("70000012");
+            }
+        }
+        IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
+        datasourceEntity.setStatus(param.getDatasourceStatus());
+        boolean isSuccessed = updateById(datasourceEntity);
+        return isSuccessed ? BusinessResult.success(isSuccessed) : BusinessResult.fail("", "操作失败");
     }
 
     @Override
