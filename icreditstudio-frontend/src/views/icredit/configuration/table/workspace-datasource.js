@@ -1,11 +1,11 @@
 const dataType = {
   1: 'MySQL',
   2: 'Oracle',
-  3: 'progresql',
+  3: 'ProgreSql',
   4: 'SqlServer',
   5: 'SFTP',
   6: 'FTP',
-  7: 'hive',
+  7: 'Hive',
   8: 'MongoDB'
 }
 
@@ -30,8 +30,7 @@ export default {
     {
       type: 'index',
       label: '序号',
-      width: '100px',
-      prop: 'serialNumber'
+      width: '80px'
     },
     {
       type: 'text',
@@ -49,8 +48,14 @@ export default {
       type: 'text',
       label: '连接信息',
       prop: 'uri',
-      width: 300,
-      formatter: ({ uri }) => uri.split('?')[0]
+      width: 350,
+      formatter: ({ uri, type }) => {
+        const uriMapping = {
+          1: uri.split('?')[0],
+          2: uri.split('|username')[0]
+        }
+        return uriMapping[type]
+      }
     },
     {
       type: 'slot',

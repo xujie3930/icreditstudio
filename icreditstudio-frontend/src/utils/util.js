@@ -312,7 +312,6 @@ export const base64UrlFilter = url => {
 
 // 数据库连接URI切割
 export const uriSplit = (uri, dataSource) => {
-  console.log(uri, dataSource)
   let ds = {}
   const { type } = dataSource
 
@@ -338,7 +337,6 @@ export const mysqlUriSplit = (uri, dataSource) => {
 
   // 处理查询参数
   const newAfterStr = afterStr.replaceAll('|', '&')
-  console.log(newAfterStr, 'newAfterStr')
   newAfterStr.split('&').forEach(item => {
     if (item.includes('password=')) {
       paramsObj.password = decrypt(item.split('password=')[1])
@@ -369,16 +367,14 @@ export const mysqlUriSplit = (uri, dataSource) => {
 // oracle数据库连接URI切割
 export const oracleUriSplit = (uri, dataSource) => {
   const paramsObj = {}
-  const fieldArr = []
   const [baseStr, nameStr, pwdStr] = uri.split('|')
   const [, databaseType, , ip, port, databaseName] = baseStr.split(':')
+  const [username, name] = nameStr.split('=')
+  const [, pwd] = pwdStr.split('password=')
 
-  fieldArr.concat([nameStr, pwdStr]).forEach(item => {
-    const [key, val] = item.split('=')
-    paramsObj[key] = val
-  })
+  paramsObj[username] = name
+  paramsObj.password = decrypt(pwd)
 
-  console.log(baseStr, nameStr, pwdStr, paramsObj)
   return {
     ...dataSource,
     ...paramsObj,
