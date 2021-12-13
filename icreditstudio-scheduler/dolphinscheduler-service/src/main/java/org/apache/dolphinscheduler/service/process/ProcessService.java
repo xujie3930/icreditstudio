@@ -33,9 +33,7 @@ import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.service.commom.IncDate;
 import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
-import org.apache.dolphinscheduler.service.handler.MysqlProcessDefinitionJsonHandler;
-import org.apache.dolphinscheduler.service.handler.OracleProcessDefinitionJsonHandler;
-import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandler;
+import org.apache.dolphinscheduler.service.handler.*;
 import org.apache.dolphinscheduler.service.increment.IncrementUtil;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.apache.dolphinscheduler.service.time.SyncTimeInterval;
@@ -63,6 +61,8 @@ import static org.apache.dolphinscheduler.common.enums.CommandType.REPEAT_RUNNIN
 public class ProcessService {
 
     private static final String QUERY_SQL = "content[0].reader.parameter.connection[0].querySql[0]";
+    private static final String FILE_NAME = "content[0].writer.parameter.fileName";
+    private static final String WRITE_MODE = "content[0].writer.parameter.writeMode";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -517,7 +517,9 @@ public class ProcessService {
                 if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
                         || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() || ExecutionStatus.STOP == processInstance.getState()) {
                     commandType = REPEAT_RUNNING;
-                    handleProcessInstance(processInstance);
+                    String processInstanceJson = handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
+                    processInstance.setProcessInstanceJson(processInstanceJson);
+                    processInstanceMapper.updateById(processInstance);
                 }else{//说明流程实例正在执行，本次周期增量同步跳过
                     logger.info("本次数据增量同步正在手动执行中，这里跳过");
                 }
@@ -655,35 +657,15 @@ public class ProcessService {
         return configuration.toJSON();
     }
 
-
     /**
-     *  处理 processInstance 并保存
-     * @param processInstance
+     *  处理 processInstance
      */
-    public void handleProcessInstance(ProcessInstance processInstance) {
-        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
-        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
-        JSONObject paramObj = taskObj.getJSONObject("params");
-        if(!"1".equals(paramObj.getString("customConfig"))){
-            return ;
-        }
-        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
-        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
-        JSONObject writer = content.getJSONObject("writer");
-        if(!"hdfswriter".equals(writer.getString("name"))){
-            return ;
-        }
-        JSONObject parameter = writer.getJSONObject("parameter");
-        String oldFileName = parameter.getString("fileName");
-        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
-        target.append(oldFileName).append("\\\"");
-        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
-        replaceStr.append(processInstance.getFileName()).append("\\\"");
-        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
-        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
-                .replace(target, replaceStr);
-        processInstance.setProcessInstanceJson(instanceJson);
-        processInstanceMapper.updateById(processInstance);
+    public String handleProcessInstance(String processInstanceJson, String fileName, PlatformPartitionParam platformPartitionParam) {
+        AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
+        Configuration configuration = handler.setValue(processInstanceJson, WRITE_MODE, "backandwrite");
+        processInstanceJson = configuration.toJSON();
+        configuration = handler.setValue(processInstanceJson, FILE_NAME, fileName);
+        return configuration.toJSON();
     }
 
     /**

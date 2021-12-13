@@ -3,7 +3,7 @@
 <mapper namespace="com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceUserMapper">
 
     <select id="getWorkspaceByUserId" parameterType="java.lang.String" resultType="map">
-        select DISTINCT w.id, w.name
+        select w.id, w.name
         from icredit_workspace_user u,
              icredit_workspace w
         <where>

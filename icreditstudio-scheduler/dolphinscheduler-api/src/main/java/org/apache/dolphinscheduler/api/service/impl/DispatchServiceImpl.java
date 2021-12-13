@@ -3,7 +3,6 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import org.apache.dolphinscheduler.api.common.ResourceCodeBean;
 import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
 import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
@@ -24,6 +23,7 @@ import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.commom.IncDate;
+import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,7 +99,11 @@ public class DispatchServiceImpl implements DispatchService {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
             dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
-            processService.handleProcessInstance(processInstance);
+            String partitionParam = processDefinition.getPartitionParam();
+            PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, false);
+            String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
+            processInstance.setProcessInstanceJson(processInstanceJson);
+            processInstanceMapper.updateById(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
         }
         return result;
@@ -188,7 +192,9 @@ public class DispatchServiceImpl implements DispatchService {
         //增量时间区间重叠， 重跑
         if(null != processInstance && processInstance.getProcessInstanceJson().contains(incDate.getEndTime()) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
                 ExecutionStatus.STOP == processInstance.getState())){
-            processService.handleProcessInstance(processInstance);
+            String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
+            processInstance.setProcessInstanceJson(processInstanceJson);
+            processInstanceMapper.updateById(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
         //增量时间区间不重叠，增量同步
