@@ -16,6 +16,10 @@ const datasourceUpdate = params => postAction('/datasource/update', params)
 // get item detail information of datasource
 const datasourceDetail = params => getAction(`/datasource/info/${params}`)
 
+// enabled or disabled datatsource
+const datasourceEnabled = params =>
+  postAction('/datasource/stopOrEnable', params)
+
 // to sync item detail information of datasource
 const datasourceSync = params => getAction(`/datasource/sync/${params}`)
 
@@ -36,6 +40,7 @@ export default {
   datasourceDelete,
   datasourceUpdate,
   datasourceDetail,
+  datasourceEnabled,
   datasourceSync,
   datasourceTestLink,
   datasourceTableDetail,

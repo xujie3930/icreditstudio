@@ -226,7 +226,8 @@ export default {
             this.syncMessage = data
             this.$notify.success({
               title: '操作提示',
-              message: '数据源同步成功！'
+              message: '数据源同步成功！',
+              duration: 1500
             })
             this.mixinRetrieveTableData()
           }
@@ -245,13 +246,14 @@ export default {
     // 操作列
     handleOperateClick(row, opType) {
       const { id, status } = row
-      const params = { id, status: status ? 0 : 1 }
+      const params = { id, datasourceStatus: status ? 0 : 1 }
+
       switch (opType) {
         case 'View':
           this.handleEditClick('datasourceDetail', id, opType)
           break
         case 'Enabled':
-          this.handleEnabledClick('datasourceUpdate', params)
+          this.handleEnabledClick('datasourceEnabled', params)
           break
         case 'Edit':
           this.handleEditClick('datasourceDetail', id, opType, 'addStepSecond')
@@ -262,13 +264,13 @@ export default {
       }
     },
 
-    // 弹窗提示回调函数
+    // 弹窗提示回调函数 - 删除、停用操作
     messageOperateCallback(opType, row) {
       const { id, status } = row
       const params =
-        opType === 'Delete' ? { id } : { id, status: status ? 0 : 1 }
+        opType === 'Delete' ? { id } : { id, datasourceStatus: status ? 0 : 1 }
       const methodName =
-        opType === 'Delete' ? 'datasourceDelete' : 'datasourceUpdate'
+        opType === 'Delete' ? 'datasourceDelete' : 'datasourceEnabled'
       this[`handle${opType}Click`](methodName, params, 'operateMessage')
     },
 

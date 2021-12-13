@@ -305,11 +305,11 @@ export default {
       }
       this.title = '新增数据源'
       this.opType = 'Add'
+      this.dataType = type
+      this.databaseType = name
       this.$refs.baseDialog.open()
       this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
       this.dataSourceForm.port = portMapping[name] ?? undefined
-      this.dataType = type
-      this.databaseType = name
     },
 
     // 编辑状态下打开弹窗
@@ -355,7 +355,9 @@ export default {
         this.veifyNameLoading = true
         API.verifyDatasourceName({ name: value })
           .then(({ success, data }) => {
-            success && data ? cb(new Error('该名称已存在，请重新输入')) : cb()
+            success && data && cb
+              ? cb(new Error('该名称已存在，请重新输入'))
+              : cb()
           })
           .finally(() => {
             this.timerId = setTimeout(() => {

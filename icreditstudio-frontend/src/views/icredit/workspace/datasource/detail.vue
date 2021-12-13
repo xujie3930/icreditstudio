@@ -185,6 +185,7 @@ export default {
     open({ opType, data = {} }) {
       this.title = `数据源${opType === 'View' ? '查看' : '编辑'}`
       this.opType = opType
+      this.tableOptions = []
       this.detailData = uriSplit(data.uri, data)
       this.handleReset()
       this.getTableDetailData(data.id)
@@ -197,10 +198,13 @@ export default {
       API.datasourceTableDetail(id)
         .then(({ success, data }) => {
           if (success && data) {
-            this.tableCount = data.tableCount
-            this.tableOptions = data.tableOptions.map(value => ({ value }))
-            this.tableData = data.columnList
-            this.sourceTableData = data.columnList
+            const { tableCount, tableOptions, columnList } = data
+            this.tableCount = tableCount
+            this.tableOptions = tableOptions
+              ? tableOptions.map(value => ({ value }))
+              : []
+            this.tableData = columnList ?? []
+            this.sourceTableData = columnList ?? []
           }
         })
         .finally(() => {
