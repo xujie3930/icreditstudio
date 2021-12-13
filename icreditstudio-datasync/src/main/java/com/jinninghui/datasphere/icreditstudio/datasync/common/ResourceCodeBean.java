@@ -90,6 +90,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000074("60000074", "限流大小不能为空"),
         RESOURCE_CODE_60000075("60000075", "taskId有误，不能找到对应的数据同步任务"),
         RESOURCE_CODE_60000076("60000076", "流程定义返回为空"),
+        RESOURCE_CODE_60000077("60000077", "字典列的key不能为空"),
+        RESOURCE_CODE_60000078("60000078", "字典列的key必须都相同"),
+        RESOURCE_CODE_60000079("60000079", "已存在相同的key"),
         ;
 
         public final String code;

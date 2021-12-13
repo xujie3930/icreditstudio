@@ -26,7 +26,8 @@ export default {
             dialogName && this.$refs[dialogName].close()
             this.$notify.success({
               title: '操作结果',
-              message: '删除成功！'
+              message: '删除成功！',
+              duration: 1500
             })
 
             if (this.$route.path === '/workspace/space-setting') {
@@ -49,7 +50,8 @@ export default {
           if (success) {
             this.$notify.success({
               title: '操作结果',
-              message: '启用成功！'
+              message: '启用成功！',
+              duration: 1500
             })
             this.mixinRetrieveTableData()
           }
@@ -64,7 +66,8 @@ export default {
           if (success) {
             this.$notify.success({
               title: '操作结果',
-              message: '停用成功！'
+              message: '停用成功！',
+              duration: 1500
             })
             dialogName && this.$refs[dialogName].close()
             this.mixinRetrieveTableData()

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.datasync.mapper.DictColumnMapper">
+
+    <resultMap id="BaseResultMap" type="com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="dictId" column="dict_id" jdbcType="VARCHAR"/>
+            <result property="columnKey" column="column_key" jdbcType="VARCHAR"/>
+            <result property="columnValue" column="column_value" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="delFlag" column="del_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,dict_id,column_key,column_value,remark,del_flag
+    </sql>
+
+    <update id="delBatchByDictId">
+        UPDATE icredit_dict_column SET del_flag = #{delFlag} WHERE dict_id = #{dictId}
+    </update>
+    <select id="findColumnByColumnKey" resultType="java.lang.String">
+        SELECT 1 FROM icredit_dict_column WHERE column_key = #{columnKey} AND del_flag = 0 limit 1
+    </select>
+    <select id="getColumnListByDictId" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictColumnResult">
+        SELECT remark,column_key AS columnKey,column_value AS columnValue FROM icredit_dict_column WHERE dict_id = #{dictId}
+    </select>
+    <delete id="truthDelBatchByDictId">
+        DELETE FROM icredit_dict_column WHERE dict_id = #{dictId}
+    </delete>
+</mapper>

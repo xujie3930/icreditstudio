@@ -1,18 +1,18 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.common.ResourceCodeBean;
+import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
+import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
+import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
 import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
-import org.apache.dolphinscheduler.api.vo.WideTableInfoVO;
 import org.apache.dolphinscheduler.common.enums.CommandType;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -23,12 +23,13 @@ import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
+import org.apache.dolphinscheduler.service.commom.IncDate;
 import org.apache.dolphinscheduler.service.process.ProcessService;
+import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROCESS_ID_STRING;
 
@@ -87,7 +88,7 @@ public class DispatchServiceImpl implements DispatchService {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
-        if("1".equals(execType)){
+        if(TaskExecTypeEnum.STOP.getCode().equals(execType)){
             if (processInstance.getState() != ExecutionStatus.RUNNING_EXECUTION) {//该任务不在 【执行中】，不能终止
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.message);
             }
@@ -145,12 +146,12 @@ public class DispatchServiceImpl implements DispatchService {
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd(), pageNum, param.getPageSize());
         for (DispatchLogVO dispatchLogVO : logVOList) {
             if(ExecutionStatus.SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.NEED_FAULT_TOLERANCE.getCode() == dispatchLogVO.getTaskInstanceState()){//成功
-                dispatchLogVO.setTaskInstanceState(0);
+                dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.SUCCESS.getCode());
             }else if(ExecutionStatus.SUBMITTED_SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.RUNNING_EXECUTION.getCode() == dispatchLogVO.getTaskInstanceState()
                     || ExecutionStatus.WAITTING_THREAD.getCode() == dispatchLogVO.getTaskInstanceState()){//执行中
-                dispatchLogVO.setTaskInstanceState(2);
+                dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.RUNNING.getCode());
             }else{//失败
-                dispatchLogVO.setTaskInstanceState(1);
+                dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.FAIL.getCode());
             }
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
@@ -161,77 +162,39 @@ public class DispatchServiceImpl implements DispatchService {
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> nowRun(String taskId, String execType) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
-        if("0".equals(execType)){//手动任务
+        if(TaskTypeEnum.MANUAL.getCode().equals(execType)){//手动任务
             platformExecutorService.execSyncTask(definitionId);
             return BusinessResult.success(true);
         }
         ProcessInstance processInstance = processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
         ProcessDefinition definition = processService.findProcessDefineById(definitionId);
-        WideTableInfoVO wideTableInfo = dataSyncDispatchTaskFeignClient.getWideTableInfoByTaskId(taskId);
-        String cronStr = wideTableInfo.getCronInfo();
-        String dialect = wideTableInfo.getDialect();
-        String endTime = handleCronAndDefinition(definition, cronStr, dialect, null == processInstance);
+
+        String partitionParam = definition.getPartitionParam();
+        boolean isFirstExec = null == processInstance;
+        PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, isFirstExec);
+        IncDate incDate = processService.getIncDate(platformPartitionParam);
+        String definitionJson = processService.execBefore(definition.getProcessDefinitionJson(), platformPartitionParam, incDate.getStartTime(), incDate.getEndTime());
+
+        if(StringUtils.isNotEmpty(definitionJson)){
+            processService.updateProcessDefinitionById(definition.getId(), definitionJson);
+        }
+
         //增量时间区间重叠，并且该任务正在 【执行中】中，不能执行
-        if (null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION
+        if (null != processInstance && processInstance.getProcessInstanceJson().contains(incDate.getEndTime()) && (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION
                 || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS || processInstance.getState() == ExecutionStatus.WAITTING_THREAD)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000013.message);
         }
         dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
         //增量时间区间重叠， 重跑
-        if(null != processInstance && processInstance.getProcessInstanceJson().contains(endTime) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
+        if(null != processInstance && processInstance.getProcessInstanceJson().contains(incDate.getEndTime()) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
                 ExecutionStatus.STOP == processInstance.getState())){
             processService.handleProcessInstance(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
         //增量时间区间不重叠，增量同步
-        if(null == processInstance || !processInstance.getProcessInstanceJson().contains(endTime)){
+        if(null == processInstance || !processInstance.getProcessInstanceJson().contains(incDate.getEndTime())){
             platformExecutorService.manualExecCycleSyncTask(definitionId);
         }
         return BusinessResult.success(true);
     }
-
-    private String handleCronAndDefinition(ProcessDefinition definition, String cronStr, String dialect, boolean isFirstFull) {
-        JSONObject cronObj = JSON.parseObject(cronStr);
-        String n = cronObj.getString("n");//T + n 中 n 的值
-        String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-        String whereField = cronObj.getString("incrementalField");// 增量字段
-        isFirstFull = isFirstFull && cronObj.getBooleanValue("firstFull");// 周期任务手动执行 第一次 是否需要全量同步
-        Map<String, String> dateMap = processService.getDateMap(n, partition);
-        String sqlSuffix = processService.getSqlSuffix(whereField, dialect, isFirstFull, dateMap.get("startTime"), dateMap.get("endTime"));
-        handleProcessDefinition(definition, sqlSuffix);
-        processService.saveProcessDefinition(definition);
-        return dateMap.get("endTime");
-    }
-
-    private void handleProcessDefinition(ProcessDefinition definition, String sqlSuffix) {
-        JSONObject obj = JSON.parseObject(definition.getProcessDefinitionJson());
-        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
-        JSONObject paramObj = taskObj.getJSONObject("params");
-        if(!"1".equals(paramObj.getString("customConfig"))){
-            return ;
-        }
-        JSONObject jsonObj = JSON.parseObject(paramObj.getString("json"));
-        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
-        JSONObject writer = content.getJSONObject("reader");
-        JSONObject parameter = writer.getJSONObject("parameter");
-
-        JSONObject connObj = (JSONObject) parameter.getJSONArray("connection").get(0);
-        //替换 definitionJson 中的 querySql
-        String querySql = connObj.getString("querySql");
-        querySql = querySql.substring(2, querySql.length() - 2);
-        StringBuilder target = new StringBuilder("\\\"querySql\\\":[\\\"");
-        target.append(querySql).append("\\\"]");
-
-        int index = querySql.indexOf(" where");
-        if(-1 != index){
-            querySql = querySql.substring(0, index);
-        }
-
-        StringBuilder replaceStr = new StringBuilder("\\\"querySql\\\":[\\\"");
-        replaceStr.append(querySql).append(sqlSuffix).append("\\\"]");
-        String definitionJson = definition.getProcessDefinitionJson().replace(target, replaceStr);
-
-        definition.setProcessDefinitionJson(definitionJson);
-    }
-
 }

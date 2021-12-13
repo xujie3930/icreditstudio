@@ -13,12 +13,12 @@ export default [
     options: [
       { value: '', label: '全部' },
       { value: 1, label: 'MySQL' },
-      { value: 2, label: 'oracle' },
-      { value: 3, label: 'hive' },
+      { value: 2, label: 'Oracle' },
+      { value: 3, label: 'Hive' },
       { value: 4, label: 'HDFS' },
       { value: 5, label: 'SFTP' },
       { value: 6, label: 'FTP' },
-      { value: 7, label: 'progresql' },
+      { value: 7, label: 'ProgreSql' },
       { value: 8, label: 'MongoDB' },
       { value: 9, label: '区块链' }
     ]

@@ -75,6 +75,7 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
         </dependency>
 
         <dependency>
@@ -102,6 +103,15 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.hashtech.businessframework</groupId>
+            <artifactId>business-exception</artifactId>
+            <version>FRAMEWORK-1.1.1.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.jinninghui.datasphere</groupId>
+            <artifactId>icreditstudio-common</artifactId>
         </dependency>
 
 
