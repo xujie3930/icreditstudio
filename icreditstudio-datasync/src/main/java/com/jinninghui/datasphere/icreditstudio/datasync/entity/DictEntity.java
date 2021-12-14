@@ -13,6 +13,7 @@ public class DictEntity {
     private String englishName;
     private String chineseName;
     private String createUserId;
+    private String createUserName;
     private Date createTime;
     private String dictDesc;
     private Integer delFlag;//0 -- 未删除，1 -- 已删除

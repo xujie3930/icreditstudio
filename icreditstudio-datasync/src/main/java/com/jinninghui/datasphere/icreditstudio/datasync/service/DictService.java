@@ -7,8 +7,8 @@ import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictQuery
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface DictService {
@@ -25,5 +25,5 @@ public interface DictService {
 
     BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param);
 
-    BusinessResult<Boolean> importDict(HttpServletRequest request);
+    BusinessResult<Boolean> importDict(MultipartFile file, DictSaveParam param);
 }

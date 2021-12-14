@@ -11,7 +11,7 @@ public class DictQueryResult {
     private String id;
     private String englishName;
     private String chineseName;
-    private String createUserId;
+    private String createUserName;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
     private String dictDesc;

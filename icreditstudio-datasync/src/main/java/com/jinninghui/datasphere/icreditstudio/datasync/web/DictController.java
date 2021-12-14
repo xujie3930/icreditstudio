@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.web;
 
-import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.DictService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictQueryParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictSaveParam;
@@ -14,12 +13,9 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -66,8 +62,10 @@ public class DictController {
     }
 
     @PostMapping("/importDict")
-    public BusinessResult<Boolean> importDict(HttpServletRequest request){
-        return dictService.importDict(request);
+    public BusinessResult<Boolean> importDict(@RequestPart("file") MultipartFile file, @RequestPart("dictSaveRequest") DictSaveRequest request){
+        DictSaveParam param = new DictSaveParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return dictService.importDict(file, param);
     }
 
 }

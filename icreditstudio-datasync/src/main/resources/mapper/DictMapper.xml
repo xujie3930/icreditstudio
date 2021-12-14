@@ -22,7 +22,7 @@
         SELECT id,english_name AS englishName,chinese_name AS chineseName,dict_desc AS dictDesc FROM icredit_dict WHERE id = #{id}
     </select>
     <select id="pageList" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictQueryResult">
-        SELECT id,english_name AS englishName,chinese_name AS chineseName,dict_desc AS dictDesc,create_user_id AS createUserId,create_time AS createTime
+        SELECT id,english_name AS englishName,chinese_name AS chineseName,dict_desc AS dictDesc,create_user_name AS createUserName,create_time AS createTime
         FROM icredit_dict WHERE del_flag = 0
         <if test="dictName != null and dictName != ''">
             AND chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%')

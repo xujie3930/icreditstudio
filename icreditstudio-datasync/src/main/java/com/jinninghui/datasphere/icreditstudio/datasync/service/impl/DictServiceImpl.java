@@ -19,11 +19,13 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.excel.ExcelUtil;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.excel.mode.DictColumnExcelMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 
@@ -38,11 +40,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> save(DictSaveParam param) {
-        DictEntity dict = new DictEntity();
-        BeanCopyUtils.copyProperties(param, dict);
-        Date nowDate = new Date();
-        dict.setCreateTime(nowDate);
-        dict.setDelFlag(0);
+        DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(param.getDictColumns(), DictColumnSaveParam.class);
         dictColumnService.saveBatch(dict.getId(), saveParams);
@@ -104,8 +102,22 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     }
 
     @Override
-    public BusinessResult<Boolean> importDict(HttpServletRequest request) {
-
-        return null;
+    @Transactional(rollbackFor = Exception.class)
+    public BusinessResult<Boolean> importDict(MultipartFile file, DictSaveParam param) {
+        DictEntity dict = createDict(param);
+        boolean isSaved = saveOrUpdate(dict);
+        List<DictColumnExcelMode> dictColumnExcelList = ExcelUtil.readExcelFileData(file, 1, 1, DictColumnExcelMode.class);
+        List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(dictColumnExcelList, DictColumnSaveParam.class);
+        dictColumnService.saveBatch(dict.getId(), saveParams);
+        return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "导入失败");
     }
+
+    private DictEntity createDict(DictSaveParam param){
+        DictEntity dict = new DictEntity();
+        BeanCopyUtils.copyProperties(param, dict);
+        dict.setCreateTime(new Date());
+        dict.setDelFlag(0);
+        return dict;
+    }
+
 }
