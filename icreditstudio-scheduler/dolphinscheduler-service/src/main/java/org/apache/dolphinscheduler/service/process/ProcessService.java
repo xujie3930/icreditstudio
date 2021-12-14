@@ -641,19 +641,10 @@ public class ProcessService {
 
     //增量同步的前置处理
     public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, String startTime, String endTime){
-        ProcessDefinitionJsonHandler handler = null;
-        Configuration configuration = null;
-        if(DialectEnum.MYSQL.getDialect().equals(platformPartitionParam.getDialect())){
-            handler = new MysqlProcessDefinitionJsonHandler();
-            Object value = ((MysqlProcessDefinitionJsonHandler) handler).getValue(definitionJson, QUERY_SQL);
-            String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), startTime, endTime);
-            configuration = ((MysqlProcessDefinitionJsonHandler) handler).setValue(definitionJson, QUERY_SQL, querySql);
-        }else if(DialectEnum.ORACLE.getDialect().equals(platformPartitionParam.getDialect())){
-            handler = new OracleProcessDefinitionJsonHandler();
-            Object value = ((OracleProcessDefinitionJsonHandler) handler).getValue(definitionJson, QUERY_SQL);
-            String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), startTime, endTime);
-            configuration = ((OracleProcessDefinitionJsonHandler) handler).setValue(definitionJson, QUERY_SQL, querySql);
-        }
+        AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
+        Object value = handler.getValue(definitionJson, QUERY_SQL);
+        String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), startTime, endTime);
+        Configuration configuration = handler.setValue(definitionJson, QUERY_SQL, querySql);
         return configuration.toJSON();
     }
 

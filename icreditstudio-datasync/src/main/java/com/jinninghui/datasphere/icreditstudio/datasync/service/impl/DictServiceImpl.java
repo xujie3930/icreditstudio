@@ -83,6 +83,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param) {
         DictQueryDTO dictQueryDTO = new DictQueryDTO();
         BeanCopyUtils.copyProperties(param, dictQueryDTO);
+        dictQueryDTO.setPageNum((dictQueryDTO.getPageNum() - 1) * dictQueryDTO.getPageSize());
         long dictCount = dictMapper.countDict(dictQueryDTO);
         List<DictQueryResult> dictQuerys = dictMapper.pageList(dictQueryDTO);
         return BusinessResult.success(BusinessPageResult.build(dictQuerys, param, dictCount));

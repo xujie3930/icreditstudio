@@ -6,5 +6,7 @@ import lombok.Data;
 public class DictQueryDTO {
 
     private String dictName;
+    private int pageNum = 1;
+    private int pageSize = 10;
 
 }

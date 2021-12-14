@@ -28,6 +28,7 @@
             AND chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%')
         </if>
         ORDER BY create_time DESC
+        limit #{pageNum},#{pageSize}
     </select>
     <select id="countDict" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO" resultType="java.lang.Long">
         SELECT count(1) FROM icredit_dict WHERE del_flag = 0
