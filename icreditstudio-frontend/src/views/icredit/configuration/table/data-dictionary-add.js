@@ -12,12 +12,12 @@ export default {
     {
       type: 'editInput',
       label: 'key',
-      prop: 'key'
+      prop: 'columnKey'
     },
     {
       type: 'editInput',
       label: 'value',
-      prop: 'value'
+      prop: 'columnValue'
     },
     {
       type: 'editInput',

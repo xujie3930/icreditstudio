@@ -28,35 +28,39 @@
       @handleImportDict="handleImportDict"
     >
     </crud-basic>
-    <Message ref="operateMessage" @on-confirm="messageOperateCallback" />
-    <AddDialog ref="addDialog" />
+    <Message ref="message" @on-confirm="messageOperateCallback" />
+    <AddDialog ref="addDialog" @on-confirm="dialogOperateCallback" />
   </div>
 </template>
 
 <script>
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-dictionary'
 import formOption from '@/views/icredit/configuration/form/data-manage-dictionary'
-
 import Message from '@/views/icredit/components/message'
 import AddDialog from './add'
-
 import crud from '@/mixins/crud'
+import operate from '@/mixins/operate'
 
 export default {
-  name: 'schedulePageList',
-
-  mixins: [crud],
+  name: 'dictionaryTable',
+  mixins: [crud, operate],
   components: { Message, AddDialog },
 
   data() {
     return {
       formOption,
       mixinSearchFormConfig: {
-        models: { name: '' }
+        models: { dictName: '' }
       },
-      mixinTableData: [{ enName: 'sdsdsds', zhName: '莫得感情的敲代码机器' }],
-      tableConfiguration: tableConfiguration(this)
+      tableConfiguration: tableConfiguration(this),
+      fetchConfig: {
+        retrieve: { url: '/datasync/dict/pageList', method: 'post' }
+      }
     }
+  },
+
+  created() {
+    this.mixinRetrieveTableData()
   },
 
   methods: {
@@ -65,31 +69,41 @@ export default {
     },
 
     handleAddDict(options) {
-      console.log(options, 'kokololo')
       this.$refs.addDialog.open(options)
     },
 
     handleViewClick() {
-      console.log(this.$refs)
       this.$refs.addDialog.open()
     },
 
-    // 删除
-    mixinHandleDelete({ row }) {
-      const { enName, zhName } = row
+    // 打开删除提示弹窗
+    handleDeleteDict({ row }) {
+      const { englishName } = row
       const options = {
         row,
-        name: zhName,
+        name: englishName,
         opType: 'Delete',
-        title: `删除字典表${enName}`,
+        title: `删除字典表${englishName}`,
         beforeOperateMsg: '删除后，',
         afterOperateMsg:
           '将不再在列表中呈现，字段不能再关联该字典表，确认删除吗？'
       }
-      this.$refs.operateMessage.open(options)
+      this.$refs.message.open(options)
     },
 
-    messageOperateCallback() {}
+    // 确认提示弹窗确认回调
+    messageOperateCallback(opType, { id }) {
+      // 字典表删除
+      this[`handle${opType}Click`]('dictionaryDelete', { id }, 'message')
+    },
+
+    // 新增或编辑字典表弹窗确认回调
+    dialogOperateCallback(success) {
+      if (success) {
+        this.$refs.addDialog.handleClose()
+        this.mixinRetrieveTableData()
+      }
+    }
   }
 }
 </script>

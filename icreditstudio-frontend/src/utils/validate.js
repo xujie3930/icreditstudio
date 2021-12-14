@@ -4,13 +4,16 @@
  * @Date: 2021-09-02
  */
 
-// const pattern = new RegExp('[\u4E00-\u9FA5]+')
+// 剔除字符串中所有空格
+export const strExcludeBlank = str => {
+  return str.replace(/\s*/g, '')
+}
 
-// //验证是否是英文
-// const pattern2 = new RegExp('[A-Za-z]+')
-
-// //验证是否是数字
-// const pattern3 = new RegExp('[0-9]+')
+// 验证字符串是否只输入英文
+export const validStrEn = str => {
+  const reg = /(^[a-zA-Z]+$)/
+  return reg.test(str)
+}
 
 // 验证是否是中文
 export const validStrZh = str => {

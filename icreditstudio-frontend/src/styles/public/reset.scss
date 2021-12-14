@@ -2,8 +2,8 @@
 /* CSS Document */
 
 @font-face {
-  font-family: "PingFangSC-Regular";
-  src: url("../../font/苹方字体.ttf");
+  font-family: 'PingFangSC-Regular';
+  src: url('../../font/苹方字体.ttf');
   font-weight: normal;
   font-size: initial;
 }
@@ -49,37 +49,36 @@ a {
 
 ul,
 ol {
-  list-style: none
+  list-style: none;
 }
 
 input {
   border: none;
   padding-top: 0;
   padding-bottom: 0;
-
 }
 
 input::-moz-focus-inner {
   border: 0;
-  padding: 0
+  padding: 0;
 }
 
 select,
 input {
-  vertical-align: middle
+  vertical-align: middle;
 }
 
 select,
 input,
 textarea {
-  margin: 0
+  margin: 0;
 }
 
-input[type="text"],
-input[type="password"],
+input[type='text'],
+input[type='password'],
 textarea {
   outline-style: none;
-  -webkit-appearance: none
+  -webkit-appearance: none;
 }
 
 button {
@@ -94,10 +93,11 @@ textarea {
 }
 
 table {
-  border-collapse: collapse
+  border-collapse: collapse;
 }
 
-em, i {
+em,
+i {
   font-style: normal;
 }
 
@@ -115,7 +115,7 @@ input[type='submit'] {
 }
 
 ::-webkit-scrollbar-track-piece {
-  background: #CCCCCC;
+  background: transparent;
   border-radius: 2px;
 }
 
@@ -126,7 +126,7 @@ input[type='submit'] {
 
 ::-webkit-scrollbar-thumb {
   min-height: 50px;
-  background: #ababab;
+  background: #ccc;
   border-radius: 2px;
 }
 

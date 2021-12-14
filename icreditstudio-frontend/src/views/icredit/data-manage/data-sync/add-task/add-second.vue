@@ -408,7 +408,7 @@ import {
   fieldTypeOptions,
   iconMapping
 } from '../contant'
-import { randomNum, deepClone, mysqlUriSplit } from '@/utils/util'
+import { randomNum, deepClone } from '@/utils/util'
 import { validStrZh, validStrSpecial } from '@/utils/validate'
 import Dialog from '@/views/icredit/components/dialog'
 import EditTable from './edit-table'
@@ -593,11 +593,14 @@ export default {
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
+      console.log('data===', data, node)
       const {
         id: tableId,
         parent: { label: database }
       } = node
-      const { ip } = mysqlUriSplit(data.url)
+      const { host = '' } = node.parent.data
+      const ip = host.split(':')[0] || ''
+      console.log(ip, 'ipip')
       const { sourceType } = this.secondTaskForm
       evt.dataTransfer.setData(
         'application/json',

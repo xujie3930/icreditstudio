@@ -43,35 +43,35 @@ export default _this => {
       {
         type: 'text',
         label: '字典表英文名称',
-        prop: 'enName'
+        prop: 'englishName'
       },
       {
         type: 'text',
         label: '字典表中文名称',
-        prop: 'zhName'
+        prop: 'chineseName'
       },
 
       {
         type: 'text',
         label: '添加人',
-        prop: 'user'
+        prop: 'createUserName'
       },
       {
-        type: 'date',
+        type: 'text',
         label: '添加时间',
-        prop: 'telPhone'
+        prop: 'createTime'
       },
       {
         type: 'text',
         label: '描述',
-        prop: 'sortNumber'
+        prop: 'dictDesc'
       },
 
       {
         type: 'operation',
         label: '操作',
         prop: 'operation',
-        width: '250px',
+        width: 250,
         fixed: 'right',
         operationList: [
           {
@@ -88,7 +88,7 @@ export default _this => {
             show: true
           },
           {
-            func: _this.mixinHandleDelete,
+            func: _this.handleDeleteDict,
             label: '删除',
             key: 'delete',
             show: true

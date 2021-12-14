@@ -30,11 +30,13 @@ export default {
               duration: 1500
             })
 
+            // 工作空间设置页面
             if (this.$route.path === '/workspace/space-setting') {
               this.$ls.remove('workspaceId')
               this.setWorkspaceId('0')
               this.getPermissionListAction()
             }
+
             this.mixinRetrieveTableData()
           }
         })

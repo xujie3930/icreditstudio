@@ -6,8 +6,10 @@
 
 import dataSyncApi from './data-sync'
 import dataScheduleApi from './data-schedule'
+import dataDictionaryApi from './data-dictionary'
 
 export default {
   ...dataSyncApi,
-  ...dataScheduleApi
+  ...dataScheduleApi,
+  ...dataDictionaryApi
 }
