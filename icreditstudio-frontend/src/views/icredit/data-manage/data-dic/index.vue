@@ -3,7 +3,7 @@
  * @Date: 2021-09-27
 -->
 <template>
-  <div class="w100 h100">
+  <div class="w100 h100 dictionary-page">
     <crud-basic
       ref="crud"
       title="字典表列表"
@@ -27,6 +27,48 @@
       @handleAddDict="handleAddDict"
       @handleImportDict="handleImportDict"
     >
+      <template #content>
+        <j-table
+          v-loading="mixinTableLoading"
+          :table-configuration="tableConfiguration"
+          :table-pagination="mixinTablePagination"
+          :table-data="mixinTableData"
+          @handleSizeChange="mixinHandleSizeChange"
+          @handleCurrentChange="mixinHandleCurrentChange"
+        >
+          <template #operationColumn="{row}">
+            <el-popover
+              placement="right"
+              width="520"
+              trigger="click"
+              @show="handleViewClick(row, 'View')"
+            >
+              <j-table
+                ref="viewTable"
+                class="view-table"
+                v-loading="viewTableLoading"
+                :table-configuration="viewTableConfiguration"
+                :table-data="viewTableData"
+              ></j-table>
+              <el-button style="margin-right:10px" slot="reference" type="text">
+                查看
+              </el-button></el-popover
+            >
+
+            <el-button
+              type="text"
+              @click="
+                handleAddDict({ row, opType: 'Edit', title: '编辑字典表' })
+              "
+            >
+              编辑
+            </el-button>
+            <el-button type="text" @click="handleDeleteDict(row, 'Delete')">
+              删除
+            </el-button></template
+          >
+        </j-table></template
+      >
     </crud-basic>
     <Message ref="message" @on-confirm="messageOperateCallback" />
     <AddDialog ref="addDialog" @on-confirm="dialogOperateCallback" />
@@ -34,12 +76,22 @@
 </template>
 
 <script>
+import viewTableConfiguration from '@/views/icredit/configuration/table/data-dictionary-add'
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-dictionary'
 import formOption from '@/views/icredit/configuration/form/data-manage-dictionary'
 import Message from '@/views/icredit/components/message'
 import AddDialog from './add'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
+import API from '@/api/icredit'
+
+const { group, ...rest } = viewTableConfiguration
+const viewTbGroup = group
+  .filter(({ prop }) => prop !== 'operation')
+  .map(item => {
+    const { type, ...restItem } = item
+    return { type: 'text', ...restItem }
+  })
 
 export default {
   name: 'dictionaryTable',
@@ -49,10 +101,11 @@ export default {
   data() {
     return {
       formOption,
-      mixinSearchFormConfig: {
-        models: { dictName: '' }
-      },
-      tableConfiguration: tableConfiguration(this),
+      mixinSearchFormConfig: { models: { dictName: '' } },
+      tableConfiguration,
+      viewTableConfiguration: { group: viewTbGroup, ...rest },
+      viewTableLoading: false,
+      viewTableData: [],
       fetchConfig: {
         retrieve: { url: '/datasync/dict/pageList', method: 'post' }
       }
@@ -72,12 +125,22 @@ export default {
       this.$refs.addDialog.open(options)
     },
 
-    handleViewClick() {
-      this.$refs.addDialog.open()
+    // 查看字典表
+    handleViewClick(row) {
+      this.viewTableLoading = true
+      API.dictionaryViewInfo({ id: row.id })
+        .then(({ success, data }) => {
+          if (success && data) {
+            this.viewTableData = data
+          }
+        })
+        .finally(() => {
+          this.viewTableLoading = false
+        })
     },
 
     // 打开删除提示弹窗
-    handleDeleteDict({ row }) {
+    handleDeleteDict(row) {
       const { englishName } = row
       const options = {
         row,
