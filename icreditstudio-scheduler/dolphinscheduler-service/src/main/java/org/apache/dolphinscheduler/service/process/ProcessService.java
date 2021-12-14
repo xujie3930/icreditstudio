@@ -18,8 +18,11 @@ package org.apache.dolphinscheduler.service.process;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.hashtech.businessframework.exception.interval.AppException;
+import com.jinninghui.datasphere.icreditstudio.framework.common.enums.DialectEnum;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
+import org.apache.dolphinscheduler.common.model.Configuration;
 import org.apache.dolphinscheduler.common.model.DateInterval;
 import org.apache.dolphinscheduler.common.process.Property;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
@@ -28,8 +31,13 @@ import org.apache.dolphinscheduler.common.utils.ParameterUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
 import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
-import org.apache.dolphinscheduler.service.increment.SyncQueryStatement;
-import org.apache.dolphinscheduler.service.increment.SyncQueryStatementContainer;
+import org.apache.dolphinscheduler.service.commom.IncDate;
+import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
+import org.apache.dolphinscheduler.service.handler.*;
+import org.apache.dolphinscheduler.service.increment.IncrementUtil;
+import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
+import org.apache.dolphinscheduler.service.time.SyncTimeInterval;
+import org.apache.dolphinscheduler.service.time.TimeInterval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -52,6 +60,10 @@ import static org.apache.dolphinscheduler.common.enums.CommandType.REPEAT_RUNNIN
 @Component
 public class ProcessService {
 
+    private static final String QUERY_SQL = "content[0].reader.parameter.connection[0].querySql[0]";
+    private static final String FILE_NAME = "content[0].writer.parameter.fileName";
+    private static final String WRITE_MODE = "content[0].writer.parameter.writeMode";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final int[] stateArray = new int[]{ExecutionStatus.SUBMITTED_SUCCESS.ordinal(),
@@ -64,7 +76,6 @@ public class ProcessService {
     private String pwd;
     private String userName;
     private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
-    private String getWideTableInfoSql = "SELECT sync_condition,dialect FROM icredit_sync_widetable w,icredit_sync_task t WHERE w.sync_task_id = t.id AND t.schedule_id = ?";
 
     {
         InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
@@ -423,29 +434,6 @@ public class ProcessService {
         return true;
     }
 
-    public Map<String, String> getWideTableInfo(String definitionId){
-        Map<String, String> result = new HashMap<>();
-        Connection con = getConnection();
-        String cronInfo = null;
-        String dialect = null;
-        try {
-            PreparedStatement pstmt = con.prepareStatement(this.getWideTableInfoSql);
-            pstmt.setString(1, definitionId);
-            ResultSet rs = pstmt.executeQuery();
-            while(rs.next()){
-                cronInfo = rs.getString(1);
-                dialect = rs.getString(2);
-            }
-            result.put("cronInfo", cronInfo);
-            result.put("dialect", dialect);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }finally {
-            closeConn(con);
-        }
-        return result;
-    }
-
     /**
      * construct process instance according to one command.
      *
@@ -513,25 +501,29 @@ public class ProcessService {
                 processInstance.setCommandParam(command.getCommandParam());
             }
         }else {
-            Map<String, String> wideTableInfoMap = getWideTableInfo(processDefinition.getId());
-            String cronInfo = wideTableInfoMap.get("cronInfo");
-            JSONObject cronObj = JSONObject.parseObject(cronInfo);
-            String n = cronObj.getString("n");//T + n 中 n 的值
-            String partition = cronObj.getString("partition");// 每年|每月|每日|每时
-            Map<String, String> dateMap = getDateMap(n, partition);
+            String partitionParam = processDefinition.getPartitionParam();
+            boolean isFirstExec = null == processInstance;
+            PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec);
+            IncDate incDate = getIncDate(platformPartitionParam);
+            String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate.getStartTime(), incDate.getEndTime());
+            if(StringUtils.isNotEmpty(definitionJson)){
+                updateProcessDefinitionById(processDefinition.getId(), definitionJson);
+            }
             //首次执行（没有点击过“立即执行”），根据流程定义创建流程实例直接执行
             if(null == processInstance){
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
-            }else if(processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围重叠
+            }else if(processInstance.getProcessInstanceJson().contains(incDate.getEndTime())){//增量时间范围重叠
                 //该流程实例已执行完成（失败|成功），重跑
                 if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
                         || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() || ExecutionStatus.STOP == processInstance.getState()) {
                     commandType = REPEAT_RUNNING;
-                    handleProcessInstance(processInstance);
+                    String processInstanceJson = handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
+                    processInstance.setProcessInstanceJson(processInstanceJson);
+                    processInstanceMapper.updateById(processInstance);
                 }else{//说明流程实例正在执行，本次周期增量同步跳过
                     logger.info("本次数据增量同步正在手动执行中，这里跳过");
                 }
-            }else if(!processInstance.getProcessInstanceJson().contains(dateMap.get("endTime"))){//增量时间范围不重叠，根据流程定义创建流程实例直接执行
+            }else if(!processInstance.getProcessInstanceJson().contains(incDate.getEndTime())){//增量时间范围不重叠，根据流程定义创建流程实例直接执行
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
         }
@@ -624,121 +616,47 @@ public class ProcessService {
         return processInstance;
     }
 
+    //获取增量同步的开始时间和结束时间
+    public IncDate getIncDate(PlatformPartitionParam platformPartitionParam){
+        IncDate incDate = new IncDate();
+        TimeInterval interval = new TimeInterval();
+        SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(platformPartitionParam, n -> true);
+        incDate.setStartTime(syncTimeInterval.formatStartTime());
+        incDate.setEndTime(syncTimeInterval.formatEndTime());
+        return incDate;
+    }
+
+    //处理分区信息
+    public PlatformPartitionParam handlePartition(String partitionParam, boolean isFirstExec){
+        PlatformPartitionParam platformPartitionParam = IncrementUtil.parseSyncConditionJson(partitionParam);
+        if(!platformPartitionParam.getInc()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.message);
+        }
+        if(StringUtils.isEmpty(platformPartitionParam.getDialect())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_101.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_101.message);
+        }
+        platformPartitionParam.setFirstFull(platformPartitionParam.getFirstFull() && isFirstExec);
+        return platformPartitionParam;
+    }
+
+    //增量同步的前置处理
+    public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, String startTime, String endTime){
+        AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
+        Object value = handler.getValue(definitionJson, QUERY_SQL);
+        String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), startTime, endTime);
+        Configuration configuration = handler.setValue(definitionJson, QUERY_SQL, querySql);
+        return configuration.toJSON();
+    }
+
     /**
-     *  处理 processInstance 并保存
-     * @param processInstance
+     *  处理 processInstance
      */
-    public void handleProcessInstance(ProcessInstance processInstance) {
-        JSONObject obj = JSONObject.parseObject(processInstance.getProcessInstanceJson());
-        JSONObject taskObj = (JSONObject) obj.getJSONArray("tasks").get(0);
-        JSONObject paramObj = taskObj.getJSONObject("params");
-        if(!"1".equals(paramObj.getString("customConfig"))){
-            return ;
-        }
-        JSONObject jsonObj = JSONObject.parseObject(paramObj.getString("json"));
-        JSONObject content = (JSONObject) jsonObj.getJSONArray("content").get(0);
-        JSONObject writer = content.getJSONObject("writer");
-        if(!"hdfswriter".equals(writer.getString("name"))){
-            return ;
-        }
-        JSONObject parameter = writer.getJSONObject("parameter");
-        String oldFileName = parameter.getString("fileName");
-        StringBuilder target = new StringBuilder("\\\"fileName\\\":\\\"");
-        target.append(oldFileName).append("\\\"");
-        StringBuilder replaceStr = new StringBuilder("\\\"fileName\\\":\\\"");
-        replaceStr.append(processInstance.getFileName()).append("\\\"");
-        //设置 writemode 为backandwrite，备份之前的文件内容，重新写入
-        String instanceJson = processInstance.getProcessInstanceJson().replace("\\\"writeMode\\\":\\\"append\\\"","\\\"writeMode\\\":\\\"backandwrite\\\"")
-                .replace(target, replaceStr);
-        processInstance.setProcessInstanceJson(instanceJson);
-        processInstanceMapper.updateById(processInstance);
-    }
-
-    public Map<String, String> getDateMap(String n, String partition) {
-        Map<String, String> result = new HashMap<>();
-        int nn = 0 - Integer.parseInt(n);
-        Calendar calendar = Calendar.getInstance();//得到一个Calendar的实例
-        calendar.setTime(new Date());
-        StringBuffer prefix = new StringBuffer();
-        StringBuffer startDateStr = new StringBuffer();
-        StringBuffer endDateStr = new StringBuffer();
-        if(partition.contains("year")){//获取前 n 年
-            calendar.add(Calendar.YEAR, nn);
-            prefix.append(calendar.get(Calendar.YEAR));
-            startDateStr.append(prefix).append("-01-01 00:00:00");
-            endDateStr.append(prefix).append("-12-31 23:59:59");
-        }else if(partition.contains("month")){
-            calendar.add(Calendar.MONTH, nn);
-            int year = calendar.get(Calendar.YEAR);
-            prefix.append(year).append("-");
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            if(month.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(month);
-            startDateStr.append(prefix).append("-01 00:00:00");
-            if("2".equals(month)){
-                if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {//闰年
-                    endDateStr.append(prefix).append("-29 23:59:59");
-                }else{
-                    endDateStr.append(prefix).append("-28 23:59:59");
-                }
-            }else if("4".equals(month) || "6".equals(month) || "9".equals(month) || "11".equals(month)){
-                endDateStr.append(prefix).append("-30 23:59:59");
-            }else {
-                endDateStr.append(prefix).append("-31 23:59:59");
-            }
-        }else if(partition.contains("day")){
-            calendar.add(Calendar.DAY_OF_MONTH, nn);
-            int year = calendar.get(Calendar.YEAR);
-            prefix.append(year).append("-");
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            if(month.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(month).append("-");
-            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            if(day.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(day);
-
-            startDateStr.append(prefix).append(" 00:00:00");
-            endDateStr.append(prefix).append(" 23:59:59");
-        }else if(partition.contains("hour")){
-            calendar.add(Calendar.HOUR, nn);
-            int year = calendar.get(Calendar.YEAR);
-            prefix.append(year).append("-");
-            String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-            if(month.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(month).append("-");
-
-            String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-            if(day.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(day).append(" ");
-            String hour = String.valueOf(calendar.get(Calendar.HOUR_OF_DAY));
-            if(hour.length() <= 1){
-                prefix.append("0");
-            }
-            prefix.append(hour);
-
-            startDateStr.append(prefix).append(":00:00");
-            endDateStr.append(prefix).append(":59:59");
-        }
-        result.put("startTime", String.valueOf(startDateStr));
-        result.put("endTime", String.valueOf(endDateStr));
-        return result;
-    }
-
-    public String getSqlSuffix(String whereField, String dialect, boolean isFirstFull, String startDateStr, String endDateStr){
-        SyncQueryStatement syncQueryStatement = SyncQueryStatementContainer.getInstance().find(dialect);
-        StringBuffer sqlSuffix = new StringBuffer(" where ");
-        sqlSuffix.append(syncQueryStatement.getSqlWhere(whereField, isFirstFull, startDateStr, endDateStr));
-        return String.valueOf(sqlSuffix);
+    public String handleProcessInstance(String processInstanceJson, String fileName, PlatformPartitionParam platformPartitionParam) {
+        AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
+        Configuration configuration = handler.setValue(processInstanceJson, WRITE_MODE, "backandwrite");
+        processInstanceJson = configuration.toJSON();
+        configuration = handler.setValue(processInstanceJson, FILE_NAME, fileName);
+        return configuration.toJSON();
     }
 
     /**
@@ -1345,7 +1263,7 @@ public class ProcessService {
     }
 
     public void updateTaskByScheduleId(String processDefinitionId, int state, Date nowDate) {
-        Connection con = getConnection();;
+        Connection con = getConnection();
         try {
             PreparedStatement pstmt = con.prepareStatement(this.statusBackWritSql);
             int status = (7 == state) ? 0 : 1;
@@ -1381,10 +1299,6 @@ public class ProcessService {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void saveProcessDefinition(ProcessDefinition definition) {
-        processDefineMapper.updateById(definition);
     }
 
     public ProcessInstance getLastInstanceByDefinitionId(String definitionId){

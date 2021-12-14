@@ -83,7 +83,7 @@ public class HomePageServiceImpl implements HomePageService {
         Long count = taskInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{});
         taskRoughResult.setTaskCount(count);
         //执行失败实例
-        Long failCount = taskInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode()});
+        Long failCount = taskInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.KILL.getCode()});
         taskRoughResult.setFailCount(failCount);
         //新增数据量条数
         Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime);
@@ -125,8 +125,8 @@ public class HomePageServiceImpl implements HomePageService {
         Date date = new Date();
         Date startTime = DateUtils.getStartOfDay(date);
         Date endTime = DateUtils.getEndOfDay((date));
-        Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode()});
-        Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.STOP.getCode(), ExecutionStatus.READY_STOP.getCode()});
+        Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode(), ExecutionStatus.NEED_FAULT_TOLERANCE.getCode()});
+        Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.KILL.getCode()});
         Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
         Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);

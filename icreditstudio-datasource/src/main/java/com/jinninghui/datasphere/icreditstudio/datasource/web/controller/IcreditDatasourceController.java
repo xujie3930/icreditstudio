@@ -52,7 +52,6 @@ public class IcreditDatasourceController {
     @PostMapping("/save")
     @Logable
     public BusinessResult<Boolean> publish(@RequestHeader("x-userid") String userId, @RequestBody IcreditDatasourceSaveRequest request) {
-
         IcreditDatasourceSaveParam param = new IcreditDatasourceSaveParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.saveDef(userId, param);
@@ -64,10 +63,20 @@ public class IcreditDatasourceController {
     @PostMapping("/update")
     @Logable
     public BusinessResult<Boolean> update(@RequestHeader("x-userid") String userId, @RequestBody IcreditDatasourceUpdateRequest request) {
-
         IcreditDatasourceUpdateParam param = new IcreditDatasourceUpdateParam();
         BeanCopyUtils.copyProperties(request, param);
         return datasourceService.updateDef(userId, param);
+    }
+
+    /**
+     * 停用|启用 数据源
+     */
+    @PostMapping("/stopOrEnable")
+    @Logable
+    public BusinessResult<Boolean> stopOrEnable(@RequestBody IcreditDatasourceUpdateStatusRequest request) {
+        IcreditDatasourceUpdateStatusParam param = new IcreditDatasourceUpdateStatusParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return datasourceService.updateStatusById(param);
     }
 
     /**

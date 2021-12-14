@@ -11,6 +11,7 @@ public class DictSaveRequest {
     private String englishName;
     private String chineseName;
     private String createUserId;
+    private String createUserName;
     private String dictDesc;
     private List<DictColumnSaveRequest> dictColumns;
 

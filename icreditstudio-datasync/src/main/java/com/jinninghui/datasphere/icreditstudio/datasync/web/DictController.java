@@ -13,15 +13,13 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/dict")
+@RequestMapping("/datasync/dict")
 public class DictController {
 
     @Autowired
@@ -61,6 +59,13 @@ public class DictController {
     @PostMapping("/lookInfo")
     public BusinessResult<List<DictColumnResult>> lookInfo(@RequestBody DictRequest request){
         return dictService.lookInfo(request.getId());
+    }
+
+    @PostMapping("/importDict")
+    public BusinessResult<Boolean> importDict(@RequestPart("file") MultipartFile file, @RequestPart("dictSaveRequest") DictSaveRequest request){
+        DictSaveParam param = new DictSaveParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return dictService.importDict(file, param);
     }
 
 }

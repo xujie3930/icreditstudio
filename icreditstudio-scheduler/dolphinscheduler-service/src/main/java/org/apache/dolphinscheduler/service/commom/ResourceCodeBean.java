@@ -1,19 +1,18 @@
-package org.apache.dolphinscheduler.api.common;
+package org.apache.dolphinscheduler.service.commom;
 
-import com.jinninghui.datasphere.icreditstudio.framework.systemcode.SystemCode;
+import com.hashtech.businessframework.system.code.SystemCode;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author liyanhui
- */
 @SystemCode
 public class ResourceCodeBean {
 
     public enum ResourceCode {
+        RESOURCE_CODE_100("100", "该任务流程定义分区信息有误"),
+        RESOURCE_CODE_101("101", "分区信息中的数据库方言dialect为空"),
+
         RESOURCE_CODE_10000000("10000000", "非法请求参数"),
         RESOURCE_CODE_10000001("10000001", "请求参数错误"),
         RESOURCE_CODE_10000002("10000002", "接口返回异常"),
-
         RESOURCE_CODE_60000000("60000000", "工作流定义不存在"),
         RESOURCE_CODE_60000001("60000001", "工作流定义不是上线状态"),
         RESOURCE_CODE_60000002("60000002", "开始时间不能和结束时间一样"),
@@ -24,8 +23,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000009("60000009", "该任务正在【执行中】，不能进行重跑"),
         RESOURCE_CODE_60000010("60000010", "工作空间ID不能为空"),
         RESOURCE_CODE_60000011("60000011", "当前登陆用户ID不能为空"),
-        RESOURCE_CODE_60000013("60000013", "周期任务正在【执行】本次增量数据同步，请等待周期任务执行完成"),
-        RESOURCE_CODE_60000014("60000014", "请先创建手动任务，执行全量同步")
+        RESOURCE_CODE_60000013("60000013", "周期任务正在【执行】本次增量数据同步，请等待周期任务执行完成")
         ;
 
         public final String code;

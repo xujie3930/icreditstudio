@@ -21,8 +21,9 @@ public class JsonHandlerTest {
         String dialect = "oracle";
         String field = "create_time";
         String startTime = "2021-12-08 00:00:00";
+        boolean isFirstFull = true;
         String endTime = "2021-12-08 23:59:59";
-        String timeIncQueryStatement = IncrementUtil.getTimeIncQueryStatement(oldStatement, dialect, field, startTime, endTime);
+        String timeIncQueryStatement = IncrementUtil.getTimeIncQueryStatement(oldStatement, dialect, isFirstFull, field, startTime, endTime);
         System.out.println(timeIncQueryStatement);
     }
 }

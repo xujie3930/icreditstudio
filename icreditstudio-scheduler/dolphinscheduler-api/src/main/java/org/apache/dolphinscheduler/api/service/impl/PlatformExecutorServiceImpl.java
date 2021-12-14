@@ -2,6 +2,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.service.DispatchService;
@@ -260,7 +261,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
                 ExecPlatformProcessDefinitionParam param = createExecParam(processDefinitionId);
                 manualExecSyncTask(param);
             }else{//后面的执行，相当于重跑
-                dispatchService.executeInstance(processInstance.getId(), "0");
+                dispatchService.executeInstance(processInstance.getId(), TaskTypeEnum.MANUAL.getCode());
             }
             //更新对应processDefinition表的updateTime
             processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);

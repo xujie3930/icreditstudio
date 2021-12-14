@@ -403,6 +403,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         User user = getSystemUserByUserId(userId);
 
         FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
+                .processDefinitionId(taskEntity.getScheduleId())
                 .accessUser(user)
                 .channelControl(new ChannelControlParam(info.getMaxThread(), info.isLimit(), info.getLimitRate()))
                 .partitionParam(condition)

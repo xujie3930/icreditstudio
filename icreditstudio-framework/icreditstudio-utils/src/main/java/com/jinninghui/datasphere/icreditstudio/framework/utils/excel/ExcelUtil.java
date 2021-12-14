@@ -1,7 +1,10 @@
 package com.jinninghui.datasphere.icreditstudio.framework.utils.excel;
 
+import com.alibaba.excel.EasyExcelFactory;
+import com.alibaba.excel.metadata.Sheet;
 import com.alibaba.excel.read.listener.ReadListener;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.jinninghui.datasphere.icreditstudio.framework.utils.excel.mode.DictColumnExcelMode;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.alibaba.excel.EasyExcelFactory.read;
@@ -116,5 +120,28 @@ public class ExcelUtil {
         }
     }
 
+    /**
+     * 获取file中的数据封装成实体返回
+     * @param file
+     * @param sheetNo 指定读取第几个sheet
+     * @param headLineMun 从sheet的第几行开始读取（1表示从第二行开始）
+     * @param dictColumnExcelModeClass 实体类class，需继承BaseRowModel
+     * @return
+     */
+    public static <T> List<T> readExcelFileData(MultipartFile file, int sheetNo, int headLineMun, Class<DictColumnExcelMode> dictColumnExcelModeClass){
+        Sheet sheet = new Sheet(sheetNo, headLineMun, dictColumnExcelModeClass);
+        try {
+            List<Object> readList = EasyExcelFactory.read(file.getInputStream(), sheet);
+            int size = readList.size();
+            List<T> dictColumnExcelModeList = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                dictColumnExcelModeList.add((T) readList.get(i));
+            }
+            return dictColumnExcelModeList;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }

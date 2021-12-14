@@ -27,6 +27,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000010("70000010", "该数据源为禁用状态,不能执行同步操作"),
         RESOURCE_CODE_70000011("70000011", "该工作空间有启用的数据源,请停用后再进行此操作"),
         RESOURCE_CODE_70000012("70000012", "该数据源有启用的同步任务,请停用后再进行此操作"),
+        RESOURCE_CODE_70000013("70000013", "数据源操作状态只能是0、1"),
         ;
 
         public final String code;

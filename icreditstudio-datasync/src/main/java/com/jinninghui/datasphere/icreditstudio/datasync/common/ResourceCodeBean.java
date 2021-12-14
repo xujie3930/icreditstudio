@@ -93,6 +93,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000077("60000077", "字典列的key不能为空"),
         RESOURCE_CODE_60000078("60000078", "字典列的key必须都相同"),
         RESOURCE_CODE_60000079("60000079", "已存在相同的key"),
+        RESOURCE_CODE_60000080("60000080", "字典表的ID不能为空"),
         ;
 
         public final String code;
