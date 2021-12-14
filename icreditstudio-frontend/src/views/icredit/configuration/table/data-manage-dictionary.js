@@ -27,7 +27,7 @@ export default _this => {
         key: 'addDict',
         options: {
           title: '新增字典表',
-          opType: 'add',
+          opType: 'Add',
           eventType: 'click',
           eventName: 'handleAddDict'
         }
@@ -54,7 +54,8 @@ export default _this => {
       {
         type: 'text',
         label: '添加人',
-        prop: 'createUserName'
+        prop: 'createUserName',
+        width: 130
       },
       {
         type: 'text',
@@ -82,7 +83,7 @@ export default _this => {
           },
           {
             func: ({ row }) =>
-              _this.handleAddDict({ row, opType: 'edit', title: '编辑字典表' }),
+              _this.handleAddDict({ row, opType: 'Edit', title: '编辑字典表' }),
             label: '编辑',
             key: 'edit',
             show: true

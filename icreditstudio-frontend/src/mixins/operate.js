@@ -8,7 +8,7 @@ import { mapActions, mapState } from 'vuex'
 
 export default {
   data() {
-    return { detailLoading: false }
+    return { detailLoading: false, btnEditLoading: false }
   },
 
   computed: {
@@ -80,8 +80,8 @@ export default {
         })
     },
 
-    // 编辑操作
-    handleEditClick(methodName, params, opType, dialogName) {
+    // 获取编辑详情信息操作
+    handleEditClick(methodName, params, opType = 'Edit', dialogName) {
       this.detailLoading = true
       this[`btn${opType}Loading`] = true
       if (dialogName) {
@@ -98,6 +98,11 @@ export default {
           this.detailLoading = false
           this[`btn${opType}Loading`] = false
         })
+    },
+
+    // 编辑保存操作
+    mixinEditSaveClick(options) {
+      console.log(options)
     },
 
     mixinDetailInfo(data) {

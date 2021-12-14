@@ -5,7 +5,7 @@
 export default [
   {
     type: 'text',
-    label: '字典名称',
+    label: '字典表名称',
     model: '',
     ruleProp: 'dictName',
     isSearch: true

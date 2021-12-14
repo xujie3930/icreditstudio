@@ -18,6 +18,7 @@
       ref="dictForm"
       label-width="150px"
       class="dict-form"
+      v-loading="detailLoading"
     >
       <el-form-item label="字典表英文名称" prop="englishName">
         <el-input
@@ -94,6 +95,7 @@ import { mapGetters } from 'vuex'
 import API from '@/api/icredit'
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/data-dictionary-add'
+import operate from '@/mixins/operate'
 import {
   validStrSpecial,
   verifySpecialStr,
@@ -102,6 +104,8 @@ import {
 } from '@/utils/validate'
 
 export default {
+  mixins: [operate],
+
   components: { BaseDialog },
 
   data() {
@@ -120,7 +124,7 @@ export default {
     return {
       title: '',
       opType: '',
-      dictForm: { englishName: '', chineseName: '', remark: '' },
+      dictForm: { englishName: '', chineseName: '', dictDesc: '' },
       dictRules: {
         englishName: [
           { required: true, message: '必填项不能为空', trigger: 'blur' },
@@ -143,16 +147,21 @@ export default {
 
   methods: {
     open(options) {
-      const { row, title, opType = 'add' } = options
+      const { row, title, opType } = options
       this.opType = opType
       this.title = title
 
-      console.log('deddeded', row, options)
-      this.$nextTick(() => this.$refs.baseDialog.open())
+      if (opType === 'Edit') {
+        this.id = row.id
+        this.handleEditClick('dictionaryInfo', { id: row.id })
+      }
+
+      this.$refs.baseDialog.open()
     },
 
     reset() {
       this.$refs.dictForm.resetFields()
+      this.id = ''
       this.tableData = []
       this.tableData.splice(0, 1, {
         columnKey: '',
@@ -190,12 +199,17 @@ export default {
             createUserId: id,
             createUserName: userName
           }
-          API.dictionarySave(params)
+          const methodName = `dictionary${this.opType}`
+          const message = `字典表${
+            this.opType === 'Add' ? '新增' : '更新'
+          }成功！`
+          this.opType === 'Edit' && (params.id = this.id)
+          API[methodName](params)
             .then(({ success, data }) => {
               if (success && data) {
                 this.$notify.success({
                   title: '操作结果',
-                  message: '字典表新增成功！',
+                  message,
                   duration: 1500
                 })
                 this.$emit('on-confirm', success)
@@ -208,6 +222,16 @@ export default {
           this.$refs.baseDialog.btnLoadingClose()
         }
       })
+    },
+
+    // 编辑-数据回显操作
+    mixinDetailInfo(data) {
+      const { dictColumns } = data
+      const fieldArr = ['englishName', 'chineseName', 'dictDesc']
+      fieldArr.forEach(field => {
+        this.dictForm[field] = data[field]
+      })
+      this.tableData = dictColumns
     }
   }
 }
