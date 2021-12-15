@@ -22,6 +22,8 @@ import java.util.List;
 @Slf4j
 public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictColumnEntity> implements DictColumnService {
 
+    private static final String COLUMN_KEY_VALUE_REGEX = "[0-9a-zA-Z\u4e00-\u9fa5]{0,40}";
+
     @Autowired
     private DictColumnMapper dictColumnMapper;
 
@@ -37,6 +39,9 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
         List<DictColumnEntity> dictColumns = new ArrayList<>();
         DictColumnEntity dictColumn;
         String columnKey = saveParams.get(0).getColumnKey();
+        if(!columnKey.matches(COLUMN_KEY_VALUE_REGEX)){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.message);
+        }
         boolean isExist = isExist(columnKey);
         if(isExist){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.message);
@@ -47,6 +52,12 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
             }
             if(!saveParams.get(i).getColumnKey().equals(columnKey)){
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.message);
+            }
+            if(!saveParams.get(i).getColumnValue().matches(COLUMN_KEY_VALUE_REGEX)){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.message);
+            }
+            if(saveParams.get(i).getRemark().length() > 200){
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000086.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000086.message);
             }
             dictColumn = new DictColumnEntity();
             dictColumn = BeanCopyUtils.copyProperties(saveParams.get(i), dictColumn);
