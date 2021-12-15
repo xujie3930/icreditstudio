@@ -19,7 +19,6 @@ package org.apache.dolphinscheduler.service.process;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.hashtech.businessframework.exception.interval.AppException;
-import com.jinninghui.datasphere.icreditstudio.framework.common.enums.DialectEnum;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Configuration;
