@@ -77,7 +77,12 @@
       </el-form-item>
       <el-form-item v-else label="上传文件">
         <div class="dict-btn">
-          <el-button icon="el-icon-download" type="text">
+          <el-button
+            icon="el-icon-download"
+            type="text"
+            :loading="btnLoading"
+            @click="handleDownload"
+          >
             下载模板
           </el-button>
         </div>
@@ -111,6 +116,7 @@ import {
   validStrEn,
   strExcludeBlank
 } from '@/utils/validate'
+import { download } from '@/utils/util'
 
 export default {
   mixins: [operate],
@@ -145,6 +151,7 @@ export default {
           { validator: verifySpecialStr, trigger: 'blur' }
         ]
       },
+      btnLoading: false,
       isUploadFile: false,
       tableLoading: false,
       tableConfiguration,
@@ -297,6 +304,17 @@ export default {
         .finally(() => {
           this.$refs.baseDialog.btnLoadingClose()
         })
+    },
+
+    handleDownload() {
+      this.btnLoading = true
+      const filename = '字典表导入模板.xlsx'
+      const url = '../../../../../static/字典表导入模板.xlsx'
+      download({ filename, url })
+
+      setTimeout(() => {
+        this.btnLoading = false
+      }, 300)
     },
 
     // 编辑-数据回显操作
