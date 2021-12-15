@@ -30,8 +30,8 @@
         <if test="userId != null and userId != ''">
             AND create_user_id = #{userId}
         </if>
-        <if test="spaceId != null and spaceId != ''">
-            AND space_id = #{spaceId}
+        <if test="workspaceId != null and workspaceId != ''">
+            AND workspace_id = #{workspaceId}
         </if>
         ORDER BY create_time DESC
         limit #{pageNum},#{pageSize}

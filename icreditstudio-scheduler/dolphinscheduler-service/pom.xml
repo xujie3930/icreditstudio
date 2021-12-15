@@ -109,12 +109,6 @@
             <artifactId>business-exception</artifactId>
             <version>FRAMEWORK-1.1.1.RELEASE</version>
         </dependency>
-        <dependency>
-            <groupId>com.jinninghui.datasphere</groupId>
-            <artifactId>icreditstudio-common</artifactId>
-        </dependency>
-
-
     </dependencies>
 
     <build>
