@@ -76,6 +76,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import viewTableConfiguration from '@/views/icredit/configuration/table/data-dictionary-add'
 import tableConfiguration from '@/views/icredit/configuration/table/data-manage-dictionary'
 import formOption from '@/views/icredit/configuration/form/data-manage-dictionary'
@@ -83,6 +84,7 @@ import Message from '@/views/icredit/components/message'
 import AddDialog from './add'
 import crud from '@/mixins/crud'
 import operate from '@/mixins/operate'
+import workspace from '@/mixins/workspace'
 import API from '@/api/icredit'
 
 const { group, ...rest } = viewTableConfiguration
@@ -95,7 +97,7 @@ const viewTbGroup = group
 
 export default {
   name: 'dictionaryTable',
-  mixins: [crud, operate],
+  mixins: [crud, operate, workspace],
   components: { Message, AddDialog },
 
   data() {
@@ -116,7 +118,19 @@ export default {
     this.mixinRetrieveTableData()
   },
 
+  computed: {
+    ...mapGetters('user', ['userInfo'])
+  },
+
   methods: {
+    interceptorsRequestRetrieve(params) {
+      const newParams = {
+        userId: this.userInfo.id,
+        workspaceId: this.workspaceId,
+        ...params
+      }
+      return newParams
+    },
     handleImportDict(options) {
       this.$refs.addDialog.open(options)
     },
