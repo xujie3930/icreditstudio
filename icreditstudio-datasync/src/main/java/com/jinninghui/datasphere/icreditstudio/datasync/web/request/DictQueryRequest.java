@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 public class DictQueryRequest extends BusinessBasePageForm {
 
+    private String userId;
+    private String workspaceId;
     private String dictName;
 
 }

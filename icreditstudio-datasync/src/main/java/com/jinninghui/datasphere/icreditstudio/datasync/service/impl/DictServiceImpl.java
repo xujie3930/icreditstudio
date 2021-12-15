@@ -40,11 +40,27 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> save(DictSaveParam param) {
+        checkDictParam(param);
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(param.getDictColumns(), DictColumnSaveParam.class);
         dictColumnService.saveBatch(dict.getId(), saveParams);
         return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "保存失败");
+    }
+
+    private static void checkDictParam(DictSaveParam param) {
+        if(StringUtils.isEmpty(param.getWorkspaceId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000000.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000000.message);
+        }
+        if(!param.getEnglishName().matches("[a-zA-Z_]{0,50}")){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000081.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000081.message);
+        }
+        if(!param.getChineseName().matches("[\u4e00-\u9fa5]{0,50}")){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000082.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000082.message);
+        }
+        if(param.getDictDesc().length() > 250){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000083.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000083.message);
+        }
     }
 
     private void checkDictId(String id){
@@ -81,6 +97,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
 
     @Override
     public BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param) {
+        if(!"0".equals(param.getWorkspaceId())){
+            param.setUserId(null);
+        }
         DictQueryDTO dictQueryDTO = new DictQueryDTO();
         BeanCopyUtils.copyProperties(param, dictQueryDTO);
         dictQueryDTO.setPageNum((dictQueryDTO.getPageNum() - 1) * dictQueryDTO.getPageSize());
@@ -93,6 +112,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> update(DictSaveParam param) {
         checkDictId(param.getId());
+        checkDictParam(param);
         DictEntity dict = new DictEntity();
         BeanCopyUtils.copyProperties(param, dict);
         dictColumnService.truthDelBatchByDictId(param.getId());
