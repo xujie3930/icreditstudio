@@ -423,3 +423,15 @@ export const decrypt = str => {
   const plianStr = str ? sm4.decrypt(str) : null
   return plianStr
 }
+
+// 前端a标签下载
+export const download = options => {
+  const { filename, url, target = '_slef', open = false } = options
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.target = target
+  document.body.appendChild(link)
+  open ? window.open(link.href) : link.click()
+  document.body.removeChild(link)
+}
