@@ -24,11 +24,16 @@ const dictionaryInfo = params => postAction('/datasync/dict/info', params)
 const dictionaryViewInfo = params =>
   postAction('/datasync/dict/lookInfo', params)
 
+// 字典表导入
+const dictionaryImport = params =>
+  postAction('/datasync/dict/importDict', params)
+
 export default {
   dictionaryAdd,
   dictionaryDelete,
   dictionaryEdit,
   dictionaryList,
   dictionaryInfo,
-  dictionaryViewInfo
+  dictionaryViewInfo,
+  dictionaryImport
 }

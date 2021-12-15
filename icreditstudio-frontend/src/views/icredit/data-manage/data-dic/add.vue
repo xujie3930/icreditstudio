@@ -81,7 +81,16 @@
             下载模板
           </el-button>
         </div>
-        <el-upload class="dict-upload" drag multiple>
+        <el-upload
+          drag
+          action="#"
+          ref="upload"
+          class="dict-upload"
+          :limit="1"
+          :on-exceed="handleExceed"
+          :before-upload="handleBeforeUpload"
+          :http-request="handleImport"
+        >
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         </el-upload>
@@ -91,7 +100,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import API from '@/api/icredit'
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/data-dictionary-add'
@@ -124,6 +133,7 @@ export default {
     return {
       title: '',
       opType: '',
+      importFileList: [],
       dictForm: { englishName: '', chineseName: '', dictDesc: '' },
       dictRules: {
         englishName: [
@@ -135,6 +145,7 @@ export default {
           { validator: verifySpecialStr, trigger: 'blur' }
         ]
       },
+      isUploadFile: false,
       tableLoading: false,
       tableConfiguration,
       tableData: [{ columnKey: '', columnValue: '', remark: '' }]
@@ -142,7 +153,8 @@ export default {
   },
 
   computed: {
-    ...mapGetters({ userInfo: 'user/userInfo' })
+    ...mapGetters({ userInfo: 'user/userInfo' }),
+    ...mapState('user', ['workspaceId'])
   },
 
   methods: {
@@ -168,6 +180,11 @@ export default {
         columnValue: '',
         remark: ''
       })
+
+      if (this.opType === 'import') {
+        console.log(1111)
+        this.$refs.upload.clearFiles()
+      }
     },
 
     // 新增一行
@@ -192,10 +209,19 @@ export default {
     handleConfirm() {
       this.$refs.dictForm.validate(valid => {
         if (valid) {
+          // 字典表导入
+          if (this.opType === 'import') {
+            this.isUploadFile = true
+            this.$refs.upload.submit()
+            return
+          }
+
+          // 新增或编辑
           const { id, userName } = this.userInfo
           const params = {
             ...this.dictForm,
             dictColumns: this.tableData,
+            workspaceId: this.workspaceId,
             createUserId: id,
             createUserName: userName
           }
@@ -224,6 +250,55 @@ export default {
       })
     },
 
+    handleExceed(files, fileList) {
+      fileList.length && this.$message.warning('最多只能选择上传一个文件！')
+    },
+
+    handleBeforeUpload(file) {
+      console.log('handleBeforeUpload==', file)
+      const { name } = file
+      const format = ['xls', 'xlsx']
+      const fileTypeArr = name.split('.')
+      const fileType = fileTypeArr[fileTypeArr.length - 1]
+      const allowUploadType = format.includes(fileType)
+      if (!allowUploadType) {
+        this.$message.error('上传文件格式不正确, 仅支持xls和xlsx格式!')
+        return false
+      }
+      return true
+    },
+
+    handleImport(options) {
+      console.log(options, 'options')
+      const { id, userName } = this.userInfo
+      const { file } = options
+      const params = {
+        ...this.dictForm,
+        workspaceId: this.workspaceId,
+        createUserId: id,
+        createUserName: userName
+      }
+      const data = new FormData()
+      data.append('file', file)
+      data.append('dictSaveRequest', JSON.stringify(params))
+      if (!this.isUploadFile) return
+      API.dictionaryImport(data)
+        .then(({ success, data: d }) => {
+          if (success && d) {
+            this.$notify.success({
+              title: '操作结果',
+              message: '字典表导入成功！',
+              duration: 1500
+            })
+            this.isUploadFile = false
+            this.$emit('on-confirm', success)
+          }
+        })
+        .finally(() => {
+          this.$refs.baseDialog.btnLoadingClose()
+        })
+    },
+
     // 编辑-数据回显操作
     mixinDetailInfo(data) {
       const { dictColumns } = data
@@ -249,8 +324,18 @@ export default {
     border: 1px dashed rgba(0, 0, 0, 0.15);
 
     ::v-deep {
+      .el-upload {
+        width: 100%;
+      }
+
+      .el-upload-list {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+
       .el-upload-dragger {
         @include flex(column);
+        width: 100%;
         height: 130px;
         border: none;
         .el-icon-upload {
