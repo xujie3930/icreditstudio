@@ -7,7 +7,7 @@ import lombok.Data;
 public class DictQueryRequest extends BusinessBasePageForm {
 
     private String userId;
-    private String spaceId;
+    private String workspaceId;
     private String dictName;
 
 }

@@ -49,7 +49,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     }
 
     private static void checkDictParam(DictSaveParam param) {
-        if(StringUtils.isEmpty(param.getSpaceId())){
+        if(StringUtils.isEmpty(param.getWorkspaceId())){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000000.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000000.message);
         }
         if(!param.getEnglishName().matches("[a-zA-Z_]{0,50}")){
@@ -97,7 +97,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
 
     @Override
     public BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param) {
-        if(!"0".equals(param.getSpaceId())){
+        if(!"0".equals(param.getWorkspaceId())){
             param.setUserId(null);
         }
         DictQueryDTO dictQueryDTO = new DictQueryDTO();

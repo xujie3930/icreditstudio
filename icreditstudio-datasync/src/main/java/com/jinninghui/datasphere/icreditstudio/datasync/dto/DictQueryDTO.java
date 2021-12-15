@@ -7,7 +7,7 @@ public class DictQueryDTO {
 
     private String dictName;
     private String userId;
-    private String spaceId;
+    private String workspaceId;
     private int pageNum = 1;
     private int pageSize = 10;
 

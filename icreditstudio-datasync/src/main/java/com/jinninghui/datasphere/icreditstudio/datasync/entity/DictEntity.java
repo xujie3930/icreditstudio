@@ -10,7 +10,7 @@ import java.util.Date;
 public class DictEntity {
 
     private String id;
-    private String spaceId;
+    private String workspaceId;
     private String englishName;
     private String chineseName;
     private String createUserId;

@@ -8,7 +8,7 @@ import java.util.List;
 public class DictSaveRequest {
 
     private String id;
-    private String spaceId;
+    private String workspaceId;
     private String englishName;
     private String chineseName;
     private String createUserId;
