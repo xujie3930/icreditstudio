@@ -25,5 +25,5 @@ public interface DictService {
 
     BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param);
 
-    BusinessResult<Boolean> importDict(MultipartFile file, DictSaveParam param);
+    BusinessResult<Boolean> importDict(MultipartFile file, String param);
 }
