@@ -4,6 +4,8 @@
  * @Date: 2021-09-02
  */
 
+// var reg = new RegExp("^[a-zA-Z\d\u4E00-\u9FA5]+$"
+
 // 剔除字符串中所有空格
 export const strExcludeBlank = str => {
   return str.replace(/\s*/g, '')
@@ -15,10 +17,13 @@ export const validStrEn = str => {
   return reg.test(str)
 }
 
-// 验证是否是中文
+// 验证是否包含中文
 export const validStrZh = str => {
-  return escape(str).indexOf('%u') < 0
+  return encodeURI(str).indexOf('%u') < 0
 }
+
+// 表单校验只能输入中文
+export const verifyStrzh = () => {}
 
 // 验证特殊字符
 export const validStrSpecial = str => {

@@ -10,17 +10,17 @@ export default {
   maxHeight: 350,
   group: [
     {
-      type: 'editInput',
+      type: 'slot',
       label: 'key',
       prop: 'columnKey'
     },
     {
-      type: 'editInput',
+      type: 'slot',
       label: 'value',
       prop: 'columnValue'
     },
     {
-      type: 'editInput',
+      type: 'slot',
       label: '备注',
       prop: 'remark'
     },
@@ -28,7 +28,8 @@ export default {
       type: 'slot',
       label: '操作',
       prop: 'operation',
-      fixed: 'right'
+      fixed: 'right',
+      width: 120
     }
   ]
 }

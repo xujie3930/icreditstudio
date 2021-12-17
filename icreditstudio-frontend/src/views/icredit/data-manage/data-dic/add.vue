@@ -6,7 +6,7 @@
 <template>
   <BaseDialog
     ref="baseDialog"
-    width="800px"
+    width="1000px"
     :title="title"
     :close-on-click-modal="false"
     @on-close="handleClose"
@@ -56,6 +56,39 @@
           :table-configuration="tableConfiguration"
           :table-data="tableData"
         >
+          <template #columnKeyColumn="{row}">
+            <el-input
+              type="textarea"
+              resize="none"
+              :rows="1"
+              :autosize="{ minRows: 1 }"
+              :maxlength="40"
+              show-word-limit
+              v-model="row.columnKey"
+            ></el-input>
+          </template>
+          <template #columnValueColumn="{row}">
+            <el-input
+              type="textarea"
+              resize="none"
+              show-word-limit
+              :rows="1"
+              :autosize="{ minRows: 1 }"
+              :maxlength="40"
+              v-model="row.columnValue"
+            ></el-input>
+          </template>
+          <template #remarkColumn="{row}">
+            <el-input
+              type="textarea"
+              resize="none"
+              show-word-limit
+              :maxlength="200"
+              :rows="1"
+              :autosize="{ minRows: 1 }"
+              v-model="row.remark"
+            ></el-input>
+          </template>
           <template #operationColumn="{row, column, index}">
             <div class="btn-wrap">
               <el-button
@@ -383,7 +416,8 @@ export default {
     }
 
     ::v-deep {
-      .el-input__inner {
+      .el-input__inner,
+      .el-textarea__inner {
         border: none;
         background-color: transparent;
       }
