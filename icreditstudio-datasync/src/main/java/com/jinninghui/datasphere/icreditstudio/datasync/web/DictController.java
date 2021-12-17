@@ -62,10 +62,8 @@ public class DictController {
     }
 
     @PostMapping("/importDict")
-    public BusinessResult<Boolean> importDict(@RequestPart("file") MultipartFile file, @RequestPart("dictSaveRequest") DictSaveRequest request){
-        DictSaveParam param = new DictSaveParam();
-        BeanCopyUtils.copyProperties(request, param);
-        return dictService.importDict(file, param);
+    public BusinessResult<Boolean> importDict(@RequestPart("file") MultipartFile file, @RequestParam("dictSaveRequest") String dictSaveRequest){
+        return dictService.importDict(file, dictSaveRequest);
     }
 
 }

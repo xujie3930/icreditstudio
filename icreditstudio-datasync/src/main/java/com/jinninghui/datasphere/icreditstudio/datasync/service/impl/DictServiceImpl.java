@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO;
@@ -124,7 +125,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BusinessResult<Boolean> importDict(MultipartFile file, DictSaveParam param) {
+    public BusinessResult<Boolean> importDict(MultipartFile file, String dictSaveRequestJson) {
+        DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnExcelMode> dictColumnExcelList = ExcelUtil.readExcelFileData(file, 1, 1, DictColumnExcelMode.class);
