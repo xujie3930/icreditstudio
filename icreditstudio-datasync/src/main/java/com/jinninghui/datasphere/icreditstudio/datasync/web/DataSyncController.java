@@ -28,6 +28,19 @@ public class DataSyncController {
     private SyncTaskService syncTaskService;
 
     /**
+     * 检查任务名称重复
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/checkRepeatTaskName")
+    public BusinessResult<ImmutablePair> checkRepeatTaskName(@RequestBody DataSyncSaveRequest request) {
+        DataSyncSaveParam param = new DataSyncSaveParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return syncTaskService.checkRepeatTaskName(param);
+    }
+
+    /**
      * 同步任务定义、同步任务构建、同步任务调度保存
      *
      * @param request
@@ -255,7 +268,7 @@ public class DataSyncController {
     }
 
     @GetMapping("/getWideTableInfoByTaskId")
-    public WideTableInfoResult getWideTableInfoByTaskId(@RequestParam("taskId") String taskId){
+    public WideTableInfoResult getWideTableInfoByTaskId(@RequestParam("taskId") String taskId) {
         return syncTaskService.getWideTableInfoByTaskId(taskId);
     }
 

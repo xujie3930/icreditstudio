@@ -14,6 +14,13 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
  */
 public interface SyncTaskService extends IService<SyncTaskEntity> {
     /**
+     * 检查重复任务名称
+     *
+     * @return
+     */
+    BusinessResult<ImmutablePair> checkRepeatTaskName(DataSyncSaveParam param);
+
+    /**
      * 同步任务定义、同步任务构建、同步任务调度保存
      *
      * @param param
