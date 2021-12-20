@@ -329,6 +329,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @BusinessParamsValidate
     public BusinessResult<List<DatasourceCatalogue>> getDatasourceCatalogue(DataSyncQueryDatasourceCatalogueParam param) {
+        datasourceCataloguePreValid(param);
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
                 .workspaceId(param.getWorkspaceId())
                 .category(SourceTypeTransferEnum.getCatalogue(param.getSourceType()))
@@ -340,55 +341,81 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (CollectionUtils.isNotEmpty(list)) {
             //数据源ID
             Set<String> sourceIds = list.parallelStream().filter(Objects::nonNull).map(IcreditDatasourceEntity::getId).collect(Collectors.toSet());
-            //数据源最新同步表
+            //获取各个数据源下的表
             Map<String, Optional<IcreditDdlSyncEntity>> stringOptionalMap = icreditDdlSyncService.categoryLatelyDdlSyncs(sourceIds);
-            //数据源信息
-            results = list.stream()
-                    .filter(Objects::nonNull)
-                    .map(icreditDatasourceEntity -> {
-                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
-                        catalogue.setDatasourceId(icreditDatasourceEntity.getId());
-                        DatasourceSync datasource = DatasourceFactory.getDatasource(icreditDatasourceEntity.getType());
-                        catalogue.setName(datasource.getDatabaseName(icreditDatasourceEntity.getUri()));
-//                        catalogue.setName(DatasourceSync.getUsername(icreditDatasourceEntity.getUri()));
-                        if (StringUtils.isNotBlank(icreditDatasourceEntity.getName())) {
-                            catalogue.setSelect(icreditDatasourceEntity.getName().equals(param.getTableName()));
-                        }
-                        catalogue.setUrl(DatasourceSync.getConnUrl(icreditDatasourceEntity.getUri()));
-                        catalogue.setHost(DatasourceSync.getHost(icreditDatasourceEntity.getUri()));
-                        catalogue.setDialect(DatasourceTypeEnum.findDatasourceTypeByType(icreditDatasourceEntity.getType()).getDesc());
-                        return catalogue;
-                    }).collect(Collectors.toList());
+
+            results = assemblyDatasourceBaseInfo(list);
             if (MapUtils.isNotEmpty(stringOptionalMap)) {
-                Map<String, List<String>> catalogueTablas = Maps.newHashMap();
-                stringOptionalMap.forEach((k, v) -> {
-                    v.ifPresent(icreditDdlSyncEntity -> {
-                        String columnsInfo = icreditDdlSyncEntity.getColumnsInfo();
-                        List<String> tableNames = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
-                        catalogueTablas.put(k, tableNames);
-                    });
-                });
-                results.stream()
-                        .forEach(datasourceCatalogue -> {
-                            String datasourceId = datasourceCatalogue.getDatasourceId();
-                            List<String> tableNames = catalogueTablas.get(datasourceId);
-                            List<DatasourceCatalogue> content = Optional.ofNullable(tableNames).orElse(Lists.newArrayList())
-                                    .parallelStream()
-                                    .map(s -> {
-                                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
-                                        catalogue.setDatasourceId(datasourceId);
-                                        catalogue.setUrl(datasourceCatalogue.getUrl());
-                                        catalogue.setDialect(datasourceCatalogue.getDialect());
-                                        catalogue.setName(s);
-                                        catalogue.setSelect(s.equals(param.getTableName()));
-                                        return catalogue;
-                                    }).collect(Collectors.toList());
-                            datasourceCatalogue.setContent(content);
-                        });
+                results = assemblyDatasourceTableInfo(results, stringOptionalMap);
             }
         }
         return BusinessResult.success(Optional.ofNullable(results).orElse(Lists.newArrayList()));
     }
+
+    //数据源目录前置校验
+    private void datasourceCataloguePreValid(DataSyncQueryDatasourceCatalogueParam param) {
+        if (StringUtils.isBlank(param.getWorkspaceId())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000005.getCode());
+        }
+        if (Objects.isNull(param.getSourceType())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000006.getCode());
+        }
+    }
+
+    //组装数据源基本信息
+    private List<DatasourceCatalogue> assemblyDatasourceBaseInfo(List<IcreditDatasourceEntity> datasourceEntities) {
+        List<DatasourceCatalogue> results = null;
+        if (CollectionUtils.isNotEmpty(datasourceEntities)) {
+            results = datasourceEntities.stream()
+                    .filter(Objects::nonNull)
+                    .map(datasourceEntity -> {
+                        DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                        catalogue.setDatasourceId(datasourceEntity.getId());
+                        catalogue.setName(datasourceEntity.getDatabaseName());
+                        catalogue.setUrl(DatasourceSync.getConnUrl(datasourceEntity.getUri()));
+                        catalogue.setHost(DatasourceSync.getHost(datasourceEntity.getUri()));
+                        catalogue.setDialect(datasourceEntity.getDialect());
+                        return catalogue;
+                    }).collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
+    }
+
+    //组装数据源下表信息
+    private List<DatasourceCatalogue> assemblyDatasourceTableInfo(List<DatasourceCatalogue> catalogues, Map<String, Optional<IcreditDdlSyncEntity>> ddlSyncInfos) {
+        List<DatasourceCatalogue> results = null;
+        if (CollectionUtils.isNotEmpty(catalogues) && MapUtils.isNotEmpty(ddlSyncInfos)) {
+            Map<String, List<String>> catalogueTablas = Maps.newHashMap();
+            ddlSyncInfos.forEach((k, v) -> {
+                v.ifPresent(ddlSyncEntity -> {
+                    String columnsInfo = ddlSyncEntity.getColumnsInfo();
+                    List<String> tableNames = IcreditDdlSyncService.parseColumnsTableName(columnsInfo);
+                    catalogueTablas.put(k, tableNames);
+                });
+            });
+            results = catalogues.stream()
+                    .map(datasourceCatalogue -> {
+                        DatasourceCatalogue result = new DatasourceCatalogue();
+                        BeanCopyUtils.copyProperties(datasourceCatalogue, result);
+                        String datasourceId = datasourceCatalogue.getDatasourceId();
+                        List<String> tableNames = catalogueTablas.get(datasourceId);
+                        List<DatasourceCatalogue> content = Optional.ofNullable(tableNames).orElse(Lists.newArrayList())
+                                .parallelStream()
+                                .map(s -> {
+                                    DatasourceCatalogue catalogue = new DatasourceCatalogue();
+                                    catalogue.setDatasourceId(datasourceId);
+                                    catalogue.setUrl(datasourceCatalogue.getUrl());
+                                    catalogue.setDialect(datasourceCatalogue.getDialect());
+                                    catalogue.setName(s);
+                                    return catalogue;
+                                }).collect(Collectors.toList());
+                        result.setContent(content);
+                        return result;
+                    }).collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
+    }
+
 
     @Override
     public BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request) {
@@ -507,11 +534,11 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
-    public BusinessResult<Boolean> updateStatusById(IcreditDatasourceUpdateStatusParam param){
-        if(StringUtils.isEmpty(param.getId())){
+    public BusinessResult<Boolean> updateStatusById(IcreditDatasourceUpdateStatusParam param) {
+        if (StringUtils.isEmpty(param.getId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000002.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000002.message);
         }
-        if(!DatasourceStatusEnum.ENABLE.getCode().equals(param.getDatasourceStatus()) && !DatasourceStatusEnum.DISABLE.getCode().equals(param.getDatasourceStatus())){
+        if (!DatasourceStatusEnum.ENABLE.getCode().equals(param.getDatasourceStatus()) && !DatasourceStatusEnum.DISABLE.getCode().equals(param.getDatasourceStatus())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000013.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000013.message);
         }
         //删除数据源时候需要判断该数据源下是否有工作流
