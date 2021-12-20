@@ -27,7 +27,7 @@
         from statistics_instance
         <where>
             <if test="startTime !=null ">
-                and date > #{startTime}
+                and date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
@@ -50,7 +50,7 @@
         FROM statistics_instance
         <where>
             <if test="startTime !=null ">
-                and date > #{startTime}
+                and date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
@@ -67,7 +67,7 @@
         FROM statistics_instance
         <where>
             <if test="startTime !=null ">
-                and date > #{startTime}
+                and date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
@@ -91,7 +91,7 @@
                 and schedule_type =#{scheduleType}
             </if>
             <if test="startTime !=null ">
-                and date > #{startTime}
+                and date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
