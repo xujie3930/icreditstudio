@@ -155,7 +155,7 @@
                 <span class="required-icon">*</span>
                 <span>同步任务周期</span>
               </div>
-              <span class="text">{{ buildDetailInfo.cronParam.crons }}</span>
+              <span class="text">{{ buildDetailInfo.cronParam.cron }}</span>
             </div>
           </div>
         </div>

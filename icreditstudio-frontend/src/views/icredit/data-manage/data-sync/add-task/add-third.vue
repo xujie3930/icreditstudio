@@ -290,7 +290,7 @@ export default {
     },
 
     handleSaveParam() {
-      const { type } = this.taskForm.cronParam
+      const { type, firstFull } = this.taskForm.cronParam
       const {
         month: mon,
         day: d,
@@ -306,6 +306,7 @@ export default {
 
       return {
         type,
+        firstFull,
         moment: momentMapping[type]
       }
     },
