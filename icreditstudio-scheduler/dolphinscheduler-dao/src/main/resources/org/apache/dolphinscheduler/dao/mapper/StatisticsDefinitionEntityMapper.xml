@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.dolphinscheduler.dao.mapper.StatisticsDefinitionMapper">
+
+    <select id="getRowData" resultType="org.apache.dolphinscheduler.dao.entity.StatisticsDefinitionEntity">
+        select *
+        from statistics_definition
+        <where>
+            <if test="workspaceId != null and workspaceId != '' ">
+                AND workspace_id = #{workspaceId}
+            </if>
+            <if test="userId != null and userId != '' ">
+                AND user_id = #{userId}
+            </if>
+            <if test="date != null ">
+                AND date = #{date}
+            </if>
+            <if test="platformTaskId != null and platformTaskId != ''">
+                AND platform_task_id = #{platformTaskId}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="runtimeTotalByDefinition" resultType="map">
+        select platform_task_id as platformTaskId,
+        name as name,
+        ifnull(speed_time, 0) as speedTime,
+        schedule_type as scheduleType
+        from statistics_definition
+        <where>
+            <if test="userId != null and userId != '' ">
+                AND user_id = #{userId}
+            </if>
+            <if test="startTime != null ">
+                AND date > #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            AND workspace_id = #{workspaceId}
+        </where>
+        order by speed_time desc
+    </select>
+
+    <select id="errorTimeTotalByDefinition" resultType="map">
+        select platform_task_id as platformTaskId,
+        name as name,
+        ifnull(error_time,0) as errorNum,
+        schedule_type as scheduleType
+        from statistics_definition
+        <where>
+            <if test="userId != null and userId != '' ">
+                AND user_id = #{userId}
+            </if>
+            <if test="startTime != null ">
+                AND date > #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            AND workspace_id = #{workspaceId}
+        </where>
+        order by error_time desc limit 6
+    </select>
+</mapper>

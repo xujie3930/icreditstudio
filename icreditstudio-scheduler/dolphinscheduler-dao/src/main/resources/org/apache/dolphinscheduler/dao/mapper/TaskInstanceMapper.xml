@@ -128,30 +128,7 @@
         </if>
         order by instance.start_time desc
     </select>
-    <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
-        select count(t.id)
-        from t_ds_task_instance t
-        left join t_ds_process_definition d
-        on t.process_definition_id = d.id
-        <where>
-            <if test="startTime !=null ">
-                and t.start_time > #{startTime}
-            </if>
-            <if test="endTime !=null ">
-                and t.end_time <![CDATA[<]]>  #{endTime}
-            </if>
-            <if test="userId !=null and userId != '' ">
-                and d.user_id =#{userId}
-            </if>
-            <if test="states != null and states.length != 0">
-                and t.state in
-                <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
-                    #{i}
-                </foreach>
-            </if>
-            and  t.workspace_id = #{workspaceId}
-        </where>
-    </select>
+
     <select id="countByDay" resultType="map">
         select DATE_FORMAT(t.start_time,'%Y-%m-%d') AS date,
         IFNULL(COUNT(t.id),0) AS count
@@ -170,48 +147,6 @@
             and d.user_id =#{userId}
         </if>
         GROUP BY DATE_FORMAT(t.start_time,'%Y-%m-%d')
-    </select>
-    <select id="runtimeTotalByDefinition" resultType="map">
-        select d.platform_task_id as platformTaskId,
-               d.name as name,
-               ifnull(SUM((unix_timestamp(i.end_time)-unix_timestamp(i.start_time)))/60, 0) as speedTime,
-               d.schedule_type as scheduleType
-        from t_ds_task_instance i
-        left join t_ds_process_definition d
-        on i.process_definition_id = d.id
-        where d.workspace_id = #{workspaceId}
-        <if test="states != null and states.length != 0">
-            and i.state in
-            <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
-                #{i}
-            </foreach>
-        </if>
-        <if test="userId !=null and userId != '' ">
-            and d.user_id =#{userId}
-        </if>
-        and i.start_time > #{startTime} and i.end_time <![CDATA[<]]>  #{endTime}
-        group by i.process_definition_id
-    </select>
-    <select id="getCountByByDefinitionAndStates" resultType="map">
-    select d.platform_task_id as platformTaskId,
-           d.name as name,
-           ifnull(count(i.id),0) as errorNum,
-           d.schedule_type as scheduleType
-    from t_ds_task_instance i
-    left join t_ds_process_definition d
-    on i.process_definition_id = d.id
-    where d.workspace_id = #{workspaceId}
-    <if test="states != null and states.length != 0">
-        and i.state in
-        <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
-            #{i}
-        </foreach>
-    </if>
-        <if test="userId !=null and userId != '' ">
-            and d.user_id =#{userId}
-        </if>
-    and i.start_time > #{startTime} and i.end_time <![CDATA[<]]>  #{endTime}
-    group by i.process_definition_id
     </select>
 
     <select id="queryTaskByProcessDefinitionId" resultType="org.apache.dolphinscheduler.common.vo.DispatchLogVO">
@@ -284,20 +219,28 @@
         </if>
     </select>
 
-    <select id="selectByWorkspaceIdAndUserId" resultType="map">
-        SELECT t.state as state,
-               d.platform_task_id as taskId,
-               d.workspace_id as workspaceId
-        FROM t_ds_task_instance t
-        left join t_ds_process_definition d
-        on t.process_definition_id = d.id
-        <where>
-            <if test="userId != null and userId != '' ">
-                AND d.user_id = #{userId}
-            </if>
-            <if test="id != null and id != '' ">
-                AND d.workspace_id = #{id}
-            </if>
-        </where>
+    <select id="selectInstanceListByScanState" resultType="org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult">
+        select i.id as instanceId,
+               d.platform_task_id as platformTaskId,
+               i.workspace_id as workspaceId,
+               d.user_id as userId,
+               d.name as taskName,
+               ifnull((unix_timestamp(i.end_time)-unix_timestamp(i.start_time))/60, 0) as speedTime,
+               d.schedule_type as scheduleType,
+               i.state as state,
+               ifnull(i.total_records, 0) as totalRecords,
+               ifnull(i.total_bytes, 0) as totalBytes,
+               DATE_FORMAT(i.start_time,'%Y-%m-%d') as date,
+               DATE_FORMAT(i.submit_time,'%Y-%m-%d') as submitTime
+        from t_ds_task_instance i
+                 left join t_ds_process_definition d
+                           on i.process_definition_id = d.id
+        where i.scan_state = #{scanState} limit 100
     </select>
+
+    <update id="updateScanStateById">
+        update t_ds_task_instance
+        set scan_state = #{scanState}
+        where id = #{id}
+    </update>
 </mapper>

@@ -39,31 +39,33 @@ public enum ExecutionStatus {
      * 10 waiting thread
      * 11 waiting depend node complete
      */
-    SUBMITTED_SUCCESS(0, "submit success"),
-    RUNNING_EXECUTION(1, "running"),
+    SUBMITTED_SUCCESS(0, "submit success", 2),
+    RUNNING_EXECUTION(1, "running", 2),
     //无此状态
-    READY_PAUSE(2, "ready pause"),
+    READY_PAUSE(2, "ready pause", 4),
     //无此状态
-    PAUSE(3, "pause"),
-    READY_STOP(4, "ready stop"),
-    STOP(5, "stop"),
-    FAILURE(6, "failure"),
-    SUCCESS(7, "success"),
-    NEED_FAULT_TOLERANCE(8, "need fault tolerance"),
+    PAUSE(3, "pause", 4),
+    READY_STOP(4, "ready stop", 1),
+    STOP(5, "stop", 1),
+    FAILURE(6, "failure", 1),
+    SUCCESS(7, "success", 0),
+    NEED_FAULT_TOLERANCE(8, "need fault tolerance", 0),
     //taskInstance 为 KILL 状态，processInstance 会成为STOP 状态
-    KILL(9, "kill"),
-    WAITTING_THREAD(10, "waiting thread"),
+    KILL(9, "kill", 1),
+    WAITTING_THREAD(10, "waiting thread", 3),
     //无此状态
-    WAITTING_DEPEND(11, "waiting depend node complete");
+    WAITTING_DEPEND(11, "waiting depend node complete", 3);
 
-    ExecutionStatus(int code, String descp) {
+    ExecutionStatus(int code, String descp, int category) {
         this.code = code;
         this.descp = descp;
+        this.category = category;
     }
 
     @EnumValue
     private final int code;
     private final String descp;
+    private final int category;
 
 
     /**
@@ -144,6 +146,10 @@ public enum ExecutionStatus {
         return code;
     }
 
+    public int getCategory() {
+        return category;
+    }
+
     public String getDescp() {
         return descp;
     }
@@ -155,5 +161,14 @@ public enum ExecutionStatus {
             }
         }
         throw new IllegalArgumentException("invalid status : " + status);
+    }
+
+    public static int getCategoryByCode(int code) {
+        for (ExecutionStatus es : values()) {
+            if (es.getCode() == code) {
+                return es.getCategory();
+            }
+        }
+        throw new IllegalArgumentException("invalid status : " + code);
     }
 }

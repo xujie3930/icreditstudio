@@ -17,19 +17,19 @@
 
 package org.apache.dolphinscheduler.api.service;
 
-import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
-import org.apache.dolphinscheduler.api.service.result.TaskCountResult;
+import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
+import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * task instance service
  */
-public interface TaskInstanceService {
+public interface TaskInstanceService extends IService<TaskInstance> {
 
     /**
      * query task list by project, process instance, task name, task start time, task end time, task status, keyword paging
@@ -62,30 +62,7 @@ public interface TaskInstanceService {
      */
     Map<String, Object> forceTaskSuccess(User loginUser, String projectName, Integer taskInstanceId);
 
-    /**
-     * 根据工作空间，起止时间，状态，查询task数量
-     * @param workspaceId
-     * @param startTime
-     * @param endTime
-     * @param statusArray
-     * @return
-     */
-    Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray);
+    List<TaskInstanceStatisticsResult> selectInstanceListByScanState(int scanState);
 
-    /**
-     * 统计task数量/天
-     * @param request
-     * @return
-     */
-    List<TaskCountResult> countByDay(String userId, SchedulerHomepageRequest request);
-
-    List<Map<String, Object>> runtimeTotalByDefinition(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime);
-
-    List<Map<String, Object>>  getCountByByDefinitionAndStates(String workspaceId, String userId, int[] statusArray, Date startTime, Date endTime);
-
-    Long totalRecordsByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime);
-
-    Long totalBytesByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime);
-
-    List<Map<String, Object>> selectByWorkspaceIdAndUserId(String userId, String id);
+    void updateScanStateById(String id, int scanState);
 }
