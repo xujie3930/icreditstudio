@@ -33,6 +33,8 @@ import java.util.List;
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> implements DictService {
 
+    private final String DEFAULT_WORKSPACE_ID = "0";
+
     @Autowired
     private DictMapper dictMapper;
     @Autowired
@@ -98,7 +100,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
 
     @Override
     public BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param) {
-        if(!"0".equals(param.getWorkspaceId())){
+        if(!DEFAULT_WORKSPACE_ID.equals(param.getWorkspaceId())){
             param.setUserId(null);
         }
         DictQueryDTO dictQueryDTO = new DictQueryDTO();
@@ -139,7 +141,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         DictEntity dict = new DictEntity();
         BeanCopyUtils.copyProperties(param, dict);
         dict.setCreateTime(new Date());
-        dict.setDelFlag(0);
+        dict.setDelFlag(DeleteFlagEnum.NOT_DELETED.getCode());
         return dict;
     }
 
