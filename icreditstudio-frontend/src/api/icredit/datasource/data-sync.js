@@ -68,6 +68,14 @@ const dataSyncLinkType = params =>
 const dataSyncFieldSearch = params =>
   postAction('/datasource/getTableInfo', params)
 
+// 任务名称重复性校验
+const dataSyncVerifyName = params =>
+  postAction('/datasync/checkRepeatTaskName', params)
+
+// sql方式识别宽表前置接口-校验表之间是否同一个IP地址
+const dataSyncVerifyHost = params =>
+  postAction('/datasync/preSqlPositionDataSource', params)
+
 export default {
   dataSyncAdd,
   dataSyncDelete,
@@ -85,5 +93,7 @@ export default {
   dataSyncGenerateTable,
   dataSyncLinkType,
   dataSyncFieldSearch,
-  dataSyncTaskDetial
+  dataSyncTaskDetial,
+  dataSyncVerifyName,
+  dataSyncVerifyHost
 }
