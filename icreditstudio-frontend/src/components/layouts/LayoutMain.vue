@@ -145,12 +145,16 @@ export default {
 
     initPage() {
       // 先去获取缓存里面页面记录
-      // 没有才执行一下操作
-      this.curBreadcrumb.push(this.topModules[1])
-      this.curBreadcrumb.push(this.topModules[1].children[0])
-      this.$router.push('/home')
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
+      const { activeModuleId } = this.$ss.get('activeMenuConfig') ?? {}
+      if (activeModuleId) {
+        this.setActinveMenuId(activeModuleId)
+      } else {
+        this.curBreadcrumb.push(this.topModules[1])
+        this.curBreadcrumb.push(this.topModules[1].children[0])
+        this.$router.push('/home')
+        this.$ss.remove('taskForm')
+        this.$ss.remove('selectedTable')
+      }
     },
 
     initBreadCrumbItems(router) {
@@ -179,8 +183,9 @@ export default {
       const { children = [], label } = curMenu
       this.curBreadcrumb = [curMenu]
       this.workspace = label
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
+      this.$ss.set('activeMenuConfig', { activeModuleId: this.activeModuleId })
+      this.$ss.remove('taskForm')
+      this.$ss.remove('selectedTable')
       // this.autoSelectWorkspaceId()
       // 自动加载二级菜单的第一个菜单
       if (children.length && !childMenu) {
@@ -205,8 +210,8 @@ export default {
       this.curBreadcrumb = parentMenu
         ? [this.curBreadcrumb[0], parentMenu, rest]
         : [this.curBreadcrumb[0], rest]
-      this.$ls.remove('taskForm')
-      this.$ls.remove('selectedTable')
+      this.$ss.remove('taskForm')
+      this.$ss.remove('selectedTable')
       // this.autoSelectWorkspaceId()
     }
   }

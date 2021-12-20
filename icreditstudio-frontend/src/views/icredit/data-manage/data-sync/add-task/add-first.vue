@@ -134,8 +134,8 @@ export default {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
       this.step = this.$route.query?.opType || ''
-      this.opType === 'add' && !this.step && this.$ls.remove('taskForm')
-      this.taskForm = this.$ls.get('taskForm') || this.taskForm
+      this.opType === 'add' && !this.step && this.$ss.remove('taskForm')
+      this.taskForm = this.$ss.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
       this.taskForm.taskId = taskId || this.$route.query?.taskId
@@ -146,7 +146,7 @@ export default {
 
     handleBackClick() {
       // 返回提示
-      this.$ls.remove('taskForm')
+      this.$ss.remove('taskForm')
       this.$router.push('/data-manage/data-sync')
     },
 
@@ -163,6 +163,7 @@ export default {
         })
         .finally(() => {
           this.detailLoading = false
+          this.oldName = this.taskForm.taskName
         })
     },
 
@@ -190,7 +191,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.taskForm.taskId = data.taskId
-            this.$ls.set('taskForm', this.taskForm)
+            this.$ss.set('taskForm', this.taskForm)
             this.$notify.success({
               title: '操作结果',
               duration: 1500,
@@ -209,7 +210,7 @@ export default {
         if (valid) {
           this.saveSetting()
           const { createMode } = this.taskForm
-          this.$ls.set('taskForm', this.taskForm)
+          this.$ss.set('taskForm', this.taskForm)
           this.$router.push({
             path: '/data-manage/add-build',
             query: { createMode, opType: this.opType, step: 'first' }
@@ -230,8 +231,13 @@ export default {
 
     // 验证是否已经存在同步任务名称
     verifySyncTaskName(rule, value, cb) {
+      console.log(this.taskForm.id, this.oldName, value, this.opType)
       this.timerId = null
-      if (this.taskForm.id && this.oldName === value) {
+      if (
+        this.taskForm.taskId &&
+        this.oldName === value &&
+        this.opType === 'edit'
+      ) {
         cb()
       } else {
         this.veifyNameLoading = true

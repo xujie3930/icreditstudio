@@ -216,7 +216,7 @@ export default {
   methods: {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
-      const beforeStepForm = this.$ls.get('taskForm') || {}
+      const beforeStepForm = this.$ss.get('taskForm') || {}
       this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
       this.taskForm.scheduleType = this.taskForm.syncCondition.incrementalField
         ? 1
@@ -240,8 +240,8 @@ export default {
           }
         })
       } else {
-        this.selectCron = this.$ls.get('selectCron') || {}
-        this.taskForm.cronParam.type = this.$ls.get('cronType')
+        this.selectCron = this.$ss.get('selectCron') || {}
+        this.taskForm.cronParam.type = this.$ss.get('cronType')
       }
     },
 
@@ -268,8 +268,8 @@ export default {
       this.$router.push(
         `/data-manage/add-build?step=third&opType=${this.opType}`
       )
-      this.$ls.set('selectCron', this.selectCron)
-      this.$ls.set('cronType', this.taskForm.cronParam.type)
+      this.$ss.set('selectCron', this.selectCron)
+      this.$ss.set('cronType', this.taskForm.cronParam.type)
     },
 
     // 周期同步任务Cron字段校验
@@ -333,10 +333,10 @@ export default {
                 })
                 if (callStep === 4) {
                   this.$router.push('/data-manage/data-sync')
-                  this.$ls.remove('taskForm')
-                  this.$ls.remove('selectedTable')
-                  this.$ls.remove('selectCron')
-                  this.$ls.remove('cronType')
+                  this.$ss.remove('taskForm')
+                  this.$ss.remove('selectedTable')
+                  this.$ss.remove('selectCron')
+                  this.$ss.remove('cronType')
                 }
               }
             })

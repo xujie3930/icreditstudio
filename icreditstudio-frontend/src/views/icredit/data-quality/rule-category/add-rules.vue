@@ -161,8 +161,8 @@ export default {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
       this.step = this.$route.query?.opType || ''
-      this.opType === 'add' && !this.step && this.$ls.remove('taskForm')
-      this.taskForm = this.$ls.get('taskForm') || this.taskForm
+      this.opType === 'add' && !this.step && this.$ss.remove('taskForm')
+      this.taskForm = this.$ss.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
       this.taskForm.taskId = taskId || this.$route.query?.taskId
@@ -177,7 +177,7 @@ export default {
 
     handleBackClick() {
       // 返回提示
-      this.$ls.remove('taskForm')
+      this.$ss.remove('taskForm')
       this.$router.push('/data-manage/data-sync')
     },
 
@@ -238,7 +238,7 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           const { createMode } = this.taskForm
-          this.$ls.set('taskForm', this.taskForm)
+          this.$ss.set('taskForm', this.taskForm)
           this.$router.push({
             path: '/data-manage/add-build',
             query: { createMode, opType: this.opType, step: 'first' }

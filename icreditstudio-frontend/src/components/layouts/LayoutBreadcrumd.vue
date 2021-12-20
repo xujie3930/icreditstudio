@@ -87,8 +87,8 @@ export default {
       } else if (this.backHome.includes(path)) {
         this.$router.replace('/home')
       } else {
-        this.$ls.remove('taskForm')
-        this.$ls.remove('selectedTable')
+        this.$ss.remove('taskForm')
+        this.$ss.remove('selectedTable')
         this.$router.push('/data-manage/data-sync')
       }
     },

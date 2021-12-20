@@ -503,7 +503,7 @@ export default {
     initPage() {
       this.opType = this.$route.query?.opType || 'add'
       this.step = this.$route.query?.step || ''
-      const taskForm = this.$ls.get('taskForm') || {}
+      const taskForm = this.$ss.get('taskForm') || {}
       this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
       this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
 
@@ -513,7 +513,7 @@ export default {
         this.getDetailData()
       } else if (!createMode && this.opType === 'add' && this.step) {
         // 没有点击保存设置， 上一步或下一步跳转到本页面的情况
-        this.selectedTable = this.$ls.get('selectedTable') || []
+        this.selectedTable = this.$ss.get('selectedTable') || []
       }
     },
 
@@ -673,7 +673,7 @@ export default {
           }
         })
       }
-      this.$ls.set('selectedTable', this.selectedTable)
+      this.$ss.set('selectedTable', this.selectedTable)
     },
 
     // 点击图标设置关联字段回调
@@ -881,7 +881,7 @@ export default {
     // 表单参数缓存以及过滤处理
     handleTaskFormParams() {
       const { workspaceId } = this
-      const firstFrom = this.$ls.get('taskForm') || {}
+      const firstFrom = this.$ss.get('taskForm') || {}
       // 可视化方式参数处理
       !firstFrom.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
@@ -902,7 +902,7 @@ export default {
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
 
       const params = { ...firstFrom, ...secondForm }
-      this.$ls.set('taskForm', params)
+      this.$ss.set('taskForm', params)
       return params
     },
 
