@@ -95,6 +95,17 @@
             @change-cron="handleChangeCron"
           />
         </el-form-item>
+
+        <el-form-item
+          v-if="taskForm.scheduleType"
+          label-width="35%"
+          label="第一次是否全量同步"
+          prop="cronParam.firstFull"
+        >
+          <el-checkbox size="mini" v-model="taskForm.cronParam.firstFull">
+            是
+          </el-checkbox>
+        </el-form-item>
       </el-form>
 
       <footer class="footer-btn-wrap">
@@ -159,6 +170,7 @@ export default {
         syncCondition: { incrementalField: undefined },
         cronParam: {
           type: undefined,
+          firstFull: true,
           moment: []
         }
       },
@@ -178,6 +190,9 @@ export default {
         ],
         limitRate: [
           { required: true, validator: verifyLimitRate, trigger: 'blur' }
+        ],
+        'cronParam.firstFull': [
+          { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
         'cronParam.type': [
           {
@@ -275,7 +290,7 @@ export default {
     },
 
     handleSaveParam() {
-      const { type } = this.taskForm.cronParam
+      const { type, firstFull } = this.taskForm.cronParam
       const {
         month: mon,
         day: d,
@@ -291,6 +306,7 @@ export default {
 
       return {
         type,
+        firstFull,
         moment: momentMapping[type]
       }
     },

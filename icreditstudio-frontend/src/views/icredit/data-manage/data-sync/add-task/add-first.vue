@@ -22,7 +22,13 @@
             clearable
             :maxlength="50"
             show-word-limit
-          ></el-input>
+          >
+            <i
+              v-if="veifyNameLoading"
+              slot="suffix"
+              class="el-icon-loading"
+            ></i>
+          </el-input>
         </el-form-item>
 
         <el-form-item label="任务启用" prop="enable">
@@ -62,13 +68,6 @@
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <!-- <el-button
-          class="btn"
-          :loading="saveSettingLoading"
-          @click="saveSetting('taskForm')"
-        >
-          保存设置
-        </el-button> -->
         <el-button class="btn" type="primary" @click="nextStep('taskForm')">
           下一步
         </el-button>
@@ -81,16 +80,21 @@
 import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
-import { verifySpecialStr } from '@/utils/validate'
+import { validStrSpecial } from '@/utils/validate'
+import { debounce } from 'lodash'
 
 export default {
   components: { HeaderStepBar },
 
   data() {
+    this.verifySyncTaskName = debounce(this.verifySyncTaskName, 500)
     return {
       step: '',
       opType: '',
+      oldName: '',
       detailLoading: false,
+      veifyNameLoading: false,
+      timerId: null,
       saveSettingLoading: false,
       createModeOptions: [
         { label: '可视化', value: 0 },
@@ -106,7 +110,7 @@ export default {
       addTaskFormRules: {
         taskName: [
           { required: true, message: '任务名不能为空', trigger: 'blur' },
-          { validator: this.verifyTaskname, trigger: 'blur' }
+          { validator: this.verifyTaskname, trigger: ['blur', 'change'] }
         ],
         enable: [
           { required: true, message: '任务启用不能为空', trigger: 'blur' }
@@ -187,7 +191,11 @@ export default {
           if (success && data) {
             this.taskForm.taskId = data.taskId
             this.$ls.set('taskForm', this.taskForm)
-            this.$notify.success({ title: '操作结果', message: '保存成功' })
+            this.$notify.success({
+              title: '操作结果',
+              duration: 1500,
+              message: '保存成功'
+            })
           }
         })
         .finally(() => {
@@ -213,7 +221,35 @@ export default {
     // 任务名称校验
     verifyTaskname(rule, value, cb) {
       const nVal = value.replaceAll('→', '')
-      verifySpecialStr(rule, nVal, cb)
+      if (validStrSpecial(nVal)) {
+        cb(new Error('该名称中包含不规范字符，请重新输入'))
+      } else {
+        this.verifySyncTaskName(rule, value, cb)
+      }
+    },
+
+    // 验证是否已经存在同步任务名称
+    verifySyncTaskName(rule, value, cb) {
+      this.timerId = null
+      if (this.taskForm.id && this.oldName === value) {
+        cb()
+      } else {
+        this.veifyNameLoading = true
+        API.dataSyncVerifyName({
+          workspaceId: this.workspaceId,
+          taskName: value
+        })
+          .then(({ success, data }) => {
+            success && data?.isRepeat
+              ? cb(new Error('该名称已存在，请重新输入'))
+              : cb()
+          })
+          .finally(() => {
+            this.timerId = setTimeout(() => {
+              this.veifyNameLoading = false
+            }, 300)
+          })
+      }
     }
   }
 }

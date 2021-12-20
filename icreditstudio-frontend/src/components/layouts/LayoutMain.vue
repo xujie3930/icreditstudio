@@ -144,6 +144,8 @@ export default {
     }),
 
     initPage() {
+      // 先去获取缓存里面页面记录
+      // 没有才执行一下操作
       this.curBreadcrumb.push(this.topModules[1])
       this.curBreadcrumb.push(this.topModules[1].children[0])
       this.$router.push('/home')

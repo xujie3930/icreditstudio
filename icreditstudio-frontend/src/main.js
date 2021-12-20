@@ -8,6 +8,7 @@ import JUI from '@jnh/icredit-ui'
 import VueEditor from 'vue2-editor'
 
 import '@/utils/vue.ls.js'
+import '@/utils/vue.ss.js'
 // import '@/mock'
 import '@/router/permission'
 import '@/components/svg/index'

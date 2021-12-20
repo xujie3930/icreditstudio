@@ -23,17 +23,6 @@ public class SyncCondition {
      * 数据源方言
      */
     private String dialect;
-    /**
-     * 周期首次是否同步以前数据
-     */
-    private Boolean firstFull;
-
-    public Boolean getFirstFull() {
-        if (firstFull == null) {
-            return false;
-        }
-        return firstFull;
-    }
 
     public Boolean getInc() {
         if (inc == null) {

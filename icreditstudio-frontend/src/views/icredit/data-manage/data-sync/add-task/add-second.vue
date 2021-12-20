@@ -212,7 +212,7 @@
                     ]"
                     slot="append"
                     :loading="widthTableLoading"
-                    @click="handleIdentifyTable(false)"
+                    @click="handleIdentifyTable"
                   >
                     {{ secondTaskForm.createMode ? '执行SQL' : '识别宽表' }}
                   </el-button>
@@ -463,9 +463,6 @@ export default {
 
       // 可视化-已拖拽的表
       selectedTable: [],
-
-      // 识别宽表-同名数据库
-      sqlInfo: { sql: '', databaseHost: [] },
 
       // 表单参数
       secondTaskForm: {
@@ -723,6 +720,7 @@ export default {
         .catch(() => {})
     },
 
+    // 删除已拖动选择的表
     handleDeleteTable(idx) {
       this.secondTaskForm.fieldInfos = []
       this.secondTaskForm.syncCondition.incrementalField = ''
@@ -813,7 +811,11 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.secondTaskForm.taskId = data.taskId
-            this.$notify.success({ title: '操作结果', message: '保存成功' })
+            this.$notify.success({
+              title: '操作结果',
+              duration: 1500,
+              message: '保存成功'
+            })
           }
         })
         .finally(() => {
@@ -909,7 +911,7 @@ export default {
       const { dialect: dia, view } = this.secondTaskForm
       const { dialect, datasourceId: sourceId } = this.selectedTable[0] || {}
 
-      this.secondTaskForm.dialect = dia ?? dialect
+      this.secondTaskForm.dialect = dialect ?? dia
       this.secondTaskForm.datasourceId = sourceId ?? this.datasourceId
       this.secondTaskForm.view = deepClone(view).map(({ idx, ...item }) => item)
 
@@ -948,23 +950,23 @@ export default {
 
     // 数据库同名选择弹窗回调
     handleSelectBatabase() {
-      this.handleIdentifyTable(true)
+      const [{ datasourceId, dialect }] = deepClone(
+        this.sameNameDataBase
+      ).filter(item => this.checkList.includes(item.datasourceId))
+      this.datasourceId = datasourceId
+      this.secondTaskForm.dialect = dialect
+      this.handleIdentifyTable(false)
     },
 
     // 识别宽表
-    handleIdentifyTable(isChooseIp) {
+    async handleIdentifyTable(isChooseIp = true) {
       if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
 
-      if (isChooseIp) {
-        this.sqlInfo.databaseHost = deepClone(
-          this.sameNameDataBase
-        ).filter(({ datasourceId }) => this.checkList.includes(datasourceId))
-      } else {
-        this.sqlInfo.databaseHost = undefined
-      }
-
+      const datasourceId =
+        this.selectedTable[0]?.datasourceId ?? this.datasourceId
       const {
+        sourceType,
         createMode,
         sql,
         sourceTables,
@@ -972,25 +974,36 @@ export default {
         view
       } = this.secondTaskForm
 
-      this.sqlInfo.sql = sql
+      // sql模式参数
       const sqlParams = {
-        workspaceId: this.workspaceId,
-        createMode,
-        sqlInfo: this.sqlInfo
-      }
-
-      const visualParams = {
+        sql,
         dialect,
         createMode,
+        sourceType,
+        datasourceId
+      }
+
+      // 可视化模式参数
+      const visualParams = {
+        ...sqlParams,
         view: sourceTables.length === 1 ? [] : view,
-        datasourceId: this.selectedTable[0]?.datasourceId ?? this.datasourceId,
-        sourceTables: deepClone(
-          sourceTables
-        ).map(({ database, tableName }) => ({ database, tableName }))
+        sourceTables: deepClone(sourceTables).map(
+          ({ database, tableName }) => ({
+            database,
+            datasourceId,
+            tableName
+          })
+        )
+      }
+
+      // SQL模式下-数据库同名的情况选择相应的库
+      if (createMode && isChooseIp) {
+        const isShow = await this.getSelectHostModel()
+        if (isShow) return
       }
 
       this.isCanJumpNext = false
-      this.widthTableLoading = false
+      this.widthTableLoading = true
       this.tableLoading = true
       this.$refs.baseDialog.close()
       API.dataSyncGenerateTable(createMode ? sqlParams : visualParams)
@@ -1003,15 +1016,6 @@ export default {
             this.increFieldsOptions = incrementalFields || []
             this.secondTaskForm.fieldInfos = this.hadleFieldInfos(fields || [])
             this.oldFieldInfos = this.hadleFieldInfos(fields || [])
-
-            // 数据库同名的情况选择相应的库
-            if (createMode && data.sameNameDataBase) {
-              this.sameNameDataBase = data.sameNameDataBase || []
-              data.sameNameDataBase.length && this.$refs.baseDialog.open()
-            }
-
-            // 编辑表结构
-            // this.$refs.editTable.open(deepClone(this.secondTaskForm.fieldInfos))
           }
         })
         .finally(() => {
@@ -1361,6 +1365,28 @@ export default {
         .catch(() => this.initParams())
         .finally(() => {
           this.detailLoading = false
+        })
+    },
+
+    // 是否弹窗选择不同IP的表去识别宽表
+    getSelectHostModel() {
+      const { sql, sourceType } = this.secondTaskForm
+      this.widthTableLoading = true
+      return API.dataSyncVerifyHost({ sql, sourceType })
+        .then(({ success, data }) => {
+          if (success && data) {
+            const { showWindow, sameNameDataBase } = data
+            this.widthTableLoading = true
+            this.sameNameDataBase = sameNameDataBase ?? []
+            showWindow && this.$refs.baseDialog.open()
+            return showWindow
+          } else {
+            return false
+          }
+        })
+        .catch(() => {
+          this.widthTableLoading = true
+          return false
         })
     }
   }
