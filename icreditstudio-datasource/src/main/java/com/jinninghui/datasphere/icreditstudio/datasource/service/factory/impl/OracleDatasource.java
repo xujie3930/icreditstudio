@@ -69,9 +69,10 @@ public class OracleDatasource implements DatasourceSync {
      */
     @Override
     public String getDatabaseName(String uri) {
-        String oracleUri = uri.split("\\|")[0];
-        int index = oracleUri.lastIndexOf(":") + 1;
-        return oracleUri.substring(index);
+//        String oracleUri = uri.split("\\|")[0];
+//        int index = oracleUri.lastIndexOf(":") + 1;
+//        return oracleUri.substring(index);
+        return DatasourceSync.getUsername(uri);
     }
 
 }

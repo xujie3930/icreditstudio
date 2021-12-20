@@ -21,8 +21,4 @@
         create_time,create_by,update_time,
         update_by,del_flag
     </sql>
-
-    <select id="getWideTableInfoByTaskId" resultType="com.jinninghui.datasphere.icreditstudio.datasync.service.result.WideTableInfoResult">
-        SELECT sync_condition AS cronInfo,dialect FROM icredit_sync_widetable WHERE sync_task_id = #{taskId}
-    </select>
 </mapper>

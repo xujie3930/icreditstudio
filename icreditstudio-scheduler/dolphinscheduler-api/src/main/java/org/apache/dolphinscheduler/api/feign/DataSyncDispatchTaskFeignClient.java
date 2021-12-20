@@ -4,7 +4,6 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.service.result.DispatchTaskPageResult;
-import org.apache.dolphinscheduler.api.vo.WideTableInfoVO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,10 +34,4 @@ public interface DataSyncDispatchTaskFeignClient {
      */
     @GetMapping("/datasync/updateExecStatusByScheduleId")
     boolean updateExecStatusByScheduleId(@RequestParam("scheduleId") String scheduleId);
-
-    /**
-     * 通过taskId来获取宽表中的cron信息
-     */
-    @GetMapping("/datasync/getWideTableInfoByTaskId")
-    WideTableInfoVO getWideTableInfoByTaskId(@RequestParam("taskId") String taskId);
 }
