@@ -98,6 +98,18 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     @Resource
     private ThreadPoolExecutor executor;
 
+    @Override
+    public BusinessResult<ImmutablePair> checkRepeatTaskName(DataSyncSaveParam param) {
+        //同工作空间下任务名称不能重复
+        QueryWrapper<SyncTaskEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(SyncTaskEntity.WORKSPACE_ID, param.getWorkspaceId());
+        wrapper.eq(SyncTaskEntity.TASK_NAME, param.getTaskName());
+        if (CollectionUtils.isNotEmpty(list(wrapper))) {
+            return BusinessResult.success(new ImmutablePair<>("isRepeat",true));
+        }
+        return BusinessResult.success(new ImmutablePair<>("isRepeat",false));
+    }
+
     /**
      * 同步任务  新增/编辑
      *

@@ -41,6 +41,14 @@
             <lineEnding>unix</lineEnding>
         </fileSet>
 
+        <fileSet>
+            <directory>src/main/resources/lib</directory>
+            <includes>
+                <include>ojdbc6-11.2.0.3.jar</include>
+            </includes>
+            <outputDirectory>lib</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
 

@@ -23,6 +23,19 @@ public class CronParam {
     private String type;
 
     /**
+     * 周期首次是否同步以前数据
+     */
+    private Boolean firstFull;
+
+    public Boolean getFirstFull() {
+        if (firstFull == null) {
+            return false;
+        }
+        return firstFull;
+    }
+
+
+    /**
      * 年
      * 月：1，日：1，时：8，分：30，秒：20
      * 月

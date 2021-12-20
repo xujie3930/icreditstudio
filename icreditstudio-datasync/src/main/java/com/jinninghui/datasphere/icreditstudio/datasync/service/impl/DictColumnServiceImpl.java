@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.enums.DeleteFlagEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.DictColumnMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.DictColumnService;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictColumnSaveParam;
@@ -62,7 +63,7 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
             dictColumn = new DictColumnEntity();
             dictColumn = BeanCopyUtils.copyProperties(saveParams.get(i), dictColumn);
             dictColumn.setDictId(dictId);
-            dictColumn.setDelFlag(0);
+            dictColumn.setDelFlag(DeleteFlagEnum.NOT_DELETED.getCode());
             dictColumns.add(dictColumn);
         }
         saveBatch(dictColumns);
