@@ -81,11 +81,13 @@ import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
 import { validStrSpecial } from '@/utils/validate'
+import { debounce } from 'lodash'
 
 export default {
   components: { HeaderStepBar },
 
   data() {
+    this.verifySyncTaskName = debounce(this.verifySyncTaskName, 500)
     return {
       step: '',
       opType: '',
