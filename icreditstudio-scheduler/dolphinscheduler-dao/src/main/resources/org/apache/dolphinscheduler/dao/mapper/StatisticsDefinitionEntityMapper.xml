@@ -33,7 +33,7 @@
                 AND user_id = #{userId}
             </if>
             <if test="startTime != null ">
-                AND date > #{startTime}
+                AND date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
@@ -54,7 +54,7 @@
                 AND user_id = #{userId}
             </if>
             <if test="startTime != null ">
-                AND date > #{startTime}
+                AND date >= #{startTime}
             </if>
             <if test="endTime !=null ">
                 and date <![CDATA[<]]>  #{endTime}
