@@ -10,6 +10,7 @@ import org.apache.dolphinscheduler.dao.mapper.StatisticsInstanceMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -81,9 +82,9 @@ public class StatisticsInstanceServiceImpl extends ServiceImpl<StatisticsInstanc
         tempStart.setTime(startTime);
         Calendar tempEnd = Calendar.getInstance();
         tempEnd.setTime(endTime);
-        Map<String, Object> tempMap = new HashMap<>();
+        Map<String, Long> tempMap = new HashMap<>();
         for (Map<String, Object> m : countByDay) {
-            tempMap.put((String) m.get("date"), m.get("count"));
+            tempMap.put((String) m.get("date"), ((BigDecimal)m.get("count")).longValue());
         }
         while (tempStart.before(tempEnd)) {
             String date = dateFormat.format(tempStart.getTime());
@@ -92,8 +93,8 @@ public class StatisticsInstanceServiceImpl extends ServiceImpl<StatisticsInstanc
             }
             tempStart.add(Calendar.DAY_OF_YEAR, 1);
         }
-        for (Map.Entry<String, Object> m : tempMap.entrySet()) {
-            list.add(new TaskCountResult(m.getKey(), (long) m.getValue()));
+        for (Map.Entry<String, Long> m : tempMap.entrySet()) {
+            list.add(new TaskCountResult(m.getKey(),  m.getValue()));
         }
         list.sort(Comparator.comparing(TaskCountResult::getDate));
         return list;
