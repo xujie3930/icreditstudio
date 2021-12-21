@@ -25,6 +25,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.service
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.service.param.OrganizationEntityQueryParam;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.ExpertInfoResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.web.result.OrganizationInfoResult;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.resources.entity.ResourcesEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.mapper.RoleDao;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.service.RoleService;
@@ -725,23 +726,6 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
             if (!DeleteFlagEnum.ALL.getCode().equals(deleteFlag.getCode())) {
                 wrapper.eq(UserEntity.DELETE_FLAG, deleteFlag.getCode());
             }
-            //根据userIds查询所有的roleIds,key:userId,value:roleId
-            List<Map<String, String>> roleIdMapTemp = userRoleMapDao.getRoleIds(ids);
-            Map<String, String> roleIdMap = new HashMap();
-            for (Map<String, String> m : roleIdMapTemp) {
-                roleIdMap.put(m.get("userId"), m.get("roleId"));
-            }
-            /*Map<String, String> roleIdMap = roleIdMapTemp.stream().collect(
-                    Collectors.toMap(s->s.get("userId"), s -> s.get("roleId")));*/
-            Set<String> roleIds = getAllRoleIds(roleIdMap);
-            //根据roleIds查询所有的roleName,key:roleId,value:roleName
-            List<Map<String, String>> roleNameTemp = roleDao.getRoleNameByRoleIds(roleIds);
-            /*Map<String, String> roleName = roleNameTemp.stream().collect(
-                    Collectors.toMap(s->s.get("roleId"), s -> s.get("roleName")));*/
-            Map<String, String> roleName = new HashMap();
-            for (Map<String, String> m : roleNameTemp) {
-                roleName.put(m.get("roleId"), m.get("roleName"));
-            }
             List<UserEntity> userEntities = userDao.selectList(wrapper);
             List<UserOrgMapEntity> allUserOrgMap = userOrgMapService.list(new QueryWrapper<>());
             List<OrganizationEntity> organizationEntities = organizationService.list(new QueryWrapper<>());
@@ -771,9 +755,9 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
                                 log.error(e.getMessage(), e);
                             }
                         }
-                        String roleId = roleIdMap.get(userEntity.getId());
-                        result.setRoleId(roleId);
-                        result.setRoleName(roleName.get(roleId));
+                        String userId = userEntity.getId();
+                        AuthorityResult authorityResult = getAuthorityResult(userId);
+                        result.setAuthorityResult(authorityResult);
                         return result;
                     }).collect(Collectors.toList());
 
@@ -981,8 +965,27 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         if (StringUtils.isEmpty(params.getName())) {
             return new ArrayList<>();
         }
+        List<LikeQueryUserRoleListResult> userList = userDao.queryUserRoleByName(params);
+        if (CollectionUtils.isEmpty(userList)){
+            return userList;
+        }
+        for (LikeQueryUserRoleListResult likeUser : userList) {
+            String userId = likeUser.getId();
+            AuthorityResult authorityResult = getAuthorityResult(userId);
+            likeUser.setAuthorityResult(authorityResult);
+        }
+        return userList;
+    }
 
-        return userDao.queryUserRoleByName(params);
+    private AuthorityResult getAuthorityResult(String userId) {
+        AuthorityResult result = new AuthorityResult();
+        RoleEntityQueryParam roleParam = new RoleEntityQueryParam();
+        roleParam.setUserId(userId);
+        List<RoleEntityInfoResult> roleList = roleService.getRoleInfoByUserId(roleParam);
+        result.setUserRole(roleList.stream().map(RoleEntityInfoResult::getRoleName).collect(Collectors.toList()).stream().distinct().collect(Collectors.toList()));
+        List<ResourcesEntity> resourceList = roleService.findResourcesByUserId(userId);
+        result.setFunctionalAuthority(resourceList.stream().map(ResourcesEntity::getName).collect(Collectors.toList()).stream().distinct().collect(Collectors.toList()));
+        return result;
     }
 
     private void deleteAccountToken(List<UserAccountEntity> accounts) {
