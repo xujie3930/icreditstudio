@@ -234,9 +234,8 @@ export default {
       console.log(this.taskForm.id, this.oldName, value, this.opType)
       this.timerId = null
       if (
-        this.taskForm.taskId &&
-        this.oldName === value &&
-        this.opType === 'edit'
+        (this.taskForm.taskId || this.opType === 'edit') &&
+        this.oldName === value
       ) {
         cb()
       } else {

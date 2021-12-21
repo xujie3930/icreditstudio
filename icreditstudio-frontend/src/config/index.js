@@ -3,7 +3,7 @@ const baseConfig = {
   baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.0.201:13249',
   // baseUrl: process.env.VUE_APP_BASE_URL || 'http://192.168.110.47:13249',
   // 请求超时时间
-  timeout: 9000,
+  timeout: 20000,
   // 项目名称
   projectName: 'iCredit',
   // 应用id
