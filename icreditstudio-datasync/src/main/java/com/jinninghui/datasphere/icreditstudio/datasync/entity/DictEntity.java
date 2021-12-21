@@ -9,6 +9,7 @@ import java.util.Date;
 @TableName(value = "icredit_dict")
 public class DictEntity {
 
+    public static final String CHINESE_NAME = "chinese_name";
     private String id;
     private String workspaceId;
     private String englishName;
