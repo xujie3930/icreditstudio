@@ -1,22 +1,19 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
-import com.jinninghui.datasphere.icreditstudio.framework.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
 import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.HomePageService;
-import org.apache.dolphinscheduler.api.service.TaskInstanceService;
+import org.apache.dolphinscheduler.api.service.StatisticsDefinitionService;
+import org.apache.dolphinscheduler.api.service.StatisticsInstanceService;
 import org.apache.dolphinscheduler.api.service.result.*;
 import org.apache.dolphinscheduler.api.utils.DoubleUtils;
-import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -29,32 +26,15 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class HomePageServiceImpl implements HomePageService {
-    @Autowired
-    private TaskInstanceService taskInstanceService;
-    private static final String DEFAULT_WORKSPACEID = "0";
-    //TODO:这里暂且用redisTemplate构建RedisUtils,存在ABA和一致性的问题，后续再完善redis工具类
-    //TODO:这里暂且不采用缓存，正式发版时候补上
-    /*@Autowired
-    private RedisTemplate<Object, Object> redisTemplate;
-    @PostConstruct
-    public void init() {
-        RedisUtils.setRedisTemplate(redisTemplate);
-    }*/
 
-
-    private static final String SCHEDULER= "scheduler-api";
-    private static final String PREROUGH= SCHEDULER + "rough";
-    private static final String PRESITUATION= SCHEDULER + "todaySituation";
-    private static final String PRETASKCOUNT= SCHEDULER + "taskCount";
-    private static final String PRERUNTIMERANK= SCHEDULER + "runtimeRank";
-    private static final String PRERUNERRORRANK= SCHEDULER + "runErrorRank";
-    private static final String WORKBENCH= SCHEDULER + "workbench";
-
-    private static final long FIVE_MINUTE_TIME = 5 * 60L;
-    private static final long ONE_HOUR_TIME = 60 * 60L;
-
-    static List<TaskSituationResult> situationZeroList = new ArrayList<>();
     static final String[] units = new String[]{"B", "KB", "MB", "GB", "TB", "PB"};
+    @Autowired
+    private StatisticsInstanceService statisticsInstanceService;
+
+    private static final String DEFAULT_WORKSPACEID = "0";
+    @Autowired
+    private StatisticsDefinitionService statisticsDefinitionService;
+    static List<TaskSituationResult> situationZeroList = new ArrayList<>();
 
     static {
         situationZeroList.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), 0L, 0.00));
@@ -63,15 +43,25 @@ public class HomePageServiceImpl implements HomePageService {
         situationZeroList.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), 0L, 0.00));
     }
 
+    private static String getDataSizeUnit(Long size) {
+        if (size == 0) {
+            return units[0];
+        }
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return units[digitGroups];
+    }
+
+    private static Double getDataSize(Long size) {
+        if (size == 0) {
+            return 0.00;
+        }
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return DoubleUtils.formatDouble(size / Math.pow(1024, digitGroups));
+    }
 
     @Override
     public BusinessResult<TaskRoughResult> rough(String userId, SchedulerHomepageRequest request) {
-//        String redisKey = PREROUGH + request.getWorkspaceId();
-//        TaskRoughResult result = (TaskRoughResult) RedisUtils.get(redisKey);
-//        if (null != result){
-//            return BusinessResult.success(result);
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())){
+        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())) {
             userId = "";
         }
         TaskRoughResult taskRoughResult = new TaskRoughResult();
@@ -80,170 +70,111 @@ public class HomePageServiceImpl implements HomePageService {
         //前一天24点
         Date endTime = DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1));
         //总调度任务数
-        Long count = taskInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{});
+        Long count = statisticsInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{});
         taskRoughResult.setTaskCount(count);
         //执行失败实例
-        Long failCount = taskInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.KILL.getCode()});
+        Long failCount = statisticsInstanceService.countByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime, new int[]{TaskExecStatusEnum.FAIL.ordinal()});
         taskRoughResult.setFailCount(failCount);
         //新增数据量条数
-        Long newlyLine = taskInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime);
-        taskRoughResult.setNewlyLine(DoubleUtils.formatDouble(((double)newlyLine) / 10000));
+        Long newlyLine = statisticsInstanceService.totalRecordsByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime);
+        taskRoughResult.setNewlyLine(DoubleUtils.formatDouble(((double) newlyLine) / 10000));
         //新增数据量：最小单位为M，超过1024为G，一次类推最大为PB
-        Long newlyDataSize = taskInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime);
+        Long newlyDataSize = statisticsInstanceService.totalBytesByWorkspaceIdAndTime(request.getWorkspaceId(), userId, startTime, endTime);
         taskRoughResult.setNewlyDataSize(getDataSize(newlyDataSize));
         taskRoughResult.setUnit(getDataSizeUnit(newlyDataSize));
-//        RedisUtils.set(redisKey, taskRoughResult, FIVE_MINUTE_TIME);
         return BusinessResult.success(taskRoughResult);
-    }
-
-    private static String getDataSizeUnit(Long size) {
-        if (size == 0){
-            return units[0];
-        }
-        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-        return units[digitGroups];
-    }
-
-    private static Double getDataSize(Long size) {
-        if (size == 0){
-            return 0.00;
-        }
-        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-        return DoubleUtils.formatDouble(size / Math.pow(1024, digitGroups));
     }
 
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String userId, String workspaceId) {
-//        String redisKey = PRESITUATION + workspaceId;
-//        List<TaskSituationResult> list = (List<TaskSituationResult>) RedisUtils.get(redisKey);
-//        if (!CollectionUtils.isEmpty(list)){
-//            return BusinessResult.success(list);
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(workspaceId)){
+        if (!DEFAULT_WORKSPACEID.equals(workspaceId)) {
             userId = "";
         }
         Date date = new Date();
         Date startTime = DateUtils.getStartOfDay(date);
         Date endTime = DateUtils.getEndOfDay((date));
-        Long success = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.SUCCESS.getCode(), ExecutionStatus.NEED_FAULT_TOLERANCE.getCode()});
-        Long fail = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.FAILURE.getCode(), ExecutionStatus.KILL.getCode()});
-        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
-        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
+        Long success = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.SUCCESS.ordinal()});
+        Long fail = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.FAIL.ordinal()});
+        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
+        Long waiting = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.WATTING.ordinal()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
-//        RedisUtils.set(redisKey,taskSituationResultList, FIVE_MINUTE_TIME);
         return BusinessResult.success(taskSituationResultList);
     }
 
     @Override
     public BusinessResult<List<TaskCountResult>> taskCount(String userId, SchedulerHomepageRequest request) {
-//        String redisKey = PRETASKCOUNT + request.getWorkspaceId();
-//        List<TaskCountResult> list = (List<TaskCountResult>) RedisUtils.get(redisKey);
-//        if (!CollectionUtils.isEmpty(list)){
-//            return BusinessResult.success(list);
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())){
+        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())) {
             userId = "";
         }
-        List<TaskCountResult> resultList = taskInstanceService.countByDay(userId, request);
-//        RedisUtils.set(redisKey, resultList, FIVE_MINUTE_TIME);
+        List<TaskCountResult> resultList = statisticsInstanceService.countByDay(userId, request);
         return BusinessResult.success(resultList);
     }
 
     @Override
     public BusinessResult<List<RuntimeRankResult>> runtimeRank(String userId, SchedulerHomepageRequest request) {
-//        String redisKey = PRERUNTIMERANK + request.getWorkspaceId();
-//        List<RuntimeRankResult> list = (List<RuntimeRankResult>) RedisUtils.get(redisKey);
-//        if (!CollectionUtils.isEmpty(list)){
-//            return BusinessResult.success(list);
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())){
+        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())) {
             userId = "";
         }
         List<RuntimeRankResult> runtimeRankResultList = new ArrayList<>();
-        Date date = new Date();
-
-        List<Map<String, Object>> maps = taskInstanceService.runtimeTotalByDefinition(request.getWorkspaceId(), userId, new int[]{}, DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1)));
+        List<Map<String, Object>> maps = statisticsDefinitionService.runtimeTotalByDefinition(request.getWorkspaceId(), userId, DateUtils.getStartOfDay(DateUtils.getSomeDay(new Date(), -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(new Date(), -1)));
         for (Map<String, Object> m : maps) {
-            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("platformTaskId"), (String)m.get("name"), ((BigDecimal) m.get("speedTime")).doubleValue(), (Integer)m.get("scheduleType")));
+            runtimeRankResultList.add(new RuntimeRankResult((String) m.get("platformTaskId"), (String) m.get("name"), ((BigDecimal) m.get("speedTime")).doubleValue(), (Integer) m.get("scheduleType")));
         }
-
         runtimeRankResultList.sort(Comparator.comparing(RuntimeRankResult::getSpeedTime).reversed());
 
-//        RedisUtils.set(redisKey, runtimeRankResultList, FIVE_MINUTE_TIME);
         return BusinessResult.success(runtimeRankResultList);
     }
 
     @Override
     public BusinessResult<List<RunErrorRankResult>> runErrorRank(String userId, SchedulerHomepageRequest request) {
-//        String redisKey = PRERUNERRORRANK + request.getWorkspaceId();
-//        List<RunErrorRankResult> list = (List<RunErrorRankResult>) RedisUtils.get(redisKey);
-//        if (!CollectionUtils.isEmpty(list)){
-//            return BusinessResult.success(list);
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())){
+        if (!DEFAULT_WORKSPACEID.equals(request.getWorkspaceId())) {
             userId = "";
         }
         List<RunErrorRankResult> runErrorRankList = new ArrayList<>();
         Date date = new Date();
-        List<Map<String, Object>> maps = taskInstanceService.getCountByByDefinitionAndStates(request.getWorkspaceId(), userId,
-                new int[]{ExecutionStatus.FAILURE.getCode()}, DateUtils.getStartOfDay(DateUtils.getSomeDay(date, -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(date, -1)));
+        List<Map<String, Object>> maps = statisticsDefinitionService.errorTimeTotalByDefinition(request.getWorkspaceId(), userId, DateUtils.getStartOfDay(DateUtils.getSomeDay(date, -1)), DateUtils.getEndOfDay(DateUtils.getSomeDay(date, -1)));
         for (Map<String, Object> m : maps) {
             RunErrorRankResult result = new RunErrorRankResult(
                     (String) m.get("platformTaskId"), (String) m.get("name"), (Long) m.get("errorNum"), (Integer) m.get("scheduleType"));
             runErrorRankList.add(result);
         }
+        //按照错误数量倒序排，且过滤掉错误数为0的数据
         runErrorRankList.sort(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed());
         runErrorRankList = runErrorRankList.parallelStream().filter(runErrorRank -> runErrorRank.getErrorNum() != 0).sorted(Comparator.comparing(RunErrorRankResult::getErrorNum).reversed()).collect(Collectors.toList());
-        runErrorRankList = runErrorRankList.size() < 6 ? runErrorRankList : runErrorRankList.subList(0, 6);
 
-//        RedisUtils.set(redisKey, runErrorRankList, FIVE_MINUTE_TIME);
         return BusinessResult.success(runErrorRankList);
     }
 
     @Override
     public WorkBenchResult workbench(String userId, String id) {
-//        String redisKey = WORKBENCH + userId + id;
-//        WorkBenchResult redisCache = (WorkBenchResult) RedisUtils.get(redisKey);
-//        if (null != redisCache){
-//            return redisCache;
-//        }
-        if (!DEFAULT_WORKSPACEID.equals(id)){
+        if (!DEFAULT_WORKSPACEID.equals(id)) {
             userId = "";
         }
         WorkBenchResult result = new WorkBenchResult();
-        List<Map<String, Object>> list = taskInstanceService.selectByWorkspaceIdAndUserId(userId, id);
-        //正在执行
-        Map<Integer, Long> state = list.stream().collect(
-                Collectors.groupingBy(org -> (int)org.get("state"), Collectors.counting()));
-        Long success = state.get(ExecutionStatus.SUCCESS.getCode()) == null? 0L : state.get(ExecutionStatus.SUCCESS.getCode());
+        Long success = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.SUCCESS.ordinal()});
         result.setSuccess(success);
-        Long failure = state.get(ExecutionStatus.FAILURE.getCode()) == null? 0L: state.get(ExecutionStatus.FAILURE.getCode());
+        Long failure = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.FAIL.ordinal()});
         result.setFailure(failure);
-        Long running = state.get(ExecutionStatus.RUNNING_EXECUTION.getCode()) == null? 0L : state.get(ExecutionStatus.RUNNING_EXECUTION.getCode());
+        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
         result.setRunning(running);
-        Long notRun = list.size() - success - failure - running;
+        Long notRun = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.WATTING.ordinal()});
         result.setNotRun(notRun);
-//        RedisUtils.set(redisKey, result, FIVE_MINUTE_TIME);
         return result;
     }
 
-    private List<TaskSituationResult> getTaskSituationList(Long...args) {
+    private List<TaskSituationResult> getTaskSituationList(Long... args) {
         Long count = 0L;
         for (Long arg : args) {
             count += arg;
         }
-        if (count == 0){
+        if (count == 0) {
             return situationZeroList;
         }
         List<TaskSituationResult> list = new ArrayList<>();
-        list.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), args[0], DoubleUtils.formatDouble((double)args[0] / count)));
-        list.add(new TaskSituationResult(TaskStatus.FAILURE.getDescp(), args[1], DoubleUtils.formatDouble((double)args[1] / count)));
-        list.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), args[2], DoubleUtils.formatDouble((double)args[2] / count)));
-        list.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), args[3], DoubleUtils.formatDouble((double)args[3] / count)));
+        list.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), args[0], DoubleUtils.formatDouble((double) args[0] / count)));
+        list.add(new TaskSituationResult(TaskStatus.FAILURE.getDescp(), args[1], DoubleUtils.formatDouble((double) args[1] / count)));
+        list.add(new TaskSituationResult(TaskStatus.RUNNING_EXECUTION.getDescp(), args[2], DoubleUtils.formatDouble((double) args[2] / count)));
+        list.add(new TaskSituationResult(TaskStatus.WAITING_THREAD.getDescp(), args[3], DoubleUtils.formatDouble((double) args[3] / count)));
         return list;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getDataSizeUnit(0L));
     }
 }

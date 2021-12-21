@@ -201,7 +201,12 @@ public class TaskInstance implements Serializable {
      */
     private String workerGroup;
 
-    private String workspaceId;;
+    private String workspaceId;
+
+    /**
+     * 扫描状态：0-未被扫描，1-已被扫描
+     */
+    private Integer scanState;
 
     /**
      * executor id

@@ -13,6 +13,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppE
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +27,7 @@ import java.util.Map;
 /**
  * @author Peng
  */
+@Slf4j
 @Data
 @Component
 public class MySqlReader extends AbstractDataxReaderHandler {
@@ -81,7 +83,7 @@ public class MySqlReader extends AbstractDataxReaderHandler {
         MysqlReaderConfigParam data = null;
         if (datasourceJdbcInfo.isSuccess()) {
 //            data = (MysqlReaderConfigParam) datasourceJdbcInfo.getData();
-            data = BeanCopyUtils.copyProperties(datasourceJdbcInfo, MysqlReaderConfigParam.class);
+            data = BeanCopyUtils.copyProperties(datasourceJdbcInfo.getData(), MysqlReaderConfigParam.class);
             data.setQuerySql(widetableEntity.getSqlStr());
         }
         configParam = data;

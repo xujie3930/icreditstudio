@@ -29,10 +29,10 @@ public class DatasourceCatalogue {
      * 主机地址
      */
     private String host;
-    /**
-     * 选中状态
-     */
-    private boolean select;
+//    /**
+//     * 选中状态
+//     */
+//    private boolean select;
     /**
      * 数据源ID
      */

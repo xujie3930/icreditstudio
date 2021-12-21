@@ -23,6 +23,7 @@ import org.apache.dolphinscheduler.common.enums.Flag;
 import org.apache.dolphinscheduler.common.vo.DispatchLogVO;
 import org.apache.dolphinscheduler.dao.entity.ExecuteStatusCount;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
+import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
@@ -72,13 +73,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
                                                     @Param("endTime") Date endTime
     );
 
-    Long countByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("userId")String userId, @Param("startTime")Date startTime, @Param("endTime")Date endTime, @Param("states") int[] statusArray);
-
     List<Map<String, Object>> countByDay(@Param("workspaceId")String workspaceId, @Param("userId")String userId, @Param("scheduleType")Integer scheduleType, @Param("startTime")Date startTime, @Param("endTime")Date endTime,@Param("states") int[] statusArray);
-
-    List<Map<String, Object>> runtimeTotalByDefinition(@Param("workspaceId")String definitionId, @Param("userId")String userId, @Param("states") int[] stateArray, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
-
-    List<Map<String, Object>>  getCountByByDefinitionAndStates(@Param("workspaceId")String workspaceId, @Param("userId")String userId, @Param("states") int[] stateArray, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 
     List<DispatchLogVO> queryTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("taskStatus") Integer taskStatus,
                                                        @Param("execTimeStart") Date execTimeStart, @Param("execTimeEnd") Date execTimeEnd, @Param("pageNum") int pageNum, @Param("pageSize") int pageSize);
@@ -92,5 +87,7 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     long countTaskByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId, @Param("taskStatus") Integer taskStatus,
                                         @Param("execTimeStart") Date execTimeStart, @Param("execTimeEnd") Date execTimeEnd);
 
-    List<Map<String, Object>> selectByWorkspaceIdAndUserId(@Param("userId")String userId, @Param("id")String id);
+    List<TaskInstanceStatisticsResult> selectInstanceListByScanState(@Param("scanState") int scanState);
+
+    void updateScanStateById(@Param("id") String id, @Param("scanState")int scanState);
 }

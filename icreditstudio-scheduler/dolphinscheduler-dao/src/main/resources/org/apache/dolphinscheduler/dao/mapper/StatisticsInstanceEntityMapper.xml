@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.apache.dolphinscheduler.dao.mapper.StatisticsInstanceMapper">
+
+    <select id="getRowData" resultType="org.apache.dolphinscheduler.dao.entity.StatisticsInstanceEntity">
+        select *
+        from statistics_instance
+        <where>
+            <if test="workspaceId != null and workspaceId != '' ">
+                AND workspace_id = #{workspaceId}
+            </if>
+            <if test="userId != null and userId != '' ">
+                AND user_id = #{userId}
+            </if>
+            <if test="date != null ">
+                AND date = #{date}
+            </if>
+            <if test="state != null ">
+                AND state = #{state}
+            </if>
+        </where>
+        limit 1
+    </select>
+
+    <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
+        select ifnull(sum(count), 0)
+        from statistics_instance
+        <where>
+            <if test="startTime !=null ">
+                and date >= #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                and user_id =#{userId}
+            </if>
+            <if test="states != null and states.length != 0">
+                and state in
+                <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                    #{i}
+                </foreach>
+            </if>
+            and  workspace_id = #{workspaceId}
+        </where>
+    </select>
+
+    <select id="totalRecordsByWorkspaceIdAndTime" resultType="java.lang.Long">
+        SELECT ifnull(SUM(total_records), 0)
+        FROM statistics_instance
+        <where>
+            <if test="startTime !=null ">
+                and date >= #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                and user_id =#{userId}
+            </if>
+            and  workspace_id = #{workspaceId}
+        </where>
+    </select>
+
+    <select id="totalBytesByWorkspaceIdAndTime" resultType="java.lang.Long">
+        SELECT ifnull(SUM(total_byte), 0)
+        FROM statistics_instance
+        <where>
+            <if test="startTime !=null ">
+                and date >= #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                and user_id =#{userId}
+            </if>
+            and  workspace_id = #{workspaceId}
+        </where>
+    </select>
+
+    <select id="countByDay" resultType="map">
+        select DATE_FORMAT(date,'%Y-%m-%d') AS date,
+        IFNULL(SUM(count),0) AS count
+        from statistics_instance
+        <where>
+            <if test="userId !=null and userId != '' ">
+                and user_id =#{userId}
+            </if>
+            <if test="scheduleType !=null ">
+                and schedule_type =#{scheduleType}
+            </if>
+            <if test="startTime !=null ">
+                and date >= #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and date <![CDATA[<]]>  #{endTime}
+            </if>
+            <if test="states != null and states.length != 0">
+                and state in
+                <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                    #{i}
+                </foreach>
+            </if>
+            and  workspace_id = #{workspaceId}
+        </where>
+        GROUP BY DATE_FORMAT(date,'%Y-%m-%d')
+    </select>
+</mapper>
