@@ -156,7 +156,8 @@ export default {
                 this.isSavePassword
                   ? this.$ls.set('loginInfo', { loginName, password, userId })
                   : this.$ls.remove('loginInfo')
-                this.$router.replace({ path: '/' }).catch(() => {})
+                this.$router.replace({ path: '/' })
+                this.$ss.remove('activeMenuConfig')
                 this.btnLoading = false
               }
             })

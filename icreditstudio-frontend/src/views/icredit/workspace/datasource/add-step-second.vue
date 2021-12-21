@@ -308,8 +308,10 @@ export default {
       this.dataType = type
       this.databaseType = name
       this.$refs.baseDialog.open()
-      this.$nextTick(() => this.$refs.dataSourceForm.resetFields())
-      this.dataSourceForm.port = portMapping[name] ?? undefined
+      this.$nextTick(() => {
+        this.$refs.dataSourceForm.resetFields()
+        this.dataSourceForm.port = portMapping[name] ?? undefined
+      })
     },
 
     // 编辑状态下打开弹窗

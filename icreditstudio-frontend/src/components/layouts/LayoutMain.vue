@@ -145,9 +145,12 @@ export default {
 
     initPage() {
       // 先去获取缓存里面页面记录
-      const { activeModuleId } = this.$ss.get('activeMenuConfig') ?? {}
+      const { activeModuleId, curBreadcrumb } =
+        this.$ss.get('activeMenuConfig') ?? {}
       if (activeModuleId) {
         this.setActinveMenuId(activeModuleId)
+        this.curBreadcrumb = curBreadcrumb ?? []
+        // currentPage && this.$router.push(currentPage)
       } else {
         this.curBreadcrumb.push(this.topModules[1])
         this.curBreadcrumb.push(this.topModules[1].children[0])
@@ -183,7 +186,6 @@ export default {
       const { children = [], label } = curMenu
       this.curBreadcrumb = [curMenu]
       this.workspace = label
-      this.$ss.set('activeMenuConfig', { activeModuleId: this.activeModuleId })
       this.$ss.remove('taskForm')
       this.$ss.remove('selectedTable')
       // this.autoSelectWorkspaceId()
@@ -202,6 +204,13 @@ export default {
         this.getChildMenus(childMenu)
         this.$router.push(childMenu.url)
       }
+
+      // 当前页面参数缓存， 以防刷新跳到首页
+      this.$ss.set('activeMenuConfig', {
+        activeModuleId: this.activeModuleId,
+        // currentPage: this.$route.path,
+        curBreadcrumb: this.curBreadcrumb
+      })
     },
 
     // 二级菜单切换
@@ -212,7 +221,11 @@ export default {
         : [this.curBreadcrumb[0], rest]
       this.$ss.remove('taskForm')
       this.$ss.remove('selectedTable')
-      // this.autoSelectWorkspaceId()
+      this.$ss.set('activeMenuConfig', {
+        activeModuleId: this.activeModuleId,
+        // currentPage: this.$route.path,
+        curBreadcrumb: this.curBreadcrumb
+      })
     }
   }
 }

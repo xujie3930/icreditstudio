@@ -34,12 +34,11 @@ const err = error => {
       case 401:
         notificationMsg('未授权，请重新登录')
         if (token) {
-          store.dispatch('user/logoutAction')
-            .then(() => {
-              setTimeout(() => {
-                window.location.reload()
-              }, 1500)
-            })
+          store.dispatch('user/logoutAction').then(() => {
+            setTimeout(() => {
+              window.location.reload()
+            }, 1500)
+          })
         }
         break
       case 403:
@@ -99,11 +98,16 @@ service.interceptors.response.use(response => {
           {
             confirmButtonText: '确定',
             callback: () => {
-              const maskDom = document.getElementsByClassName('el-message-box__wrapper')
-              const popupDom = document.getElementsByClassName('el-popup-parent--hidden')
+              const maskDom = document.getElementsByClassName(
+                'el-message-box__wrapper'
+              )
+              const popupDom = document.getElementsByClassName(
+                'el-popup-parent--hidden'
+              )
               alertBoxDom.length && popupDom[0].removeChild(maskDom[0])
               Vue.ls.remove(ACCESS_TOKEN)
-              router.push({ path: '/login' })
+              Vue.ss.remove('activeMenuConfig')
+              router.replace({ path: '/login' })
             }
           }
         )
@@ -116,7 +120,8 @@ service.interceptors.response.use(response => {
       return Promise.reject(response.data)
     }
   } else {
-    !response.config.noErrorNotification && notificationMsg(response.data.returnMsg)
+    !response.config.noErrorNotification &&
+      notificationMsg(response.data.returnMsg)
     return Promise.reject(response.data)
   }
 }, err)
