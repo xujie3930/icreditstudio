@@ -175,30 +175,31 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (DatasourceStatusEnum.DISABLE.getCode().equals(getById(id).getStatus())) {
             throw new AppException("70000010");
         }
-        Date date = new Date();
-        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
         IcreditDatasourceEntity dataEntity = datasourceMapper.selectById(id);
         if (dataEntity == null) {
             log.error("没有找到该数据源:{}", id);
             throw new AppException("70000003");
         }
-        //开始同步的时间，更新到表中
-        Map<String, String> map = null;
+        Date date = new Date();
+        dataEntity.setLastSyncTime(date);
+
+        //TODO:同步任务可能会耗时较久，看后期是否需要加redis锁
         try {
-            dataEntity.setLastSyncTime(new Date());
-            dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.FAIL.getStatus());
             //这里根据不同type类型，连接不同的数据库，同步其表
             DatasourceSync datasource = DatasourceFactory.getDatasource(dataEntity.getType());
             String key = sequenceService.nextValueString();
-            map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+            Map<String, String> map = datasource.syncDDL(dataEntity.getType(), dataEntity.getUri());
+
+            //icredit_ddl_sync表创建对象并且赋值
             IcreditDdlSyncEntity ddlEntity = new IcreditDdlSyncEntity();
             BeanCopyUtils.copyProperties(dataEntity, ddlEntity);
             ddlEntity.setId(sequenceService.nextValueString());
             ddlEntity.setUpdateTime(date);
-            ddlEntity.setCreateTime(new Date());
-            //建立外键关联
+            ddlEntity.setCreateTime(date);
             ddlEntity.setDatasourceId(dataEntity.getId());
+
             //TODO:这里加锁：先查询最大版本号，对其递增再插入，查询和插入两操作得保证原子性
+            //获取旧数据,无旧数据则新增，旧数据与新数据不同，更新表结构字段且版本号+1
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
                 extracted(map, key, ddlEntity);
@@ -211,14 +212,17 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                     result = getResult(oldColumnsInfo, map.get("datasourceInfo"));
                 }
             }
+
+            //更新datasource表
+            dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
+            updateById(dataEntity);
         } catch (Exception e) {
             IcreditDatasourceServiceImpl icreditDatasourceService = (IcreditDatasourceServiceImpl) AopContext.currentProxy();
+            dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.FAIL.getStatus());
             icreditDatasourceService.updateDatasourceById(dataEntity);
             log.error("数据源同步异常:{}", e.getMessage());
             throw new AppException("70000003");
         }
-        dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.SUCCESS.getStatus());
-        datasourceMapper.updateById(dataEntity);
         return BusinessResult.success(result);
     }
 

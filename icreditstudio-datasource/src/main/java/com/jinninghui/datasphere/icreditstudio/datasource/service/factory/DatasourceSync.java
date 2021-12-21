@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasource.service.factory;
 
+import com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.DatasourceTypeEnum;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.sm4.SM4Utils;
@@ -104,7 +105,7 @@ public interface DatasourceSync {
         }
     }
 
-    static Connection getConn(Integer type, String uri, String username, String password) {
+    static Connection getConn(Integer type, String uri, String username, String password) throws AppException{
         String driver = DatasourceTypeEnum.findDatasourceTypeByType(type).getDriver();
         Connection connection = null;
         try {
@@ -113,6 +114,7 @@ public interface DatasourceSync {
             connection = DriverManager.getConnection(jdbcUri, username, password);
         } catch (Exception e) {
             logger.error("获取连接失败", e);
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000000.getCode());
         }
         return connection;
     }
