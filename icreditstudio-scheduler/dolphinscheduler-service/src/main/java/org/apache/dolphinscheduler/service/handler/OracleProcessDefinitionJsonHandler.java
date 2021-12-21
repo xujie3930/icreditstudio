@@ -36,14 +36,9 @@ public class OracleProcessDefinitionJsonHandler extends AbstractProcessDefinitio
         //增量存储开启则创建分区
         String partitionDir = null;
         if (partitionParam.getInc()) {
-            Object value = getValue(processDefinitionJson, PATH);
-            log.info("路径:" + JSONObject.toJSONString(value));
-            if (Objects.nonNull(value)) {
-                String timeFormat = syncTimeInterval.getTimeFormat();
-                String dataxHdfsPath = IncrementUtil.getDataxHdfsPath(value.toString(), timeFormat);
-                log.info("处理后路径:" + dataxHdfsPath);
-                partitionDir = dataxHdfsPath;
-            }
+            String timeFormat = syncTimeInterval.getTimeFormat();
+            partitionDir = getPartitionPath(processDefinitionJson, timeFormat);
+            log.info("处理后路径:" + partitionDir);
         }
         Object value = getValue(processDefinitionJson, QUERY_SQL);
         log.info("查询SQL:" + JSONObject.toJSONString(value));

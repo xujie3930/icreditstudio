@@ -1,7 +1,11 @@
 package org.apache.dolphinscheduler.service.handler;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.dolphinscheduler.common.model.Configuration;
+import org.apache.dolphinscheduler.service.increment.IncrementUtil;
+
+import java.util.Objects;
 
 /**
  * @author Peng
@@ -9,6 +13,7 @@ import org.apache.dolphinscheduler.common.model.Configuration;
 public abstract class AbstractProcessDefinitionJsonHandler implements ProcessDefinitionJsonHandler {
 
     private final static String TASK_PARAM_JSON = "tasks[0].params.json";
+    private static final String PATH = "content[0].writer.parameter.path";
 
     public AbstractProcessDefinitionJsonHandler() {
         register();
@@ -34,5 +39,14 @@ public abstract class AbstractProcessDefinitionJsonHandler implements ProcessDef
 
         from.set(TASK_PARAM_JSON, content.toJSON());
         return from;
+    }
+
+    public String getPartitionPath(String processDefinitionJson, String timeFormat){
+        Object value = getValue(processDefinitionJson, PATH);
+//        log.info("路径:" + JSONObject.toJSONString(value));
+        if (Objects.nonNull(value)) {
+            return IncrementUtil.getDataxHdfsPath(value.toString(), timeFormat);
+        }
+        return null;
     }
 }

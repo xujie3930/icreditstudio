@@ -18,7 +18,6 @@
 package org.apache.dolphinscheduler.service.quartz;
 
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -42,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * process schedule job

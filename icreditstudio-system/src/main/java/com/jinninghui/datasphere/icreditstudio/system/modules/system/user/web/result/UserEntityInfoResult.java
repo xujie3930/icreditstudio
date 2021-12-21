@@ -102,11 +102,5 @@ public class UserEntityInfoResult {
 
     private Set<String> orgIds;
 
-    private String functionalAuthority;//功能权限
-
-    private String dataAuthority;//数据权限
-
-    private String roleId;
-
-    private String roleName;
+    private AuthorityResult authorityResult;
 }

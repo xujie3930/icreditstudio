@@ -758,8 +758,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         sb.append(".db/");
         sb.append(wideTableName);
-        sb.append("/");
-        sb.append(partitionDir);
+        if (StringUtils.isNotBlank(partitionDir)) {
+            sb.append("/");
+            sb.append(partitionDir);
+        }
         return sb.toString();
     }
 
@@ -793,9 +795,20 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
      * @return
      */
     private List<DictInfo> findDictInfos(Collection<String> keys) {
-//        BusinessResult<List<DictInfo>> dictInfoByTypes = systemFeign.getDictInfoByTypes(keys);
         List<DictColumnEntity> dictInfoByKeys = dictService.getDictInfoByKeys(keys);
-        return null;
+        List<DictInfo> result = null;
+        if (CollectionUtils.isNotEmpty(dictInfoByKeys)) {
+            result = dictInfoByKeys.stream()
+                    .filter(Objects::nonNull)
+                    .map(dictColumnEntity -> {
+                        DictInfo info = new DictInfo();
+                        info.setName(dictColumnEntity.getDictId());
+                        info.setType(dictColumnEntity.getColumnKey());
+                        info.setValue(dictColumnEntity.getColumnValue());
+                        return info;
+                    }).collect(Collectors.toList());
+        }
+        return Optional.ofNullable(result).orElse(Lists.newArrayList());
     }
 
     @Override

@@ -103,9 +103,10 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         newMember.setSpaceId(defEntity.getId());
         newMember.setCreateUser(defEntity.getCreateUser());
         newMember.setCreateTime(new Date());
-        if (!CollectionUtils.isEmpty(member.getOrgNames())) {
-            newMember.setOrgName(String.join(",", member.getOrgNames()));
-        }
+        newMember.setOrgName(String.join(",", member.getOrgNames()));
+        newMember.setUserRole(String.join(",", member.getUserRole()));
+        newMember.setDataAuthority(String.join(",", member.getDataAuthority()));
+        newMember.setFunctionalAuthority(String.join(",", member.getFunctionalAuthority()));
         return newMember;
     }
 
@@ -177,6 +178,12 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             member.setCreateTime(user.getCreateTime().getTime());
             if (!StringUtils.isBlank(user.getOrgName())) {
                 member.setOrgNames(Arrays.asList(user.getOrgName().split(",")));
+            }
+            if (!StringUtils.isBlank(user.getUserRole())) {
+                member.setUserRole(Arrays.asList(user.getUserRole().split(",")));
+            }
+            if (!StringUtils.isBlank(user.getFunctionalAuthority())) {
+                member.setFunctionalAuthority(Arrays.asList(user.getFunctionalAuthority().split(",")));
             }
             return member;
         }).collect(Collectors.toList());
