@@ -1,5 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictQueryParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictSaveParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DictColumnResult;
@@ -9,6 +11,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface DictService {
@@ -26,4 +29,6 @@ public interface DictService {
     BusinessResult<BusinessPageResult<DictQueryResult>> pageList(DictQueryParam param);
 
     BusinessResult<Boolean> importDict(MultipartFile file, String param);
+
+    List<DictColumnEntity> getDictInfoByKeys(Collection<String> keys);
 }

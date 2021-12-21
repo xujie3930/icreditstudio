@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO;
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictColumnEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.DeleteFlagEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.DictMapper;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -145,4 +147,8 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         return dict;
     }
 
+    @Override
+    public List<DictColumnEntity> getDictInfoByKeys(Collection<String> keys) {
+        return null;
+    }
 }

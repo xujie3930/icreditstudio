@@ -97,6 +97,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private DatasourceFeign datasourceFeign;
     @Resource
     private ThreadPoolExecutor executor;
+    @Resource
+    private DictService dictService;
 
     @Override
     public BusinessResult<ImmutablePair> checkRepeatTaskName(DataSyncSaveParam param) {
@@ -105,9 +107,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         wrapper.eq(SyncTaskEntity.WORKSPACE_ID, param.getWorkspaceId());
         wrapper.eq(SyncTaskEntity.TASK_NAME, param.getTaskName());
         if (CollectionUtils.isNotEmpty(list(wrapper))) {
-            return BusinessResult.success(new ImmutablePair<>("isRepeat",true));
+            return BusinessResult.success(new ImmutablePair<>("isRepeat", true));
         }
-        return BusinessResult.success(new ImmutablePair<>("isRepeat",false));
+        return BusinessResult.success(new ImmutablePair<>("isRepeat", false));
     }
 
     /**
@@ -412,13 +414,16 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         //增量相关参数
         SyncCondition condition = JSONObject.parseObject(syncCondition).toJavaObject(SyncCondition.class);
+        FeignSyncCondition feignSyncCondition = BeanCopyUtils.copyProperties(condition, FeignSyncCondition.class);
+        feignSyncCondition.setFirstFull(info.getCronParam().getFirstFull());
+
         User user = getSystemUserByUserId(userId);
 
         FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
                 .processDefinitionId(taskEntity.getScheduleId())
                 .accessUser(user)
                 .channelControl(new ChannelControlParam(info.getMaxThread(), info.isLimit(), info.getLimitRate()))
-                .partitionParam(condition)
+                .partitionParam(feignSyncCondition)
                 .schedulerParam(new SchedulerParam(info.getScheduleType(), info.getCronParam().getCron()))
                 .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
                 .build();
@@ -788,12 +793,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
      * @return
      */
     private List<DictInfo> findDictInfos(Collection<String> keys) {
-        BusinessResult<List<DictInfo>> dictInfoByTypes = systemFeign.getDictInfoByTypes(keys);
-        if (dictInfoByTypes.isSuccess()) {
-            return dictInfoByTypes.getData();
-        } else {
-            throw new AppException("60000029");
-        }
+//        BusinessResult<List<DictInfo>> dictInfoByTypes = systemFeign.getDictInfoByTypes(keys);
+        List<DictColumnEntity> dictInfoByKeys = dictService.getDictInfoByKeys(keys);
+        return null;
     }
 
     @Override

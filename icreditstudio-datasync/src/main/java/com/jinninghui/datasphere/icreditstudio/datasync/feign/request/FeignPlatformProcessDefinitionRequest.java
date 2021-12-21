@@ -29,7 +29,7 @@ public class FeignPlatformProcessDefinitionRequest {
     /**
      * 同步参数
      */
-    private SyncCondition partitionParam;
+    private FeignSyncCondition partitionParam;
     /**
      * 通道控制
      */
