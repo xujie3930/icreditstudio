@@ -339,12 +339,7 @@
       </div>
 
       <footer class="footer-btn-wrap">
-        <el-button
-          class="btn"
-          @click="
-            $router.push(`/data-manage/add-task?opType=${opType}&step=second`)
-          "
-        >
+        <el-button class="btn" @click="handlePreviousClick">
           上一步
         </el-button>
         <el-button
@@ -400,7 +395,7 @@ import dayjs from 'dayjs'
 import crud from '@/mixins/crud'
 import tableConfiguration from '@/views/icredit/configuration/table/data-sync-add'
 import API from '@/api/icredit'
-import { debounce } from 'lodash'
+import { debounce, cloneDeep } from 'lodash'
 import { mapState } from 'vuex'
 import {
   treeIconMapping,
@@ -484,6 +479,18 @@ export default {
     }
   },
 
+  props: {
+    options: {
+      type: Object,
+      default: () => ({})
+    },
+
+    form: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+
   computed: {
     ...mapState('user', ['workspaceId']),
 
@@ -494,6 +501,19 @@ export default {
     }
   },
 
+  watch: {
+    form: {
+      immediate: true,
+      deep: true,
+      handler(nVal) {
+        if (nVal) {
+          const { secondTaskForm: secondForm } = this
+          this.secondTaskForm = { ...cloneDeep(secondForm), ...cloneDeep(nVal) }
+        }
+      }
+    }
+  },
+
   created() {
     this.initPage()
     this.getDatasourceCatalog()
@@ -501,22 +521,11 @@ export default {
 
   methods: {
     initPage() {
-      this.opType = this.$route.query?.opType || 'add'
-      this.step = this.$route.query?.step || ''
-      const taskForm = this.$ss.get('taskForm') || {}
-      this.secondTaskForm = { ...this.secondTaskForm, ...taskForm }
-      this.secondTaskForm.fieldInfos = this.hadleFieldInfos(taskForm.fieldInfos)
-
-      const { createMode, taskId } = this.secondTaskForm
-      // taskId存在表明是编辑的情况
-      if (taskId) {
-        this.getDetailData()
-      } else if (!createMode && this.opType === 'add' && this.step) {
-        // 没有点击保存设置， 上一步或下一步跳转到本页面的情况
-        this.selectedTable = this.$ss.get('selectedTable') || []
-      }
+      // taskId存在表明是该条数据已经保存过
+      this.secondTaskForm.taskId && this.getDetailData()
     },
 
+    // 重置参数
     initParams() {
       this.secondTaskForm.view = []
       this.secondTaskForm.fieldInfos = []
@@ -803,6 +812,12 @@ export default {
       }
     },
 
+    // 上一步
+    handlePreviousClick() {
+      const { taskName: oldName } = this.secondTaskForm
+      this.$emit('change', 1, null, { oldName })
+    },
+
     // 保存设置
     handleSaveSetting() {
       const params = this.handleTaskFormParams()
@@ -811,6 +826,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.secondTaskForm.taskId = data.taskId
+            this.$emit('change', 0, cloneDeep(this.secondTaskForm))
             this.$notify.success({
               title: '操作结果',
               duration: 1500,
@@ -828,7 +844,8 @@ export default {
       if (this.handleVerifyTip()) return
       this.handleSaveSetting()
       this.handleTaskFormParams()
-      this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
+      this.$emit('change', 3, this.secondTaskForm)
+      // this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
     },
 
     // 验证宽表信息以及宽表名称是否已填
@@ -902,7 +919,7 @@ export default {
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
 
       const params = { ...firstFrom, ...secondForm }
-      this.$ss.set('taskForm', params)
+      // this.$ss.set('taskForm', params)
       return params
     },
 
