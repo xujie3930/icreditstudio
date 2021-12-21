@@ -95,16 +95,12 @@
   background-image: none;
 }
 
-// .icredit-form {
-//   ::v-deep {
-//     .el-form-item {
-//       .el-form-item__label {
-//         font-size: 14px;
-//         font-family: PingFangSC, PingFangSC-Regular;
-//         font-weight: 400;
-//         text-align: right;
-//         color: #262626;
-//       }
-//     }
-//   }
-// }
+/** 分页样式覆盖 S **/
+.el-pager li {
+  margin: 0 4px !important;
+  background-color: #fbfbfc;
+}
+
+.el-pager li.active + li {
+  border-left: 1px solid #d9d9d9 !important;
+}
