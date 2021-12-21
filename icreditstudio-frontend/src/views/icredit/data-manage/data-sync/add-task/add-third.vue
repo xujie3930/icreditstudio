@@ -136,7 +136,7 @@
 import HeaderStepBar from './header-step-bar'
 import API from '@/api/icredit'
 import { mapState } from 'vuex'
-import { deepClone } from '@/utils/util'
+import { cloneDeep } from 'lodash'
 
 export default {
   components: { HeaderStepBar },
@@ -205,8 +205,31 @@ export default {
     }
   },
 
+  props: {
+    form: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+
   computed: {
     ...mapState('user', ['workspaceId'])
+  },
+
+  watch: {
+    form: {
+      immediate: true,
+      deep: true,
+      handler(nVal) {
+        if (nVal) {
+          const { taskForm: thirdForm } = this
+          this.taskForm = { ...cloneDeep(thirdForm), ...cloneDeep(nVal) }
+          const { incrementalField } = this.taskForm.syncCondition
+          console.log(incrementalField, 'kiki')
+          this.taskForm.scheduleType = incrementalField ? 1 : 0
+        }
+      }
+    }
   },
 
   created() {
@@ -215,12 +238,8 @@ export default {
 
   methods: {
     initPage() {
-      this.opType = this.$route.query?.opType || 'add'
-      const beforeStepForm = this.$ss.get('taskForm') || {}
-      this.taskForm = deepClone({ ...this.taskForm, ...beforeStepForm })
-      this.taskForm.scheduleType = this.taskForm.syncCondition.incrementalField
-        ? 1
-        : 0
+      const { incrementalField } = this.taskForm.syncCondition
+      this.taskForm.scheduleType = incrementalField ? 1 : 0
       // 编辑
       this.taskForm.taskId && this.getDetailData()
     },
@@ -265,11 +284,12 @@ export default {
 
     // 上一步
     handlePreiousStep() {
-      this.$router.push(
-        `/data-manage/add-build?step=third&opType=${this.opType}`
-      )
-      this.$ss.set('selectCron', this.selectCron)
-      this.$ss.set('cronType', this.taskForm.cronParam.type)
+      this.$emit('change', 2)
+      // this.$router.push(
+      //   `/data-manage/add-build?step=third&opType=${this.opType}`
+      // )
+      // this.$ss.set('selectCron', this.selectCron)
+      // this.$ss.set('cronType', this.taskForm.cronParam.type)
     },
 
     // 周期同步任务Cron字段校验
@@ -290,7 +310,8 @@ export default {
     },
 
     handleSaveParam() {
-      const { type, firstFull } = this.taskForm.cronParam
+      const { cronParam, scheduleType } = this.taskForm
+      const { type, firstFull } = cronParam
       const {
         month: mon,
         day: d,
@@ -303,20 +324,35 @@ export default {
       const month = [{ day: d }, ...day]
       const year = [{ month: mon }, ...month]
       const momentMapping = { hour, day, month, year }
-
-      return {
+      const params = {
         type,
         firstFull,
         moment: momentMapping[type]
       }
+      return scheduleType ? params : {}
     },
 
     // 保存设置或发布
     handleSaveSetting(callStep, loading) {
-      const { cronParam, callStep: s, ...restForm } = this.taskForm
+      const { cronParam, callStep: s, fieldInfos, ...restForm } = this.taskForm
+      const newFieldInfos = cloneDeep(fieldInfos).map(
+        ({
+          dictLoading,
+          dictionaryOptions,
+          fieldTypeOptions: fOption,
+          fieldType,
+          ...rest
+        }) => {
+          return {
+            fieldType: fieldType[1],
+            ...rest
+          }
+        }
+      )
       const params = {
         ...restForm,
         callStep,
+        fieldInfos: newFieldInfos,
         workspaceId: this.workspaceId,
         cronParam: this.handleSaveParam()
       }

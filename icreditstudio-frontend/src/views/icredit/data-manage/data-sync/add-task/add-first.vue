@@ -122,8 +122,27 @@ export default {
     }
   },
 
+  props: {
+    options: {
+      type: Object,
+      default: () => ({})
+    }
+  },
+
   computed: {
     ...mapState('user', ['workspaceId'])
+  },
+
+  watch: {
+    options: {
+      immediate: true,
+      deep: true,
+      handler(nVal) {
+        if (nVal && nVal.oldName) {
+          this.oldName = nVal.oldName ?? ''
+        }
+      }
+    }
   },
 
   mounted() {
@@ -132,22 +151,12 @@ export default {
 
   methods: {
     initPage() {
-      this.opType = this.$route.query?.opType || 'add'
-      this.step = this.$route.query?.opType || ''
-      this.opType === 'add' && !this.step && this.$ss.remove('taskForm')
-      this.taskForm = this.$ss.get('taskForm') || this.taskForm
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
       this.taskForm.taskId = taskId || this.$route.query?.taskId
       this.taskForm.taskId
         ? this.getDetailData()
         : this.autoGenerateTaskName(taskName)
-    },
-
-    handleBackClick() {
-      // 返回提示
-      this.$ss.remove('taskForm')
-      this.$router.push('/data-manage/data-sync')
     },
 
     // 编辑情况下获取详情
@@ -191,7 +200,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.taskForm.taskId = data.taskId
-            this.$ss.set('taskForm', this.taskForm)
+            this.$emit('change', 0, this.taskForm)
             this.$notify.success({
               title: '操作结果',
               duration: 1500,
@@ -209,12 +218,13 @@ export default {
       this.$refs[name].validate(valid => {
         if (valid) {
           this.saveSetting()
-          const { createMode } = this.taskForm
-          this.$ss.set('taskForm', this.taskForm)
-          this.$router.push({
-            path: '/data-manage/add-build',
-            query: { createMode, opType: this.opType, step: 'first' }
-          })
+          // const { createMode } = this.taskForm
+          // this.$ss.set('taskForm', this.taskForm)
+          this.$emit('change', 2, { ...this.taskForm })
+          // this.$router.push({
+          //   path: '/data-manage/add-build',
+          //   query: { createMode, opType: this.opType, step: 'first' }
+          // })
         }
       })
     },
@@ -231,7 +241,6 @@ export default {
 
     // 验证是否已经存在同步任务名称
     verifySyncTaskName(rule, value, cb) {
-      console.log(this.taskForm.id, this.oldName, value, this.opType)
       this.timerId = null
       if (
         (this.taskForm.taskId || this.opType === 'edit') &&

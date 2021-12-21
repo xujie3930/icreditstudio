@@ -179,8 +179,9 @@ export default {
   },
 
   methods: {
+    // 新增
     handleAddSyncTask() {
-      this.$router.push('/data-manage/add-task?opType=add')
+      this.$router.push('/data-manage/sync-task')
     },
 
     // 删除
@@ -254,10 +255,9 @@ export default {
     },
 
     // 编辑
-    handleEditBtnClick(row, opType) {
-      console.log(row, opType)
+    handleEditBtnClick(row) {
       const params = {
-        path: '/data-manage/add-task',
+        path: '/data-manage/sync-task',
         query: { opType: 'edit', taskId: row.taskId }
       }
       this.$router.push(params)

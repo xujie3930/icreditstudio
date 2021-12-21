@@ -177,7 +177,7 @@ public class DispatchServiceImpl implements DispatchService {
         boolean isFirstExec = null == processInstance;
         PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, isFirstExec);
         IncDate incDate = processService.getIncDate(platformPartitionParam);
-        String definitionJson = processService.execBefore(definition.getProcessDefinitionJson(), platformPartitionParam, incDate.getStartTime(), incDate.getEndTime());
+        String definitionJson = processService.execBefore(definition.getProcessDefinitionJson(), platformPartitionParam, incDate);
 
         if(StringUtils.isNotEmpty(definitionJson)){
             processService.updateProcessDefinitionById(definition.getId(), definitionJson);

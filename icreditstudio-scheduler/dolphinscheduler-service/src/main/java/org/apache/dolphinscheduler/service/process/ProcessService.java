@@ -59,6 +59,7 @@ import static org.apache.dolphinscheduler.common.enums.CommandType.REPEAT_RUNNIN
 @Component
 public class ProcessService {
 
+    private static final String PATH = "content[0].writer.parameter.path";
     private static final String QUERY_SQL = "content[0].reader.parameter.connection[0].querySql[0]";
     private static final String FILE_NAME = "content[0].writer.parameter.fileName";
     private static final String WRITE_MODE = "content[0].writer.parameter.writeMode";
@@ -504,7 +505,7 @@ public class ProcessService {
             boolean isFirstExec = null == processInstance;
             PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec);
             IncDate incDate = getIncDate(platformPartitionParam);
-            String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate.getStartTime(), incDate.getEndTime());
+            String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate);
             if(StringUtils.isNotEmpty(definitionJson)){
                 updateProcessDefinitionById(processDefinition.getId(), definitionJson);
             }
@@ -615,13 +616,14 @@ public class ProcessService {
         return processInstance;
     }
 
-    //获取增量同步的开始时间和结束时间
+    //获取增量同步的开始时间、结束时间、分区路径格式
     public IncDate getIncDate(PlatformPartitionParam platformPartitionParam){
         IncDate incDate = new IncDate();
         TimeInterval interval = new TimeInterval();
         SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(platformPartitionParam, n -> true);
         incDate.setStartTime(syncTimeInterval.formatStartTime());
         incDate.setEndTime(syncTimeInterval.formatEndTime());
+        incDate.setTimeFormat(syncTimeInterval.getTimeFormat());
         return incDate;
     }
 
@@ -639,11 +641,16 @@ public class ProcessService {
     }
 
     //增量同步的前置处理
-    public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, String startTime, String endTime){
+    public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, IncDate incDate){
         AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
         Object value = handler.getValue(definitionJson, QUERY_SQL);
-        String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), startTime, endTime);
-        Configuration configuration = handler.setValue(definitionJson, QUERY_SQL, querySql);
+        String partitionPath = handler.getPartitionPath(definitionJson, incDate.getTimeFormat());
+        String querySql = IncrementUtil.getTimeIncQueryStatement(value.toString(), platformPartitionParam.getDialect(), platformPartitionParam.getFirstFull(), platformPartitionParam.getIncrementalField(), incDate.getStartTime(), incDate.getEndTime());
+        Configuration configuration = handler.setValue(definitionJson, QUERY_SQL, querySql);//替换querySql
+        definitionJson = configuration.toJSON();
+        if (StringUtils.isNotBlank(partitionPath)) {//替换path
+            configuration = handler.setValue(definitionJson, PATH, partitionPath);
+        }
         return configuration.toJSON();
     }
 
