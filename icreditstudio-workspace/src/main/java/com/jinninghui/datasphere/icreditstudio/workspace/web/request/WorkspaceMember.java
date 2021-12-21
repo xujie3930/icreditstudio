@@ -13,9 +13,9 @@ import java.util.List;
 public class WorkspaceMember {
     private String userId;//用户id
     private String username;//用户名称
-    private String userRole;//用户角色
+    private List<String> userRole;//用户角色
     private List<String> orgNames;//用户部门
-    private String functionalAuthority;//功能权限
-    private String dataAuthority;//数据权限
+    private List<String> functionalAuthority;//功能权限
+    private List<String> dataAuthority;//数据权限
     private Long createTime;//创建时间
 }
