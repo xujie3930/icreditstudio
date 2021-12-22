@@ -9,8 +9,8 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public enum SyncRateEnum {
-    LIMIT(0, "限流"),
-    NOT_LIMIT(1, "不限流"),
+    NOT_LIMIT(0, "不限流"),
+    LIMIT(1, "限流"),
     ;
     private Integer code;
     private String desc;

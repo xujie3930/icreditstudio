@@ -31,6 +31,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatf
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.*;
+import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.task.DataxJsonEntity;
@@ -99,6 +100,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     private ThreadPoolExecutor executor;
     @Resource
     private DictService dictService;
+    @Resource
+    private DictColumnService dictColumnService;
 
     @Override
     public BusinessResult<ImmutablePair> checkRepeatTaskName(DataSyncSaveParam param) {
@@ -414,6 +417,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         //增量相关参数
         SyncCondition condition = JSONObject.parseObject(syncCondition).toJavaObject(SyncCondition.class);
+        condition = IncrementUtil.getSyncCondition(condition, info.getCronParam().getCron());
         FeignSyncCondition feignSyncCondition = BeanCopyUtils.copyProperties(condition, FeignSyncCondition.class);
         feignSyncCondition.setFirstFull(info.getCronParam().getFirstFull());
 
@@ -795,15 +799,15 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
      * @return
      */
     private List<DictInfo> findDictInfos(Collection<String> keys) {
-        List<DictColumnEntity> dictInfoByKeys = dictService.getDictInfoByKeys(keys);
+        List<DictColumnEntity> dictInfoByKeys = dictColumnService.getDictInfoByIds(keys);
         List<DictInfo> result = null;
         if (CollectionUtils.isNotEmpty(dictInfoByKeys)) {
             result = dictInfoByKeys.stream()
                     .filter(Objects::nonNull)
                     .map(dictColumnEntity -> {
                         DictInfo info = new DictInfo();
-                        info.setName(dictColumnEntity.getDictId());
-                        info.setType(dictColumnEntity.getColumnKey());
+                        info.setName(dictColumnEntity.getRemark());
+                        info.setType(dictColumnEntity.getDictId());
                         info.setValue(dictColumnEntity.getColumnValue());
                         return info;
                     }).collect(Collectors.toList());

@@ -7,6 +7,8 @@ import lombok.Data;
 @TableName(value = "icredit_dict_column")
 public class DictColumnEntity {
 
+    public static final String COLUMN_KEY = "column_key";
+    public static final String ID = "id";
     private String id;
     private String dictId;
     private String columnKey;
