@@ -44,6 +44,6 @@ public class JdbcDataSyncQuery extends AbstractDataSyncQuery {
 
     @Override
     public String getDialect() {
-        return "mysql";
+        return "jdbc";
     }
 }

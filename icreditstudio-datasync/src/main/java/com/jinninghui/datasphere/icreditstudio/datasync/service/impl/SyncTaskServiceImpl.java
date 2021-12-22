@@ -11,9 +11,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.DataSyncQuery;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.Parser;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.impl.DataSyncQueryContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.utils.AssociatedUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
+import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.QueryField;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.TableInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.QueryStatementParseContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.QueryStatementParseHandler;
@@ -230,7 +233,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             entity.setId(widetableEntity.getId());
         }
         entity.setSyncTaskId(param.getTaskId());
-        entity.setSqlStr(param.getSql());
+
+        List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
+        DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
+        String querySql = matching.querySql(queryFields, param.getSql());
+
+        entity.setSqlStr(querySql);
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         //前置操作是识别宽表,dialect必然存在
         entity.setDialect(param.getDialect());
@@ -273,6 +281,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             wideTableFieldSave(saveParams);
         }
         return param.getTaskId();
+    }
+
+    private List<QueryField> transferQueryField(List<WideTableFieldRequest> fieldInfos) {
+        return Optional.ofNullable(fieldInfos).orElse(Lists.newArrayList())
+                .parallelStream()
+                .filter(Objects::nonNull)
+                .map(field -> {
+                    QueryField queryField = new QueryField();
+                    queryField.setFieldName(field.getFieldName());
+                    queryField.setDatabaseName(field.getDatabaseName());
+                    queryField.setSourceTable(field.getSourceTable());
+                    return queryField;
+                }).collect(Collectors.toList());
     }
 
     /**
