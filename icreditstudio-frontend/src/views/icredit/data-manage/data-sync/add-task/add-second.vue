@@ -319,7 +319,7 @@
                     v-for="(item, idx) in row.dictionaryOptions"
                     :key="`${item.name}-${idx}`"
                     :label="item.name"
-                    :value="item.name"
+                    :value="item.key"
                   >
                   </el-option>
                 </el-select>
