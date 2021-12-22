@@ -95,7 +95,7 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
         List<DictColumnEntity> results = null;
         if (CollectionUtils.isNotEmpty(ids)) {
             QueryWrapper<DictColumnEntity> wrapper = new QueryWrapper<>();
-            wrapper.in(DictColumnEntity.ID, ids);
+            wrapper.in(DictColumnEntity.DICT_ID, ids);
             results = list(wrapper);
         }
         return Optional.ofNullable(results).orElse(Lists.newArrayList());
