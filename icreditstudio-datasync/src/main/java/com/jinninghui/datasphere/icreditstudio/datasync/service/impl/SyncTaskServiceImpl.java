@@ -334,6 +334,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             syncCondition = JSONObject.parseObject(syncConditionJson).toJavaObject(SyncCondition.class);
         }
         if (Objects.nonNull(syncCondition)) {
+            if (StringUtils.isNotBlank(param.getCronParam().getCron())) {
+                syncCondition = IncrementUtil.getSyncCondition(syncCondition, param.getCronParam().getCron());
+                wideTableEntity.setSyncCondition(JSONObject.toJSONString(syncCondition));
+                syncWidetableService.saveOrUpdate(wideTableEntity);
+            }
             if (StringUtils.isNotBlank(syncCondition.getIncrementalField())) {
                 entity.setSyncMode(SyncModeEnum.INC.getCode());
             } else {
