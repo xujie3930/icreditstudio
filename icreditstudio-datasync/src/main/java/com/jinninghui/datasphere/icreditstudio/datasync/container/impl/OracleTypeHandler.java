@@ -49,7 +49,7 @@ public class OracleTypeHandler extends AbstractDialectTypeHandler {
                 .stream()
                 .map(s -> {
                     String database = s.getDatabase();
-                    s.setTableName(new StringJoiner(".").add(database).add(s.getTableName()).toString());
+                    s.setTableName(new StringJoiner(".").add(database).add("\"").add(s.getTableName()).add("\"").toString());
                     return s;
                 }).collect(Collectors.toList());
         vo.setSourceTables(collect);
@@ -60,22 +60,22 @@ public class OracleTypeHandler extends AbstractDialectTypeHandler {
                 .forEach(associatedData -> {
                     String leftSource = associatedData.getLeftSource();
                     String leftSourceDatabase = associatedData.getLeftSourceDatabase();
-                    StringJoiner leftSourceJoiner = new StringJoiner(".").add(leftSourceDatabase).add(leftSource);
+                    StringJoiner leftSourceJoiner = new StringJoiner(".").add(leftSourceDatabase).add("\"").add(leftSource).add("\"");
                     associatedData.setLeftSource(leftSourceJoiner.toString());
 
                     String rightSource = associatedData.getRightSource();
                     String rightSourceDatabase = associatedData.getRightSourceDatabase();
-                    StringJoiner rightSourceJoiner = new StringJoiner(".").add(rightSourceDatabase).add(rightSource);
+                    StringJoiner rightSourceJoiner = new StringJoiner(".").add(rightSourceDatabase).add("\"").add(rightSource).add("\"");
                     associatedData.setRightSource(rightSourceJoiner.toString());
 
                     List<AssociatedCondition> conditions = associatedData.getConditions();
                     Optional.ofNullable(conditions).orElse(Lists.newArrayList())
                             .stream().forEach(associatedCondition -> {
                         String left = associatedCondition.getLeft();
-                        associatedCondition.setLeft(new StringJoiner(".").merge(leftSourceJoiner).add(left).toString());
+                        associatedCondition.setLeft(new StringJoiner(".").merge(leftSourceJoiner).add("\"").add(left).add("\"").toString());
 
                         String right = associatedCondition.getRight();
-                        associatedCondition.setRight(new StringJoiner(".").merge(rightSourceJoiner).add(right).toString());
+                        associatedCondition.setRight(new StringJoiner(".").merge(rightSourceJoiner).add("\"").add(right).add("\"").toString());
                     });
                 });
         return typeHandler.format(vo);
