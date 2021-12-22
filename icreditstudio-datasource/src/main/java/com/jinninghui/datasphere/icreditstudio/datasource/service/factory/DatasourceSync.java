@@ -18,7 +18,11 @@ import java.util.regex.Pattern;
 public interface DatasourceSync {
 
     Logger logger = LoggerFactory.getLogger(DatasourceSync.class);
-    static final String SEPARATOR = "|";
+    String SEPARATOR = "|";
+    //整个数据库的表结构json格式
+    String DATASOURCEINFO = "datasourceInfo";
+    //整个数据库的表数量
+    String TABLESCOUNT = "tablesCount";
 
     /**
      * 根据uri获取jdbc连接

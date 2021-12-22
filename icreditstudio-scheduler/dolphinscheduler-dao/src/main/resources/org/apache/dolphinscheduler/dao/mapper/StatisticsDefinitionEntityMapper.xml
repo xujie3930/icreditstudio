@@ -63,4 +63,8 @@
         </where>
         order by error_time desc limit 6
     </select>
+
+    <delete id="deleteByPlatformTaskId">
+        DELETE FROM statistics_definition WHERE platform_task_id = #{platformTaskId}
+    </delete>
 </mapper>

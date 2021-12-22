@@ -50,6 +50,7 @@
               </el-radio-group>
             </el-button-group>
 
+            <!-- 左侧数据库树列表 -->
             <el-tree
               highlight-current
               check-on-click-node
@@ -201,7 +202,6 @@
                   placeholder="请输入宽表名称"
                   v-model.trim="secondTaskForm.wideTableName"
                   @blur="handleVerifyWidthTableName"
-                  @clear="isCanJumpNext = false"
                 >
                   <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
@@ -319,7 +319,7 @@
                     v-for="(item, idx) in row.dictionaryOptions"
                     :key="`${item.name}-${idx}`"
                     :label="item.name"
-                    :value="item.name"
+                    :value="item.key"
                   >
                   </el-option>
                 </el-select>
@@ -425,10 +425,9 @@ export default {
 
     return {
       step: '',
-      opType: '',
+      opType: 'add',
       oldSql: '',
       datasourceId: null,
-      isCanJumpNext: false,
       isCanSaveSetting: false,
       isShowDot: false,
 
@@ -462,7 +461,7 @@ export default {
 
       // 表单参数
       secondTaskForm: {
-        syncCondition: { incrementalField: '', inc: undefined, n: undefined },
+        syncCondition: { incrementalField: '', inc: undefined, n: 1 },
         sql: '',
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
@@ -522,6 +521,9 @@ export default {
 
   methods: {
     initPage() {
+      console.log(this.$route, 'currentRouter')
+      const { opType } = this.$route.query
+      this.opType = opType ?? 'add'
       // taskId存在表明是该条数据已经保存过
       this.secondTaskForm.taskId && this.getDetailData()
     },
@@ -844,8 +846,6 @@ export default {
     handleStepClick() {
       if (this.handleVerifyTip()) return
       this.handleSaveSetting(3)
-      // this.handleTaskFormParams()
-      // this.$emit('change', 3, this.secondTaskForm)
     },
 
     // 验证宽表信息以及宽表名称是否已填
@@ -853,7 +853,7 @@ export default {
       const {
         targetSource,
         wideTableName,
-        createMode,
+        // createMode,
         sourceTables,
         view
       } = this.secondTaskForm
@@ -864,14 +864,11 @@ export default {
       } else if (!wideTableName) {
         this.$message.error('请先填写宽表名称！')
         return true
-      } else if (
-        !this.isCanJumpNext &&
-        !['edit', 'previousStep'].includes(this.opType)
-      ) {
-        this.$message.error(
-          `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
-        )
-        return true
+        // } else if (!['edit', 'previousStep'].includes(this.opType)) {
+        //   this.$message.error(
+        //     `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
+        //   )
+        //   return true
       } else if (sourceTables.length > 1 && !view.length) {
         this.$message.error('表关联关系不能为空，请关联后再进行操作！')
         return true
@@ -941,7 +938,6 @@ export default {
 
     // 清空下拉框Options
     handleClear(name) {
-      this.isCanJumpNext = false
       this[name] = []
     },
 
@@ -1015,7 +1011,6 @@ export default {
         if (isShow) return
       }
 
-      this.isCanJumpNext = false
       this.widthTableLoading = true
       this.tableLoading = true
       this.$refs.baseDialog.close()
@@ -1023,7 +1018,6 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             const { sql: sq, partitions, fields, incrementalFields } = data
-            this.isCanJumpNext = true
             this.secondTaskForm.sql = sq
             this.zoningOptions = partitions || []
             this.increFieldsOptions = incrementalFields || []
@@ -1331,7 +1325,7 @@ export default {
     getFluzzyDictionary(name, row) {
       /* eslint-disable no-param-reassign */
       row.dictLoading = true
-      API.dataSyncFluzzyDictionary({ name })
+      API.dataSyncDictionary({ name })
         .then(({ success, data }) => {
           if (success && data) {
             // eslint-disable-next-line no-param-reassign

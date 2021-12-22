@@ -203,13 +203,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
                 extracted(map, key, ddlEntity);
-                result = getResult(null, map.get("datasourceInfo"));
+                result = getResult(null, map.get(DatasourceSync.DATASOURCEINFO));
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
-                if (!oldColumnsInfo.equals(map.get("datasourceInfo"))) {
+                if (!oldColumnsInfo.equals(map.get(DatasourceSync.DATASOURCEINFO))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
                     extracted(map, key, ddlEntity);
-                    result = getResult(oldColumnsInfo, map.get("datasourceInfo"));
+                    result = getResult(oldColumnsInfo, map.get(DatasourceSync.DATASOURCEINFO));
                 }
             }
 
@@ -277,7 +277,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
-        String hdfsPath = HDFSUtils.copyStringToHDFS(map.get("datasourceInfo"), key);
+        String hdfsPath = HDFSUtils.copyStringToHDFS(map.get(DatasourceSync.DATASOURCEINFO), key);
         ddlEntity.setColumnsInfo(hdfsPath);
         ddlSyncMapper.insert(ddlEntity);
     }

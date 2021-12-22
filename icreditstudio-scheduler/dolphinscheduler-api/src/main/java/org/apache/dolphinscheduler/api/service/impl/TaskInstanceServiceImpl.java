@@ -20,9 +20,12 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.dolphinscheduler.api.service.TaskInstanceService;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
+import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
 import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult;
+import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
+import org.apache.dolphinscheduler.dao.mapper.StatisticsDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +49,11 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
 //    ProcessService processService;
 
     @Resource
-    TaskInstanceMapper taskInstanceMapper;
+    private TaskInstanceMapper taskInstanceMapper;
+    @Resource
+    private ProcessDefinitionMapper processDefinitionMapper;
+    @Resource
+    private StatisticsDefinitionMapper statisticsDefinitionMapper;
 
 //    @Resource
 //    ProcessInstanceService processInstanceService;
@@ -187,5 +194,13 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
     @Override
     public void updateScanStateById(String id, int scanState) {
         taskInstanceMapper.updateScanStateById(id, scanState);
+    }
+
+    @Override
+    public void deleteByProcessDefinitionId(String processDefinitionId) {
+        ProcessDefinition processDefinition = processDefinitionMapper.queryByDefineId(processDefinitionId);
+        String platformTaskId = processDefinition.getPlatformTaskId();
+        statisticsDefinitionMapper.deleteByPlatformTaskId(platformTaskId);
+        taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
     }
 }

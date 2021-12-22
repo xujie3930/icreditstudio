@@ -2,13 +2,10 @@ package org.apache.dolphinscheduler.api.service.impl;
 
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.api.enums.Status;
+import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
-import org.apache.dolphinscheduler.api.service.DispatchService;
-import org.apache.dolphinscheduler.api.service.MonitorService;
-import org.apache.dolphinscheduler.api.service.PlatformExecutorService;
-import org.apache.dolphinscheduler.api.service.SchedulerService;
+import org.apache.dolphinscheduler.api.service.*;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Server;
@@ -57,6 +54,8 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     private TaskInstanceMapper taskInstanceMapper;
     @Resource
     private ScheduleMapper scheduleMapper;
+    @Resource
+    private TaskInstanceService taskInstanceService;
 
     @Override
     public BusinessResult<Boolean> execProcessInstance(ExecPlatformProcessDefinitionParam param) {
@@ -318,7 +317,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
         if (StringUtils.isNotEmpty(result)) {//流程正在执行，不能删除
             return "1";
         }
-        taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
+        taskInstanceService.deleteByProcessDefinitionId(processDefinitionId);
         processInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
         processDefinitionMapper.deleteById(processDefinitionId);
         schedulerService.deleteByProcessDefinitionId(processDefinitionId);

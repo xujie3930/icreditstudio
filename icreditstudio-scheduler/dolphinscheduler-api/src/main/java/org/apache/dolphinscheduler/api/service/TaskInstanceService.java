@@ -65,4 +65,6 @@ public interface TaskInstanceService extends IService<TaskInstance> {
     List<TaskInstanceStatisticsResult> selectInstanceListByScanState(int scanState);
 
     void updateScanStateById(String id, int scanState);
+
+    void deleteByProcessDefinitionId(String processDefinitionId);
 }

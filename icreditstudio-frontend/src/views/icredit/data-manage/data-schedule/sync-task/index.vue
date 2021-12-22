@@ -27,7 +27,6 @@
     >
       <template #content>
         <j-table
-          v-loading="mixinTableLoading"
           :table-configuration="tableConfiguration"
           :table-pagination="mixinTablePagination"
           :table-data="mixinTableData"
@@ -102,6 +101,7 @@ export default {
 
   data() {
     return {
+      timerId: null,
       formOption,
       tableConfiguration,
       searchFormConfig: {
@@ -130,12 +130,25 @@ export default {
 
   created() {
     this.mixinRetrieveTableData()
+    this.polling()
+  },
+
+  beforeDestroy() {
+    this.handleClearInterval()
   },
 
   methods: {
-    // 历史日志
-    handleViewLog(row) {
-      this.$refs.viewLog.open(row)
+    // 清空定时器
+    handleClearInterval() {
+      this.timerId && clearInterval(this.timerId)
+    },
+
+    // 轮询查询表格数据
+    polling() {
+      this.handleClearInterval()
+      this.timerId = setInterval(() => {
+        this.mixinRetrieveTableData()
+      }, 5000)
     },
 
     // 立即执行
@@ -151,6 +164,11 @@ export default {
           this.mixinRetrieveTableData()
         }
       })
+    },
+
+    // 历史日志
+    handleViewLog(row) {
+      this.$refs.viewLog.open(row)
     },
 
     // 表格请求接口参数拦截

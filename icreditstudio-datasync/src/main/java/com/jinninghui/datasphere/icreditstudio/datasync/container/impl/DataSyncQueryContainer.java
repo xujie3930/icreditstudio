@@ -20,9 +20,9 @@ public class DataSyncQueryContainer extends AbstractMapContainer<String, DataSyn
 
     public static DataSyncQuery matching(String sql) {
         if (StrUtil.contains(sql, "select") && StrUtil.contains(sql, "from")) {
-            return getInstance().find("mysql");
+            return getInstance().find("jdbc");
         } else {
-            return getInstance().find("mysql");
+            return getInstance().find("jdbc");
         }
     }
 }

@@ -23,4 +23,6 @@ public interface StatisticsDefinitionMapper extends BaseMapper<StatisticsDefinit
     List<Map<String, Object>> runtimeTotalByDefinition(@Param("workspaceId") String workspaceId, @Param("userId") String userId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
 
     List<Map<String, Object>> errorTimeTotalByDefinition(@Param("workspaceId") String workspaceId, @Param("userId") String userId, @Param("startTime") Date startTime, @Param("endTime") Date endTime);
+
+    void deleteByPlatformTaskId(@Param("platformTaskId") String platformTaskId);
 }

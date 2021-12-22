@@ -277,7 +277,6 @@ export default {
 
     // 弹窗提示回调函数
     messageOperateCallback(opType, row) {
-      console.log(row, opType, 'row')
       const methodName = `dataSync${opType}`
       const params = {
         Disabled: { taskId: row.taskId },

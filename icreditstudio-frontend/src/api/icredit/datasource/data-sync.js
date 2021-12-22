@@ -76,6 +76,10 @@ const dataSyncVerifyName = params =>
 const dataSyncVerifyHost = params =>
   postAction('/datasync/preSqlPositionDataSource', params)
 
+// 关联字典表
+const dataSyncDictionary = params =>
+  postAction('/datasync/dict/associatedDict', params)
+
 export default {
   dataSyncAdd,
   dataSyncDelete,
@@ -95,5 +99,6 @@ export default {
   dataSyncFieldSearch,
   dataSyncTaskDetial,
   dataSyncVerifyName,
-  dataSyncVerifyHost
+  dataSyncVerifyHost,
+  dataSyncDictionary
 }
