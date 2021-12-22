@@ -9,5 +9,5 @@ import lombok.Data;
 public class DictInfo {
     private String name;
     private String value;
-    private String type;
+    private String key;
 }
