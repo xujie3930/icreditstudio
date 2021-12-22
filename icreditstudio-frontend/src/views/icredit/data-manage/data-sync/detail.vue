@@ -157,6 +157,15 @@
               </div>
               <span class="text">{{ buildDetailInfo.cronParam.cron }}</span>
             </div>
+            <div class="content-item" v-if="buildDetailInfo.scheduleType">
+              <div class="label">
+                <span class="required-icon">*</span>
+                <span>第一次是否全量同步</span>
+              </div>
+              <span class="text">{{
+                buildDetailInfo.cronParam.firstFull ? '是' : '否'
+              }}</span>
+            </div>
           </div>
         </div>
       </el-tab-pane>

@@ -153,18 +153,14 @@ export default {
               if (success && data) {
                 const { userId } = data
                 const { loginName, password } = this.loginData
+                this.$ss.remove('activeMenuConfig')
                 this.isSavePassword
                   ? this.$ls.set('loginInfo', { loginName, password, userId })
                   : this.$ls.remove('loginInfo')
-                this.$router.replace({ path: '/' }).catch(err => {
-                  console.log(err)
-                })
-                this.$ss.remove('activeMenuConfig')
-                this.btnLoading = false
+                this.$router.replace({ path: '/' }).catch(() => {})
               }
             })
-            .catch(err => {
-              console.log(err)
+            .finally(() => {
               this.btnLoading = false
             })
         }

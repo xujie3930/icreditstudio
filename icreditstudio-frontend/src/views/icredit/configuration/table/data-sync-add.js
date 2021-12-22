@@ -54,7 +54,7 @@ export default that => ({
       type: 'operation',
       label: '操作',
       prop: 'operation',
-      width: '100px',
+      width: 80,
       fixed: 'right',
       operationList: [
         {
