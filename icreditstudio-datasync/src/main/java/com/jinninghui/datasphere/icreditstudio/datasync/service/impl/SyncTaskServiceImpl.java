@@ -1108,10 +1108,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         }
         //取得宽表sql
         String wideTableSql = outsideGenerateWideTable.getWideTableSql(param);
-        log.info("取得宽表的sql语句", wideTableSql);
+        log.info("取得宽表的sql语句" + wideTableSql);
         //取得数据源ID
         String dataSourceId = outsideGenerateWideTable.getDataSourceId(wideTableSql, param);
-        log.info("数据源ID", dataSourceId);
+        log.info("数据源ID" + dataSourceId);
         //生成宽表数据列
         WideTable wideTable = outsideGenerateWideTable.generate(wideTableSql, dataSourceId);
         return wideTable;
