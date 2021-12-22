@@ -682,7 +682,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 .reader(dataxReader)
                 .writer(hdfsWriterEntity)
                 .setting(getDataxSetting(parse.getMaxThread()))
-                .core(getDataxCore(parse.getMaxThread(), parse.getSyncRate()))
+                .core(getDataxCore(parse.getMaxThread(), parse.getLimitRate()))
                 .build().buildDataxJson();
         return JSONObject.toJSONString(taskConfig);
     }
