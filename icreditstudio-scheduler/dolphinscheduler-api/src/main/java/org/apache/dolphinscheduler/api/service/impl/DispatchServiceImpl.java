@@ -5,7 +5,6 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
-import org.apache.dolphinscheduler.api.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.param.LogPageParam;
@@ -24,6 +23,7 @@ import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
 import org.apache.dolphinscheduler.service.commom.IncDate;
 import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
+import org.apache.dolphinscheduler.service.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,7 +100,7 @@ public class DispatchServiceImpl implements DispatchService {
             }
             dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
             String partitionParam = processDefinition.getPartitionParam();
-            PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, false);
+            PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, false, TaskTypeEnum.MANUAL.getCode());
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
             processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
@@ -175,7 +175,7 @@ public class DispatchServiceImpl implements DispatchService {
 
         String partitionParam = definition.getPartitionParam();
         boolean isFirstExec = null == processInstance;
-        PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, isFirstExec);
+        PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, isFirstExec, TaskTypeEnum.CYCLE.getCode());
         IncDate incDate = processService.getIncDate(platformPartitionParam);
         String definitionJson = processService.execBefore(definition.getProcessDefinitionJson(), platformPartitionParam, incDate);
 

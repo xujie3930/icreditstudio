@@ -1,4 +1,4 @@
-package org.apache.dolphinscheduler.api.enums;
+package org.apache.dolphinscheduler.service.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

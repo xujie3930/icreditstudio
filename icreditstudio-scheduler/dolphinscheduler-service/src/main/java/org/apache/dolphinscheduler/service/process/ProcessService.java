@@ -32,6 +32,7 @@ import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.service.commom.IncDate;
 import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
+import org.apache.dolphinscheduler.service.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.service.handler.*;
 import org.apache.dolphinscheduler.service.increment.IncrementUtil;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
@@ -503,7 +504,7 @@ public class ProcessService {
         }else {
             String partitionParam = processDefinition.getPartitionParam();
             boolean isFirstExec = null == processInstance;
-            PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec);
+            PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec, TaskTypeEnum.MANUAL.getCode());
             IncDate incDate = getIncDate(platformPartitionParam);
             String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate);
             if(StringUtils.isNotEmpty(definitionJson)){
@@ -627,10 +628,10 @@ public class ProcessService {
         return incDate;
     }
 
-    //处理分区信息
-    public PlatformPartitionParam handlePartition(String partitionParam, boolean isFirstExec){
+    //处理分区信息  code: 0-手动，1-周期
+    public PlatformPartitionParam handlePartition(String partitionParam, boolean isFirstExec, String code){
         PlatformPartitionParam platformPartitionParam = IncrementUtil.parseSyncConditionJson(partitionParam);
-        if(!platformPartitionParam.getInc()){
+        if(TaskTypeEnum.CYCLE.getCode().equals(code) && !platformPartitionParam.getInc()){//周期任务的  inc 必须为true
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.message);
         }
         if(StringUtils.isEmpty(platformPartitionParam.getDialect())){
@@ -660,8 +661,10 @@ public class ProcessService {
     public String handleProcessInstance(String processInstanceJson, String fileName, PlatformPartitionParam platformPartitionParam) {
         AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
         Configuration configuration = handler.setValue(processInstanceJson, WRITE_MODE, "backandwrite");
-        processInstanceJson = configuration.toJSON();
-        configuration = handler.setValue(processInstanceJson, FILE_NAME, fileName);
+        if(StringUtils.isNotEmpty(fileName)) {
+            processInstanceJson = configuration.toJSON();
+            configuration = handler.setValue(processInstanceJson, FILE_NAME, fileName);
+        }
         return configuration.toJSON();
     }
 
