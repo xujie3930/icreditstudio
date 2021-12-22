@@ -346,6 +346,7 @@
           class="btn"
           type="primary"
           :disabled="!secondTaskForm.sql"
+          :loading="saveSettingLoading"
           @click="handleStepClick"
         >
           下一步
@@ -819,14 +820,14 @@ export default {
     },
 
     // 保存设置
-    handleSaveSetting() {
+    handleSaveSetting(step = 0) {
       const params = this.handleTaskFormParams()
       this.saveSettingLoading = true
       API.dataSyncAdd(params)
         .then(({ success, data }) => {
           if (success && data) {
             this.secondTaskForm.taskId = data.taskId
-            this.$emit('change', 0, cloneDeep(this.secondTaskForm))
+            this.$emit('change', step, cloneDeep(this.secondTaskForm))
             this.$notify.success({
               title: '操作结果',
               duration: 1500,
@@ -842,10 +843,9 @@ export default {
     // 下一步
     handleStepClick() {
       if (this.handleVerifyTip()) return
-      this.handleSaveSetting()
-      this.handleTaskFormParams()
-      this.$emit('change', 3, this.secondTaskForm)
-      // this.$router.push(`/data-manage/add-transfer?opType=${this.opType}`)
+      this.handleSaveSetting(3)
+      // this.handleTaskFormParams()
+      // this.$emit('change', 3, this.secondTaskForm)
     },
 
     // 验证宽表信息以及宽表名称是否已填
@@ -898,9 +898,8 @@ export default {
     // 表单参数缓存以及过滤处理
     handleTaskFormParams() {
       const { workspaceId } = this
-      const firstFrom = this.$ss.get('taskForm') || {}
       // 可视化方式参数处理
-      !firstFrom.createMode && this.handleVisualizationParams()
+      !this.secondTaskForm.createMode && this.handleVisualizationParams()
       const { fieldInfos, ...restForm } = this.secondTaskForm
       const newFieldInfos = deepClone(fieldInfos).map(
         ({
@@ -917,10 +916,7 @@ export default {
         }
       )
       const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
-
-      const params = { ...firstFrom, ...secondForm }
-      // this.$ss.set('taskForm', params)
-      return params
+      return secondForm
     },
 
     // 处理可视化表单参数

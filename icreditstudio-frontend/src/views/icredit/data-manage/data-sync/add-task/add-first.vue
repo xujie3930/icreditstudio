@@ -68,7 +68,12 @@
       </el-form>
 
       <footer class="footer-btn-wrap">
-        <el-button class="btn" type="primary" @click="nextStep('taskForm')">
+        <el-button
+          :loading="saveSettingLoading"
+          class="btn"
+          type="primary"
+          @click="nextStep('taskForm')"
+        >
           下一步
         </el-button>
       </footer>
@@ -189,7 +194,7 @@ export default {
     },
 
     // 保存设置
-    saveSetting() {
+    saveSetting(step = 0) {
       const params = {
         workspaceId: this.workspaceId,
         callStep: 1,
@@ -200,7 +205,7 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             this.taskForm.taskId = data.taskId
-            this.$emit('change', 0, this.taskForm)
+            this.$emit('change', step, this.taskForm)
             this.$notify.success({
               title: '操作结果',
               duration: 1500,
@@ -216,16 +221,7 @@ export default {
     // 下一步
     nextStep(name) {
       this.$refs[name].validate(valid => {
-        if (valid) {
-          this.saveSetting()
-          // const { createMode } = this.taskForm
-          // this.$ss.set('taskForm', this.taskForm)
-          this.$emit('change', 2, { ...this.taskForm })
-          // this.$router.push({
-          //   path: '/data-manage/add-build',
-          //   query: { createMode, opType: this.opType, step: 'first' }
-          // })
-        }
+        valid && this.saveSetting(2)
       })
     },
 
