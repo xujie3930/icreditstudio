@@ -103,10 +103,10 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         newMember.setSpaceId(defEntity.getId());
         newMember.setCreateUser(defEntity.getCreateUser());
         newMember.setCreateTime(new Date());
-        newMember.setOrgName(String.join(",", member.getOrgNames()));
-        newMember.setUserRole(String.join(",", member.getUserRole()));
-        newMember.setDataAuthority(String.join(",", member.getDataAuthority()));
-        newMember.setFunctionalAuthority(String.join(",", member.getFunctionalAuthority()));
+        newMember.setOrgName(StringUtils.join(member.getOrgNames(),","));
+        newMember.setUserRole(StringUtils.join(member.getUserRole(),","));
+        newMember.setDataAuthority(StringUtils.join(member.getDataAuthority(),","));
+        newMember.setFunctionalAuthority(StringUtils.join(member.getFunctionalAuthority(),","));
         return newMember;
     }
 
