@@ -853,7 +853,7 @@ export default {
       const {
         targetSource,
         wideTableName,
-        createMode,
+        // createMode,
         sourceTables,
         view
       } = this.secondTaskForm
@@ -864,11 +864,11 @@ export default {
       } else if (!wideTableName) {
         this.$message.error('请先填写宽表名称！')
         return true
-      } else if (!['edit', 'previousStep'].includes(this.opType)) {
-        this.$message.error(
-          `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
-        )
-        return true
+        // } else if (!['edit', 'previousStep'].includes(this.opType)) {
+        //   this.$message.error(
+        //     `请先进行${createMode ? '执行SQL' : '识别宽表'}操作！`
+        //   )
+        //   return true
       } else if (sourceTables.length > 1 && !view.length) {
         this.$message.error('表关联关系不能为空，请关联后再进行操作！')
         return true
