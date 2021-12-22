@@ -9,6 +9,7 @@ public class DictColumnEntity {
 
     public static final String COLUMN_KEY = "column_key";
     public static final String ID = "id";
+    public static final String DICT_ID = "dict_id";
     private String id;
     private String dictId;
     private String columnKey;
