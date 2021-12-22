@@ -57,8 +57,8 @@ public class MysqlDatasource implements DatasourceSync {
                 }
                 tableList.add(table);
             }
-            map.put("datasourceInfo", JSONObject.toJSONString(tableList));
-            map.put("tablesCount", tablesCount.toString());
+            map.put(DATASOURCEINFO, JSONObject.toJSONString(tableList));
+            map.put(TABLESCOUNT, tablesCount.toString());
         }finally {
             if (null != conn){
                 conn.close();
