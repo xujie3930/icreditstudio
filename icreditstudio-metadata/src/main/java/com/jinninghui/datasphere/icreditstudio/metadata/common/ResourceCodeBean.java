@@ -18,6 +18,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_80000001("80000001", "未找到目标源"),
         RESOURCE_CODE_80000002("80000002", "未获取hive连接"),
         RESOURCE_CODE_80000003("80000003", "已存在相同名称的hive表"),
+        RESOURCE_CODE_80000004("80000004", "工作空间ID不能为空"),
+        RESOURCE_CODE_80000005("80000005", "hive库名称为空"),
+        RESOURCE_CODE_80000006("80000006", "hive表名称为空"),
         ;
 
         public final String code;

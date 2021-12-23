@@ -977,7 +977,8 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         return userList;
     }
 
-    private AuthorityResult getAuthorityResult(String userId) {
+    @Override
+    public AuthorityResult getAuthorityResult(String userId) {
         AuthorityResult result = new AuthorityResult();
         RoleEntityQueryParam roleParam = new RoleEntityQueryParam();
         roleParam.setUserId(userId);

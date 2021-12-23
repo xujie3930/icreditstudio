@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 
 /**
  * @author xujie
- * @description 11
+ * @description 限流构造器
  * @create 2021-12-23 10:10
  **/
 @Configuration
