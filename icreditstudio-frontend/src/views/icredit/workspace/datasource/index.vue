@@ -74,7 +74,12 @@
               <el-button type="text" @click="handleOperateClick(row, 'View')">
                 查看
               </el-button>
-              <el-button type="text" @click="handleSyncClick(row, 'Sync')">
+              <el-button
+                type="text"
+                :disabled="row.syncBtnLoading"
+                :loading="row.syncBtnLoading"
+                @click="handleSyncClick(row, 'Sync')"
+              >
                 同步
               </el-button>
               <el-button type="text" @click="handleDisabledBtnClick(row)">
@@ -137,6 +142,7 @@ import Detail from './detail'
 import AddDataSourceStepFirst from './add-step-first'
 import AddDataSourceStepSecond from './add-step-second'
 import API from '@/api/icredit'
+import { debounce } from 'lodash'
 
 export default {
   mixins: [crud, operate, workspace],
@@ -148,6 +154,8 @@ export default {
   },
 
   data() {
+    this.handleSyncClick = debounce(this.handleSyncClick, 700)
+
     return {
       timerId: null,
       isSyncClick: false,
@@ -156,6 +164,7 @@ export default {
 
       btnViewLoading: false,
       btnEditLoading: false,
+      syncBtnLoading: false,
 
       formOption,
       tableConfiguration,
@@ -182,6 +191,10 @@ export default {
         spaceId: this.workspaceId,
         ...params
       }
+    },
+
+    interceptorsResponseTableData(data) {
+      return data?.map(item => ({ syncBtnLoading: false, ...item })) ?? []
     },
 
     // 新增数据源
@@ -220,6 +233,8 @@ export default {
       this.timerId = null
       this.isSyncStatus = true
       this.syncMessage = ''
+      // eslint-disable-next-line no-param-reassign
+      row.syncBtnLoading = true
       API.datasourceSync(row.id)
         .then(({ success, data }) => {
           if (success) {
@@ -237,6 +252,8 @@ export default {
         })
         .finally(() => {
           this.isSyncClick = true
+          // eslint-disable-next-line no-param-reassign
+          row.syncBtnLoading = true
           this.timerId = setTimeout(() => {
             this.isSyncClick = false
           }, 2500)
