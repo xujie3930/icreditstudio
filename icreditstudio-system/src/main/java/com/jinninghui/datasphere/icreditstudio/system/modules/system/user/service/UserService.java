@@ -88,5 +88,7 @@ public interface UserService extends IService<UserEntity> {
     BusinessResult<Boolean> status(UserChangeStatusParam param);
 
     List<LikeQueryUserRoleListResult> queryUserRoleByName(LikeQueryUserRoleRequest params);
+
+    AuthorityResult getAuthorityResult(String userId);
 }
 
