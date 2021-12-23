@@ -58,5 +58,10 @@
             <groupId>com.jinninghui.datasphere</groupId>
             <artifactId>icreditstudio-system-code</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.1-jre</version>
+        </dependency>
     </dependencies>
 </project>

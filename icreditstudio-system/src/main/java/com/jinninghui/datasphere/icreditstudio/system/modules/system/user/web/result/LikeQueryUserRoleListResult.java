@@ -20,5 +20,8 @@ public class LikeQueryUserRoleListResult {
 
     private List<String> orgNames;//用户部门
 
+    /**
+     * 用户角色权限信息
+     */
     private AuthorityResult authorityResult;
 }

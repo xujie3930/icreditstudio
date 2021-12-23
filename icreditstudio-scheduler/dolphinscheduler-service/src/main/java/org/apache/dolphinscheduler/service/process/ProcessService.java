@@ -504,7 +504,7 @@ public class ProcessService {
         }else {
             String partitionParam = processDefinition.getPartitionParam();
             boolean isFirstExec = null == processInstance;
-            PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec, TaskTypeEnum.MANUAL.getCode());
+            PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec, TaskTypeEnum.CYCLE.getCode());
             IncDate incDate = getIncDate(platformPartitionParam);
             String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate);
             if(StringUtils.isNotEmpty(definitionJson)){

@@ -12,6 +12,10 @@ import java.util.List;
 public class CreateWideTableParam {
 
     /**
+     * 工作空间ID
+     */
+    private String workspaceId;
+    /**
      * 宽表名称
      */
     private String wideTableName;

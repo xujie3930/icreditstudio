@@ -11,6 +11,10 @@ import java.util.List;
 public class FeignMetadataGenerateWideTableRequest {
 
     /**
+     * 工作空间
+     */
+    private String workspaceId;
+    /**
      * 数据库名
      */
     private String databaseName;

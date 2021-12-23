@@ -65,6 +65,7 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesDao, ResourcesEnt
     private RoleService roleService;
     @Autowired
     private UserRoleMapService userRoleMapService;
+    private static final String PARENTID = "0";
 
     @Override
     public BusinessPageResult queryPage(ResourcesEntityPageRequest pageRequest) {
@@ -372,7 +373,11 @@ public class ResourcesServiceImpl extends ServiceImpl<ResourcesDao, ResourcesEnt
         if (CollectionUtils.isNotEmpty(roleIds)) {
             List<RoleResourcesMapEntity> roleResourcesMaps = getRoleResourcesMaps(roleIds);
             Set<String> resourcesIdsByRoleIds = findResourcesIdsByRoleIds(roleIds, roleResourcesMaps);
-            List<ResourcesEntity> resources = getResources(ResourcesEntityConditionParam.builder().ids(resourcesIdsByRoleIds).build());
+            //目前只做一级权限
+            Set<String> parentIds = new HashSet<String>() {{
+                add(PARENTID);
+            }};
+            List<ResourcesEntity> resources = getResources(ResourcesEntityConditionParam.builder().ids(resourcesIdsByRoleIds).parentIds(parentIds).build());
             results = Optional.ofNullable(resources);
         }
         return results;

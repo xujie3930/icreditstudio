@@ -468,6 +468,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             List<WideTableFieldRequest> wideTableFieldRequests = wideTableFieldEntityTransferToRequest(wideTableFields);
 
             CreateWideTableParam wideTableParam = new CreateWideTableParam();
+            wideTableParam.setWorkspaceId(taskEntity.getWorkspaceId());
             wideTableParam.setWideTableName(wideTableEntity.getName());
             wideTableParam.setTargetSource(wideTableEntity.getTargetSource());
             wideTableParam.setFieldInfos(wideTableFieldRequests);
@@ -1330,6 +1331,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             throw new AppException("60000014");
         }
         FeignMetadataGenerateWideTableRequest feignRequest = new FeignMetadataGenerateWideTableRequest();
+        feignRequest.setWorkspaceId(param.getWorkspaceId());
         feignRequest.setWideTableName(wideTableName);
         feignRequest.setPartition(param.getPartition());
         feignRequest.setDatabaseName(targetSource);

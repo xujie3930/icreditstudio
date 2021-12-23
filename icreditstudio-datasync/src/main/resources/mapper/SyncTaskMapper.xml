@@ -100,7 +100,7 @@
         <if test="taskName != null and taskName != ''">
             AND task_name LIKE concat('%',#{taskName},'%')
         </if>
-        ORDER BY last_update_time DESC
+        ORDER BY last_scheduling_time DESC
         limit #{pageNum},#{pageSize}
     </select>
 
