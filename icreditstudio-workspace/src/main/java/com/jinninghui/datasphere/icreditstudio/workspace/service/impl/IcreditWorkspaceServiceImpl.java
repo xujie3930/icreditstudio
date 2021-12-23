@@ -65,6 +65,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Autowired
     private SchedulerFeign schedulerFeign;
     private static final String DEFAULT_WORKSPACEID = "0";
+    private static final String SEPARATOR = ",";
 
     @Override
     @BusinessParamsValidate
@@ -103,10 +104,18 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         newMember.setSpaceId(defEntity.getId());
         newMember.setCreateUser(defEntity.getCreateUser());
         newMember.setCreateTime(new Date());
-        newMember.setOrgName(StringUtils.join(member.getOrgNames(),","));
-        newMember.setUserRole(StringUtils.join(member.getUserRole(),","));
-        newMember.setDataAuthority(StringUtils.join(member.getDataAuthority(),","));
-        newMember.setFunctionalAuthority(StringUtils.join(member.getFunctionalAuthority(),","));
+        if (!CollectionUtils.isEmpty(member.getOrgNames())){
+            newMember.setOrgName(StringUtils.join(member.getOrgNames().toArray(),SEPARATOR));
+        }
+        if (!CollectionUtils.isEmpty(member.getUserRole())){
+            newMember.setUserRole(StringUtils.join(member.getUserRole().toArray(),SEPARATOR));
+        }
+        if (!CollectionUtils.isEmpty(member.getDataAuthority())){
+            newMember.setDataAuthority(StringUtils.join(member.getDataAuthority().toArray(),SEPARATOR));
+        }
+        if (!CollectionUtils.isEmpty(member.getFunctionalAuthority())){
+            newMember.setFunctionalAuthority(StringUtils.join(member.getFunctionalAuthority().toArray(),SEPARATOR));
+        }
         return newMember;
     }
 
@@ -177,13 +186,16 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             WorkspaceMember member = BeanCopyUtils.copyProperties(user, new WorkspaceMember());
             member.setCreateTime(user.getCreateTime().getTime());
             if (!StringUtils.isBlank(user.getOrgName())) {
-                member.setOrgNames(Arrays.asList(user.getOrgName().split(",")));
+                member.setOrgNames(Arrays.asList(user.getOrgName().split(SEPARATOR)));
             }
             if (!StringUtils.isBlank(user.getUserRole())) {
-                member.setUserRole(Arrays.asList(user.getUserRole().split(",")));
+                member.setUserRole(Arrays.asList(user.getUserRole().split(SEPARATOR)));
             }
             if (!StringUtils.isBlank(user.getFunctionalAuthority())) {
-                member.setFunctionalAuthority(Arrays.asList(user.getFunctionalAuthority().split(",")));
+                member.setFunctionalAuthority(Arrays.asList(user.getFunctionalAuthority().split(SEPARATOR)));
+            }
+            if (!StringUtils.isBlank(user.getDataAuthority())) {
+                member.setDataAuthority(Arrays.asList(user.getDataAuthority().split(SEPARATOR)));
             }
             return member;
         }).collect(Collectors.toList());
@@ -206,7 +218,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         }
         String spaceId = entity.getId();
         //先删除该空间下所有成员
-        List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(userEntity -> userEntity.getId()).collect(Collectors.toList());
+        List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
         workspaceUserService.removeByIds(delList);
         for (int i = 0; i < param.getMemberList().size(); i++) {
             IcreditWorkspaceUserEntity newMember = getNewMember(param.getMemberList().get(i), entity);

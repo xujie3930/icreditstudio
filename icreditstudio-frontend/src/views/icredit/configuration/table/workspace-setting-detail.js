@@ -23,17 +23,20 @@ export default {
     {
       type: 'text',
       label: '角色',
-      prop: 'userRole'
+      prop: 'userRole',
+      formatter: ({ userRole: value }) => value?.join('、') ?? ''
     },
     {
       type: 'text',
       label: '功能权限',
-      prop: 'functionalAuthority'
+      prop: 'functionalAuthority',
+      formatter: ({ functionalAuthority: value }) => value?.join('、') ?? ''
     },
     {
       type: 'text',
       label: '数据权限',
-      prop: 'dataAuthority'
+      prop: 'dataAuthority',
+      formatter: ({ dataAuthority: value }) => value?.join('、') ?? ''
     },
     {
       type: 'date',

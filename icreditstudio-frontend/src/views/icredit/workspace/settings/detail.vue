@@ -228,11 +228,9 @@ export default {
       const { query } = this.$route
       const {
         id,
-        userRole,
         orgNames,
         userName,
-        dataAuthority,
-        functionalAuthority
+        authorityResult: { userRole, dataAuthority, functionalAuthority }
       } = this.userInfo
 
       // 当前登录用户
@@ -263,6 +261,7 @@ export default {
             username: userName,
             userRole: roleName,
             // orgName: orgNames,
+            authorityResult,
             ...rest
           } = item
           return {
@@ -270,6 +269,7 @@ export default {
             userName,
             roleName,
             // orgNames,
+            ...authorityResult,
             ...rest
           }
         })
@@ -299,9 +299,7 @@ export default {
           id: userId,
           name: username,
           orgNames,
-          userRole,
-          dataAuthority,
-          functionalAuthority
+          authorityResult: { userRole, dataAuthority, functionalAuthority }
         } = item || {}
 
         this.oldUserId = userId
@@ -330,12 +328,10 @@ export default {
       if (opType === 'confirm') {
         const userList = users.map(item => {
           const {
+            orgNames,
             id: userId,
             userName: username,
-            roleName: userRole,
-            orgNames,
-            functionalAuthority,
-            dataAuthority
+            authorityResult: { userRole, dataAuthority, functionalAuthority }
           } = item
           return {
             userId,
@@ -351,7 +347,6 @@ export default {
           ({ userId }) => ![cId, sId].includes(userId)
         )
 
-        console.log(this.selectedUser, cId !== sId, 'kkmm')
         // 当前登录系统用户与负责人不是同一个人
         cId !== sId &&
           this.selectedUser &&
