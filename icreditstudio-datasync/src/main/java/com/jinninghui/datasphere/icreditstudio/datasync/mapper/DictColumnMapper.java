@@ -13,8 +13,6 @@ public interface DictColumnMapper extends BaseMapper<DictColumnEntity> {
 
     void delBatchByDictId(@Param("delFlag") Integer delFlag, @Param("dictId") String dictId);
 
-    String findColumnByColumnKey(@Param("columnKey") String columnKey);
-
     List<DictColumnResult> getColumnListByDictId(@Param("dictId") String dictId);
 
     void truthDelBatchByDictId(@Param("dictId") String dictId);

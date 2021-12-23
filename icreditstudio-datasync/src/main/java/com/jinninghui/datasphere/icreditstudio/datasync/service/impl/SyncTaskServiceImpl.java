@@ -833,9 +833,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     .filter(Objects::nonNull)
                     .map(dictColumnEntity -> {
                         DictInfo info = new DictInfo();
-                        info.setName(dictColumnEntity.getRemark());
+                        info.setName(dictColumnEntity.getColumnValue());
                         info.setKey(dictColumnEntity.getDictId());
-                        info.setValue(dictColumnEntity.getColumnValue());
+                        info.setValue(dictColumnEntity.getColumnKey());
                         return info;
                     }).collect(Collectors.toList());
         }

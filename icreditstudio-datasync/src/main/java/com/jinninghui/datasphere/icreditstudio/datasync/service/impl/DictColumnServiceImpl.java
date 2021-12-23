@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -48,16 +49,15 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
         if (!columnKey.matches(COLUMN_KEY_VALUE_REGEX)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.message);
         }
-        boolean isExist = isExist(columnKey);
-        if (isExist) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.message);
+        List<String> stringList = saveParams.stream().map(DictColumnSaveParam::getColumnKey)
+                .collect(Collectors.toList());
+        long count = stringList.stream().distinct().count();
+        if(size > count){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.message);
         }
         for (int i = 0; i < size; i++) {
             if (StringUtils.isEmpty(saveParams.get(i).getColumnKey())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000077.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000077.message);
-            }
-            if (!saveParams.get(i).getColumnKey().equals(columnKey)) {
-                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000078.message);
             }
             if (!saveParams.get(i).getColumnValue().matches(COLUMN_KEY_VALUE_REGEX)) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.message);
@@ -72,12 +72,6 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
             dictColumns.add(dictColumn);
         }
         saveBatch(dictColumns);
-    }
-
-    @Override
-    public boolean isExist(String columnKey) {
-        String keyColumn = dictColumnMapper.findColumnByColumnKey(columnKey);
-        return StringUtils.isEmpty(keyColumn) ? false : true;
     }
 
     @Override
