@@ -230,9 +230,7 @@ export default {
         id,
         orgNames,
         userName,
-        userRole,
-        dataAuthority,
-        functionalAuthority
+        authorityResult: { userRole, dataAuthority, functionalAuthority }
       } = this.userInfo
 
       // 当前登录用户
