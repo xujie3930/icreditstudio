@@ -349,7 +349,6 @@ export default {
           ({ userId }) => ![cId, sId].includes(userId)
         )
 
-        console.log(this.selectedUser, cId !== sId, 'kkmm')
         // 当前登录系统用户与负责人不是同一个人
         cId !== sId &&
           this.selectedUser &&

@@ -154,6 +154,7 @@ export default {
       } else {
         this.curBreadcrumb.push(this.topModules[1])
         this.curBreadcrumb.push(this.topModules[1].children[0])
+        this.setActinveMenuId(this.topModules[1]?.id)
         this.$router.push('/home')
         this.$ss.remove('taskForm')
         this.$ss.remove('selectedTable')
