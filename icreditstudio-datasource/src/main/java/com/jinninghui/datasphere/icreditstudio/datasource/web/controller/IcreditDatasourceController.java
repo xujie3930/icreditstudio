@@ -15,10 +15,12 @@ import com.jinninghui.datasphere.icreditstudio.framework.log.Logable;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import com.jinninghui.datasphere.icreditstudio.framework.validate.RequestLimiter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -122,6 +124,8 @@ public class IcreditDatasourceController {
 
     @GetMapping("/sync/{id}")
     @Logable
+    //TODO:后期改为分布式限流
+    @RequestLimiter(QPS = 2D, timeout = 200, msg = "正在同步中，请勿频繁操作")
     public BusinessResult<String> sync(@PathVariable("id") String id) {
         return datasourceService.syncById(id);
     }

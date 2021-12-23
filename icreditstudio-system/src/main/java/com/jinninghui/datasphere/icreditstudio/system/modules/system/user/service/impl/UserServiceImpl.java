@@ -985,6 +985,7 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         result.setUserRole(roleList.stream().map(RoleEntityInfoResult::getRoleName).collect(Collectors.toList()).stream().distinct().collect(Collectors.toList()));
         List<ResourcesEntity> resourceList = roleService.findResourcesByUserId(userId);
         result.setFunctionalAuthority(resourceList.stream().map(ResourcesEntity::getName).collect(Collectors.toList()).stream().distinct().collect(Collectors.toList()));
+        result.setDataAuthority(Arrays.asList("全部"));
         return result;
     }
 
