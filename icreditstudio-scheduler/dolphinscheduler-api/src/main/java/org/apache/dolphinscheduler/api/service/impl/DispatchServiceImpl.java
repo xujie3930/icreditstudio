@@ -165,6 +165,7 @@ public class DispatchServiceImpl implements DispatchService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> nowRun(String taskId, String execType) {
+        System.out.println("execType: " + execType);
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         if(TaskTypeEnum.MANUAL.getCode().equals(execType)){//手动任务
             platformExecutorService.execSyncTask(definitionId);
