@@ -6,7 +6,6 @@ import lombok.Data;
 public class ExecInstanceRequest {
 
     private String processInstanceId;
-    private String taskInstanceId;
     private String execType;
 
 }
