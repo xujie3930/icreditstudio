@@ -682,7 +682,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                 .reader(dataxReader)
                 .writer(hdfsWriterEntity)
                 .setting(getDataxSetting(parse.getMaxThread()))
-                .core(getDataxCore(parse.getMaxThread(), parse.getSyncRate()))
+                .core(getDataxCore(parse.getMaxThread(), parse.getLimitRate()))
                 .build().buildDataxJson();
         return JSONObject.toJSONString(taskConfig);
     }
@@ -833,7 +833,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     .map(dictColumnEntity -> {
                         DictInfo info = new DictInfo();
                         info.setName(dictColumnEntity.getRemark());
-                        info.setType(dictColumnEntity.getDictId());
+                        info.setKey(dictColumnEntity.getDictId());
                         info.setValue(dictColumnEntity.getColumnValue());
                         return info;
                     }).collect(Collectors.toList());
