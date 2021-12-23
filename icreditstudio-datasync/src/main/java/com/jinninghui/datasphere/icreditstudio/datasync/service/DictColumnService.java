@@ -14,8 +14,6 @@ public interface DictColumnService {
 
     void saveBatch(String dictId, List<DictColumnSaveParam> saveParams);
 
-    boolean isExist(String columnKey);
-
     List<DictColumnResult> getColumnListByDictId(String dictId);
 
     void truthDelBatchByDictId(String id);
