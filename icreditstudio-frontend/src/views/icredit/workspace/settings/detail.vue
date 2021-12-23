@@ -230,9 +230,7 @@ export default {
         id,
         orgNames,
         userName,
-        userRole,
-        dataAuthority,
-        functionalAuthority
+        authorityResult: { userRole, dataAuthority, functionalAuthority }
       } = this.userInfo
 
       // 当前登录用户
@@ -349,7 +347,6 @@ export default {
           ({ userId }) => ![cId, sId].includes(userId)
         )
 
-        console.log(this.selectedUser, cId !== sId, 'kkmm')
         // 当前登录系统用户与负责人不是同一个人
         cId !== sId &&
           this.selectedUser &&

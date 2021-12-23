@@ -972,11 +972,17 @@ export default {
       if (this.verifyLinkTip()) return
       this.handleVisualizationParams()
 
+      // SQL模式下-数据库同名的情况选择相应的库
+      const { createMode } = this.secondTaskForm
+      if (createMode && isChooseIp) {
+        const isShow = await this.getSelectHostModel()
+        if (!isShow) return
+      }
+
       const datasourceId =
         this.selectedTable[0]?.datasourceId ?? this.datasourceId
       const {
         sourceType,
-        createMode,
         sql,
         sourceTables,
         dialect,
@@ -1003,12 +1009,6 @@ export default {
             tableName
           })
         )
-      }
-
-      // SQL模式下-数据库同名的情况选择相应的库
-      if (createMode && isChooseIp) {
-        const isShow = await this.getSelectHostModel()
-        if (isShow) return
       }
 
       this.widthTableLoading = true
@@ -1383,16 +1383,18 @@ export default {
         .then(({ success, data }) => {
           if (success && data) {
             const { showWindow, sameNameDataBase } = data
-            this.widthTableLoading = true
+            const [{ datasourceId, dialect }] = sameNameDataBase
+
+            this.widthTableLoading = false
+            this.datasourceId = datasourceId
+            this.secondTaskForm.dialect = dialect
             this.sameNameDataBase = sameNameDataBase ?? []
             showWindow && this.$refs.baseDialog.open()
-            return showWindow
-          } else {
-            return false
+            return true
           }
         })
         .catch(() => {
-          this.widthTableLoading = true
+          this.widthTableLoading = false
           return false
         })
     }
