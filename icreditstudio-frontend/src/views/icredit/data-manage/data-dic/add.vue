@@ -222,20 +222,17 @@ export default {
       })
 
       if (this.opType === 'import') {
-        console.log(1111)
         this.$refs.upload.clearFiles()
       }
     },
 
     // 新增一行
-    handleAddRow(row) {
-      const { columnKey } = row
-      this.tableData.push({ columnKey, columnValue: '', remark: '' })
+    handleAddRow() {
+      this.tableData.push({ columnKey: '', columnValue: '', remark: '' })
     },
 
     // 删减一行
     handleMinusRow(row, column, index) {
-      console.log(row, column, index, 'row')
       this.tableData.splice(index, 1)
     },
 
