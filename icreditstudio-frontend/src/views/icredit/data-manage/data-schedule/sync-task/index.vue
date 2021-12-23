@@ -154,7 +154,7 @@ export default {
     // 立即执行
     handleRunBtnClick(row) {
       const { taskId, dispatchType } = row
-      const params = { taskId, execType: dispatchType }
+      const params = { taskId, execType: dispatchType === '手动执行' ? 0 : 1 }
       API.dataScheduleSyncRun(params).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({

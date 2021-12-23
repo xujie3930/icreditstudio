@@ -228,9 +228,9 @@ export default {
       const { query } = this.$route
       const {
         id,
-        userRole,
         orgNames,
         userName,
+        userRole,
         dataAuthority,
         functionalAuthority
       } = this.userInfo
@@ -263,6 +263,7 @@ export default {
             username: userName,
             userRole: roleName,
             // orgName: orgNames,
+            authorityResult,
             ...rest
           } = item
           return {
@@ -270,6 +271,7 @@ export default {
             userName,
             roleName,
             // orgNames,
+            ...authorityResult,
             ...rest
           }
         })
@@ -299,9 +301,7 @@ export default {
           id: userId,
           name: username,
           orgNames,
-          userRole,
-          dataAuthority,
-          functionalAuthority
+          authorityResult: { userRole, dataAuthority, functionalAuthority }
         } = item || {}
 
         this.oldUserId = userId
@@ -330,12 +330,10 @@ export default {
       if (opType === 'confirm') {
         const userList = users.map(item => {
           const {
+            orgNames,
             id: userId,
             userName: username,
-            roleName: userRole,
-            orgNames,
-            functionalAuthority,
-            dataAuthority
+            authorityResult: { userRole, dataAuthority, functionalAuthority }
           } = item
           return {
             userId,
