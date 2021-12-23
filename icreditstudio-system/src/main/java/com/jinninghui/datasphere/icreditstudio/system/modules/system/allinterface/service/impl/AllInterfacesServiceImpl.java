@@ -35,6 +35,7 @@ import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.servic
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserOrgMapService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserRoleMapService;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.service.UserService;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.AuthorityResult;
 import com.jinninghui.datasphere.icreditstudio.system.modules.uaa.common.em.UaaCodeBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -210,6 +211,8 @@ public class AllInterfacesServiceImpl implements AllInterfacesService {
             userEntityAuthResult.setOrgList((List<OrganizationEntity>) organizationEntities);
         }
 
+        AuthorityResult authorityResult = userService.getAuthorityResult(userAuthParams.getUserId());
+        userEntityAuthResult.setAuthorityResult(authorityResult);
         // 给用户信息赋值
         authResult.setUserInfo(userEntityAuthResult);
 

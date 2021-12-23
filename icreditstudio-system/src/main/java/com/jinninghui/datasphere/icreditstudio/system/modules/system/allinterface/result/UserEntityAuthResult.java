@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.system.modules.system.allinterfa
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.org.entity.OrganizationEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.role.entity.RoleEntity;
 import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.entity.UserEntity;
+import com.jinninghui.datasphere.icreditstudio.system.modules.system.user.web.result.AuthorityResult;
 import lombok.Data;
 
 import java.util.List;
@@ -24,12 +25,7 @@ public class UserEntityAuthResult extends UserEntity {
      */
     private boolean isFirstLogin;
 
-    private String userRole;//用户角色
-
     private List<String> orgNames;//用户部门
 
-    private String functionalAuthority;//功能权限
-
-    private String dataAuthority;//数据权限
-
+    private AuthorityResult authorityResult;
 }
