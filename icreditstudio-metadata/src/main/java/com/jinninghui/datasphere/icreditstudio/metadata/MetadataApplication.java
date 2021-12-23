@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.metadata;
 
 import com.jinninghui.datasphere.icreditstudio.framework.sequence.configuration.EnableSequenceService;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -15,7 +16,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableSequenceService
 //@EnableValidator
 @EnableScheduling
-//@MapperScan(basePackages = {"com.jinninghui.**.mapper"})
+@MapperScan(basePackages = {"com.jinninghui.**.mapper"})
 @EnableAspectJAutoProxy(exposeProxy = true)//exposeProxy类内部可以获取到当前类的代理对象
 @ComponentScan("com.jinninghui")
 public class MetadataApplication {

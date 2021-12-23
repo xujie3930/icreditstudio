@@ -5,9 +5,12 @@ import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
+import com.jinninghui.datasphere.icreditstudio.metadata.common.ResourceCodeBean;
+import com.jinninghui.datasphere.icreditstudio.metadata.entity.WorkspaceTableEntity;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.AbstractClusterHiveConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataConnection;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.WorkspaceTableService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
@@ -39,6 +42,8 @@ public class MetadataServiceImpl implements MetadataService {
     private MetadataConnection connection;
     @Autowired
     private AbstractClusterHiveConnectionSource connectionSource;
+    @Resource
+    private WorkspaceTableService workspaceTableService;
 
     @Override
     public List<Database> getDatabases() {
@@ -107,7 +112,42 @@ public class MetadataServiceImpl implements MetadataService {
             }
             return true;
         });
+        if (aBoolean) {
+            addWorkspaceTable(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
+        }
         return BusinessResult.success(aBoolean);
+    }
+
+    /**
+     * 添加hive表和工作空间映射
+     *
+     * @param workspaceId
+     * @param databaseName
+     * @param tableName
+     */
+    private void addWorkspaceTable(String workspaceId, String databaseName, String tableName) {
+        //参数前置校验
+        addWorkspaceTablePreValid(workspaceId, databaseName, tableName);
+        WorkspaceTableEntity workspaceTableEntity = new WorkspaceTableEntity();
+        workspaceTableEntity.setWorkspaceId(workspaceId);
+        workspaceTableEntity.setTableName(tableName);
+        workspaceTableEntity.setDatabaseName(databaseName);
+        workspaceTableService.save(workspaceTableEntity);
+    }
+
+    private void addWorkspaceTablePreValid(String workspaceId, String databaseName, String tableName) {
+        //工作空间为空
+        if (StringUtils.isBlank(workspaceId)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000004.getCode());
+        }
+        //hive库名称为空
+        if (StringUtils.isBlank(databaseName)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000005.getCode());
+        }
+        //hive表名称为空
+        if (StringUtils.isBlank(tableName)) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
+        }
     }
 
     @Override
