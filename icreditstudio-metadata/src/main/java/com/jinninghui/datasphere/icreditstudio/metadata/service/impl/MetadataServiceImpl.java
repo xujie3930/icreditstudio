@@ -11,6 +11,7 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.AbstractClusterH
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataConnection;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.WorkspaceTableService;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.HiveAuthInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
@@ -147,6 +148,31 @@ public class MetadataServiceImpl implements MetadataService {
         //hive表名称为空
         if (StringUtils.isBlank(tableName)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
+        }
+    }
+
+    private void hiveTableAuth(List<HiveAuthInfo> authInfos) {
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(authInfos)) {
+            String statement = null;
+            Connection connection = this.connection.getConnection();
+            smartCloseConn(connection, statement, (conn, sql) -> {
+                for (HiveAuthInfo authInfo : authInfos) {
+                    sql = "grant  all on table " + authInfo.getHiveBaseName() + "." + authInfo.getHiveTable() + " to user " + authInfo.getUserName();
+                    System.out.println(sql);
+//                    String setAdmin = "set role admin";
+                    Statement stmt = null;
+                    try {
+                        stmt = conn.createStatement();
+//                        stmt.execute(setAdmin);
+                        stmt.execute(sql);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+                        IoUtil.close(stmt);
+                    }
+                }
+                return true;
+            });
         }
     }
 
