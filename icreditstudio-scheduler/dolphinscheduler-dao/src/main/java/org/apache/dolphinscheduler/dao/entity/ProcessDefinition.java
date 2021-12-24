@@ -53,6 +53,10 @@ public class ProcessDefinition {
     @TableId(value = "id", type = IdType.ID_WORKER_STR)
     private String id;
 
+    private String cron;
+    private String targetTable;
+    private String sourceTable;
+
     private String workspaceId;//新增工作空间id
 
     private Integer scheduleType;//0-周期实例，1-手动实例

@@ -150,7 +150,7 @@
     </select>
 
     <select id="queryTaskByProcessDefinitionId" resultType="org.apache.dolphinscheduler.common.vo.DispatchLogVO">
-        SELECT id AS taskInstanceId,process_instance_id AS processInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
+        SELECT schedule_type AS scheduleType,source_table AS sourceTable,target_table AS targetTable,cron,id AS taskInstanceId,process_instance_id AS processInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
                 total_records AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum,start_time AS startTime,end_time AS endTime
         FROM t_ds_task_instance
         WHERE process_definition_id = #{processDefinitionId}

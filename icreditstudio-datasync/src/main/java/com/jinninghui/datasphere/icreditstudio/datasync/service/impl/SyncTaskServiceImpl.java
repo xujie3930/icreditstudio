@@ -450,13 +450,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         User user = getSystemUserByUserId(userId);
 
+        List<SourceTable> sourceTableList = JSONArray.parseArray(wideTableEntity.getSourceTables(), SourceTable.class);
+        StringJoiner sourceTables = new StringJoiner(",", "(", ")");
+        for (SourceTable sourceTable : sourceTableList) {
+            sourceTables.add(sourceTable.getTableName());
+        }
+
         FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
                 .processDefinitionId(taskEntity.getScheduleId())
                 .accessUser(user)
                 .channelControl(new ChannelControlParam(info.getMaxThread(), info.isLimit(), info.getLimitRate()))
                 .partitionParam(feignSyncCondition)
                 .schedulerParam(new SchedulerParam(info.getScheduleType(), info.getCronParam().getCron()))
-                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
+                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getVersion(), info.getScheduleType(), info.getCron(), wideTableEntity.getTargetSource(), String.valueOf(sourceTables), taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
                 .build();
         String scheduleId = taskEntity.getScheduleId();
         if (StringUtils.isBlank(scheduleId)) {

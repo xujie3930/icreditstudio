@@ -3,6 +3,7 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
@@ -148,6 +149,7 @@ public class DispatchServiceImpl implements DispatchService {
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(param.getTaskId());
         long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd());
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd(), pageNum, param.getPageSize());
+        StringBuilder scheduleTypeStr;
         for (DispatchLogVO dispatchLogVO : logVOList) {
             if(ExecutionStatus.SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.NEED_FAULT_TOLERANCE.getCode() == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.SUCCESS.getCode());
@@ -157,6 +159,9 @@ public class DispatchServiceImpl implements DispatchService {
             }else{//失败
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.FAIL.getCode());
             }
+            scheduleTypeStr = new StringBuilder();
+            scheduleTypeStr.append(ScheduleType.find(dispatchLogVO.getScheduleType()).getMsg()).append(dispatchLogVO.getCron());
+            dispatchLogVO.setScheduleTypeStr(String.valueOf(scheduleTypeStr));
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
         return BusinessResult.success(BusinessPageResult.build(logVOList, param, countLog));

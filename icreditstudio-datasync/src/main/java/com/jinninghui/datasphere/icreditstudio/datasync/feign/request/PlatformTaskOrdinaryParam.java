@@ -10,6 +10,11 @@ import lombok.Data;
 @AllArgsConstructor
 public class PlatformTaskOrdinaryParam {
 
+    private Integer version;
+    private Integer scheduleType;
+    private String cron;
+    private String targetTable;
+    private String sourceTableStr;
     private String workspaceId;
     /**
      * 启用/停用
