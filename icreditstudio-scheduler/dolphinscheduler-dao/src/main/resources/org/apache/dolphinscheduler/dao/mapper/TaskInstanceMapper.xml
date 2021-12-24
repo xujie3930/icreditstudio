@@ -150,46 +150,46 @@
     </select>
 
     <select id="queryTaskByProcessDefinitionId" resultType="org.apache.dolphinscheduler.common.vo.DispatchLogVO">
-        SELECT schedule_type AS scheduleType,source_table AS sourceTable,target_table AS targetTable,cron,id AS taskInstanceId,process_instance_id AS processInstanceId,name AS taskInstanceName,state AS taskInstanceState,submit_time AS taskInstanceExecTime,
-                total_records AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum,start_time AS startTime,end_time AS endTime
-        FROM t_ds_task_instance
-        WHERE process_definition_id = #{processDefinitionId}
+        SELECT tdpd.schedule_type AS scheduleType,tdpd.source_table AS sourceTable,tdpd.target_table AS targetTable,tdpd.cron AS cron,tdti.id AS taskInstanceId,tdti.process_instance_id AS processInstanceId,tdti.name AS taskInstanceName,tdti.state AS taskInstanceState,tdti.submit_time AS taskInstanceExecTime,
+        tdti.total_records AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum,tdti.start_time AS startTime,tdti.end_time AS endTime
+        FROM t_ds_task_instance tdti LEFT JOIN t_ds_process_definition tdpd ON tdti.process_definition_id = tdpd.id
+        WHERE tdti.process_definition_id = #{processDefinitionId}
         <if test="taskStatus == 0">
-            AND state IN (7,8)
+            AND tdti.state IN (7,8)
         </if>
         <if test="taskStatus == 2">
-            AND state IN (0,1,10)
+            AND tdti.state IN (0,1,10)
         </if>
         <if test="taskStatus == 1">
-            AND state IN (4,5,6,9)
+            AND tdti.state IN (4,5,6,9)
         </if>
         <if test="execTimeStart != null">
-            AND submit_time <![CDATA[ >= ]]> #{execTimeStart}
+            AND tdti.submit_time <![CDATA[ >= ]]> #{execTimeStart}
         </if>
         <if test="execTimeEnd != null">
-            AND submit_time <![CDATA[ <= ]]> #{execTimeEnd}
+            AND tdti.submit_time <![CDATA[ <= ]]> #{execTimeEnd}
         </if>
-        ORDER BY submit_time DESC
+        ORDER BY tdti.submit_time DESC
         limit #{pageNum},#{pageSize}
     </select>
     <select id="countTaskByProcessDefinitionId" resultType="java.lang.Long">
         SELECT count(1)
-        FROM t_ds_task_instance
-        WHERE process_definition_id = #{processDefinitionId}
+        FROM t_ds_task_instance tdti LEFT JOIN t_ds_process_definition tdpd ON tdti.process_definition_id = tdpd.id
+        WHERE tdti.process_definition_id = #{processDefinitionId}
         <if test="taskStatus == 0">
-            AND state IN (7,8)
+            AND tdti.state IN (7,8)
         </if>
         <if test="taskStatus == 2">
-            AND state IN (0,1,10)
+            AND tdti.state IN (0,1,10)
         </if>
         <if test="taskStatus == 1">
-            AND state IN (4,5,6,9)
+            AND tdti.state IN (4,5,6,9)
         </if>
         <if test="execTimeStart != null">
-            AND submit_time <![CDATA[ >= ]]> #{execTimeStart}
+            AND tdti.submit_time <![CDATA[ >= ]]> #{execTimeStart}
         </if>
         <if test="execTimeEnd != null">
-            AND submit_time <![CDATA[ <= ]]> #{execTimeEnd}
+            AND tdti.submit_time <![CDATA[ <= ]]> #{execTimeEnd}
         </if>
     </select>
 
