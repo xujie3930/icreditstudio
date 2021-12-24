@@ -238,7 +238,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
         String querySql = matching.querySql(queryFields, param.getSql());
 
-        entity.setSqlStr(querySql);
+//        entity.setSqlStr(querySql);
+        entity.setSqlStr(param.getSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         //前置操作是识别宽表,dialect必然存在
         entity.setDialect(param.getDialect());
@@ -490,7 +491,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //更新状态为启用
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(taskId);
-        if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity)) {
+        if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
             entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
         } else {
             entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
