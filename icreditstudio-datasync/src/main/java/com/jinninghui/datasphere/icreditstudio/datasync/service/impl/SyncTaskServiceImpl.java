@@ -490,7 +490,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //更新状态为启用
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(taskId);
-        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity)) {
+            entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        } else {
+            entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+        }
         updateById(entity);
         //同步历史数据
         syncHiRecord(taskId);
