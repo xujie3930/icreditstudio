@@ -238,7 +238,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
         String querySql = matching.querySql(queryFields, param.getSql());
 
-        entity.setSqlStr(querySql);
+//        entity.setSqlStr(querySql);
+        entity.setSqlStr(param.getSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         //前置操作是识别宽表,dialect必然存在
         entity.setDialect(param.getDialect());
@@ -476,7 +477,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
         } else {
-            if (!TaskStatusEnum.DRAFT.getCode().equals(taskEntity.getTaskStatus())) {
+            if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
                 schedulerFeign.update(build);
             }
         }
@@ -490,7 +491,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //更新状态为启用
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(taskId);
-        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
+            entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        } else {
+            entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+        }
         updateById(entity);
         //同步历史数据
         syncHiRecord(taskId);
@@ -833,9 +838,9 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                     .filter(Objects::nonNull)
                     .map(dictColumnEntity -> {
                         DictInfo info = new DictInfo();
-                        info.setName(dictColumnEntity.getRemark());
+                        info.setName(dictColumnEntity.getColumnValue());
                         info.setKey(dictColumnEntity.getDictId());
-                        info.setValue(dictColumnEntity.getColumnValue());
+                        info.setValue(dictColumnEntity.getColumnKey());
                         return info;
                     }).collect(Collectors.toList());
         }
