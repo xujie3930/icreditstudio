@@ -160,7 +160,10 @@ public class DispatchServiceImpl implements DispatchService {
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.FAIL.getCode());
             }
             scheduleTypeStr = new StringBuilder();
-            scheduleTypeStr.append(ScheduleType.find(dispatchLogVO.getScheduleType()).getMsg()).append(dispatchLogVO.getCron());
+            scheduleTypeStr.append(ScheduleType.find(dispatchLogVO.getScheduleType()).getMsg());
+            if(StringUtils.isNotEmpty(dispatchLogVO.getCron())){
+                scheduleTypeStr.append("(").append(dispatchLogVO.getCron()).append(")");
+            }
             dispatchLogVO.setScheduleTypeStr(String.valueOf(scheduleTypeStr));
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }

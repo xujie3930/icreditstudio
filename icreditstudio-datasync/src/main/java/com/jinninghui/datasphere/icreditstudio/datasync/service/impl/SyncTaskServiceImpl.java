@@ -448,8 +448,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         FeignSyncCondition feignSyncCondition = BeanCopyUtils.copyProperties(condition, FeignSyncCondition.class);
         feignSyncCondition.setFirstFull(info.getCronParam().getFirstFull());
 
-//        User user = getSystemUserByUserId(userId);
-        User user = null;
+        User user = getSystemUserByUserId(userId);
 
         List<SourceTable> sourceTableList = JSONArray.parseArray(wideTableEntity.getSourceTables(), SourceTable.class);
         StringJoiner sourceTables = new StringJoiner(",");
