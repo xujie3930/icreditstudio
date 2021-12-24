@@ -205,17 +205,20 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
     @Override
     public BusinessResult<Boolean> update(UpdatePlatformProcessDefinitionParam param) {
+        log.info("编辑同步任务定义参数：" + JSONObject.toJSONString(param));
         Map<String, Object> result = new HashMap<>(5);
 
         ProcessDefinition processDefine = processDefinitionMapper.selectById(param.getProcessDefinitionId());
         // check process definition exists
         if (processDefine == null) {
+            logger.error("process definition  does not exist");
             putMsg(result, Status.PROCESS_DEFINE_NOT_EXIST, param.getProcessDefinitionId());
             return BusinessResult.fail("", (String) result.get(Constants.MSG));
         }
 
         if (processDefine.getReleaseState() == ReleaseState.ONLINE) {
             // online can not permit edit
+            logger.error("process definition {} does not allow edit", ReleaseState.ONLINE.getDescp());
             putMsg(result, Status.PROCESS_DEFINE_NOT_ALLOWED_EDIT, processDefine.getName());
             return BusinessResult.fail("", (String) result.get(Constants.MSG));
         }
