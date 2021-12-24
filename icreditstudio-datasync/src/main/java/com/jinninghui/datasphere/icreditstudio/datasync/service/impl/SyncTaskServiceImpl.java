@@ -477,11 +477,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
         } else {
-            if (!TaskStatusEnum.DRAFT.getCode().equals(taskEntity.getTaskStatus())) {
-                BusinessResult<Boolean> update = schedulerFeign.update(build);
-                if (!update.isSuccess()) {
-                    throw new AppException("", update.getReturnMsg());
-                }
+            if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
+                schedulerFeign.update(build);
             }
         }
         //判断是否是周期执行
