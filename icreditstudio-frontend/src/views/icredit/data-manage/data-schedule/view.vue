@@ -44,7 +44,7 @@
               </el-col>
               <el-col :span="9">
                 <span class="label">宽表名称：</span>
-                <span class="text">{{ extraData.targetTablessssss }}</span>
+                <span class="text">{{ extraData.targetTable }}</span>
               </el-col>
               <el-col :span="6">
                 <span class="label">调度类型：</span>
