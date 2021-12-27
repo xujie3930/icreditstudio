@@ -10,16 +10,6 @@ public class DispatchLogVO {
 
     //task任务实例ID
     private String taskInstanceId;
-    //定时表达式
-    private String cron;
-    //目标表
-    private String targetTable;
-    //源表
-    private String sourceTable;
-    //调度任务类型（1-周期,0-手动）
-    private Integer scheduleType;
-    //任务调度类型
-    private String scheduleTypeStr;
     //流程实例ID
     private String processInstanceId;
     //task任务实例名称

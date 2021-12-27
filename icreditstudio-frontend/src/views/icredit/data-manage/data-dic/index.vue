@@ -161,7 +161,7 @@ export default {
         name: englishName,
         opType: 'Delete',
         title: `删除字典表${englishName}`,
-        beforeOperateMsg: '删除后，',
+        beforeOperateMsg: '删除后，字典表',
         afterOperateMsg:
           '将不再在列表中呈现，字段不能再关联该字典表，确认删除吗？'
       }

@@ -17,6 +17,12 @@ export default {
     },
     {
       type: 'text',
+      label: '版本号',
+      prop: 'verion',
+      width: 80
+    },
+    {
+      type: 'text',
       label: '执行时间',
       prop: 'taskInstanceExecTime',
       width: 200

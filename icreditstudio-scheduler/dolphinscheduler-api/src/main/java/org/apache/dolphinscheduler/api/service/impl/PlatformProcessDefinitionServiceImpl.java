@@ -69,7 +69,13 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         processDefine.setPartitionParam(JSONObject.toJSONString(syncCondition));
 
         processDefine.setWorkspaceId(param.getOrdinaryParam().getWorkspaceId());
-        processDefine.setScheduleType(0);
+
+        processDefine.setScheduleType(param.getOrdinaryParam().getScheduleType());
+        processDefine.setVersion(param.getOrdinaryParam().getVersion());
+        processDefine.setTargetTable(param.getOrdinaryParam().getTargetTable());
+        processDefine.setSourceTable(param.getOrdinaryParam().getSourceTableStr());
+        processDefine.setCron(param.getOrdinaryParam().getCron());
+
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
         processDefine.setName(param.getOrdinaryParam().getName());
         processDefine.setReleaseState(param.getOrdinaryParam().getReleaseState());

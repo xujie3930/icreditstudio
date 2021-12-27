@@ -136,6 +136,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> importDict(MultipartFile file, String dictSaveRequestJson) {
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
+        checkDictParam(param);
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnExcelMode> dictColumnExcelList = ExcelUtil.readExcelFileData(file, 1, 1, DictColumnExcelMode.class);
