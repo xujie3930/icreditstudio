@@ -36,6 +36,23 @@
         :handleCancel="mixinHandleCancel"
       >
         <template #content>
+          <header class="content-header">
+            <el-row>
+              <el-col :span="6">
+                <span class="label">源表：</span>
+                <span class="text">{{ extraData.sourceTables }}</span>
+              </el-col>
+              <el-col :span="9">
+                <span class="label">宽表名称：</span>
+                <span class="text">{{ extraData.targetTablessssss }}</span>
+              </el-col>
+              <el-col :span="6">
+                <span class="label">调度类型：</span>
+                <span class="text">{{ extraData.scheduleTypeStr }}</span>
+              </el-col>
+            </el-row>
+          </header>
+
           <j-table
             ref="viewLogTable"
             v-loading="mixinTableLoading"
@@ -128,6 +145,7 @@ export default {
 
       // 表格与表单参数
       formOption,
+      extraData: {},
       mixinSearchFormConfig: {
         models: {
           taskStatus: '',
@@ -146,6 +164,7 @@ export default {
       this.taskRow = row
       this.titleName = row.taskName
       this.logDetail = ''
+      this.extraData = {}
       this.taskId = row.taskId
       this.mixinRetrieveTableData()
       this.$refs.baseDialog.open()
@@ -163,6 +182,13 @@ export default {
         ...rest
       }
       return newParams
+    },
+
+    interceptorsResponseTableData(data, res) {
+      console.log(res, 'koko')
+      const { sourceTables, targetTable, scheduleTypeStr } = res?.data ?? {}
+      this.extraData = { sourceTables, targetTable, scheduleTypeStr }
+      return data
     },
 
     // 重跑
@@ -239,6 +265,20 @@ export default {
 <style lang="scss" scoped>
 .log-dialog {
   white-space: pre-wrap;
+
+  .content-header {
+    margin-bottom: 20px;
+    margin-top: -10px;
+
+    .label {
+      color: #262626;
+      font-weight: 700;
+    }
+
+    .text {
+      color: #262626;
+    }
+  }
 
   ::v-deep {
     .iframe-layout-basic-header {
