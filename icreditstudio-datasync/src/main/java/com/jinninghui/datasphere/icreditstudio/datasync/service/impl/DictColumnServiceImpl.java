@@ -43,12 +43,11 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(String dictId, List<DictColumnSaveParam> saveParams) {
         int size = saveParams.size();
+        if(size < 1){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000087.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000087.message);
+        }
         List<DictColumnEntity> dictColumns = new ArrayList<>();
         DictColumnEntity dictColumn;
-        String columnKey = saveParams.get(0).getColumnKey();
-        if (!columnKey.matches(COLUMN_KEY_VALUE_REGEX)) {
-            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.message);
-        }
         List<String> stringList = saveParams.stream().map(DictColumnSaveParam::getColumnKey)
                 .collect(Collectors.toList());
         long count = stringList.stream().distinct().count();
@@ -58,6 +57,9 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
         for (int i = 0; i < size; i++) {
             if (StringUtils.isEmpty(saveParams.get(i).getColumnKey())) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000077.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000077.message);
+            }
+            if (!saveParams.get(i).getColumnKey().matches(COLUMN_KEY_VALUE_REGEX)) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000084.message);
             }
             if (!saveParams.get(i).getColumnValue().matches(COLUMN_KEY_VALUE_REGEX)) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.message);

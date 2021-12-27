@@ -100,6 +100,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000084("60000084", "字典表列中的key只能包含中文、字母、数字，并且长度在40以内"),
         RESOURCE_CODE_60000085("60000085", "字典表列中的value只能包含中文、字母、数字，并且长度在40以内"),
         RESOURCE_CODE_60000086("60000086", "字典表列中的备注的长度在200以内"),
+        RESOURCE_CODE_60000087("600000867", "文件中没有实际的有效内容"),
         ;
 
         public final String code;
