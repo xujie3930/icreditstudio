@@ -15,8 +15,6 @@ public class ScheduleLogPageResult<T> implements java.io.Serializable {
     private String sourceTables;
     //任务调度类型
     private String scheduleTypeStr;
-    //版本号
-    private Integer version;
 
     /**
      * 总记录数
