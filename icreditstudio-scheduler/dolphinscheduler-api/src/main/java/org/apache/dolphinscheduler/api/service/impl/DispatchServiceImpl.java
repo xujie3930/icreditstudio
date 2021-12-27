@@ -172,6 +172,7 @@ public class DispatchServiceImpl implements DispatchService {
         pageResult.setScheduleTypeStr(String.valueOf(scheduleTypeStr));
         pageResult.setSourceTables(definition.getSourceTable());
         pageResult.setTargetTable(definition.getTargetTable());
+        pageResult.setVersion(definition.getVersion());
         return BusinessResult.success(pageResult);
     }
 
