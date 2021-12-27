@@ -238,7 +238,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
         String querySql = matching.querySql(queryFields, param.getSql());
 
-        entity.setSqlStr(querySql);
+//        entity.setSqlStr(querySql);
+        entity.setSqlStr(param.getSql());
         entity.setViewJson(JSONObject.toJSONString(param.getView()));
         //前置操作是识别宽表,dialect必然存在
         entity.setDialect(param.getDialect());
@@ -449,13 +450,19 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
 
         User user = getSystemUserByUserId(userId);
 
+        List<SourceTable> sourceTableList = JSONArray.parseArray(wideTableEntity.getSourceTables(), SourceTable.class);
+        StringJoiner sourceTables = new StringJoiner(",");
+        for (SourceTable sourceTable : sourceTableList) {
+            sourceTables.add(sourceTable.getTableName());
+        }
+
         FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
                 .processDefinitionId(taskEntity.getScheduleId())
                 .accessUser(user)
                 .channelControl(new ChannelControlParam(info.getMaxThread(), info.isLimit(), info.getLimitRate()))
                 .partitionParam(feignSyncCondition)
                 .schedulerParam(new SchedulerParam(info.getScheduleType(), info.getCronParam().getCron()))
-                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
+                .ordinaryParam(new PlatformTaskOrdinaryParam(taskEntity.getVersion(), info.getScheduleType(), info.getCronParam().getCron(), wideTableEntity.getName(), String.valueOf(sourceTables), taskEntity.getWorkspaceId(), taskEntity.getEnable(), taskEntity.getTaskName(), "icredit", taskId, buildDataxJson(taskId), 0))
                 .build();
         String scheduleId = taskEntity.getScheduleId();
         if (StringUtils.isBlank(scheduleId)) {
@@ -476,7 +483,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
         } else {
-            if (!TaskStatusEnum.DRAFT.getCode().equals(taskEntity.getTaskStatus())) {
+            if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
                 schedulerFeign.update(build);
             }
         }
@@ -490,7 +497,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         //更新状态为启用
         SyncTaskEntity entity = new SyncTaskEntity();
         entity.setId(taskId);
-        entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
+            entity.setTaskStatus(TaskStatusEnum.ENABLE.getCode());
+        } else {
+            entity.setTaskStatus(TaskStatusEnum.DISABLE.getCode());
+        }
         updateById(entity);
         //同步历史数据
         syncHiRecord(taskId);

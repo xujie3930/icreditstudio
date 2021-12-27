@@ -3,6 +3,8 @@ package org.apache.dolphinscheduler.api.service.impl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
+import org.apache.dolphinscheduler.api.result.ScheduleLogPageResult;
+import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
 import org.apache.dolphinscheduler.api.feign.DataSyncDispatchTaskFeignClient;
@@ -143,11 +145,12 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
-    public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(LogPageParam param) {
+    public BusinessResult<ScheduleLogPageResult<DispatchLogVO>> logPage(LogPageParam param) {
         int pageNum = (param.getPageNum() - 1) * param.getPageSize();
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(param.getTaskId());
         long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd());
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd(), pageNum, param.getPageSize());
+        StringBuilder scheduleTypeStr;
         for (DispatchLogVO dispatchLogVO : logVOList) {
             if(ExecutionStatus.SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.NEED_FAULT_TOLERANCE.getCode() == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.SUCCESS.getCode());
@@ -159,7 +162,17 @@ public class DispatchServiceImpl implements DispatchService {
             }
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
-        return BusinessResult.success(BusinessPageResult.build(logVOList, param, countLog));
+        ProcessDefinition definition = processService.findProcessDefineById(processDefinitionId);
+        ScheduleLogPageResult<DispatchLogVO> pageResult = ScheduleLogPageResult.build(logVOList, param, countLog);
+        scheduleTypeStr = new StringBuilder();
+        scheduleTypeStr.append(ScheduleType.find(definition.getScheduleType()).getMsg());
+        if(StringUtils.isNotEmpty(definition.getCron())){
+            scheduleTypeStr.append("(").append(definition.getCron()).append(")");
+        }
+        pageResult.setScheduleTypeStr(String.valueOf(scheduleTypeStr));
+        pageResult.setSourceTables(definition.getSourceTable());
+        pageResult.setTargetTable(definition.getTargetTable());
+        return BusinessResult.success(pageResult);
     }
 
     @Override
