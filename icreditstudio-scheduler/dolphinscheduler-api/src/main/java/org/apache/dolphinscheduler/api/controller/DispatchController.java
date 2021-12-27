@@ -3,6 +3,7 @@ package org.apache.dolphinscheduler.api.controller;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import org.apache.dolphinscheduler.api.result.ScheduleLogPageResult;
 import org.apache.dolphinscheduler.api.param.DispatchTaskPageParam;
 import org.apache.dolphinscheduler.api.param.LogPageParam;
 import org.apache.dolphinscheduler.api.request.DispatchTaskPageRequest;
@@ -61,7 +62,7 @@ public class DispatchController {
     }
 
     @PostMapping("/log/page")
-    public BusinessResult<BusinessPageResult<DispatchLogVO>> logPage(@RequestBody LogPageRequest request){
+    public BusinessResult<ScheduleLogPageResult<DispatchLogVO>> logPage(@RequestBody LogPageRequest request){
         LogPageParam param = new LogPageParam();
         BeanCopyUtils.copyProperties(request, param);
         if(null != request.getExecTimeStart()){
