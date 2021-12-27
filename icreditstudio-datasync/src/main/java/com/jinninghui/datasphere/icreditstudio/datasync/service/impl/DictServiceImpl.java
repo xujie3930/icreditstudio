@@ -135,6 +135,9 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> importDict(MultipartFile file, String dictSaveRequestJson) {
+        if(file.isEmpty()){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000079.message);
+        }
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         checkDictParam(param);
         DictEntity dict = createDict(param);
