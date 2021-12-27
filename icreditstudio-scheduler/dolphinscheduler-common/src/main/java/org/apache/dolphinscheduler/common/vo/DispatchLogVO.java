@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class DispatchLogVO {
 
+    private Integer version;
     //task任务实例ID
     private String taskInstanceId;
     //流程实例ID

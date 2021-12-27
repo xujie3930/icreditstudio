@@ -150,7 +150,7 @@ public class DispatchServiceImpl implements DispatchService {
         String processDefinitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(param.getTaskId());
         long countLog = taskInstanceMapper.countTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd());
         List<DispatchLogVO> logVOList = taskInstanceMapper.queryTaskByProcessDefinitionId(processDefinitionId, param.getTaskStatus(), param.getExecTimeStart(), param.getExecTimeEnd(), pageNum, param.getPageSize());
-        StringBuilder scheduleTypeStr;
+        ProcessDefinition definition = processService.findProcessDefineById(processDefinitionId);
         for (DispatchLogVO dispatchLogVO : logVOList) {
             if(ExecutionStatus.SUCCESS.getCode() == dispatchLogVO.getTaskInstanceState() || ExecutionStatus.NEED_FAULT_TOLERANCE.getCode() == dispatchLogVO.getTaskInstanceState()){//成功
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.SUCCESS.getCode());
@@ -160,11 +160,11 @@ public class DispatchServiceImpl implements DispatchService {
             }else{//失败
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.FAIL.getCode());
             }
+            dispatchLogVO.setVersion(definition.getVersion());
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
-        ProcessDefinition definition = processService.findProcessDefineById(processDefinitionId);
         ScheduleLogPageResult<DispatchLogVO> pageResult = ScheduleLogPageResult.build(logVOList, param, countLog);
-        scheduleTypeStr = new StringBuilder();
+        StringBuilder scheduleTypeStr = new StringBuilder();
         scheduleTypeStr.append(ScheduleType.find(definition.getScheduleType()).getMsg());
         if(StringUtils.isNotEmpty(definition.getCron())){
             scheduleTypeStr.append("(").append(definition.getCron()).append(")");
