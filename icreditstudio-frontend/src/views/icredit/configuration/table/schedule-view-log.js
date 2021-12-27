@@ -18,7 +18,7 @@ export default {
     {
       type: 'text',
       label: '版本号',
-      prop: 'verion',
+      prop: 'version',
       width: 80
     },
     {
