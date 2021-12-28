@@ -96,7 +96,7 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
                         WideTableFieldResult info = new WideTableFieldResult();
                         info.setSort(i);
                         info.setDatabaseName(fieldInfo.getDatabase());
-                        info.setSourceTable(fieldInfo.getTableName());
+                        info.setSourceTable(fieldInfo.getTableName().replaceAll("\"", ""));
                         info.setFieldName(fieldInfo.getFieldName());
                         info.setFieldChineseName(fieldInfo.getRemarks());
                         info.setRemark(fieldInfo.getRemarks());
