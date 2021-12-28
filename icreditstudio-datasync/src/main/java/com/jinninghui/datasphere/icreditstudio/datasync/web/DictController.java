@@ -70,7 +70,7 @@ public class DictController {
     }
 
     @PostMapping("/associatedDict")
-    public BusinessResult<List<AssociatedDictInfoResult>> associatedDict(AssociatedDictRequest request) {
+    public BusinessResult<List<AssociatedDictInfoResult>> associatedDict(@RequestBody AssociatedDictRequest request) {
         AssociatedDictParam param = new AssociatedDictParam();
         BeanCopyUtils.copyProperties(request, param);
         return dictService.associatedDict(param);

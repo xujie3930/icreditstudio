@@ -8,5 +8,6 @@ import lombok.Data;
 @Data
 public class AssociatedDictRequest {
 
+    private String workspaceId;
     private String name;
 }
