@@ -102,9 +102,10 @@
           label="第一次是否全量同步"
           prop="cronParam.firstFull"
         >
-          <el-checkbox size="mini" v-model="taskForm.cronParam.firstFull">
-            是
-          </el-checkbox>
+          <el-radio-group v-model="taskForm.cronParam.firstFull">
+            <el-radio size="mini" :label="true">是</el-radio>
+            <el-radio size="mini" :label="false">否</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
 
