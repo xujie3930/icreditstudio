@@ -235,7 +235,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setSyncTaskId(param.getTaskId());
 
         List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
-        DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
+        DataSyncQuery matching = DataSyncQueryContainer.matching(param.getDialect());
         String querySql = matching.querySql(queryFields, param.getSql());
 
         entity.setSqlStr(querySql);
