@@ -58,7 +58,7 @@
               :rows="4"
               type="textarea"
               v-model="detailForm.descriptor"
-              :placeholder="opType === 'view' ? '' : 请输入工作空间描述"
+              :placeholder="opType === 'view' ? '' : '请输入工作空间描述'"
             ></el-input>
           </el-form-item>
         </el-col>
