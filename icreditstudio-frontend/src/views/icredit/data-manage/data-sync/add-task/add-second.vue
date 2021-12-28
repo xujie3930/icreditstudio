@@ -1320,7 +1320,7 @@ export default {
     getFluzzyDictionary(name, row) {
       /* eslint-disable no-param-reassign */
       row.dictLoading = true
-      API.dataSyncDictionary({ name })
+      API.dataSyncDictionary({ name, workspaceId: this.workspaceId })
         .then(({ success, data }) => {
           if (success && data) {
             // eslint-disable-next-line no-param-reassign

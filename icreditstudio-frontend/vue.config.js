@@ -11,8 +11,6 @@ const resolve = dir => path.join(__dirname, dir)
 
 if (baseConfig.illustrate) donationConsole()
 
-console.log(process.env.NODE_ENV, 'NODE_ENV')
-
 module.exports = {
   publicPath: '/',
   outputDir: 'dist',
