@@ -42,8 +42,8 @@ public interface SchedulerFeign {
      * @param processDefinitionId
      * @return
      */
-    @GetMapping(value = "/dolphinscheduler/platform/exec/execSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
-    String execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
+    @GetMapping(value = "/dolphinscheduler/platform/exec/execSyncTask")
+    void execSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 停止任务

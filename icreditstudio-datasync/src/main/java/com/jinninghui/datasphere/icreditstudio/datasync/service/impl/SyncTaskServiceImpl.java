@@ -1269,7 +1269,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
         SyncTaskEntity entity = checkTaskId(param.getTaskId());
         if (!TaskStatusEnum.ENABLE.getCode().equals(entity.getTaskStatus())) {
@@ -1278,17 +1277,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (ExecStatusEnum.EXEC.getCode().equals(entity.getExecStatus())) {//“执行中” 状态
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
         }
-        String processDefinitionId = entity.getScheduleId();
         entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);//执行中
-        String result = schedulerFeign.execSyncTask(processDefinitionId);
-        if ("true".equals(result)) {//成功
-            return BusinessResult.success(true);
-        } else {//失败
-            return BusinessResult.fail("", "执行失败");
-        }
+        schedulerFeign.execSyncTask(entity.getScheduleId());
+        return BusinessResult.success(true);
     }
 
     @Override
