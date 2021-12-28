@@ -1277,11 +1277,12 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (ExecStatusEnum.EXEC.getCode().equals(entity.getExecStatus())) {//“执行中” 状态
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000036.message);
         }
+        String processDefinitionId = entity.getScheduleId();
         entity = new SyncTaskEntity();
         entity.setId(param.getTaskId());
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);//执行中
-        schedulerFeign.execSyncTask(entity.getScheduleId());
+        schedulerFeign.execSyncTask(processDefinitionId);
         return BusinessResult.success(true);
     }
 
