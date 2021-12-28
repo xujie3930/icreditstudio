@@ -1199,7 +1199,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         BeanCopyUtils.copyProperties(entity, info);
                         info.setFieldChineseName(entity.getChinese());
                         info.setSourceTable(entity.getSource());
-                        info.setAssociateDict(entity.getDictKey());
+                        DictEntity dictById = dictService.getDictById(entity.getDictKey());
+                        if (Objects.nonNull(dictById)) {
+                            info.setAssociateDict(dictById.getChineseName());
+                        }
                         info.setFieldType(Arrays.asList(HiveMapJdbcTypeEnum.find(entity.getType()).getCategoryEnum().getCode(), entity.getType()));
                         info.setFieldName(entity.getName());
                         info.setRemark(entity.getRemark());
