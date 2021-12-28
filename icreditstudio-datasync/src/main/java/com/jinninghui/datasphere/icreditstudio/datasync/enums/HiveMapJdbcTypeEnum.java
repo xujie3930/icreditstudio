@@ -27,6 +27,7 @@ public enum HiveMapJdbcTypeEnum {
     DATETIME("DATETIME", "DATE", HiveFieldCategoryEnum.DATE),
     DATE("DATE", "DATE", HiveFieldCategoryEnum.DATE),
     TIMESTAMP("TIMESTAMP", "TIMESTAMP", HiveFieldCategoryEnum.DATE),
+    TIMESTAMP1("TIMESTAMP(6)", "TIMESTAMP", HiveFieldCategoryEnum.DATE),
     ;
     private String jdbcType;
     private String hiveType;

@@ -37,6 +37,6 @@ mybatis-plus:
       id-type: id_worker_str
   mapper-locations: classpath*:mapper/*.xml
 ribbon:
-  ReadTimeout: 120000
-  SocketTimeout: 120000
-  ConnectTimeout: 30000
+  ReadTimeout: 500000
+  SocketTimeout: 500000
+  ConnectTimeout: 500000

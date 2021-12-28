@@ -235,7 +235,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setSyncTaskId(param.getTaskId());
 
         List<QueryField> queryFields = transferQueryField(param.getFieldInfos());
-        DataSyncQuery matching = DataSyncQueryContainer.matching(param.getSql());
+        DataSyncQuery matching = DataSyncQueryContainer.matching(param.getDialect());
         String querySql = matching.querySql(queryFields, param.getSql());
 
         entity.setSqlStr(querySql);
@@ -1272,7 +1272,6 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> run(DataSyncExecParam param) {
         SyncTaskEntity entity = checkTaskId(param.getTaskId());
         if (!TaskStatusEnum.ENABLE.getCode().equals(entity.getTaskStatus())) {
@@ -1286,12 +1285,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         entity.setId(param.getTaskId());
         entity.setExecStatus(ExecStatusEnum.EXEC.getCode());
         updateById(entity);//执行中
-        String result = schedulerFeign.execSyncTask(processDefinitionId);
-        if ("true".equals(result)) {//成功
-            return BusinessResult.success(true);
-        } else {//失败
-            return BusinessResult.fail("", "执行失败");
-        }
+        schedulerFeign.execSyncTask(processDefinitionId);
+        return BusinessResult.success(true);
     }
 
     @Override
