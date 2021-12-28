@@ -226,7 +226,6 @@ export default {
           const { taskForm: thirdForm } = this
           this.taskForm = { ...cloneDeep(thirdForm), ...cloneDeep(nVal) }
           const { incrementalField } = this.taskForm.syncCondition
-          console.log(incrementalField, 'kiki')
           this.taskForm.scheduleType = incrementalField ? 1 : 0
         }
       }
@@ -247,7 +246,6 @@ export default {
 
     // 渲染周期同步任务下拉框的值
     handleRenderCron(cronParam) {
-      console.log(cronParam)
       const { taskId } = this.taskForm
       const { moment, type } = cronParam
 

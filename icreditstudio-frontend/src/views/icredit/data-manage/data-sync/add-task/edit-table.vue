@@ -51,18 +51,15 @@ export default {
 
   methods: {
     open(data) {
-      console.log('data', data)
       this.tableData = data
       this.$refs.baseDialog.open()
     },
 
     handleSelectChange(selectedRows) {
-      console.log(selectedRows, ' lplp')
       this.selectedRows = selectedRows.map(({ sort }) => sort)
     },
 
-    handleDelete({ $index, row }) {
-      console.log(row, this.selectedRows, 'rows')
+    handleDelete({ $index }) {
       this.$refs.editTable.$refs.dataSyncEditTable.clearSelection()
       this.tableData.splice($index, 1)
     },

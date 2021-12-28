@@ -232,7 +232,6 @@ export default {
       this.bTableName = rightTable.name
       this.form.associatedType = associatedType ?? 0
       this.form.linkTypeData.conditions = conditions
-      console.log(conditions, this.form, 'conditions')
 
       this.$refs.baseDialog.open()
       this.getLinkTypeData(dialect)
@@ -270,11 +269,6 @@ export default {
         rightSourceDatabase: rightTable.database
       }
 
-      console.log(
-        'relationData',
-        this.form.linkTypeData.conditions,
-        relationData
-      )
       // 关联条件必填
       if (relationData.conditions.length) {
         relationData.conditions.forEach(({ left, right, associate }) => {

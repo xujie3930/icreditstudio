@@ -521,7 +521,6 @@ export default {
 
   methods: {
     initPage() {
-      console.log(this.$route, 'currentRouter')
       const { opType } = this.$route.query
       this.opType = opType ?? 'add'
       // taskId存在表明是该条数据已经保存过
@@ -602,14 +601,12 @@ export default {
 
     // 可视化-表拖拽
     handleDragClick(evt, data, node) {
-      console.log('data===', data, node)
       const {
         id: tableId,
         parent: { label: database }
       } = node
       const { host = '' } = node.parent.data
       const ip = host.split(':')[0] || ''
-      console.log(ip, 'ipip')
       const { sourceType } = this.secondTaskForm
       evt.dataTransfer.setData(
         'application/json',
@@ -791,8 +788,6 @@ export default {
       const vidx = (idx - 1) / 2
       const { associatedType, conditions } =
         view[vidx] || deepClone(viewDefaultData)
-
-      console.log('view[vidx]', associatedType, conditions)
 
       this.$refs.linkDialog.open({
         idx,
