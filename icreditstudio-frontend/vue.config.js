@@ -7,11 +7,11 @@ const path = require('path')
 const { baseConfig } = require('./src/config')
 const { donationConsole } = require('./illustrate.config')
 
-function resolve(dir) {
-  return path.join(__dirname, dir)
-}
+const resolve = dir => path.join(__dirname, dir)
 
 if (baseConfig.illustrate) donationConsole()
+
+console.log(process.env.NODE_ENV, 'NODE_ENV')
 
 module.exports = {
   publicPath: '/',
