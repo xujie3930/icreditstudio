@@ -1,5 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service;
 
+import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.AssociatedDictParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictQueryParam;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.DictSaveParam;
@@ -36,4 +37,12 @@ public interface DictService {
      * @return
      */
     BusinessResult<List<AssociatedDictInfoResult>> associatedDict(AssociatedDictParam param);
+
+    /**
+     * 根据ID查询字典信息
+     *
+     * @param id
+     * @return
+     */
+    DictEntity getDictById(String id);
 }

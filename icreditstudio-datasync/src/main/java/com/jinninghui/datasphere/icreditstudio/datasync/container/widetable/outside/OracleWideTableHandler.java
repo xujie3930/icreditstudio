@@ -304,7 +304,8 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
                 v.stream().forEach(tableName -> {
                     ResultSet columnResultSet = null;
                     try {
-                        columnResultSet = metaData.getColumns(null, userName, tableName, "%");
+                        String tableN = tableName.replaceAll("\"", "");
+                        columnResultSet = metaData.getColumns(null, userName, tableN, "%");
                         while (columnResultSet.next()) {
                             // 字段名称
                             String columnName = columnResultSet.getString("COLUMN_NAME");
