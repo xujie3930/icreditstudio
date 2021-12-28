@@ -180,6 +180,7 @@ public class DispatchServiceImpl implements DispatchService {
     public BusinessResult<Boolean> nowRun(String taskId, String execType) {
         String definitionId = dataSyncDispatchTaskFeignClient.getProcessDefinitionIdByTaskId(taskId);
         if(TaskTypeEnum.MANUAL.getCode().equals(execType)){//手动任务
+            dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(definitionId);
             platformExecutorService.execSyncTask(definitionId);
             return BusinessResult.success(true);
         }
