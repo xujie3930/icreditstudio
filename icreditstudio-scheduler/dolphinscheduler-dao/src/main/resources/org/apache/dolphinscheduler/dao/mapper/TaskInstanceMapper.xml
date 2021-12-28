@@ -235,7 +235,7 @@
         from t_ds_task_instance i
                  left join t_ds_process_definition d
                            on i.process_definition_id = d.id
-        where i.scan_state = #{scanState}  and i.end_time != null limit 100
+        where i.scan_state = #{scanState}  and i.end_time is not null limit 100
     </select>
 
     <update id="updateScanStateById">

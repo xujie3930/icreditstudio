@@ -72,7 +72,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(String userId, IcreditWorkspaceSaveParam param) {
         Date date = new Date();
-        String createUserName = param.getCreateUser().getUsername();
+        String createUserName = param.getCreateUser();
         //保存工作空间信息
         IcreditWorkspaceEntity defEntity = new IcreditWorkspaceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
@@ -82,15 +82,11 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         defEntity.setUpdateTime(date);
         defEntity.setUpdateUser(createUserName);
         save(defEntity);
-        //保存创建人信息
-        IcreditWorkspaceUserEntity createUser = getNewMember(param.getCreateUser(), defEntity);
-        createUser.setSort(0);
-        workspaceUserService.save(createUser);
         //保存用户列表信息
         if (!CollectionUtils.isEmpty(param.getMemberList())) {
             for (int i = 0; i < param.getMemberList().size(); i++) {
                 IcreditWorkspaceUserEntity entity = getNewMember(param.getMemberList().get(i), defEntity);
-                entity.setSort(i + 1);
+                entity.setSort(i);
                 workspaceUserService.save(entity);
             }
         }
@@ -144,7 +140,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         Page<IcreditWorkspaceEntity> page = new Page<>(param.getPageNum(), param.getPageSize());
         BusinessResult<Boolean> result = systemFeignClient.isAdmin();
         //管理员，可以查询所有数据
-        if (result.isSuccess() && result.getData()) {
+        if (result.isSuccess() && Boolean.TRUE.equals(result.getData())) {
             log.info("当前用户为管理员，拥有全部空间权限");
             param.setUserId("");
         }
@@ -158,6 +154,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             list = list.parallelStream()
                     .filter(w -> !DEFAULT_WORKSPACEID.equals(w.getId()))
                     .collect(Collectors.toList());
+            page.setTotal(list.size());
         }
         return BusinessPageResult.build(page.setRecords(list), param);
     }
