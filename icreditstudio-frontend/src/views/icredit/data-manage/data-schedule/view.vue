@@ -10,6 +10,8 @@
       hideFooter
       :before-title-name="titleName"
       :title="title"
+      :closeOnClickModal="false"
+      @on-close="close"
     >
       <crud-basic
         ref="crud"
@@ -122,6 +124,7 @@
 <script>
 import API from '@/api/icredit'
 import crud from '@/mixins/crud'
+import polling from '@/mixins/polling'
 import BaseDialog from '@/views/icredit/components/dialog'
 import tableConfiguration from '@/views/icredit/configuration/table/schedule-view-log'
 import formOption from '@/views/icredit/configuration/form/schedule-view-log'
@@ -129,7 +132,7 @@ import { execStatusMapping } from '@/views/icredit/data-manage/data-sync/contant
 import Message from '@/views/icredit/components/message'
 
 export default {
-  mixins: [crud],
+  mixins: [crud, polling],
   components: { BaseDialog, Message },
 
   data() {
@@ -160,14 +163,20 @@ export default {
 
   methods: {
     open(row) {
-      console.log(row, 'row')
       this.taskRow = row
       this.titleName = row.taskName
       this.logDetail = ''
       this.extraData = {}
       this.taskId = row.taskId
       this.mixinRetrieveTableData()
+      this.polling()
       this.$refs.baseDialog.open()
+    },
+
+    close() {
+      console.log(1111, this.timerId)
+      this.$emit('close')
+      this.handleClearInterval()
     },
 
     interceptorsRequestRetrieve(params) {

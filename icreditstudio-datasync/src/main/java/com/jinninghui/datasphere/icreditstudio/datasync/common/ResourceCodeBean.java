@@ -101,6 +101,9 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000085("60000085", "字典表列中的value只能包含中文、字母、数字，并且长度在40以内"),
         RESOURCE_CODE_60000086("60000086", "字典表列中的备注的长度在200以内"),
         RESOURCE_CODE_60000087("600000867", "文件中没有实际的有效内容"),
+        RESOURCE_CODE_60000088("60000087", "库表归集参数错误"),
+        RESOURCE_CODE_60000089("60000088", "获取表字段"),
+        RESOURCE_CODE_60000090("60000089", "确定返回字段所属表错误"),
         ;
 
         public final String code;

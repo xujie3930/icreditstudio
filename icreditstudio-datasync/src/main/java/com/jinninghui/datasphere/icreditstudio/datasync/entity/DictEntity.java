@@ -10,6 +10,7 @@ import java.util.Date;
 public class DictEntity {
 
     public static final String CHINESE_NAME = "chinese_name";
+    public static final String WORKSPACE_ID = "workspace_id";
     private String id;
     private String workspaceId;
     private String englishName;

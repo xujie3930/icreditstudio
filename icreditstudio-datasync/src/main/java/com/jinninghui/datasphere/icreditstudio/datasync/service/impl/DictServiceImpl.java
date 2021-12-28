@@ -162,6 +162,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         if (org.apache.commons.lang3.StringUtils.isNotBlank(param.getName())) {
             wrapper.like(DictEntity.CHINESE_NAME, param.getName());
         }
+        wrapper.eq(DictEntity.WORKSPACE_ID, param.getWorkspaceId());
         List<DictEntity> list = list(wrapper);
 
         List<AssociatedDictInfoResult> results = null;

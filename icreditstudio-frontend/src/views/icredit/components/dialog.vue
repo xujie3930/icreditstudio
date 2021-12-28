@@ -11,6 +11,7 @@
       :width="width"
       :close-on-click-modal="closeOnClickModal"
       :top="top"
+      @close="close"
     >
       <div class="icredit-dialog-title" slot="title">
         <span v-if="beforeTitleName" style="color: #1890ff">

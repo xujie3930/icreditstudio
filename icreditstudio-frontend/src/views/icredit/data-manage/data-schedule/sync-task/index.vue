@@ -77,7 +77,7 @@
         </j-table>
       </template>
     </crud-basic>
-    <ViewLog ref="viewLog" />
+    <ViewLog ref="viewLog" @close="polling" />
   </div>
 </template>
 
@@ -168,6 +168,7 @@ export default {
 
     // 历史日志
     handleViewLog(row) {
+      this.handleClearInterval()
       this.$refs.viewLog.open(row)
     },
 

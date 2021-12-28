@@ -1390,7 +1390,7 @@ export default {
             this.secondTaskForm.dialect = dialect
             this.sameNameDataBase = sameNameDataBase ?? []
             showWindow && this.$refs.baseDialog.open()
-            return true
+            return !showWindow
           }
         })
         .catch(() => {
