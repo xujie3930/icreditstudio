@@ -58,7 +58,7 @@
               :rows="4"
               type="textarea"
               v-model="detailForm.descriptor"
-              placeholder="请输入工作空间描述"
+              :placeholder="opType === 'view' ? '' : 请输入工作空间描述"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -357,8 +357,9 @@ export default {
 
     // 编辑操作数据回显
     mixinDetailInfo(data) {
-      const { memberList, director } = data
+      const { memberList, director, descriptor } = data
       this.detailForm = data
+      this.detailForm.descriptor = descriptor ?? ' '
       this.selectedUser = memberList.find(item => item.username === director)
       this.oldName = this.detailForm.name
     },
@@ -406,6 +407,7 @@ export default {
               if (success) {
                 this.$notify.success({
                   title: '操作提示',
+                  duration: 1500,
                   message: `工作空间${this.id ? '编辑' : '新增'}成功！`
                 })
                 this.getPermissionListAction()
