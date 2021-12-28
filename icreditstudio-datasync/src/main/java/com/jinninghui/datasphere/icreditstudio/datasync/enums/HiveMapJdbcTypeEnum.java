@@ -22,6 +22,7 @@ public enum HiveMapJdbcTypeEnum {
     FLOAT("FLOAT", "FLOAT", HiveFieldCategoryEnum.NUMERIC),
     DOUBLE("DOUBLE", "DOUBLE", HiveFieldCategoryEnum.NUMERIC),
     DECIMAL("DECIMAL", "DECIMAL", HiveFieldCategoryEnum.NUMERIC),
+    NUMBER("NUMBER", "INT", HiveFieldCategoryEnum.NUMERIC),
 
     DATETIME("DATETIME", "DATE", HiveFieldCategoryEnum.DATE),
     DATE("DATE", "DATE", HiveFieldCategoryEnum.DATE),

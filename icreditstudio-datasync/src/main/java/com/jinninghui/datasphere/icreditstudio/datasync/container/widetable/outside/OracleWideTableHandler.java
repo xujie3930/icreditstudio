@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.widetable.outside;
 
 import cn.hutool.core.io.IoUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -23,13 +24,18 @@ import com.jinninghui.datasphere.icreditstudio.framework.common.enums.DialectEnu
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUtils;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -81,41 +87,24 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
         ConnectionSource connectionSource = getConnectionSource(datasourceFeign, datasourceId);
         return smartConnection(connectionSource, statement, (connection, sql) -> {
             //宽表字段信息列表
-            List<WideTableFieldInfo> fieldInfos = Lists.newArrayList();
+            List<WideTableFieldInfo> wideTableFieldInfos = Lists.newArrayList();
             try {
-                DatabaseMetaData metaData = connection.getMetaData();
-                PreparedStatement state = connection.prepareStatement(sql);
-                ResultSetMetaData rsMetadata = state.getMetaData();
-                //数据库和表映射
-                Map<String, List<String>> databaseTables = Maps.newHashMap();
+                List<FieldInfo> fieldInfos = analysisRestructuring(sql, connection);
+                if (CollectionUtils.isNotEmpty(fieldInfos)) {
+                    for (int i = 0; i < fieldInfos.size(); i++) {
+                        FieldInfo fieldInfo = fieldInfos.get(i);
+                        WideTableFieldResult info = new WideTableFieldResult();
+                        info.setSort(i);
+                        info.setDatabaseName(fieldInfo.getDatabase());
+                        info.setSourceTable(fieldInfo.getTableName());
+                        info.setFieldName(fieldInfo.getFieldName());
+                        info.setFieldChineseName(fieldInfo.getRemarks());
+                        info.setRemark(fieldInfo.getRemarks());
 
-                for (int i = 1; i <= rsMetadata.getColumnCount(); i++) {
-                    String catalogName = rsMetadata.getCatalogName(i);
-                    String tableName = rsMetadata.getTableName(i);
-                    //宽表字段信息
-                    WideTableFieldResult fieldInfo = new WideTableFieldResult();
-                    fieldInfo.setSort(i);
-                    fieldInfo.setFieldName(rsMetadata.getColumnName(i));
-                    HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(rsMetadata.getColumnTypeName(i));
-                    fieldInfo.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
-                    fieldInfo.setSourceTable(tableName);
-                    fieldInfo.setDatabaseName(catalogName);
-
-                    fieldInfos.add(fieldInfo);
-                    //添加数据库和表的映射
-                    addDatabaseTables(databaseTables, catalogName, tableName);
-                }
-                //数据库字段注释内容
-                Map<String, String> comments = getComments(metaData, databaseTables);
-                //将数据库字段注释设置为字段中文名
-                for (WideTableFieldInfo fieldInfo : fieldInfos) {
-                    String databaseName = fieldInfo.getDatabaseName();
-                    String sourceTable = fieldInfo.getSourceTable();
-                    String fieldName = fieldInfo.getFieldName();
-                    String key = new StringJoiner(".").add(databaseName).add(sourceTable).add(fieldName).toString();
-                    String comment = comments.get(key);
-                    fieldInfo.setFieldChineseName(comment);
-                    fieldInfo.setRemark(comment);
+                        HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(fieldInfo.getType().trim());
+                        info.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
+                        wideTableFieldInfos.add(info);
+                    }
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -127,8 +116,8 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
             }
             WideTable wideTable = new WideTable();
             wideTable.setSql(sql);
-            wideTable.setIncrementalFields(fieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
-            wideTable.setFields(fieldInfos);
+            wideTable.setIncrementalFields(wideTableFieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
+            wideTable.setFields(wideTableFieldInfos);
             wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), new StringJoiner("_").add(e.getName()).toString())).collect(Collectors.toList()));
             return wideTable;
         });
@@ -213,7 +202,11 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
             String username = source.getUsername();
             String password = source.getPassword();
             String url = source.getUrl();
-            connection = DriverManager.getConnection(url, username, password);
+            Properties properties = new Properties();
+            properties.put("user", username);
+            properties.put("password", password);
+            properties.put("remarksReporting", "true");
+            connection = DriverManager.getConnection(url, properties);
             apply = conn.apply(connection, s);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -222,5 +215,158 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
             IoUtil.close(connection);
         }
         return apply;
+    }
+
+
+    private List<FieldInfo> analysisRestructuring(String analysisSql, Connection connection) {
+        List<FieldInfo> results = Lists.newArrayList();
+        try {
+            log.info("查询语句：" + analysisSql);
+            List<String> dbTables = analysisContainsTable(analysisSql);
+            log.info("语句中包含的库表：" + dbTables);
+            Map<String, List<String>> dbMapTables = separationDBAndTable(dbTables);
+            log.info("归集数据库和所属表：" + JSONObject.toJSONString(dbMapTables));
+            List<FieldInfo> tableColumns = getTableColumns(connection, dbMapTables);
+            log.info("表和字段映射：" + tableColumns);
+
+            results = assembleStatement(tableColumns, analysisSql);
+            log.info("最终生成的查询语句字段信息：" + JSONObject.toJSONString(results));
+        } catch (Exception e) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000089.getCode());
+        }
+        return results;
+    }
+
+    /**
+     * 分析sql中的数据库和下面的表
+     *
+     * @param analysisSql
+     * @return 语句中包含的表[库.表名]
+     */
+    private List<String> analysisContainsTable(String analysisSql) {
+        List<String> results = Lists.newArrayList();
+        //解析数据库.表名称
+        String from = StrUtil.subAfter(analysisSql, "from", true);
+        List<String> join = StrUtil.split(from, "join");
+        results = Optional.ofNullable(join).orElse(Lists.newArrayList())
+                .stream()
+                .filter(StringUtils::isNotBlank)
+                .map(s -> {
+                    String on = StrUtil.subBefore(s, "on", false);
+                    List<String> split = StrUtil.split(on.trim(), " ");
+                    String result = "";
+                    if (org.apache.commons.collections.CollectionUtils.isNotEmpty(split)) {
+                        String s1 = split.get(0);
+                        result = s1;
+                    }
+                    return result;
+                })
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
+    }
+
+    /**
+     * 归集数据库和所属表
+     *
+     * @param dbTables [库.表名]
+     * @return 数据库和所属表{库:[表，表]}
+     */
+    private Map<String, List<String>> separationDBAndTable(List<String> dbTables) {
+        Map<String, List<String>> baseMapTable = Maps.newHashMap();
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(dbTables)) {
+            for (String data : dbTables) {
+                String[] split = data.split("\\.");
+                if (split.length != 2) {
+                    throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000087.getCode());
+                }
+                if (baseMapTable.containsKey(split[0])) {
+                    baseMapTable.get(split[0]).add(split[1]);
+                } else {
+                    baseMapTable.put(split[0], Lists.newArrayList(split[1]));
+                }
+            }
+        }
+        return baseMapTable;
+    }
+
+    /**
+     * @param connection 数据库连接
+     * @param dbTables   {库：[表1，表2]}
+     * @return 表和所属字段 {库.表:[字段1,字段2]}
+     */
+    private List<FieldInfo> getTableColumns(Connection connection, Map<String, List<String>> dbTables) {
+        List<FieldInfo> results = Lists.newArrayList();
+        try {
+            DatabaseMetaData metaData = connection.getMetaData();
+            String userName = metaData.getUserName();
+            dbTables.forEach((k, v) -> {
+                v.stream().forEach(tableName -> {
+                    ResultSet columnResultSet = null;
+                    try {
+                        String tableN = tableName.replaceAll("\"", "");
+                        columnResultSet = metaData.getColumns(null, userName, tableN, "%");
+                        while (columnResultSet.next()) {
+                            // 字段名称
+                            String columnName = columnResultSet.getString("COLUMN_NAME");
+                            String columnTypeName = columnResultSet.getString("TYPE_NAME");
+                            String remarks = columnResultSet.getString("REMARKS");
+
+                            String wideField = new StringJoiner(".").add(k).add(tableName).add(columnName).toString();
+                            FieldInfo info = new FieldInfo(k, tableName, columnName, columnTypeName, remarks, wideField);
+                            results.add(info);
+                        }
+                    } catch (Exception e) {
+                        throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000088.getCode());
+                    } finally {
+                        IoUtil.close(columnResultSet);
+                    }
+                });
+            });
+        } catch (Exception e) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000088.getCode());
+        }
+        return results;
+    }
+
+    /**
+     * 拼装查询sql
+     *
+     * @param tableColumns 表字段集合 {表：[{字段，类型}]}
+     * @param oldStatement 原查询语句
+     * @return 拼装后的查询语句
+     */
+    private List<FieldInfo> assembleStatement(List<FieldInfo> tableColumns, String oldStatement) {
+        List<FieldInfo> results = Lists.newArrayList();
+        results = tableColumns;
+
+        if (!StringUtils.contains(oldStatement, "*")) {
+            String from = StrUtil.subBefore(oldStatement, "from", true);
+            String select = StrUtil.subAfter(from, "select", true);
+            List<String> split = StrUtil.split(select, ",");
+
+            List<FieldInfo> temp = Lists.newArrayList();
+            for (FieldInfo tableColumn : tableColumns) {
+                for (String s : split) {
+                    if (tableColumn.getWideField().trim().equalsIgnoreCase(s.trim())) {
+                        temp.add(tableColumn);
+                    }
+                }
+            }
+            results = temp;
+        }
+        return results;
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class FieldInfo {
+        private String database;
+        private String tableName;
+        private String fieldName;
+        private String type;
+        private String remarks;
+        //库.表.字段
+        private String wideField;
     }
 }
