@@ -456,6 +456,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             sourceTables.add(sourceTable.getTableName());
         }
 
+        log.info("taskVersion: " + taskEntity.getVersion());
         FeignPlatformProcessDefinitionRequest build = FeignPlatformProcessDefinitionRequest.builder()
                 .processDefinitionId(taskEntity.getScheduleId())
                 .accessUser(user)
