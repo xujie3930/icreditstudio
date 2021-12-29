@@ -7,8 +7,10 @@ import org.apache.dolphinscheduler.api.request.SchedulerHomepageRequest;
 import org.apache.dolphinscheduler.api.service.HomePageService;
 import org.apache.dolphinscheduler.api.service.StatisticsDefinitionService;
 import org.apache.dolphinscheduler.api.service.StatisticsInstanceService;
+import org.apache.dolphinscheduler.api.service.TaskInstanceService;
 import org.apache.dolphinscheduler.api.service.result.*;
 import org.apache.dolphinscheduler.api.utils.DoubleUtils;
+import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
 import org.apache.dolphinscheduler.common.enums.TaskStatus;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +30,14 @@ import java.util.stream.Collectors;
 public class HomePageServiceImpl implements HomePageService {
 
     static final String[] units = new String[]{"B", "KB", "MB", "GB", "TB", "PB"};
-    @Autowired
-    private StatisticsInstanceService statisticsInstanceService;
-
+    static List<TaskSituationResult> situationZeroList = new ArrayList<>();
     private static final String DEFAULT_WORKSPACEID = "0";
     @Autowired
+    private StatisticsInstanceService statisticsInstanceService;
+    @Autowired
+    private TaskInstanceService taskInstanceService;
+    @Autowired
     private StatisticsDefinitionService statisticsDefinitionService;
-    static List<TaskSituationResult> situationZeroList = new ArrayList<>();
 
     static {
         situationZeroList.add(new TaskSituationResult(TaskStatus.SUCCESS.getDescp(), 0L, 0.00));
@@ -85,6 +88,13 @@ public class HomePageServiceImpl implements HomePageService {
         return BusinessResult.success(taskRoughResult);
     }
 
+    /**
+     * 离线统计：没法同时兼顾运行中（中间态）和成功/失败（终态），这里运行中改为实时查询
+     * 最终离线统计到离线统计表中的是终态
+     * @param userId
+     * @param workspaceId
+     * @return
+     */
     @Override
     public BusinessResult<List<TaskSituationResult>> situation(String userId, String workspaceId) {
         if (!DEFAULT_WORKSPACEID.equals(workspaceId)) {
@@ -95,8 +105,10 @@ public class HomePageServiceImpl implements HomePageService {
         Date endTime = DateUtils.getEndOfDay((date));
         Long success = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.SUCCESS.ordinal()});
         Long fail = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.FAIL.ordinal()});
-        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
-        Long waiting = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.WATTING.ordinal()});
+//        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
+//        Long waiting = statisticsInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{TaskExecStatusEnum.WATTING.ordinal()});
+        Long running = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, null, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
+        Long waiting = taskInstanceService.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
         List<TaskSituationResult> taskSituationResultList = getTaskSituationList(success, fail, running, waiting);
         return BusinessResult.success(taskSituationResultList);
     }
@@ -155,9 +167,10 @@ public class HomePageServiceImpl implements HomePageService {
         result.setSuccess(success);
         Long failure = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.FAIL.ordinal()});
         result.setFailure(failure);
-        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
+//        Long running = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.RUNNING.ordinal()});
+        Long running = taskInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{ExecutionStatus.SUBMITTED_SUCCESS.getCode(), ExecutionStatus.RUNNING_EXECUTION.getCode()});
         result.setRunning(running);
-        Long notRun = statisticsInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{TaskExecStatusEnum.WATTING.ordinal()});
+        Long notRun = taskInstanceService.countByWorkspaceIdAndTime(id, userId, null, null, new int[]{ExecutionStatus.WAITTING_THREAD.getCode(), ExecutionStatus.WAITTING_DEPEND.getCode()});
         result.setNotRun(notRun);
         return result;
     }
