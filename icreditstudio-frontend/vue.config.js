@@ -3,18 +3,11 @@ const CompressionWebpackPlugin = require('compression-webpack-plugin')
 const IS_PROD = ['production', 'prod'].includes(process.env.NODE_ENV)
 const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
 
-// const webpack = require('webpack');
-// const ThemeColorReplacer = require('webpack-theme-color-replacer');
-// const forElementUI = require('webpack-theme-color-replacer/forElementUI');
-
-// const config = require('./src/config/theme.js');
 const path = require('path')
 const { baseConfig } = require('./src/config')
 const { donationConsole } = require('./illustrate.config')
 
-function resolve(dir) {
-  return path.join(__dirname, dir)
-}
+const resolve = dir => path.join(__dirname, dir)
 
 if (baseConfig.illustrate) donationConsole()
 

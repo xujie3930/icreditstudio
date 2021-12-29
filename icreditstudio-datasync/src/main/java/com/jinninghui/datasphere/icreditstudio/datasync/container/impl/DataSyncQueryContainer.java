@@ -1,6 +1,5 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.container.impl;
 
-import cn.hutool.core.util.StrUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.AbstractMapContainer;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.DataSyncQuery;
 
@@ -18,11 +17,7 @@ public class DataSyncQueryContainer extends AbstractMapContainer<String, DataSyn
         return instance;
     }
 
-    public static DataSyncQuery matching(String sql) {
-        if (StrUtil.contains(sql, "select") && StrUtil.contains(sql, "from")) {
-            return getInstance().find("jdbc");
-        } else {
-            return getInstance().find("jdbc");
-        }
+    public static DataSyncQuery matching(String dialect) {
+        return getInstance().find(dialect);
     }
 }

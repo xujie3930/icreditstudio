@@ -241,8 +241,7 @@ export default {
     },
 
     // 停止
-    handleStopBtnClick(row, opType) {
-      console.log(row, opType)
+    handleStopBtnClick(row) {
       API.dataSyncStop({ taskId: row.taskId }).then(({ success, data }) => {
         if (success && data) {
           this.$notify.success({

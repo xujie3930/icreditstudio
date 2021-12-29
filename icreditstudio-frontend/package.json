@@ -10,7 +10,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --mode production",
-    "build:test": "vue-cli-service build --mode alpha",
+    "build:dev": "vue-cli-service build --mode development",
+    "build:test": "vue-cli-service build --mode test",
     "lint": "vue-cli-service lint",
     "lint-fix": "eslint --fix --ext .js --ext .jsx --ext .vue src"
   },

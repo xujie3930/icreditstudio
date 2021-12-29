@@ -10,7 +10,7 @@ const baseConfig = {
   // 应用id
   applicationId: '641012265471465786',
   // 是否显示控制台文档信息
-  illustrate: true
+  illustrate: false
 }
 
 /* axios token失效配置 */

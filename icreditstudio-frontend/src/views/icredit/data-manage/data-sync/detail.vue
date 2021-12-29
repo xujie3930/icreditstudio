@@ -32,7 +32,7 @@
                 </span>
                 <span>{{ item.label }}</span>
               </div>
-              <span class="text">{{ item.value }}</span>
+              <div class="text">{{ item.value }}</div>
             </div>
           </div>
         </div>
@@ -344,6 +344,10 @@ export default {
             margin-right: 5px;
             color: rgb(245, 108, 108);
           }
+        }
+
+        .text {
+          width: calc(100% - 200px);
         }
       }
 
