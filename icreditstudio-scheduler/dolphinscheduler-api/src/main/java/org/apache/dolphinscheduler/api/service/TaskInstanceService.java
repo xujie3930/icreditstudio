@@ -23,6 +23,7 @@ import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.entity.User;
 import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,9 @@ public interface TaskInstanceService extends IService<TaskInstance> {
 
     List<TaskInstanceStatisticsResult> selectInstanceListByScanState(int scanState);
 
-    void updateScanStateById(String id, int scanState);
+    void updateScanStateById(String id, Integer scanState);
 
     void deleteByProcessDefinitionId(String processDefinitionId);
+
+    Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray);
 }

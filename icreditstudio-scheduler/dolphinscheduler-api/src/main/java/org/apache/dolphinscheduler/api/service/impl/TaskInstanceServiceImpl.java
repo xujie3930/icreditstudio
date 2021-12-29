@@ -27,9 +27,11 @@ import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResul
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.StatisticsDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -192,7 +194,7 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
     }
 
     @Override
-    public void updateScanStateById(String id, int scanState) {
+    public void updateScanStateById(String id, Integer scanState) {
         taskInstanceMapper.updateScanStateById(id, scanState);
     }
 
@@ -202,5 +204,10 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
         String platformTaskId = processDefinition.getPlatformTaskId();
         statisticsDefinitionMapper.deleteByPlatformTaskId(platformTaskId);
         taskInstanceMapper.deleteByProcessDefinitionId(processDefinitionId);
+    }
+
+    @Override
+    public Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray) {
+        return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, statusArray);
     }
 }
