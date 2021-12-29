@@ -6,6 +6,7 @@ import cn.hutool.core.date.DateUtil;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dolphinscheduler.api.dto.ScheduleParam;
+import org.apache.dolphinscheduler.api.enums.ScheduleType;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
 import org.apache.dolphinscheduler.api.param.CreateSchedulerParam;
@@ -332,13 +333,15 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Transactional(rollbackFor = Exception.class)
     public String enableSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.ONLINE.getCode());
-        List<Schedule> schedules = scheduleMapper.queryByProcessDefinitionId(processDefinitionId);
-        if(schedules.size() <= 0) {//创建schedule
-            ProcessDefinition definition = processDefinitionMapper.queryByDefineId(processDefinitionId);
-            CreateSchedulerParam createSchedulerParam = buildUpdateSchedulerParam(definition);
-            platformSchedulerService.createSchedule(createSchedulerParam);
+        ProcessDefinition definition = processDefinitionMapper.queryByDefineId(processDefinitionId);
+        if(ScheduleType.INSTANCE.getCode() != definition.getTaskType()){//周期
+            List<Schedule> schedules = scheduleMapper.queryByProcessDefinitionId(processDefinitionId);
+            if(schedules.size() <= 0) {//创建schedule
+                CreateSchedulerParam createSchedulerParam = buildUpdateSchedulerParam(definition);
+                platformSchedulerService.createSchedule(createSchedulerParam);
+            }
+            schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
         }
-        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
         //更新对应processDefinition表的updateTime
         processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
