@@ -39,7 +39,7 @@
     <select id="countDict" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO" resultType="java.lang.Long">
         SELECT count(1) FROM icredit_dict WHERE del_flag = 0
         <if test="dictName != null and dictName != ''">
-            AND chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%')
+            AND (chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%'))
         </if>
         <if test="userId != null and userId != ''">
             AND create_user_id = #{userId}
