@@ -116,7 +116,14 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
             }
             WideTable wideTable = new WideTable();
             wideTable.setSql(sql);
-            wideTable.setIncrementalFields(wideTableFieldInfos.stream().filter(Objects::nonNull).map(e -> new WideTable.Select(e.getFieldName(), e.getFieldName())).collect(Collectors.toList()));
+            List<WideTable.Select> incrementFields = wideTableFieldInfos.stream()
+                    .filter(Objects::nonNull).map(e ->
+                    {
+                        String incrementField = new StringJoiner(".").add(e.getDatabaseName()).add("\"" + e.getSourceTable() + "\"").add("\"" + e.getFieldName() + "\"").toString();
+                        return new WideTable.Select(e.getFieldName(), incrementField);
+                    })
+                    .collect(Collectors.toList());
+            wideTable.setIncrementalFields(incrementFields);
             wideTable.setFields(wideTableFieldInfos);
             wideTable.setPartitions(Arrays.stream(PartitionTypeEnum.values()).map(e -> new WideTable.Select(e.getName(), new StringJoiner("_").add(e.getName()).toString())).collect(Collectors.toList()));
             return wideTable;
