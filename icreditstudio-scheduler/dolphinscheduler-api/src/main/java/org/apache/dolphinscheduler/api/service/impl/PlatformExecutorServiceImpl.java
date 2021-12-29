@@ -329,17 +329,16 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String enableSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.ONLINE.getCode());
         List<Schedule> schedules = scheduleMapper.queryByProcessDefinitionId(processDefinitionId);
-        if(schedules.size() > 0){//schedule上线
-            schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
-        }else{//创建schedule
+        if(schedules.size() <= 0) {//创建schedule
             ProcessDefinition definition = processDefinitionMapper.queryByDefineId(processDefinitionId);
             CreateSchedulerParam createSchedulerParam = buildUpdateSchedulerParam(definition);
             platformSchedulerService.createSchedule(createSchedulerParam);
         }
-//        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
+        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
         //更新对应processDefinition表的updateTime
         processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
