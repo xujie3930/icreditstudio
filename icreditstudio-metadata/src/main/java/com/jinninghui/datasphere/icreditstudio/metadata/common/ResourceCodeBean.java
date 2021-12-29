@@ -21,6 +21,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_80000004("80000004", "工作空间ID不能为空"),
         RESOURCE_CODE_80000005("80000005", "hive库名称为空"),
         RESOURCE_CODE_80000006("80000006", "hive表名称为空"),
+        RESOURCE_CODE_80000007("80000007", "hive授权异常"),
+        RESOURCE_CODE_80000008("80000008", "hive解除权限异常"),
         ;
 
         public final String code;
