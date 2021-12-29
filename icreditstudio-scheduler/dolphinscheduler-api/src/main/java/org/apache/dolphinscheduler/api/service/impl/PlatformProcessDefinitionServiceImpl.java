@@ -70,12 +70,13 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
 
         processDefine.setWorkspaceId(param.getOrdinaryParam().getWorkspaceId());
 
-        processDefine.setScheduleType(param.getOrdinaryParam().getScheduleType());
+        processDefine.setTaskType(param.getOrdinaryParam().getTaskType());
         processDefine.setVersion(param.getOrdinaryParam().getVersion());
         processDefine.setTargetTable(param.getOrdinaryParam().getTargetTable());
         processDefine.setSourceTable(param.getOrdinaryParam().getSourceTableStr());
         processDefine.setCron(param.getOrdinaryParam().getCron());
 
+        processDefine.setScheduleType(0);
         processDefine.setPlatformTaskId(param.getOrdinaryParam().getPlatformTaskId());
         processDefine.setName(param.getOrdinaryParam().getName());
         processDefine.setReleaseState(param.getOrdinaryParam().getReleaseState());
@@ -243,7 +244,7 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
         Date now = new Date();
 
-        processDefine.setScheduleType(param.getOrdinaryParam().getScheduleType());
+        processDefine.setTaskType(param.getOrdinaryParam().getTaskType());
         processDefine.setVersion(param.getOrdinaryParam().getVersion());
         processDefine.setTargetTable(param.getOrdinaryParam().getTargetTable());
         processDefine.setSourceTable(param.getOrdinaryParam().getSourceTableStr());
