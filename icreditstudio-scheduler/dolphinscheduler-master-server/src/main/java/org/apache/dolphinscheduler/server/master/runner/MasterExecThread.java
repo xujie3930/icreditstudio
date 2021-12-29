@@ -326,7 +326,7 @@ public class MasterExecThread implements Runnable {
     private void endProcess() {
         processInstance.setEndTime(new Date());
         processService.updateProcessInstance(processInstance);
-        processService.updateTaskByScheduleId(processInstance.getProcessDefinitionId(), processInstance.getState().getCode(), processInstance.getCommandStartTime());
+        processService.updateTaskByScheduleId(processInstance.getProcessDefinitionId(), processInstance.getState().getCode(), processInstance.getStartTime());
         if (processInstance.getState().typeIsWaitingThread()) {
             processService.createRecoveryWaitingThreadCommand(null, processInstance);
         }

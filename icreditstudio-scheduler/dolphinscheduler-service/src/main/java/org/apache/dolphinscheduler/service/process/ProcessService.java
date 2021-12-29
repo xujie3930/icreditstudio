@@ -1280,7 +1280,10 @@ public class ProcessService {
             pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
             pstmt.setString(3, processDefinitionId);
             pstmt.execute();
-            logger.info(statusBackWritSql + " status:" + status + ",processDefinitionId:" + processDefinitionId);
+            StringBuffer logInfo = new StringBuffer();
+            logInfo.append("sql: ").append(statusBackWritSql).append(",status: ").append(status).append(",execTime: ").append(DateUtils.format(nowDate, "yyyy-MM-dd HH:mm:ss"))
+                    .append(",processDefinitionId: ").append(processDefinitionId);
+            logger.info(String.valueOf(logInfo));
         } catch (SQLException e) {
             e.printStackTrace();
         }finally {
