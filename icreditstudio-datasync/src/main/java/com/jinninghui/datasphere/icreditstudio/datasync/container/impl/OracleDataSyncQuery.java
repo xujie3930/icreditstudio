@@ -22,7 +22,7 @@ public class OracleDataSyncQuery extends AbstractDataSyncQuery {
         String result = null;
         if (CollectionUtils.isNotEmpty(queryFields) && StringUtils.isNotBlank(srcSql)) {
             List<String> collect = queryFields.stream()
-                    .map(field -> new StringJoiner(".").add(field.getDatabaseName()).add("\"" + field.getSourceTable() + "\"").add(field.getFieldName()).toString())
+                    .map(field -> new StringJoiner(".").add(field.getDatabaseName()).add("\"" + field.getSourceTable() + "\"").add("\"" + field.getFieldName() + "\"").toString())
                     .collect(Collectors.toList());
             StringJoiner sj = new StringJoiner(",");
             for (String s : collect) {
