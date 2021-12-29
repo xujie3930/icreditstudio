@@ -1,10 +1,16 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
+import cn.hutool.core.date.CalendarUtil;
+import cn.hutool.core.date.DateField;
+import cn.hutool.core.date.DateUtil;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dolphinscheduler.api.dto.ScheduleParam;
 import org.apache.dolphinscheduler.api.enums.Status;
 import org.apache.dolphinscheduler.api.enums.TaskExecTypeEnum;
+import org.apache.dolphinscheduler.api.param.CreateSchedulerParam;
 import org.apache.dolphinscheduler.api.param.ExecPlatformProcessDefinitionParam;
+import org.apache.dolphinscheduler.api.param.UpdatePlatformProcessDefinitionParam;
 import org.apache.dolphinscheduler.api.service.*;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
@@ -13,10 +19,7 @@ import org.apache.dolphinscheduler.common.utils.CollectionUtils;
 import org.apache.dolphinscheduler.common.utils.DateUtils;
 import org.apache.dolphinscheduler.common.utils.JSONUtils;
 import org.apache.dolphinscheduler.common.utils.StringUtils;
-import org.apache.dolphinscheduler.dao.entity.Command;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.ProcessInstance;
-import org.apache.dolphinscheduler.dao.entity.Schedule;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.ProcessInstanceMapper;
 import org.apache.dolphinscheduler.dao.mapper.ScheduleMapper;
@@ -52,7 +55,7 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Resource
     private ProcessInstanceMapper processInstanceMapper;
     @Resource
-    private TaskInstanceMapper taskInstanceMapper;
+    private PlatformSchedulerService platformSchedulerService;
     @Resource
     private ScheduleMapper scheduleMapper;
     @Resource
@@ -328,10 +331,37 @@ public class PlatformExecutorServiceImpl extends BaseServiceImpl implements Plat
     @Override
     public String enableSyncTask(String processDefinitionId) {
         processDefinitionMapper.updateStatusById(processDefinitionId, ReleaseState.ONLINE.getCode());
-        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
+        List<Schedule> schedules = scheduleMapper.queryByProcessDefinitionId(processDefinitionId);
+        if(schedules.size() > 0){//schedule上线
+            schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
+        }else{//创建schedule
+            ProcessDefinition definition = processDefinitionMapper.queryByDefineId(processDefinitionId);
+            CreateSchedulerParam createSchedulerParam = buildUpdateSchedulerParam(definition);
+            platformSchedulerService.createSchedule(createSchedulerParam);
+        }
+//        schedulerService.setScheduleState(processDefinitionId, ReleaseState.ONLINE);
         //更新对应processDefinition表的updateTime
         processDefinitionMapper.updateTimeById(new Date(), processDefinitionId);
         return "true";
+    }
+
+    private CreateSchedulerParam buildUpdateSchedulerParam(ProcessDefinition definition) {
+        User user = new User();
+        user.setId(definition.getUserId());
+        user.setTenantCode(definition.getTenantCode());
+        Date startTime = new Date();
+        Date endTime = DateUtil.offset(startTime, DateField.YEAR, 10);
+        ScheduleParam scheduleParam = new ScheduleParam(startTime, endTime, CalendarUtil.calendar().getTimeZone().getID(), definition.getCron());
+        return CreateSchedulerParam.builder()
+                .accessUser(user)
+                .processDefineId(definition.getId())
+                .schedule(scheduleParam)
+                .processInstancePriority(Priority.MEDIUM)
+                .projectCode(definition.getProjectCode())
+                .failureStrategy(FailureStrategy.CONTINUE)
+                .warningType(WarningType.NONE)
+                .workerGroup("default")
+                .build();
     }
 
     @Override
