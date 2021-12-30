@@ -68,7 +68,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         if (!param.getChineseName().matches("[\u4e00-\u9fa5]{0,50}")) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000082.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000082.message);
         }
-        if (param.getDictDesc().length() > 250) {
+        if (!StringUtils.isEmpty(param.getDictDesc()) && param.getDictDesc().length() > 250) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000083.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000083.message);
         }
     }

@@ -17,5 +17,6 @@ public class WorkspaceMember {
     private List<String> orgNames;//用户部门
     private List<String> functionalAuthority;//功能权限
     private List<String> dataAuthority;//数据权限
+    private String tenantCode;//用户账号
     private Long createTime;//创建时间
 }

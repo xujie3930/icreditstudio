@@ -59,6 +59,7 @@ public class IcreditWorkspaceUserController {
      * @param workspaceId
      * @return
      */
+    @Logable
     @GetMapping("/getWorkspaceUserByWorkspaceId")
     public BusinessResult<List<IcreditWorkspaceUserEntity>> getWorkspaceUserByWorkspaceId(@RequestParam("workspaceId") String workspaceId) {
         return workspaceUserService.getWorkspaceUserByWorkspaceId(workspaceId);

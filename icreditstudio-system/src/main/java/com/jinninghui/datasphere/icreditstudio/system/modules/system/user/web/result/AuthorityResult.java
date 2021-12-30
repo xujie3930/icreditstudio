@@ -16,4 +16,6 @@ public class AuthorityResult {
     private List<String> functionalAuthority;//功能权限
 
     private List<String> dataAuthority;//数据权限
+
+    private String tenantCode;//账户
 }

@@ -987,6 +987,10 @@ public class UserServiceImpl extends ServiceImpl<UserDao, UserEntity> implements
         List<ResourcesEntity> resourceList = roleService.findResourcesByUserId(userId);
         result.setFunctionalAuthority(resourceList.stream().map(ResourcesEntity::getName).collect(Collectors.toList()).stream().distinct().collect(Collectors.toList()));
         result.setDataAuthority(Arrays.asList("全部"));
+        BusinessResult<Map<String, String>> userExecCode = userAccountService.getUserExecCode(userId);
+        if (userExecCode.isSuccess() && !userExecCode.getData().isEmpty()){
+            result.setTenantCode(userExecCode.getData().get("tenantCode"));
+        }
         return result;
     }
 

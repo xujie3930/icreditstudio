@@ -34,6 +34,7 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
 
     @Autowired
     private IcreditWorkspaceUserMapper workspaceUserMapper;
+    public static final String DEFAULT_WORKSPACE_ID = "0";
 
     @Override
     public BusinessPageResult queryPage(IcreditWorkspaceUserEntityPageRequest pageRequest) {
@@ -73,7 +74,9 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
     @Override
     public BusinessResult<List<IcreditWorkspaceUserEntity>> getWorkspaceUserByWorkspaceId(String workspaceId) {
         QueryWrapper<IcreditWorkspaceUserEntity> wrapper = new QueryWrapper<>();
-        wrapper.eq(IcreditWorkspaceUserEntity.SPACE_ID, workspaceId);
+        if (!DEFAULT_WORKSPACE_ID.equals(workspaceId)) {
+            wrapper.eq(IcreditWorkspaceUserEntity.SPACE_ID, workspaceId);
+        }
         List<IcreditWorkspaceUserEntity> list = list(wrapper);
         return BusinessResult.success(Optional.ofNullable(list).orElse(Lists.newArrayList()));
     }

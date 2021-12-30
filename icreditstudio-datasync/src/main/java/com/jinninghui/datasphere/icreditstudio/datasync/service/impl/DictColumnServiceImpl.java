@@ -64,7 +64,7 @@ public class DictColumnServiceImpl extends ServiceImpl<DictColumnMapper, DictCol
             if (!saveParams.get(i).getColumnValue().matches(COLUMN_KEY_VALUE_REGEX)) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000085.message);
             }
-            if (saveParams.get(i).getRemark().length() > 200) {
+            if (StringUtils.isNotEmpty(saveParams.get(i).getRemark()) && saveParams.get(i).getRemark().length() > 200) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000086.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000086.message);
             }
             dictColumn = new DictColumnEntity();
