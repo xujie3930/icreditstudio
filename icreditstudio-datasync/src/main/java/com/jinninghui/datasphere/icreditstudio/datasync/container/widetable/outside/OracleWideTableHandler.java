@@ -117,7 +117,7 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
             WideTable wideTable = new WideTable();
             wideTable.setSql(sql);
             List<WideTable.Select> incrementFields = wideTableFieldInfos.stream()
-                    .filter(Objects::nonNull).map(e ->
+                    .filter(Objects::nonNull).filter(Objects::nonNull).filter(e -> StringUtils.equalsIgnoreCase("DATE", e.getOldType())).map(e ->
                     {
                         String incrementField = new StringJoiner(".").add(e.getDatabaseName()).add("\"" + e.getSourceTable() + "\"").add("\"" + e.getFieldName() + "\"").toString();
                         return new WideTable.Select(e.getFieldName(), incrementField);

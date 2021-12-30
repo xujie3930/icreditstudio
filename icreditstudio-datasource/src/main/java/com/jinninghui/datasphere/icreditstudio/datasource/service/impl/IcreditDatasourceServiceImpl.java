@@ -494,6 +494,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @BusinessParamsValidate
     public BusinessResult<List<IcreditDatasourceEntity>> getDataSources(DataSourcesQueryParam param) {
         IcreditDatasourceConditionParam build = IcreditDatasourceConditionParam.builder()
+                .workspaceId(param.getWorkspaceId())
 //                .uri(param.getDatabaseName())
                 .databaseName(param.getDatabaseName())
                 .datasourceId(param.getDatasourceId())

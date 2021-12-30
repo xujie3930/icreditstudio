@@ -35,4 +35,6 @@ public class WideTableFieldInfo {
      * 来源库
      */
     private String databaseName;
+
+    private String oldType;
 }
