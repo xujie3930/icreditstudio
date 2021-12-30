@@ -93,7 +93,7 @@ export default {
       type: 'slot',
       label: '操作',
       prop: 'operation',
-      width: '250px',
+      width: 200,
       fixed: 'right'
     }
   ]
