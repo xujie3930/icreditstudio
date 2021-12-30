@@ -486,6 +486,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         } else {
             if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
                 schedulerFeign.update(build);
+            }else{
+                schedulerFeign.updateDefinitionVersionById(taskEntity.getVersion(), scheduleId);
             }
         }
         //判断是否是周期执行

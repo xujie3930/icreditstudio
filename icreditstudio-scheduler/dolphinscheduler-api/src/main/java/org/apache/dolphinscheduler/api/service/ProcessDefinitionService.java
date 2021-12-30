@@ -299,5 +299,7 @@ public interface ProcessDefinitionService {
     boolean checkHasAssociatedProcessDefinition(String processDefinitionId, long version);
 
     List<Map<String, Object>> selectByWorkspaceIdAndTime(String workspaceId, Date startOfDay, Date endOfDay);
+
+    void updateDefinitionVersionById(Integer version, String processDefinitionId);
 }
 

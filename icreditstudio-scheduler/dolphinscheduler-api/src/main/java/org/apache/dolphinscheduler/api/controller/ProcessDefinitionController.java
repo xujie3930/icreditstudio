@@ -50,7 +50,8 @@ import static org.apache.dolphinscheduler.api.enums.Status.*;
  */
 @Api(tags = "PROCESS_DEFINITION_TAG")
 @RestController
-@RequestMapping("projects/{projectName}/process")
+//@RequestMapping("projects/{projectName}/process")
+@RequestMapping("definition")
 public class ProcessDefinitionController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(ProcessDefinitionController.class);
@@ -638,6 +639,11 @@ public class ProcessDefinitionController extends BaseController {
                                                        @RequestParam("projectId") String projectId) {
         Map<String, Object> result = processDefinitionService.queryProcessDefinitionAllByProjectId(projectId);
         return returnDataList(result);
+    }
+
+    @GetMapping("updateDefinitionVersionById")
+    public void updateDefinitionVersionById(@RequestParam("version") Integer version, @RequestParam("processDefinitionId") String processDefinitionId){
+        processDefinitionService.updateDefinitionVersionById(version, processDefinitionId);
     }
 
 }

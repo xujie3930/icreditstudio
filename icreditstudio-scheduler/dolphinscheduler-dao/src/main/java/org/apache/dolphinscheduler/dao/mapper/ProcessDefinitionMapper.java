@@ -134,4 +134,6 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
     void updateStatusById(@Param("processDefinitionId") String processDefinitionId, @Param("state") int state);
 
     int updateTimeById(@Param("updateTime")Date date, @Param("processDefinitionId")String processDefinitionId);
+
+    void updateDefinitionVersionById(@Param("version") Integer version, @Param("processDefinitionId") String processDefinitionId);
 }
