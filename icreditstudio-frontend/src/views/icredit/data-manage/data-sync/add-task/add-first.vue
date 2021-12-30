@@ -143,8 +143,8 @@ export default {
       immediate: true,
       deep: true,
       handler(nVal) {
-        if (nVal && nVal.oldName) {
-          this.oldName = nVal.oldName ?? ''
+        if (nVal) {
+          this.oldName = nVal?.oldName ?? ''
         }
       }
     }

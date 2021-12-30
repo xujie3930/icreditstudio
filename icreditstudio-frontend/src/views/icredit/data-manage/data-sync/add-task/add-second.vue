@@ -1376,7 +1376,11 @@ export default {
     getSelectHostModel() {
       const { sql, sourceType } = this.secondTaskForm
       this.widthTableLoading = true
-      return API.dataSyncVerifyHost({ sql, sourceType })
+      return API.dataSyncVerifyHost({
+        sql,
+        sourceType,
+        workspaceId: this.workspaceId
+      })
         .then(({ success, data }) => {
           if (success && data) {
             const { showWindow, sameNameDataBase } = data

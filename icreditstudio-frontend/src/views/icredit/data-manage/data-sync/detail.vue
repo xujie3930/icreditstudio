@@ -50,7 +50,13 @@
 
               <el-col class="col" :span="12">
                 <div>表间关联关系：</div>
-                <div v-if="datasourceDetailInfo.view.length" class="pop-wrap">
+                <div
+                  v-if="
+                    datasourceDetailInfo.view &&
+                      datasourceDetailInfo.view.length
+                  "
+                  class="pop-wrap"
+                >
                   <el-popover placement="right-end" width="450" trigger="hover">
                     <Figure :data-source="datasourceDetailInfo.view" />
                     <div class="svg-wrap" slot="reference">
@@ -82,18 +88,16 @@
               <el-col class="col" :span="6">
                 <span> 增量字段：</span>
                 <span>
-                  {{ datasourceDetailInfo.syncCondition.incrementalField }}
+                  {{
+                    datasourceDetailInfo.syncCondition | filterIncrementalField
+                  }}
                 </span>
               </el-col>
 
               <el-col class="col" :span="6">
                 <span> 时间过滤条件：</span>
-                <span
-                  v-if="
-                    datasourceDetailInfo.syncCondition.n ||
-                      datasourceDetailInfo.syncCondition.n === 0
-                  "
-                  >T + {{ datasourceDetailInfo.syncCondition.n }}</span
+                <span v-if="conditionCount || conditionCount === 0">
+                  T + {{ conditionCount }}</span
                 >
               </el-col>
             </el-row>
@@ -216,10 +220,20 @@ export default {
     }
   },
 
+  filters: {
+    filterIncrementalField(item) {
+      return item ? item?.incrementalField : ''
+    }
+  },
+
   computed: {
     datasourceName() {
       const { sourceType } = this.datasourceDetailInfo
       return radioBtnOption[sourceType] ? radioBtnOption[sourceType].name : ''
+    },
+
+    conditionCount() {
+      return this.datasourceDetailInfo.syncCondition?.n ?? null
     }
   },
 
