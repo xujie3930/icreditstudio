@@ -103,6 +103,7 @@ public class OracleWideTableHandler extends AbstractOutsideWideTableHandler {
 
                         HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(fieldInfo.getType().trim());
                         info.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
+                        info.setOldType(typeEnum.getHiveType());
                         wideTableFieldInfos.add(info);
                     }
                 }
