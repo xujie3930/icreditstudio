@@ -230,7 +230,12 @@ export default {
         id,
         orgNames,
         userName,
-        authorityResult: { userRole, dataAuthority, functionalAuthority }
+        authorityResult: {
+          userRole,
+          tenantCode,
+          dataAuthority,
+          functionalAuthority
+        }
       } = this.userInfo
 
       // 当前登录用户
@@ -241,6 +246,7 @@ export default {
         orgNames,
         dataAuthority,
         functionalAuthority,
+        tenantCode,
         createTime: new Date().getTime()
       }
 
@@ -253,32 +259,42 @@ export default {
 
     // 点击打开添加成员信息弹窗
     handleUserSelect() {
+      const rightData = this.detailForm.memberList.map(item => {
+        const {
+          userId: id,
+          username: userName,
+          orgName: orgNames,
+          tenantCode,
+          userRole,
+          functionalAuthority,
+          dataAuthority,
+          ...rest
+        } = item
+
+        const authorityResult = {
+          tenantCode,
+          userRole,
+          functionalAuthority,
+          dataAuthority
+        }
+
+        return {
+          id,
+          userName,
+          orgNames,
+          authorityResult,
+          ...rest
+        }
+      })
+
       // id存在说明是编辑情况
       if (this.id) {
-        const rightData = this.detailForm.memberList.map(item => {
-          const {
-            userId: id,
-            username: userName,
-            userRole: roleName,
-            // orgName: orgNames,
-            authorityResult,
-            ...rest
-          } = item
-          return {
-            id,
-            userName,
-            roleName,
-            // orgNames,
-            ...authorityResult,
-            ...rest
-          }
-        })
         this.$refs.usersSelect.open('edit', rightData)
-        return
+      } else {
+        this.detailForm.director
+          ? this.$refs.usersSelect.open('add', rightData)
+          : this.$refs.detailForm.validateField('director')
       }
-      this.detailForm.director
-        ? this.$refs.usersSelect.open('add')
-        : this.$refs.detailForm.validateField('director')
     },
 
     // 清空负责人
@@ -299,7 +315,12 @@ export default {
           id: userId,
           name: username,
           orgNames,
-          authorityResult: { userRole, dataAuthority, functionalAuthority }
+          authorityResult: {
+            userRole,
+            tenantCode,
+            dataAuthority,
+            functionalAuthority
+          }
         } = item || {}
 
         this.oldUserId = userId
@@ -308,6 +329,7 @@ export default {
           userRole,
           username,
           orgNames,
+          tenantCode,
           dataAuthority,
           functionalAuthority,
           createTime: new Date().getTime()
@@ -328,16 +350,22 @@ export default {
       if (opType === 'confirm') {
         const userList = users.map(item => {
           const {
-            orgNames,
             id: userId,
             userName: username,
-            authorityResult: { userRole, dataAuthority, functionalAuthority }
+            orgNames,
+            authorityResult: {
+              userRole,
+              tenantCode,
+              dataAuthority,
+              functionalAuthority
+            }
           } = item
           return {
             userId,
             username,
             userRole,
             orgNames,
+            tenantCode,
             functionalAuthority,
             dataAuthority,
             createTime: new Date().getTime()
@@ -388,18 +416,23 @@ export default {
     handleConfirm() {
       this.$refs.detailForm.validate(valid => {
         if (valid) {
+          const { userName } = this.userInfo
           const {
-            memberList: [createUser, ...mList],
+            memberList,
             director: { name },
             ...restParams
           } = this.detailForm
-          const newMemberList = mList.map(({ createTime, ...item }) => item)
+          const newMemberList = memberList.map(
+            ({ createTime, ...item }) => item
+          )
           const params = {
-            memberList: newMemberList,
             director: name,
-            createUser,
+            memberList: newMemberList,
+            createUser: this.userInfo.userName,
             ...restParams
           }
+
+          this.id && (params.updateUser = userName)
 
           this.btnLoading = true
           API[`workspace${this.id ? 'Update' : 'Add'}`](params)

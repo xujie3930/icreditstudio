@@ -111,7 +111,7 @@ export default {
     open(opType, rightData) {
       this.userSetDialogFlag = true
       this.fetchAllOrgs()
-      if (opType === 'edit') {
+      if (opType && rightData) {
         this.userSetModels.transfer.rightData = rightData
         this.$nextTick(() => this.$refs.userTransfer.init())
       }
@@ -142,6 +142,8 @@ export default {
 
     close() {
       this.userSetDialogFlag = false
+      this.userSetModels.transfer.rightData = []
+      this.userSetModels.transfer.leftData = []
     },
 
     // 获取公司组织架构

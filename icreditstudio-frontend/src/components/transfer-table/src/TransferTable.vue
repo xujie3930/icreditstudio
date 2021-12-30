@@ -29,9 +29,7 @@
         :span="2"
         align="center"
         class="btn-group"
-        :style="{
-          marginTop: elLeftData.length || elLeftData.length ? '250px' : '100px'
-        }"
+        :style="{ marginTop: '100px' }"
       >
         <el-button
           circle

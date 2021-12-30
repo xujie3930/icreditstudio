@@ -7,7 +7,7 @@ export default {
   id: 'settingDetial',
   isBorder: true,
   hasPage: false,
-  maxHeight: 250,
+  maxHeight: 220,
   group: [
     {
       type: 'index',
