@@ -106,6 +106,7 @@ export const scheduleTaskOptions = {
   },
   yAxis: {
     type: 'value',
+    minInterval: 1,
     axisLabel: {
       formatter: val => val,
       fontWeight: 400,
