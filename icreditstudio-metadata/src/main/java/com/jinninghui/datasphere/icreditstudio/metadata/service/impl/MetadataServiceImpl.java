@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
 import cn.hutool.core.io.IoUtil;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -118,16 +119,18 @@ public class MetadataServiceImpl implements MetadataService {
         if (aBoolean) {
             log.info("添加工作空间表映射,工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
             addWorkspaceTable(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
-            log.info("调用授权，工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
+//            log.info("调用授权，工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
             auth(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
         }
         return BusinessResult.success(aBoolean);
     }
 
     private void auth(String workspaceId, String databaseName, String tableName) {
+        log.info("调用授权，工作空间：" + workspaceId + "数据库名称：" + databaseName + "数据表名称：" + tableName);
         Connection connection = this.connection.getConnection();
         try {
             List<String> workspaceUsers = getWorkspaceUsers(workspaceId);
+            log.info("授权用户列表:" + JSONObject.toJSONString(workspaceUsers));
             List<UserPerm> all = workspaceUsers.stream()
                     .filter(StringUtils::isNotBlank)
                     .map(user -> {
