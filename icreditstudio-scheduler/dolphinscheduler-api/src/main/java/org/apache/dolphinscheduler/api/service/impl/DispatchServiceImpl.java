@@ -165,7 +165,7 @@ public class DispatchServiceImpl implements DispatchService {
         }
         ScheduleLogPageResult<DispatchLogVO> pageResult = ScheduleLogPageResult.build(logVOList, param, countLog);
         StringBuilder scheduleTypeStr = new StringBuilder();
-        scheduleTypeStr.append(ScheduleType.find(definition.getScheduleType()).getMsg());
+        scheduleTypeStr.append(ScheduleType.find(definition.getTaskType()).getMsg());
         if(StringUtils.isNotEmpty(definition.getCron())){
             scheduleTypeStr.append("(").append(definition.getCron()).append(")");
         }

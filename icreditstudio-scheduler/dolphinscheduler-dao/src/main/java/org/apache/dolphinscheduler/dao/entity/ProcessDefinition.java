@@ -56,10 +56,11 @@ public class ProcessDefinition {
     private String cron;
     private String targetTable;
     private String sourceTable;
+    private Integer taskType;//0-周期实例，1-手动实例
 
     private String workspaceId;//新增工作空间id
 
-    private Integer scheduleType;//0-周期实例，1-手动实例
+    private Integer scheduleType;//0-同步任务，1-开发任务，2-治理任务
     /**
      * 分区参数
      */

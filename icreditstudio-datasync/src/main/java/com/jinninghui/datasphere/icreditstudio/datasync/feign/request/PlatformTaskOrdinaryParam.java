@@ -11,7 +11,7 @@ import lombok.Data;
 public class PlatformTaskOrdinaryParam {
 
     private Integer version;
-    private Integer scheduleType;
+    private Integer taskType;
     private String cron;
     private String targetTable;
     private String sourceTableStr;

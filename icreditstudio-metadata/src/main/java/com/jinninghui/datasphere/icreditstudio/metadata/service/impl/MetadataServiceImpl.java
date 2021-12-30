@@ -7,14 +7,13 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.Database;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.metadata.entity.WorkspaceTableEntity;
+import com.jinninghui.datasphere.icreditstudio.metadata.feign.WorkspaceFeign;
+import com.jinninghui.datasphere.icreditstudio.metadata.feign.result.IcreditWorkspaceUserResult;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.AbstractClusterHiveConnectionSource;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataConnection;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.WorkspaceTableService;
-import com.jinninghui.datasphere.icreditstudio.metadata.service.param.HiveAuthInfo;
-import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
-import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
-import com.jinninghui.datasphere.icreditstudio.metadata.service.param.StatementField;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -45,6 +45,8 @@ public class MetadataServiceImpl implements MetadataService {
     private AbstractClusterHiveConnectionSource connectionSource;
     @Resource
     private WorkspaceTableService workspaceTableService;
+    @Resource
+    private WorkspaceFeign workspaceFeign;
 
     @Override
     public List<Database> getDatabases() {
@@ -114,9 +116,60 @@ public class MetadataServiceImpl implements MetadataService {
             return true;
         });
         if (aBoolean) {
+            log.info("添加工作空间表映射,工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
             addWorkspaceTable(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
+            log.info("调用授权，工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
+            auth(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
         }
         return BusinessResult.success(aBoolean);
+    }
+
+    private void auth(String workspaceId, String databaseName, String tableName) {
+        Connection connection = this.connection.getConnection();
+        try {
+            List<String> workspaceUsers = getWorkspaceUsers(workspaceId);
+            List<UserPerm> all = workspaceUsers.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .map(user -> {
+                        UserPerm userPerm = new UserPerm();
+                        userPerm.setUserName(user);
+
+                        TablePerm tablePerm = new TablePerm();
+                        tablePerm.setDatabase(databaseName);
+                        tablePerm.setTableName(tableName);
+
+                        Perm perm = new Perm();
+                        perm.setPerm("all");
+                        tablePerm.setPerms(Lists.newArrayList(perm));
+                        userPerm.setTablePerms(Lists.newArrayList(tablePerm));
+                        return userPerm;
+                    }).collect(Collectors.toList());
+            workspaceTableService.authTable(all, connection);
+        } catch (Exception e) {
+            log.error("授权失败，失败原因可能是:" + e);
+        } finally {
+            IoUtil.close(connection);
+        }
+    }
+
+    /**
+     * 工作空间的用户
+     *
+     * @param workspaceId
+     * @return
+     */
+    private List<String> getWorkspaceUsers(String workspaceId) {
+        List<String> results = null;
+        BusinessResult<List<IcreditWorkspaceUserResult>> workspaceUsers = workspaceFeign.getWorkspaceUserByWorkspaceId(workspaceId);
+        List<IcreditWorkspaceUserResult> data = workspaceUsers.getData();
+        if (workspaceUsers.isSuccess() && CollectionUtils.isNotEmpty(data)) {
+            results = data.stream()
+                    .filter(Objects::nonNull)
+                    .map(IcreditWorkspaceUserResult::getUsername)
+                    .distinct()
+                    .collect(Collectors.toList());
+        }
+        return Optional.ofNullable(results).orElse(Lists.newArrayList());
     }
 
     /**

@@ -386,4 +386,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
         return processDefinitionMapper.selectByWorkspaceIdAndTime(workspaceId, startOfDay, endOfDay);
     }
 
+    @Override
+    public void updateDefinitionVersionById(Integer version, String processDefinitionId) {
+        processDefinitionMapper.updateDefinitionVersionById(version, processDefinitionId);
+    }
 }

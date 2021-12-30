@@ -243,4 +243,29 @@
         set scan_state = #{scanState}
         where id = #{id}
     </update>
+
+    <select id="countByWorkspaceIdAndTime" resultType="java.lang.Long">
+        select count(t.id)
+        from t_ds_task_instance t
+        left join t_ds_process_definition d
+        on t.process_definition_id = d.id
+        <where>
+            <if test="startTime !=null ">
+                and t.start_time > #{startTime}
+            </if>
+            <if test="endTime !=null ">
+                and t.end_time <![CDATA[<]]>  #{endTime}
+            </if>
+            <if test="userId !=null and userId != '' ">
+                and d.user_id =#{userId}
+            </if>
+            <if test="states != null and states.length != 0">
+                and t.state in
+                <foreach collection="states" index="index" item="i" open="(" separator="," close=")">
+                    #{i}
+                </foreach>
+            </if>
+            and  t.workspace_id = #{workspaceId} and t.scan_state = 0
+        </where>
+    </select>
 </mapper>

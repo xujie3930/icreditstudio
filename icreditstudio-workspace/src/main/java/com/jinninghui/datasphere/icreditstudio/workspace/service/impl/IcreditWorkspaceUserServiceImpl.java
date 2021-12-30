@@ -3,7 +3,9 @@ package com.jinninghui.datasphere.icreditstudio.workspace.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
+import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.Query;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * <p>
@@ -50,7 +53,7 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
     public List<Map<String, String>> getWorkspaceByUserId(String id) {
         List<Map<String, String>> list = workspaceUserMapper.getWorkspaceByUserId(id);
         //增加默认工作空间信息
-        Map<String , String> defaultWorkspace = new HashMap<String , String>(){{
+        Map<String, String> defaultWorkspace = new HashMap<String, String>() {{
             put("id", "0");
             put("name", "默认工作空间");
         }};
@@ -65,5 +68,13 @@ public class IcreditWorkspaceUserServiceImpl extends ServiceImpl<IcreditWorkspac
     @Override
     public List<String> getWorkSpaceIdsByUserId(String userId) {
         return workspaceUserMapper.getWorkSpaceIdsByUserId(userId);
+    }
+
+    @Override
+    public BusinessResult<List<IcreditWorkspaceUserEntity>> getWorkspaceUserByWorkspaceId(String workspaceId) {
+        QueryWrapper<IcreditWorkspaceUserEntity> wrapper = new QueryWrapper<>();
+        wrapper.eq(IcreditWorkspaceUserEntity.SPACE_ID, workspaceId);
+        List<IcreditWorkspaceUserEntity> list = list(wrapper);
+        return BusinessResult.success(Optional.ofNullable(list).orElse(Lists.newArrayList()));
     }
 }

@@ -10,7 +10,7 @@ import org.apache.dolphinscheduler.common.enums.ReleaseState;
 public class PlatformTaskOrdinaryParam {
 
     private Integer version;
-    private Integer scheduleType;
+    private Integer taskType;
     private String cron;
     private String targetTable;
     private String sourceTableStr;
