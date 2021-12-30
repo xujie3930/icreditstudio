@@ -124,11 +124,15 @@
           action="#"
           ref="upload"
           class="dict-upload"
-          :limit="1"
-          :on-exceed="handleExceed"
+          :auto-upload="false"
+          :file-list="importFileList"
+          :on-change="handleUploadChange"
+          :on-remove="handleUploadRemove"
           :before-upload="handleBeforeUpload"
           :http-request="handleImport"
         >
+          <!-- :limit="1" -->
+          <!-- :on-exceed="handleExceed" -->
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         </el-upload>
@@ -202,6 +206,7 @@ export default {
       const { row, title, opType } = options
       this.opType = opType
       this.title = title
+      this.importFileList = []
 
       if (opType === 'Edit') {
         this.id = row.id
@@ -248,6 +253,11 @@ export default {
         if (valid) {
           // 字典表导入
           if (this.opType === 'import') {
+            if (!this.importFileList.length) {
+              this.$message.warning('请先上传文件！')
+              this.$refs.baseDialog.btnLoadingClose()
+              return
+            }
             this.isUploadFile = true
             this.$refs.upload.submit()
             return
@@ -292,7 +302,6 @@ export default {
     },
 
     handleBeforeUpload(file) {
-      console.log('handleBeforeUpload==', file)
       const { name } = file
       const format = ['xls', 'xlsx']
       const fileTypeArr = name.split('.')
@@ -302,11 +311,11 @@ export default {
         this.$message.error('上传文件格式不正确, 仅支持xls和xlsx格式!')
         return false
       }
+      this.importFileList = [file]
       return true
     },
 
     handleImport(options) {
-      console.log(options, 'options')
       const { id, userName } = this.userInfo
       const { file } = options
       const params = {
@@ -331,9 +340,21 @@ export default {
             this.$emit('on-confirm', success)
           }
         })
+        .catch(() => {
+          this.importFileList = []
+        })
         .finally(() => {
           this.$refs.baseDialog.btnLoadingClose()
         })
+    },
+
+    handleUploadChange(file, fileList) {
+      const length = fileList?.length ?? 0
+      length && (this.importFileList = [fileList[length - 1]])
+    },
+
+    handleUploadRemove() {
+      this.importFileList = []
     },
 
     handleDownload() {
@@ -378,7 +399,8 @@ export default {
 
       .el-upload-list {
         text-align: center;
-        margin-bottom: 10px;
+        padding: 0 10px;
+        margin-bottom: 20px;
       }
 
       .el-upload-dragger {
@@ -390,6 +412,16 @@ export default {
           margin: 0;
           margin-bottom: 20px;
         }
+      }
+
+      .el-list-enter-active,
+      .el-list-leave-active {
+        transition: none;
+      }
+
+      .el-list-enter,
+      .el-list-leave-active {
+        opacity: 0;
       }
     }
   }
