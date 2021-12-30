@@ -122,4 +122,8 @@
     <update id="updateTimeById">
         UPDATE t_ds_process_definition SET update_time = #{updateTime} WHERE id = #{processDefinitionId}
     </update>
+
+    <update id="updateDefinitionVersionById">
+        UPDATE t_ds_process_definition SET version = #{version} WHERE id = #{processDefinitionId}
+    </update>
 </mapper>
