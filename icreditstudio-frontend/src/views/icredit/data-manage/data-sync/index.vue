@@ -87,7 +87,7 @@
             >
               启用
             </el-button>
-            <el-button
+            <!-- <el-button
               type="text"
               v-if="
                 row.taskStatus === 0 &&
@@ -104,7 +104,7 @@
               @click="handleStopBtnClick(row, 'Stop')"
             >
               停止执行
-            </el-button>
+            </el-button> -->
             <el-button
               type="text"
               v-if="row.taskStatus !== 0"

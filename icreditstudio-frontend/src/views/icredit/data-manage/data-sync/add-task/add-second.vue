@@ -182,6 +182,7 @@
                   remote
                   size="mini"
                   placeholder="请输入库名称"
+                  :disabled="opType === 'edit'"
                   :loading="searchStockLoading"
                   :remote-method="getFluzzyStockName"
                   @change="changeStockName"
@@ -200,6 +201,7 @@
                   size="mini"
                   style="margin-left:10px;"
                   placeholder="请输入宽表名称"
+                  :disabled="opType === 'edit'"
                   v-model.trim="secondTaskForm.wideTableName"
                   @blur="handleVerifyWidthTableName"
                 >

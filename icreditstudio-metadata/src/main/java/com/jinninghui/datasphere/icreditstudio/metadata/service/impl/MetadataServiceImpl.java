@@ -116,7 +116,9 @@ public class MetadataServiceImpl implements MetadataService {
             return true;
         });
         if (aBoolean) {
+            log.info("添加工作空间表映射,工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
             addWorkspaceTable(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
+            log.info("调用授权，工作空间：" + param.getWorkspaceId() + "数据库名称：" + param.getDatabaseName() + "数据表名称：" + param.getWideTableName());
             auth(param.getWorkspaceId(), param.getDatabaseName(), param.getWideTableName());
         }
         return BusinessResult.success(aBoolean);
@@ -143,6 +145,8 @@ public class MetadataServiceImpl implements MetadataService {
                         return userPerm;
                     }).collect(Collectors.toList());
             workspaceTableService.authTable(all, connection);
+        } catch (Exception e) {
+            log.error("授权失败，失败原因可能是:" + e);
         } finally {
             IoUtil.close(connection);
         }
