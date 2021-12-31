@@ -369,7 +369,6 @@ public class ProcessService {
                                                        Command command,
                                                        Map<String, String> cmdParam) {
         ProcessInstance processInstance = new ProcessInstance(processDefinition);
-        processInstance.setVersion(processDefinition.getVersion());
 
         processInstance.setState(ExecutionStatus.RUNNING_EXECUTION);
         processInstance.setRecovery(Flag.NO);
@@ -780,6 +779,7 @@ public class ProcessService {
      * @return task instance
      */
     public TaskInstance submitTaskInstanceToDB(TaskInstance taskInstance, ProcessInstance processInstance) {
+        ProcessDefinition definition = findProcessDefineById(processInstance.getProcessDefinitionId());
         ExecutionStatus processInstanceState = processInstance.getState();
 
         if (taskInstance.getState().typeIsFailure()) {
@@ -804,6 +804,7 @@ public class ProcessService {
                 }
             }
         }
+        taskInstance.setVersion(definition.getVersion());
         taskInstance.setExecutorId(processInstance.getExecutorId());
         taskInstance.setProcessInstancePriority(processInstance.getProcessInstancePriority());
         taskInstance.setState(getSubmitTaskState(taskInstance, processInstanceState));

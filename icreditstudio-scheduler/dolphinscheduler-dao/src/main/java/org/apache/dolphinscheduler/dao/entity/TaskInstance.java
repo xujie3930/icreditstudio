@@ -39,6 +39,8 @@ import java.util.Map;
 @TableName("t_ds_task_instance")
 public class TaskInstance implements Serializable {
 
+    private Integer version;
+
     /**
      * id
      */

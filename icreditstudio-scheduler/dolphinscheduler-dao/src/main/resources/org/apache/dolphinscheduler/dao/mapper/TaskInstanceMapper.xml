@@ -150,9 +150,9 @@
     </select>
 
     <select id="queryTaskByProcessDefinitionId" resultType="org.apache.dolphinscheduler.common.vo.DispatchLogVO">
-        SELECT pro.version AS version,task.id AS taskInstanceId,task.process_instance_id AS processInstanceId,task.name AS taskInstanceName,task.state AS taskInstanceState,task.submit_time AS taskInstanceExecTime,
+        SELECT task.version AS version,task.id AS taskInstanceId,task.process_instance_id AS processInstanceId,task.name AS taskInstanceName,task.state AS taskInstanceState,task.submit_time AS taskInstanceExecTime,
         task.total_records AS totalSyncInstanceNum,0 AS totalQualityCheckInstanceNum,task.start_time AS startTime,task.end_time AS endTime
-        FROM t_ds_task_instance task LEFT JOIN t_ds_process_instance pro ON task.process_definition_id = pro.process_definition_id
+        FROM t_ds_task_instance task
         WHERE task.process_definition_id = #{processDefinitionId}
         <if test="taskStatus == 0">
             AND task.state IN (7,8)
@@ -174,22 +174,22 @@
     </select>
     <select id="countTaskByProcessDefinitionId" resultType="java.lang.Long">
         SELECT count(1)
-        FROM t_ds_task_instance
-        WHERE process_definition_id = #{processDefinitionId}
+        FROM t_ds_task_instance task
+        WHERE task.process_definition_id = #{processDefinitionId}
         <if test="taskStatus == 0">
-            AND state IN (7,8)
+            AND task.state IN (7,8)
         </if>
         <if test="taskStatus == 2">
-            AND state IN (0,1,10)
+            AND task.state IN (0,1,10)
         </if>
         <if test="taskStatus == 1">
-            AND state IN (4,5,6,9)
+            AND task.state IN (4,5,6,9)
         </if>
         <if test="execTimeStart != null">
-            AND submit_time <![CDATA[ >= ]]> #{execTimeStart}
+            AND task.submit_time <![CDATA[ >= ]]> #{execTimeStart}
         </if>
         <if test="execTimeEnd != null">
-            AND submit_time <![CDATA[ <= ]]> #{execTimeEnd}
+            AND task.submit_time <![CDATA[ <= ]]> #{execTimeEnd}
         </if>
     </select>
 

@@ -35,8 +35,6 @@ import java.util.Date;
 @TableName("t_ds_process_instance")
 public class ProcessInstance {
 
-    private Integer version;
-
     /**
      * id
      */
