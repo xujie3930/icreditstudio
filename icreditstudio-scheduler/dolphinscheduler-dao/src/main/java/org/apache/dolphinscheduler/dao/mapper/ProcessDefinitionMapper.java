@@ -17,15 +17,10 @@
 package org.apache.dolphinscheduler.dao.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import org.apache.dolphinscheduler.dao.entity.DefinitionGroupByUser;
 import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 /**
  * process definition mapper interface
@@ -43,16 +38,6 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
                                          @Param("name") String name);
 
     /**
-     * query process definition by name
-     *
-     * @param projectId projectId
-     * @param name      name
-     * @return process definition
-     */
-    ProcessDefinition queryByDefineName(@Param("projectId") String projectId,
-                                        @Param("processDefinitionName") String name);
-
-    /**
      * query process definition by id
      *
      * @param processDefineId processDefineId
@@ -60,80 +45,9 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
      */
     ProcessDefinition queryByDefineId(@Param("processDefineId") String processDefineId);
 
-    /**
-     * process definition page
-     *
-     * @param page      page
-     * @param searchVal searchVal
-     * @param userId    userId
-     * @param projectId projectId
-     * @param isAdmin   isAdmin
-     * @return process definition IPage
-     */
-    IPage<ProcessDefinition> queryDefineListPaging(IPage<ProcessDefinition> page,
-                                                   @Param("searchVal") String searchVal,
-                                                   @Param("userId") String userId,
-                                                   @Param("projectId") String projectId,
-                                                   @Param("isAdmin") boolean isAdmin);
-
-    /**
-     * query all process definition list
-     *
-     * @param projectId projectId
-     * @return process definition list
-     */
-    List<ProcessDefinition> queryAllDefinitionList(@Param("projectId") String projectId);
-
-    /**
-     * query process definition by ids
-     *
-     * @param ids ids
-     * @return process definition list
-     */
-    List<ProcessDefinition> queryDefinitionListByIdList(@Param("ids") String[] ids);
-
-    /**
-     * query process definition by tenant
-     *
-     * @param tenantId tenantId
-     * @return process definition list
-     */
-    List<ProcessDefinition> queryDefinitionListByTenant(@Param("tenantId") int tenantId);
-
-    /**
-     * count process definition group by user
-     *
-     * @param userId     userId
-     * @param projectIds projectIds
-     * @param isAdmin    isAdmin
-     * @return process definition list
-     */
-    List<DefinitionGroupByUser> countDefinitionGroupByUser(
-            @Param("userId") String userId,
-            @Param("projectIds") String[] projectIds,
-            @Param("isAdmin") boolean isAdmin);
-
-    /**
-     * list all resource ids
-     *
-     * @return resource ids list
-     */
-    @MapKey("id")
-    List<Map<String, Object>> listResources();
-
-    /**
-     * list all resource ids by user id
-     *
-     * @return resource ids list
-     */
-    @MapKey("id")
-    List<Map<String, Object>> listResourcesByUser(@Param("userId") String userId);
-
-    List<Map<String, Object>> selectByWorkspaceIdAndTime(@Param("workspaceId") String workspaceId, @Param("startTime") Date startOfDay, @Param("endTime") Date endOfDay);
-
     void updateStatusById(@Param("processDefinitionId") String processDefinitionId, @Param("state") int state);
 
     int updateTimeById(@Param("updateTime")Date date, @Param("processDefinitionId")String processDefinitionId);
 
-    void updateDefinitionVersionById(@Param("version") Integer version, @Param("processDefinitionId") String processDefinitionId);
+    void updateDefinitionVersionById(@Param("version") Integer version, @Param("cron") String cron, @Param("processDefinitionId") String processDefinitionId);
 }
