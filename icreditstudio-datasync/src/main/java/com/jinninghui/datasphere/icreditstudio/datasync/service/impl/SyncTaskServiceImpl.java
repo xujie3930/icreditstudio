@@ -1040,8 +1040,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         if (StringUtils.isBlank(param.getSql())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000063.getCode());
         }
+        if (StringUtils.isBlank(param.getWorkspaceId())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000000.getCode());
+        }
         QueryStatementParseHandler handler = QueryStatementParseContainer.get(param.getSql());
-        List<PreSqlPositionDataSourceResult.DatabaseInfo> dataSourceInfo = handler.getDataSourceInfo(param.getSourceType(), param.getSql());
+        List<PreSqlPositionDataSourceResult.DatabaseInfo> dataSourceInfo = handler.getDataSourceInfo(param.getSourceType(), param.getSql(), param.getWorkspaceId());
         if (CollectionUtils.isEmpty(dataSourceInfo)) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000064.getCode());
         }

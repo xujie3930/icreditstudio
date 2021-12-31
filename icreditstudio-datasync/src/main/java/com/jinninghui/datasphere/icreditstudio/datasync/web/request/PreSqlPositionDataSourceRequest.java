@@ -15,4 +15,8 @@ public class PreSqlPositionDataSourceRequest {
      * 查询语句
      */
     private String sql;
+    /**
+     * 工作空间ID
+     */
+    private String workspaceId;
 }

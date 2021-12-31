@@ -40,14 +40,14 @@ public class RelationQueryStatementParseHandler extends AbstractQueryStatementPa
     }
 
     @Override
-    public List<PreSqlPositionDataSourceResult.DatabaseInfo> getDataSourceInfo(Integer sourceType, String queryStat) {
+    public List<PreSqlPositionDataSourceResult.DatabaseInfo> getDataSourceInfo(Integer sourceType, String queryStat, String workspaceId) {
         String databaseName = parseDatabaseNameFromSql(queryStat);
 
         List<PreSqlPositionDataSourceResult.DatabaseInfo> result = null;
         if (StringUtils.isNotBlank(databaseName)) {
             FeignDataSourcesRequest request = new FeignDataSourcesRequest();
             request.setDatabaseName(databaseName);
-
+            request.setWorkspaceId(workspaceId);
             request.setSourceType(sourceType);
             BusinessResult<List<DatasourceInfo>> dataSources = datasourceFeign.getDataSources(request);
             if (dataSources.isSuccess() && Objects.nonNull(dataSources.getData())) {

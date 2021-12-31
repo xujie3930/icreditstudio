@@ -25,5 +25,5 @@ public interface QueryStatementParseHandler extends DialectKeyRegister {
      * @param queryStat
      * @return
      */
-    List<PreSqlPositionDataSourceResult.DatabaseInfo> getDataSourceInfo(Integer sourceType, String queryStat);
+    List<PreSqlPositionDataSourceResult.DatabaseInfo> getDataSourceInfo(Integer sourceType, String queryStat,String workspaceId);
 }
