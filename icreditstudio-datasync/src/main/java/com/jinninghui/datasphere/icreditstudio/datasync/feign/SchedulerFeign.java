@@ -78,6 +78,6 @@ public interface SchedulerFeign {
     @GetMapping(value = "/dolphinscheduler/platform/exec/ceaseSyncTask", produces = MediaType.APPLICATION_JSON_UTF8_VALUE, consumes = "application/json;charset=UTF-8")
     String ceaseSyncTask(@RequestParam("processDefinitionId") String processDefinitionId);
 
-    @GetMapping(value = "/dolphinscheduler/definition/updateDefinitionVersionById")
-    void updateDefinitionVersionById(@RequestParam("version") Integer version, @RequestParam("processDefinitionId") String processDefinitionId);
+    @GetMapping(value = "/dolphinscheduler/definition/updateDefinitionById")
+    void updateDefinitionById(@RequestParam("version") Integer version, @RequestParam("cron") String cron, @RequestParam("processDefinitionId") String processDefinitionId);
 }

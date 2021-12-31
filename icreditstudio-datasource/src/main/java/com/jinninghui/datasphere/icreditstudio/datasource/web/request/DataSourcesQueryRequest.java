@@ -13,6 +13,8 @@ import java.util.Set;
 @Data
 public class DataSourcesQueryRequest {
 
+    private String workspaceId;
+
     private Integer sourceType;
     /**
      * 数据源名称

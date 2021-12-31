@@ -96,6 +96,7 @@ public class MySqlWideTableHandler extends AbstractOutsideWideTableHandler {
                     fieldInfo.setSort(i);
                     fieldInfo.setFieldName(rsMetadata.getColumnName(i));
                     HiveMapJdbcTypeEnum typeEnum = HiveMapJdbcTypeEnum.find(rsMetadata.getColumnTypeName(i));
+                    fieldInfo.setOldType(typeEnum.getHiveType());
                     fieldInfo.setFieldType(Lists.newArrayList(typeEnum.getCategoryEnum().getCode(), typeEnum.getHiveType()));
                     fieldInfo.setSourceTable(tableName);
                     fieldInfo.setDatabaseName(catalogName);
@@ -128,7 +129,7 @@ public class MySqlWideTableHandler extends AbstractOutsideWideTableHandler {
             wideTable.setSql(sql);
 
             List<WideTable.Select> incrementFields = fieldInfos.stream()
-                    .filter(Objects::nonNull).map(e ->
+                    .filter(Objects::nonNull).filter(e -> StringUtils.equalsIgnoreCase("DATE", e.getOldType())).map(e ->
                     {
                         String incrementField = new StringJoiner(".").add(e.getDatabaseName()).add(e.getSourceTable()).add(e.getFieldName()).toString();
                         return new WideTable.Select(e.getFieldName(), incrementField);
