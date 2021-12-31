@@ -33,9 +33,9 @@ public class ProcessDefinitionController extends BaseController {
     @Autowired
     private ProcessDefinitionService processDefinitionService;
 
-    @GetMapping("updateDefinitionVersionById")
+    @GetMapping("updateDefinitionById")
     public void updateDefinitionVersionById(@RequestParam("version") Integer version, @RequestParam("cron") String cron, @RequestParam("processDefinitionId") String processDefinitionId){
-        processDefinitionService.updateDefinitionVersionById(version, cron, processDefinitionId);
+        processDefinitionService.updateDefinitionById(version, cron, processDefinitionId);
     }
 
 }

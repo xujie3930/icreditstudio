@@ -42,7 +42,7 @@
         UPDATE t_ds_process_definition SET update_time = #{updateTime} WHERE id = #{processDefinitionId}
     </update>
 
-    <update id="updateDefinitionVersionById">
+    <update id="updateDefinitionById">
         UPDATE t_ds_process_definition SET version = #{version},cron = #{cron} WHERE id = #{processDefinitionId}
     </update>
 </mapper>

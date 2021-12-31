@@ -32,8 +32,8 @@ public class ProcessDefinitionServiceImpl extends BaseServiceImpl implements Pro
     private ProcessDefinitionMapper processDefinitionMapper;
 
     @Override
-    public void updateDefinitionVersionById(Integer version, String cron, String processDefinitionId) {
-        processDefinitionMapper.updateDefinitionVersionById(version, cron, processDefinitionId);
+    public void updateDefinitionById(Integer version, String cron, String processDefinitionId) {
+        processDefinitionMapper.updateDefinitionById(version, cron, processDefinitionId);
     }
 
 }

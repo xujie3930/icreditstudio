@@ -22,6 +22,6 @@ package org.apache.dolphinscheduler.api.service;
  */
 public interface ProcessDefinitionService {
 
-    void updateDefinitionVersionById(Integer version, String cron, String processDefinitionId);
+    void updateDefinitionById(Integer version, String cron, String processDefinitionId);
 }
 

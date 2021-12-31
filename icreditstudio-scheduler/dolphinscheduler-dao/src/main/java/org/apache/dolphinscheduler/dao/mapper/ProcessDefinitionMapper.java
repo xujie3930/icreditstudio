@@ -49,5 +49,5 @@ public interface ProcessDefinitionMapper extends BaseMapper<ProcessDefinition> {
 
     int updateTimeById(@Param("updateTime")Date date, @Param("processDefinitionId")String processDefinitionId);
 
-    void updateDefinitionVersionById(@Param("version") Integer version, @Param("cron") String cron, @Param("processDefinitionId") String processDefinitionId);
+    void updateDefinitionById(@Param("version") Integer version, @Param("cron") String cron, @Param("processDefinitionId") String processDefinitionId);
 }
