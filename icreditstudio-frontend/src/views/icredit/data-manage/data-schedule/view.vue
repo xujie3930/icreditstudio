@@ -165,18 +165,24 @@ export default {
     open(row) {
       this.taskRow = row
       this.titleName = row.taskName
-      this.logDetail = ''
-      this.extraData = {}
       this.taskId = row.taskId
+      this.reset()
       this.mixinRetrieveTableData()
       this.polling()
       this.$refs.baseDialog.open()
     },
 
     close() {
-      console.log(1111, this.timerId)
       this.$emit('close')
       this.handleClearInterval()
+    },
+
+    reset() {
+      this.logDetail = ''
+      this.extraData = {}
+      this.$nextTick(() => {
+        this.mixinHandleReset()
+      })
     },
 
     interceptorsRequestRetrieve(params) {
@@ -194,7 +200,6 @@ export default {
     },
 
     interceptorsResponseTableData(data, res) {
-      console.log(res, 'koko')
       const { sourceTables, targetTable, scheduleTypeStr } = res?.data ?? {}
       this.extraData = { sourceTables, targetTable, scheduleTypeStr }
       return data
