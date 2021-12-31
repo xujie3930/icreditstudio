@@ -47,6 +47,6 @@
     </update>
 
     <update id="updateDefinitionJsonById">
-        UPDATE t_ds_process_definition SET processDefinitionJson = #{processDefinitionJson} WHERE id = #{processDefinitionId}
+        UPDATE t_ds_process_definition SET process_definition_json = #{processDefinitionJson} WHERE id = #{processDefinitionId}
     </update>
 </mapper>
