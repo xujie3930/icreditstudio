@@ -112,10 +112,7 @@ public class ProcessService {
 
     @Transactional(rollbackFor = Exception.class)
     public void updateProcessDefinitionById(String processDefinitionId, String processDefinitionJson) {
-        ProcessDefinition updateEntity = new ProcessDefinition();
-        updateEntity.setId(processDefinitionId);
-        updateEntity.setProcessDefinitionJson(processDefinitionJson);
-        processDefineMapper.updateById(updateEntity);
+        processDefineMapper.updateDefinitionJsonById(processDefinitionId, processDefinitionJson);
     }
 
     /**
