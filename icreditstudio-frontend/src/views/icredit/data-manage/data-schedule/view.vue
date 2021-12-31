@@ -57,7 +57,6 @@
 
           <j-table
             ref="viewLogTable"
-            v-loading="mixinTableLoading"
             :table-data="mixinTableData"
             :table-configuration="tableConfiguration"
             :table-pagination="mixinTablePagination"

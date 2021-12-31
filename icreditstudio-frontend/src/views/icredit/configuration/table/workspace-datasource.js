@@ -80,7 +80,8 @@ export default {
     {
       type: 'text',
       label: '描述信息',
-      prop: 'descriptor'
+      prop: 'descriptor',
+      popperClass: 'descriptorPopper'
     },
     {
       type: 'slot',
