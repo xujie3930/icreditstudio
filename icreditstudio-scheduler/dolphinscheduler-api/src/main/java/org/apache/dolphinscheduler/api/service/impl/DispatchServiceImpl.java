@@ -160,7 +160,6 @@ public class DispatchServiceImpl implements DispatchService {
             }else{//失败
                 dispatchLogVO.setTaskInstanceState(TaskExecStatusEnum.FAIL.getCode());
             }
-            dispatchLogVO.setVersion(definition.getVersion());
             dispatchLogVO.setTaskInstanceExecDuration(DateUtils.differSec(dispatchLogVO.getStartTime(), dispatchLogVO.getEndTime()));
         }
         ScheduleLogPageResult<DispatchLogVO> pageResult = ScheduleLogPageResult.build(logVOList, param, countLog);

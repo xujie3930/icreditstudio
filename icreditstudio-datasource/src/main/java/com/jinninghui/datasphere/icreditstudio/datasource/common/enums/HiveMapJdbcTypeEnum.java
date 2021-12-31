@@ -22,19 +22,21 @@ public enum HiveMapJdbcTypeEnum {
     FLOAT("FLOAT", "FLOAT", HiveFieldCategoryEnum.NUMERIC),
     DOUBLE("DOUBLE", "DOUBLE", HiveFieldCategoryEnum.NUMERIC),
     DECIMAL("DECIMAL", "DECIMAL", HiveFieldCategoryEnum.NUMERIC),
+    NUMBER("NUMBER", "INT", HiveFieldCategoryEnum.NUMERIC),
 
     DATETIME("DATETIME", "DATE", HiveFieldCategoryEnum.DATE),
     DATE("DATE", "DATE", HiveFieldCategoryEnum.DATE),
     TIMESTAMP("TIMESTAMP", "TIMESTAMP", HiveFieldCategoryEnum.DATE),
+    TIMESTAMP1("TIMESTAMP(6)", "TIMESTAMP", HiveFieldCategoryEnum.DATE),
     ;
     private String jdbcType;
     private String hiveType;
     private HiveFieldCategoryEnum categoryEnum;
 
     public static HiveMapJdbcTypeEnum find(String jdbcType) {
-        jdbcType = jdbcType.replaceAll("[^a-zA-Z\\u4E00-\\u9FA5]", "");  //去除数字，英文，汉字  之外的内容
+        jdbcType = jdbcType.replaceAll("[^a-zA-Z\\u4E00-\\u9FA5]", "");
         for (HiveMapJdbcTypeEnum value : HiveMapJdbcTypeEnum.values()) {
-            if (value.jdbcType.equalsIgnoreCase(jdbcType)) {
+            if (value.jdbcType.equals(jdbcType)) {
                 return value;
             }
         }

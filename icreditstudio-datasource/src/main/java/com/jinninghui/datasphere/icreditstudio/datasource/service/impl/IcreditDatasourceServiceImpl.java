@@ -97,6 +97,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
         BeanCopyUtils.copyProperties(param, defEntity);
         if (saveOrUpdate(userId, defEntity)) {
+            String datasourceId = defEntity.getId();
+            syncById(datasourceId);
             return BusinessResult.success(true);
         } else {
             return BusinessResult.fail("", "保存失败");
