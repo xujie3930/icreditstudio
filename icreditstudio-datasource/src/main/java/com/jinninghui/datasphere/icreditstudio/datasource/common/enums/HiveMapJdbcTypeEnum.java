@@ -34,6 +34,7 @@ public enum HiveMapJdbcTypeEnum {
     private HiveFieldCategoryEnum categoryEnum;
 
     public static HiveMapJdbcTypeEnum find(String jdbcType) {
+        jdbcType = jdbcType.replaceAll("[^a-zA-Z\\u4E00-\\u9FA5]", "");
         for (HiveMapJdbcTypeEnum value : HiveMapJdbcTypeEnum.values()) {
             if (value.jdbcType.equals(jdbcType)) {
                 return value;
