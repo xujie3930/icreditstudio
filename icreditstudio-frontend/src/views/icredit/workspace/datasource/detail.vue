@@ -78,7 +78,17 @@
           </el-col>
           <el-col :span="10">
             <el-form-item label="数据源描述">
-              <span class="label-text"> {{ detailData.descriptor }}</span>
+              <!-- <el-input
+                v-if="detailData.descriptor"
+                class="label-text"
+                :readonly="true"
+                type="textarea"
+                :autosize="{ minRows: 2, maxRows: 4 }"
+                v-model="detailData.descriptor"
+              ></el-input> -->
+              <div class="label-text label-text-des">
+                {{ detailData.descriptor }}
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -277,6 +287,11 @@ export default {
     font-weight: 400;
     text-align: left;
     // color: #262626;
+  }
+
+  .label-text-des {
+    max-height: 100px;
+    overflow: auto;
   }
 }
 
