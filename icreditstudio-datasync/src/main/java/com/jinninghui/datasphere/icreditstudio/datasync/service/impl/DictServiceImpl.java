@@ -51,11 +51,19 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> save(DictSaveParam param) {
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(param.getDictColumns(), DictColumnSaveParam.class);
         dictColumnService.saveBatch(dict.getId(), saveParams);
         return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "保存失败");
+    }
+
+    private DictEntity findByName(String chineseName){
+        return dictMapper.findByName(chineseName);
     }
 
     private static void checkDictParam(DictSaveParam param) {
@@ -123,6 +131,10 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<Boolean> update(DictSaveParam param) {
         checkDictId(param.getId());
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict && !oldDict.getId().equals(param.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = new DictEntity();
         BeanCopyUtils.copyProperties(param, dict);
         dictColumnService.truthDelBatchByDictId(param.getId());
@@ -140,6 +152,10 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         }
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnExcelMode> dictColumnExcelList = ExcelUtil.readExcelFileData(file, 1, 1, DictColumnExcelMode.class);
