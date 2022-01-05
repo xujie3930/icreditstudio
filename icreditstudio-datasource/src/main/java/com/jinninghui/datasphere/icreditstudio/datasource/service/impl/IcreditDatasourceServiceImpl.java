@@ -562,6 +562,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> offDatasourceFromWorkspace(String spaceId) {
         List<IcreditDatasourceEntity> datasourceEntityList = datasourceMapper.selectAll(spaceId, DatasourceStatusEnum.ENABLE.getCode());
         for (IcreditDatasourceEntity datasourceEntity : datasourceEntityList) {
@@ -600,6 +601,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> delDatasourceFromWorkspace(String spaceId) {
         Boolean hasExit = BooleanUtils.isTrue(datasourceMapper.selectByWorkspaceIdHasExit(spaceId));
         if (hasExit) {

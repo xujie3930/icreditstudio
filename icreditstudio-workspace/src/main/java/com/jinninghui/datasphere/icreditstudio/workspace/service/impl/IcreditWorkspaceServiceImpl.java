@@ -229,8 +229,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     private void updateByspaceId(IcreditWorkspaceEntity entity) {
         //先停用该空间下的所有数据源，再停用该空间
         if (WorkspaceStatusEnum.OFF.getCode().equals(entity.getStatus())){
-            BusinessResult<Boolean> result = datasourceFeignClient.offDatasourceFromWorkspace(entity.getId());
-            if (!result.isSuccess()){
+            try {
+                datasourceFeignClient.offDatasourceFromWorkspace(entity.getId());
+            } catch (Exception e) {
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000005.getCode());
             }
         }
