@@ -11,6 +11,7 @@ import com.jinninghui.datasphere.icreditstudio.framework.utils.CollectionUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.DateUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.validate.BusinessParamsValidate;
+import com.jinninghui.datasphere.icreditstudio.workspace.common.code.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.workspace.common.enums.WorkspaceStatusEnum;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
@@ -209,7 +210,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         //更新workspace
         IcreditWorkspaceEntity entity = BeanCopyUtils.copyProperties(param, new IcreditWorkspaceEntity());
         entity.setUpdateTime(new Date());
-        updateById(entity);
+        updateByspaceId(entity);
         if (CollectionUtils.isEmpty(param.getMemberList())) {
             return BusinessResult.success(true);
         }
@@ -223,6 +224,18 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             workspaceUserService.save(newMember);
         }
         return BusinessResult.success(true);
+    }
+
+    private void updateByspaceId(IcreditWorkspaceEntity entity) {
+        //先停用该空间下的所有数据源，再停用该空间
+        if (WorkspaceStatusEnum.OFF.getCode().equals(entity.getStatus())){
+            try {
+                datasourceFeignClient.offDatasourceFromWorkspace(entity.getId());
+            } catch (Exception e) {
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000005.getCode());
+            }
+        }
+        updateById(entity);
     }
 
     @Override
