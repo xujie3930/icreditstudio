@@ -18,4 +18,7 @@ public interface DatasourceFeignClient {
 
     @GetMapping("/datasource/delDatasourceFromWorkspace")
     BusinessResult<Boolean> delDatasourceFromWorkspace(@RequestParam("spaceId") String spaceId);
+
+    @GetMapping("/datasource/offDatasourceFromWorkspace")
+    BusinessResult<Boolean> offDatasourceFromWorkspace(@RequestParam("spaceId") String spaceId);
 }

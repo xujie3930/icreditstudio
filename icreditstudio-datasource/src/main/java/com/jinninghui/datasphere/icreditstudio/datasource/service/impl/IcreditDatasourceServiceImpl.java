@@ -562,6 +562,18 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     }
 
     @Override
+    public BusinessResult<Boolean> offDatasourceFromWorkspace(String spaceId) {
+        List<IcreditDatasourceEntity> datasourceEntityList = datasourceMapper.selectAll(spaceId, DatasourceStatusEnum.ENABLE.getCode());
+        for (IcreditDatasourceEntity datasourceEntity : datasourceEntityList) {
+            IcreditDatasourceUpdateStatusParam param = new IcreditDatasourceUpdateStatusParam();
+            param.setId(datasourceEntity.getId());
+            param.setDatasourceStatus(DatasourceStatusEnum.DISABLE.getCode());
+            updateStatusById(param);
+        }
+        return BusinessResult.success(true);
+    }
+
+    @Override
     public List<IcreditDatasourceEntity> findAllDatasoure() {
         return datasourceMapper.selectAll(null, DatasourceStatusEnum.ENABLE.getCode());
     }

@@ -90,4 +90,6 @@ public interface IcreditDatasourceService extends IService<IcreditDatasourceEnti
     BusinessResult<Boolean> delDatasourceFromWorkspace(String spaceId);
 
     BusinessResult<Boolean> updateStatusById(IcreditDatasourceUpdateStatusParam param);
+
+    BusinessResult<Boolean> offDatasourceFromWorkspace(String spaceId);
 }
