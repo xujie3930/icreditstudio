@@ -52,6 +52,6 @@
         UPDATE icredit_dict SET del_flag = #{delFlag} WHERE id = #{id}
     </update>
     <select id="findByName" resultType="com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity">
-        SELECT id FROM icredit_dict WHERE chinese_name = #{chineseName}
+        SELECT id FROM icredit_dict WHERE del_flag = 0 AND chinese_name = #{chineseName}
     </select>
 </mapper>
