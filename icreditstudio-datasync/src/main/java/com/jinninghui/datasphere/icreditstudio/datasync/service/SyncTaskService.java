@@ -9,6 +9,9 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResu
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author peng
  */
@@ -162,4 +165,12 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
     String getDatasourceId(String taskId);
 
     Boolean updateExecStatusByScheduleId(String scheduleId);
+
+    /**
+     * 根据字典id集合取得字典信息
+     *
+     * @param ids
+     * @return
+     */
+    BusinessResult<List<DictInfo>> getDictColumnsByDictIds(Set<String> ids);
 }
