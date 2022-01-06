@@ -115,7 +115,6 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<DictResult> getInfoById(String id) {
         DictResult dict = dictMapper.getInfoById(id);
         dict.setDictColumns(getColumnList(id));
-        String tt = redisTemplate.opsForValue().get(REDIS_DICT_PREFIX + id);
         return BusinessResult.success(dict);
     }
 

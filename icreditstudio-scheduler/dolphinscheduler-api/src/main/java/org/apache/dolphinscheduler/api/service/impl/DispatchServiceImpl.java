@@ -91,13 +91,13 @@ public class DispatchServiceImpl implements DispatchService {
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
         if(TaskExecTypeEnum.STOP.getCode().equals(execType)){
-            if (processInstance.getState() != ExecutionStatus.RUNNING_EXECUTION) {//该任务不在 【执行中】，不能终止
+            if (ExecutionStatus.RUNNING_EXECUTION != processInstance.getState()) {//该任务不在 【执行中】，不能终止
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.message);
             }
             result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
         }else{
-            if (processInstance.getState() == ExecutionStatus.RUNNING_EXECUTION || processInstance.getState() == ExecutionStatus.SUBMITTED_SUCCESS ||
-                    processInstance.getState() == ExecutionStatus.WAITTING_THREAD) {//该任务正在 【执行中】中，不能重跑
+            if (ExecutionStatus.RUNNING_EXECUTION ==  processInstance.getState()|| ExecutionStatus.SUBMITTED_SUCCESS ==  processInstance.getState()||
+                    ExecutionStatus.WAITTING_THREAD == processInstance.getState()) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
             dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
