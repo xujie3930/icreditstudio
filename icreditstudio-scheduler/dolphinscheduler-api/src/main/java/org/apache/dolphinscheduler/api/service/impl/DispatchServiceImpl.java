@@ -35,6 +35,8 @@ import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
 import org.apache.dolphinscheduler.service.enums.TaskTypeEnum;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,8 @@ import static org.apache.dolphinscheduler.common.Constants.CMDPARAM_RECOVER_PROC
 
 @Service
 public class DispatchServiceImpl implements DispatchService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private DataSyncDispatchTaskFeignClient dataSyncDispatchTaskFeignClient;
@@ -112,13 +116,13 @@ public class DispatchServiceImpl implements DispatchService {
         ProcessInstance processInstance = processService.findProcessInstanceDetailById(instanceId);
         ProcessDefinition processDefinition = processService.findProcessDefineById(processInstance.getProcessDefinitionId());
         int result = 0;
-        if(TaskExecTypeEnum.STOP.getCode().equals(execType)){
+        if (TaskExecTypeEnum.STOP.getCode().equals(execType)) {
             if (ExecutionStatus.RUNNING_EXECUTION != processInstance.getState()) {//该任务不在 【执行中】，不能终止
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000008.message);
             }
             result = updateProcessInstancePrepare(processInstance, CommandType.STOP, ExecutionStatus.READY_STOP);
-        }else{
-            if (ExecutionStatus.RUNNING_EXECUTION ==  processInstance.getState()|| ExecutionStatus.SUBMITTED_SUCCESS ==  processInstance.getState()||
+        } else {
+            if (ExecutionStatus.RUNNING_EXECUTION == processInstance.getState() || ExecutionStatus.SUBMITTED_SUCCESS == processInstance.getState() ||
                     ExecutionStatus.WAITTING_THREAD == processInstance.getState()) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
@@ -128,7 +132,9 @@ public class DispatchServiceImpl implements DispatchService {
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
 
             List<String> dictIds = getDictIds(processInstanceJson);
+            logger.info("=============>配置的字典ID列表" + JSONObject.toJSONString(dictIds));
             processInstanceJson = replaceTransferDict(processInstanceJson, dictIds);
+            logger.info("=============>转换后的流程实例任务json" + processInstanceJson);
             //TODO 更新流程实例的json参数
             processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
@@ -161,7 +167,9 @@ public class DispatchServiceImpl implements DispatchService {
                     .filter(StringUtils::isNotBlank)
                     .map(s -> REDIS_DICT_PREFIX + s)
                     .collect(Collectors.toList());
+            logger.info("=============>需要查询redis的key" + JSONObject.toJSONString(collect));
             List<Object> strings = redisTemplate.opsForValue().multiGet(collect);
+            logger.info("=============>redis中查询到的值" + JSONObject.toJSONString(strings));
             if (CollectionUtils.isNotEmpty(strings)) {
                 List<DictInfo> dictInfos = Lists.newArrayList();
                 for (Object obj : strings) {
@@ -282,6 +290,8 @@ public class DispatchServiceImpl implements DispatchService {
         String definitionJson = processService.execBefore(definition.getProcessDefinitionJson(), platformPartitionParam, incDate);
 
         if (StringUtils.isNotEmpty(definitionJson)) {
+            List<String> dictIds = getDictIds(definitionJson);
+            definitionJson = replaceTransferDict(definitionJson, dictIds);
             // TODO 更新匹配字典
             processService.updateProcessDefinitionById(definition.getId(), definitionJson);
         }
@@ -296,8 +306,12 @@ public class DispatchServiceImpl implements DispatchService {
         if (null != processInstance && processInstance.getProcessInstanceJson().contains(incDate.getEndTime()) && (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState() || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() ||
                 ExecutionStatus.STOP == processInstance.getState())) {
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
-            processInstance.setProcessInstanceJson(processInstanceJson);
+
+
+            List<String> dictIds = getDictIds(definitionJson);
+            definitionJson = replaceTransferDict(definitionJson, dictIds);
             // TODO 更新匹配字典
+            processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
         }
