@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Peng
@@ -267,4 +269,14 @@ public class DataSyncController {
         return syncTaskService.updateExecStatusByScheduleId(scheduleId);
     }
 
+    /**
+     * 根据字典id获取字典信息
+     *
+     * @param dictIds
+     * @return
+     */
+    @GetMapping("/getDictColumnsByDictIds")
+    public BusinessResult<List<DictInfo>> getDictColumnsByDictIds(@RequestParam Set<String> dictIds) {
+        return syncTaskService.getDictColumnsByDictIds(dictIds);
+    }
 }

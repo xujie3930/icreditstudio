@@ -486,7 +486,7 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
         } else {
             if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
                 schedulerFeign.update(build);
-            }else{
+            } else {
                 schedulerFeign.updateDefinitionById(taskEntity.getVersion(), info.getCronParam().getCron(), scheduleId);
             }
         }
@@ -1436,5 +1436,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public Boolean updateExecStatusByScheduleId(String scheduleId) {
         syncTaskMapper.updateExecStatusByScheduleId(scheduleId, ExecStatusEnum.EXEC.getCode());
         return true;
+    }
+
+    @Override
+    public BusinessResult<List<DictInfo>> getDictColumnsByDictIds(Set<String> ids) {
+        List<DictInfo> dictInfos = findDictInfos(ids);
+        return BusinessResult.success(dictInfos);
     }
 }

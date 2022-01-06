@@ -16,9 +16,12 @@
  */
 package org.apache.dolphinscheduler.service.process;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import com.hashtech.businessframework.exception.interval.AppException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.model.Configuration;
@@ -33,13 +36,18 @@ import org.apache.dolphinscheduler.dao.mapper.*;
 import org.apache.dolphinscheduler.service.commom.IncDate;
 import org.apache.dolphinscheduler.service.commom.ResourceCodeBean;
 import org.apache.dolphinscheduler.service.enums.TaskTypeEnum;
-import org.apache.dolphinscheduler.service.handler.*;
+import org.apache.dolphinscheduler.service.handler.AbstractProcessDefinitionJsonHandler;
+import org.apache.dolphinscheduler.service.handler.ProcessDefinitionJsonHandlerContainer;
 import org.apache.dolphinscheduler.service.increment.IncrementUtil;
+import org.apache.dolphinscheduler.service.process.param.DictInfo;
+import org.apache.dolphinscheduler.service.process.param.RedisDictInfoResult;
 import org.apache.dolphinscheduler.service.quartz.PlatformPartitionParam;
 import org.apache.dolphinscheduler.service.time.SyncTimeInterval;
 import org.apache.dolphinscheduler.service.time.TimeInterval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +72,11 @@ public class ProcessService {
     private static final String QUERY_SQL = "content[0].reader.parameter.connection[0].querySql[0]";
     private static final String FILE_NAME = "content[0].writer.parameter.fileName";
     private static final String WRITE_MODE = "content[0].writer.parameter.writeMode";
+
+    private final String REDIS_DICT_PREFIX = "dict-column-";
+    private final static String TRANSFER_DICT = "content[0].reader.parameter.transferDict";
+    private final static String NEED_TRANSFER_COLUMNS = "content[0].reader.parameter.needTransferColumns";
+    private final static String TASK_PARAM_JSON = "tasks[0].params.json";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -109,6 +122,10 @@ public class ProcessService {
 
     @Resource
     private ErrorCommandMapper errorCommandMapper;
+
+    @Resource
+    @Qualifier("redisTemplate")
+    private RedisTemplate<String, Object> redisTemplate;
 
     @Transactional(rollbackFor = Exception.class)
     public void updateProcessDefinitionById(String processDefinitionId, String processDefinitionJson) {
@@ -499,30 +516,30 @@ public class ProcessService {
             if (cmdParam.containsKey(Constants.CMDPARAM_SUB_PROCESS)) {
                 processInstance.setCommandParam(command.getCommandParam());
             }
-        }else {
+        } else {
             String partitionParam = processDefinition.getPartitionParam();
             boolean isFirstExec = null == processInstance;
             PlatformPartitionParam platformPartitionParam = handlePartition(partitionParam, isFirstExec, TaskTypeEnum.CYCLE.getCode());
             IncDate incDate = getIncDate(platformPartitionParam);
             String definitionJson = execBefore(processDefinition.getProcessDefinitionJson(), platformPartitionParam, incDate);
-            if(StringUtils.isNotEmpty(definitionJson)){
+            if (StringUtils.isNotEmpty(definitionJson)) {
                 updateProcessDefinitionById(processDefinition.getId(), definitionJson);
             }
             //首次执行（没有点击过“立即执行”），根据流程定义创建流程实例直接执行
-            if(null == processInstance){
+            if (null == processInstance) {
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
-            }else if(processInstance.getProcessInstanceJson().contains(incDate.getEndTime())){//增量时间范围重叠
+            } else if (processInstance.getProcessInstanceJson().contains(incDate.getEndTime())) {//增量时间范围重叠
                 //该流程实例已执行完成（失败|成功），重跑
-                if(ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
+                if (ExecutionStatus.SUCCESS == processInstance.getState() || ExecutionStatus.FAILURE == processInstance.getState()
                         || ExecutionStatus.NEED_FAULT_TOLERANCE == processInstance.getState() || ExecutionStatus.STOP == processInstance.getState()) {
                     commandType = REPEAT_RUNNING;
                     String processInstanceJson = handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
                     processInstance.setProcessInstanceJson(processInstanceJson);
                     processInstanceMapper.updateById(processInstance);
-                }else{//说明流程实例正在执行，本次周期增量同步跳过
+                } else {//说明流程实例正在执行，本次周期增量同步跳过
                     logger.info("本次数据增量同步正在手动执行中，这里跳过");
                 }
-            }else if(!processInstance.getProcessInstanceJson().contains(incDate.getEndTime())){//增量时间范围不重叠，根据流程定义创建流程实例直接执行
+            } else if (!processInstance.getProcessInstanceJson().contains(incDate.getEndTime())) {//增量时间范围不重叠，根据流程定义创建流程实例直接执行
                 processInstance = generateNewProcessInstance(processDefinition, command, cmdParam);
             }
         }
@@ -616,7 +633,7 @@ public class ProcessService {
     }
 
     //获取增量同步的开始时间、结束时间、分区路径格式
-    public IncDate getIncDate(PlatformPartitionParam platformPartitionParam){
+    public IncDate getIncDate(PlatformPartitionParam platformPartitionParam) {
         IncDate incDate = new IncDate();
         TimeInterval interval = new TimeInterval();
         SyncTimeInterval syncTimeInterval = interval.getSyncTimeInterval(platformPartitionParam, n -> true);
@@ -627,12 +644,12 @@ public class ProcessService {
     }
 
     //处理分区信息  code: 0-手动，1-周期
-    public PlatformPartitionParam handlePartition(String partitionParam, boolean isFirstExec, String code){
+    public PlatformPartitionParam handlePartition(String partitionParam, boolean isFirstExec, String code) {
         PlatformPartitionParam platformPartitionParam = IncrementUtil.parseSyncConditionJson(partitionParam);
-        if(TaskTypeEnum.CYCLE.getCode().equals(code) && !platformPartitionParam.getInc()){//周期任务的  inc 必须为true
+        if (TaskTypeEnum.CYCLE.getCode().equals(code) && !platformPartitionParam.getInc()) {//周期任务的  inc 必须为true
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_100.message);
         }
-        if(StringUtils.isEmpty(platformPartitionParam.getDialect())){
+        if (StringUtils.isEmpty(platformPartitionParam.getDialect())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_101.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_101.message);
         }
         platformPartitionParam.setFirstFull(platformPartitionParam.getFirstFull() && isFirstExec);
@@ -640,7 +657,7 @@ public class ProcessService {
     }
 
     //增量同步的前置处理
-    public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, IncDate incDate){
+    public String execBefore(String definitionJson, PlatformPartitionParam platformPartitionParam, IncDate incDate) {
         AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
         Object value = handler.getValue(definitionJson, QUERY_SQL);
         String partitionPath = handler.getPartitionPath(definitionJson, incDate.getTimeFormat());
@@ -654,12 +671,12 @@ public class ProcessService {
     }
 
     /**
-     *  处理 processInstance
+     * 处理 processInstance
      */
     public String handleProcessInstance(String processInstanceJson, String fileName, PlatformPartitionParam platformPartitionParam) {
         AbstractProcessDefinitionJsonHandler handler = (AbstractProcessDefinitionJsonHandler) ProcessDefinitionJsonHandlerContainer.getInstance().find(platformPartitionParam.getDialect());
         Configuration configuration = handler.setValue(processInstanceJson, WRITE_MODE, "backandwrite");
-        if(StringUtils.isNotEmpty(fileName)) {
+        if (StringUtils.isNotEmpty(fileName)) {
             processInstanceJson = configuration.toJSON();
             configuration = handler.setValue(processInstanceJson, FILE_NAME, fileName);
         }
@@ -1286,12 +1303,12 @@ public class ProcessService {
             logger.info(String.valueOf(logInfo));
         } catch (SQLException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             closeConn(con);
         }
     }
 
-    private Connection getConnection(){
+    private Connection getConnection() {
         try {
             Class.forName(this.driverStr);
             return DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
@@ -1303,7 +1320,7 @@ public class ProcessService {
         return null;
     }
 
-    private void closeConn(Connection con){
+    private void closeConn(Connection con) {
         if (null != con) {
             try {
                 con.close();
@@ -1313,7 +1330,76 @@ public class ProcessService {
         }
     }
 
-    public ProcessInstance getLastInstanceByDefinitionId(String definitionId){
+    public ProcessInstance getLastInstanceByDefinitionId(String definitionId) {
         return processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
     }
+
+    /**
+     * 替换字典内容
+     *
+     * @return
+     */
+    public String replaceDictInfo(String oldStatement) {
+        List<String> dictIds = getDictIds(oldStatement);
+        return replaceTransferDict(oldStatement, dictIds);
+    }
+
+    private List<String> getDictIds(String oldStatementJson) {
+        List<String> results = Lists.newArrayList();
+        Object value = getValue(oldStatementJson, NEED_TRANSFER_COLUMNS);
+        Map map = JSONObject.parseObject(JSONObject.toJSONString(value)).toJavaObject(Map.class);
+        Collection values = map.values();
+        if (CollectionUtils.isNotEmpty(values)) {
+            for (Object o : values) {
+                results.add(o.toString());
+            }
+        }
+        return results;
+    }
+
+    private String replaceTransferDict(String oldStatementJson, List<String> dictIds) {
+        if (CollectionUtils.isNotEmpty(dictIds)) {
+            List<String> collect = dictIds.stream()
+                    .filter(StringUtils::isNotBlank)
+                    .map(s -> REDIS_DICT_PREFIX + s)
+                    .collect(Collectors.toList());
+            List<Object> strings = redisTemplate.opsForValue().multiGet(collect);
+            if (CollectionUtils.isNotEmpty(strings)) {
+                List<DictInfo> dictInfos = Lists.newArrayList();
+                for (Object obj : strings) {
+                    if (Objects.nonNull(obj)) {
+                        List<RedisDictInfoResult> redisDictInfos = JSONObject.parseArray(JSONObject.toJSONString(obj)).toJavaList(RedisDictInfoResult.class);
+                        for (RedisDictInfoResult redisDictInfo : redisDictInfos) {
+                            DictInfo dictInfo = new DictInfo();
+                            dictInfo.setKey(redisDictInfo.getDictId());
+                            dictInfo.setValue(redisDictInfo.getColumnKey());
+                            dictInfo.setName(redisDictInfo.getColumnValue());
+                            dictInfos.add(dictInfo);
+                        }
+                    }
+                }
+                Configuration re = setValue(oldStatementJson, TRANSFER_DICT, JSONObject.toJSONString(dictInfos));
+                return re.toJSON();
+            }
+
+        }
+        return oldStatementJson;
+    }
+
+    public Object getValue(String json, String path) {
+        Configuration from = Configuration.from(json);
+        Object js = from.get(TASK_PARAM_JSON);
+        Configuration content = Configuration.from(JSONUtil.toJsonStr(js));
+        return content.get(path);
+    }
+
+    public Configuration setValue(String json, String path, Object newValue) {
+        Configuration from = Configuration.from(json);
+        Object js = from.get(TASK_PARAM_JSON);
+        Configuration content = Configuration.from(JSONUtil.toJsonStr(js));
+        content.set(path, newValue);
+        from.set(TASK_PARAM_JSON, content.toJSON());
+        return from;
+    }
+
 }
