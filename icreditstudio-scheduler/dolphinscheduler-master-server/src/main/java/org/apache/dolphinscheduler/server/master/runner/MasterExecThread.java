@@ -45,6 +45,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static org.apache.dolphinscheduler.common.Constants.*;
 
@@ -52,6 +53,9 @@ import static org.apache.dolphinscheduler.common.Constants.*;
  * master exec thread,split dag
  */
 public class MasterExecThread implements Runnable {
+
+    ReentrantLock lock = new ReentrantLock();
+
     /**
      * logger of MasterExecThread
      */
@@ -689,6 +693,7 @@ public class MasterExecThread implements Runnable {
         ProcessInstance instance = processService.findProcessInstanceById(processInstance.getId());
         ExecutionStatus state = instance.getState();
 
+        lock.lock();
         if (activeTaskNode.size() > 0 || retryTaskExists()) {
             // active task and retry task exists
             return runningState(state);
@@ -735,6 +740,7 @@ public class MasterExecThread implements Runnable {
                 return ExecutionStatus.SUCCESS;
             }
         }
+        lock.unlock();
 
         return state;
     }
