@@ -693,7 +693,6 @@ public class MasterExecThread implements Runnable {
         ProcessInstance instance = processService.findProcessInstanceById(processInstance.getId());
         ExecutionStatus state = instance.getState();
 
-        lock.lock();
         if (activeTaskNode.size() > 0 || retryTaskExists()) {
             // active task and retry task exists
             return runningState(state);
@@ -740,7 +739,6 @@ public class MasterExecThread implements Runnable {
                 return ExecutionStatus.SUCCESS;
             }
         }
-        lock.unlock();
 
         return state;
     }
@@ -789,6 +787,7 @@ public class MasterExecThread implements Runnable {
      * after each batch of tasks is executed, the status of the process instance is updated
      */
     private void updateProcessInstanceState() {
+        lock.lock();
         ExecutionStatus state = getProcessInstanceState();
         if (processInstance.getState() != state) {
             logger.info(
@@ -802,6 +801,7 @@ public class MasterExecThread implements Runnable {
             instance.setProcessDefinition(processInstance.getProcessDefinition());
             processService.updateProcessInstance(instance);
             processInstance = instance;
+            lock.unlock();
         }
     }
 
