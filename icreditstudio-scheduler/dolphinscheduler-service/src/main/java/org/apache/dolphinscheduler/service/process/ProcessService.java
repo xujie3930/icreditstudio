@@ -1340,6 +1340,7 @@ public class ProcessService {
      */
     public String replaceDictInfo(String oldStatement) {
         List<String> dictIds = getDictIds(oldStatement);
+        logger.info("=============>配置的字典ID列表" + JSONObject.toJSONString(dictIds));
         return replaceTransferDict(oldStatement, dictIds);
     }
 
@@ -1362,7 +1363,9 @@ public class ProcessService {
                     .filter(StringUtils::isNotBlank)
                     .map(s -> REDIS_DICT_PREFIX + s)
                     .collect(Collectors.toList());
+            logger.info("=============>需要查询redis的key" + JSONObject.toJSONString(collect));
             List<String> strings = redisTemplate.opsForValue().multiGet(collect);
+            logger.info("=============>redis中查询到的值" + JSONObject.toJSONString(strings));
             if (CollectionUtils.isNotEmpty(strings)) {
                 List<DictInfo> dictInfos = Lists.newArrayList();
                 for (Object obj : strings) {
@@ -1377,7 +1380,7 @@ public class ProcessService {
                         }
                     }
                 }
-                Configuration re = setValue(oldStatementJson, TRANSFER_DICT, JSONObject.toJSONString(dictInfos));
+                Configuration re = setValue(oldStatementJson, TRANSFER_DICT, dictInfos);
                 return re.toJSON();
             }
 

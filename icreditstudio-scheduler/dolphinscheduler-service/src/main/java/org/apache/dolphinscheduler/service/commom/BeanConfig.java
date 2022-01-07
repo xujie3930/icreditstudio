@@ -31,7 +31,7 @@ public class BeanConfig {
     @Value("${spring.redis.timeout}")
     private int redisTimeout;
 
-//    @Value("${spring.redis.password:''}")
+//    @Value("${spring.redis.password:}")
 //    private String redisAuth;
 
     @Value("${spring.redis.database:0}")

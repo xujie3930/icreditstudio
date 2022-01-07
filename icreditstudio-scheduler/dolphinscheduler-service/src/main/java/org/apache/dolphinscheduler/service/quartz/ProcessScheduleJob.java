@@ -51,7 +51,6 @@ import java.util.Map;
 /**
  * process schedule job
  */
-@Slf4j
 public class ProcessScheduleJob implements Job {
 
     /**
@@ -123,9 +122,9 @@ public class ProcessScheduleJob implements Job {
                 platformPartitionParam.setFirstFull(platformPartitionParam.getFirstFull() && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId()));
                 ProcessDefinitionJsonHandler handler = ProcessDefinitionJsonHandlerContainer.get(dialect);
                 String handStatement = handler.handler(platformPartitionParam, processDefinitionJson);
-                log.info("处理后的json语句:{}", handStatement);
+                logger.info("处理后的json语句:{}", handStatement);
                 handStatement = getProcessService().replaceDictInfo(handStatement);
-                log.info("================>>>>>>>替换字典后的json" + handStatement);
+                logger.info("================>>>>>>>替换字典后的json" + handStatement);
                 getProcessService().updateProcessDefinitionById(processDefinition.getId(), handStatement);
             }
         }
