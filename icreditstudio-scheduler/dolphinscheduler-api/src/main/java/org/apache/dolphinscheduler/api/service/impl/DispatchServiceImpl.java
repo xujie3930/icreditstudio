@@ -67,7 +67,7 @@ public class DispatchServiceImpl implements DispatchService {
     @Autowired
     private PlatformExecutorService platformExecutorService;
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     private final String REDIS_DICT_PREFIX = "dict-column-";
     private final static String TRANSFER_DICT = "content[0].reader.parameter.transferDict";
@@ -168,7 +168,7 @@ public class DispatchServiceImpl implements DispatchService {
                     .map(s -> REDIS_DICT_PREFIX + s)
                     .collect(Collectors.toList());
             logger.info("=============>需要查询redis的key" + JSONObject.toJSONString(collect));
-            List<Object> strings = redisTemplate.opsForValue().multiGet(collect);
+            List<String> strings = redisTemplate.opsForValue().multiGet(collect);
             logger.info("=============>redis中查询到的值" + JSONObject.toJSONString(strings));
             if (CollectionUtils.isNotEmpty(strings)) {
                 List<DictInfo> dictInfos = Lists.newArrayList();
