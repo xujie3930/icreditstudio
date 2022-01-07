@@ -1368,9 +1368,9 @@ public class ProcessService {
             logger.info("=============>redis中查询到的值" + JSONObject.toJSONString(strings));
             if (CollectionUtils.isNotEmpty(strings)) {
                 List<DictInfo> dictInfos = Lists.newArrayList();
-                for (Object obj : strings) {
+                for (String obj : strings) {
                     if (Objects.nonNull(obj)) {
-                        List<RedisDictInfoResult> redisDictInfos = JSONObject.parseArray(JSONObject.toJSONString(obj)).toJavaList(RedisDictInfoResult.class);
+                        List<RedisDictInfoResult> redisDictInfos = JSONObject.parseArray(obj).toJavaList(RedisDictInfoResult.class);
                         for (RedisDictInfoResult redisDictInfo : redisDictInfos) {
                             DictInfo dictInfo = new DictInfo();
                             dictInfo.setKey(redisDictInfo.getDictId());
