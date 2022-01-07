@@ -125,7 +125,7 @@ public class ProcessService {
 
     @Resource
     @Qualifier("redisTemplate")
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     @Transactional(rollbackFor = Exception.class)
     public void updateProcessDefinitionById(String processDefinitionId, String processDefinitionJson) {
@@ -458,7 +458,6 @@ public class ProcessService {
      * @return process instance
      */
     private ProcessInstance constructProcessInstance(Command command, String host) {
-
         ProcessInstance processInstance = null;
         CommandType commandType = command.getCommandType();
         Map<String, String> cmdParam = JSONUtils.toMap(command.getCommandParam());
@@ -1363,7 +1362,7 @@ public class ProcessService {
                     .filter(StringUtils::isNotBlank)
                     .map(s -> REDIS_DICT_PREFIX + s)
                     .collect(Collectors.toList());
-            List<Object> strings = redisTemplate.opsForValue().multiGet(collect);
+            List<String> strings = redisTemplate.opsForValue().multiGet(collect);
             if (CollectionUtils.isNotEmpty(strings)) {
                 List<DictInfo> dictInfos = Lists.newArrayList();
                 for (Object obj : strings) {

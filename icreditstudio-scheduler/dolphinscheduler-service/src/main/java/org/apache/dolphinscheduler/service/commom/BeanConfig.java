@@ -31,8 +31,8 @@ public class BeanConfig {
     @Value("${spring.redis.timeout}")
     private int redisTimeout;
 
-    @Value("${spring.redis.password:''}")
-    private String redisAuth;
+//    @Value("${spring.redis.password:''}")
+//    private String redisAuth;
 
     @Value("${spring.redis.database:0}")
     private int redisDb;
@@ -69,7 +69,7 @@ public class BeanConfig {
         // 集群redis
         // RedisClusterConfiguration redisConfig = new RedisClusterConfiguration();
         redisConfig.setHostName(redisHost);
-        redisConfig.setPassword(RedisPassword.of(redisAuth));
+//        redisConfig.setPassword(RedisPassword.of(redisAuth));
         redisConfig.setPort(redisPort);
 //        redisConfig.setDatabase(redisDb);
 
@@ -77,12 +77,12 @@ public class BeanConfig {
     }
 
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
-        redisTemplate.setValueSerializer(new FastJsonRedisSerializer<>(Object.class));
+    public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory factory) {
+        RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+//        redisTemplate.setKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+//        redisTemplate.setHashValueSerializer(new StringRedisSerializer());
+//        redisTemplate.setValueSerializer(new FastJsonRedisSerializer<>(Object.class));
         redisTemplate.setConnectionFactory(factory);
         return redisTemplate;
     }
