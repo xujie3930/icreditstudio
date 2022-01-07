@@ -45,7 +45,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-import java.util.concurrent.locks.ReentrantLock;
 
 import static org.apache.dolphinscheduler.common.Constants.*;
 
@@ -53,8 +52,6 @@ import static org.apache.dolphinscheduler.common.Constants.*;
  * master exec thread,split dag
  */
 public class MasterExecThread implements Runnable {
-
-    ReentrantLock lock = new ReentrantLock();
 
     /**
      * logger of MasterExecThread
@@ -140,7 +137,6 @@ public class MasterExecThread implements Runnable {
      * master config
      */
     private MasterConfig masterConfig;
-
     /**
      *
      */
@@ -787,7 +783,6 @@ public class MasterExecThread implements Runnable {
      * after each batch of tasks is executed, the status of the process instance is updated
      */
     private void updateProcessInstanceState() {
-        lock.lock();
         ExecutionStatus state = getProcessInstanceState();
         if (processInstance.getState() != state) {
             logger.info(
@@ -801,7 +796,6 @@ public class MasterExecThread implements Runnable {
             instance.setProcessDefinition(processInstance.getProcessDefinition());
             processService.updateProcessInstance(instance);
             processInstance = instance;
-            lock.unlock();
         }
     }
 
@@ -955,7 +949,6 @@ public class MasterExecThread implements Runnable {
             }
             updateProcessInstanceState();
         }
-
         logger.info("process:{} end, state :{}", processInstance.getId(), processInstance.getState());
     }
 

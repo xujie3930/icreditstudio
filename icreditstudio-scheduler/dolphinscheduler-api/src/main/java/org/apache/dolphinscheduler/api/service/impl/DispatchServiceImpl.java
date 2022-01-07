@@ -126,6 +126,9 @@ public class DispatchServiceImpl implements DispatchService {
                     ExecutionStatus.WAITTING_THREAD == processInstance.getState()) {//该任务正在 【执行中】中，不能重跑
                 throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000009.message);
             }
+            if (ExecutionStatus.READY_STOP == processInstance.getState()) {//该任务正在 【终止】，不能重跑
+                throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000014.message);
+            }
             dataSyncDispatchTaskFeignClient.updateExecStatusByScheduleId(processDefinition.getId());
             String partitionParam = processDefinition.getPartitionParam();
             PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, false, TaskTypeEnum.MANUAL.getCode());
