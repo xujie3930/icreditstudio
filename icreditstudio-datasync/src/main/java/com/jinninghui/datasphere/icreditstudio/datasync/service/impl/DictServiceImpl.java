@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.datasync.common.ResourceCodeBean;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DictQueryDTO;
+import com.jinninghui.datasphere.icreditstudio.datasync.dto.RedisDictColumnDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.DictEntity;
 import com.jinninghui.datasphere.icreditstudio.datasync.enums.DeleteFlagEnum;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.DictMapper;
@@ -26,36 +27,57 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import com.jinninghui.datasphere.icreditstudio.framework.utils.StringUtils;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.excel.ExcelUtil;
 import com.jinninghui.datasphere.icreditstudio.framework.utils.excel.mode.DictColumnExcelMode;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> implements DictService {
 
     private final String DEFAULT_WORKSPACE_ID = "0";
+    private final String REDIS_DICT_PREFIX = "dict-column-";
 
     @Resource
     private DictMapper dictMapper;
     @Resource
     private DictColumnService dictColumnService;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> save(DictSaveParam param) {
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(param.getDictColumns(), DictColumnSaveParam.class);
         dictColumnService.saveBatch(dict.getId(), saveParams);
+        saveDictColumnToRedis(dict.getId(), saveParams);
         return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "保存失败");
+    }
+
+    //将字典表列保存到redis
+    private void saveDictColumnToRedis(String dictId, List<DictColumnSaveParam> saveParams){
+        List<RedisDictColumnDTO> redisDictColumnDTOList = new ArrayList<>();
+        for (DictColumnSaveParam saveParam : saveParams) {
+            RedisDictColumnDTO redisDictColumnDTO = new RedisDictColumnDTO(dictId, saveParam.getColumnKey(), saveParam.getColumnValue());
+            redisDictColumnDTOList.add(redisDictColumnDTO);
+        }
+        String redisDictStr = JSONObject.toJSONString(redisDictColumnDTOList);
+        redisTemplate.opsForValue().set(REDIS_DICT_PREFIX + dictId, redisDictStr);
+    }
+
+    private DictEntity findByName(String chineseName){
+        return dictMapper.findByName(chineseName);
     }
 
     private static void checkDictParam(DictSaveParam param) {
@@ -85,6 +107,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         checkDictId(id);
         dictColumnService.delBatchByDictId(DeleteFlagEnum.DELETED.getCode(), id);
         boolean isRemoved = dictMapper.delById(DeleteFlagEnum.DELETED.getCode(), id);
+        redisTemplate.delete(REDIS_DICT_PREFIX + id);
         return isRemoved ? BusinessResult.success(isRemoved) : BusinessResult.fail("", "删除失败");
     }
 
@@ -123,11 +146,16 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<Boolean> update(DictSaveParam param) {
         checkDictId(param.getId());
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict && !oldDict.getId().equals(param.getId())){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = new DictEntity();
         BeanCopyUtils.copyProperties(param, dict);
         dictColumnService.truthDelBatchByDictId(param.getId());
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(param.getDictColumns(), DictColumnSaveParam.class);
         dictColumnService.saveBatch(param.getId(), saveParams);
+        saveDictColumnToRedis(dict.getId(), saveParams);
         boolean isUpdated = updateById(dict);
         return isUpdated ? BusinessResult.success(isUpdated) : BusinessResult.fail("", "更新失败");
     }
@@ -140,11 +168,16 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         }
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         checkDictParam(param);
+        DictEntity oldDict = findByName(param.getChineseName());
+        if(null != oldDict){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
+        }
         DictEntity dict = createDict(param);
         boolean isSaved = saveOrUpdate(dict);
         List<DictColumnExcelMode> dictColumnExcelList = ExcelUtil.readExcelFileData(file, 1, 1, DictColumnExcelMode.class);
         List<DictColumnSaveParam> saveParams = BeanCopyUtils.copy(dictColumnExcelList, DictColumnSaveParam.class);
         dictColumnService.saveBatch(dict.getId(), saveParams);
+        saveDictColumnToRedis(dict.getId(), saveParams);
         return isSaved ? BusinessResult.success(isSaved) : BusinessResult.fail("", "导入失败");
     }
 

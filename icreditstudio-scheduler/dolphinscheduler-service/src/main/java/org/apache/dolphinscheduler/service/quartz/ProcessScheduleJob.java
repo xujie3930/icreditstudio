@@ -18,7 +18,10 @@
 package org.apache.dolphinscheduler.service.quartz;
 
 import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.CommandType;
@@ -40,12 +43,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * process schedule job
  */
-@Slf4j
 public class ProcessScheduleJob implements Job {
 
     /**
@@ -117,7 +122,9 @@ public class ProcessScheduleJob implements Job {
                 platformPartitionParam.setFirstFull(platformPartitionParam.getFirstFull() && null == getProcessService().getLastInstanceByDefinitionId(processDefinition.getId()));
                 ProcessDefinitionJsonHandler handler = ProcessDefinitionJsonHandlerContainer.get(dialect);
                 String handStatement = handler.handler(platformPartitionParam, processDefinitionJson);
-                log.info("处理后的json语句:{}", handStatement);
+                logger.info("处理后的json语句:{}", handStatement);
+                handStatement = getProcessService().replaceDictInfo(handStatement);
+                logger.info("================>>>>>>>替换字典后的json" + handStatement);
                 getProcessService().updateProcessDefinitionById(processDefinition.getId(), handStatement);
             }
         }
@@ -147,8 +154,13 @@ public class ProcessScheduleJob implements Job {
     }
 
     public static void main(String[] args) {
-        String json = ("{\"globalParams\":[],\"tasks\":[{\"conditionResult\":{\"failedNode\":[],\"successNode\":[]},\"dependence\":{},\"description\":\"\",\"id\":\"tasks-94508\",\"maxRetryTimes\":\"0\",\"name\":\"bigdata\",\"params\":{\"customConfig\":1,\"json\":\"{\\\"content\\\":[{\\\"reader\\\":{\\\"parameter\\\":{\\\"password\\\":\\\"thgc@0305\\\",\\\"transferDict\\\":[],\\\"needTransferColumns\\\":{},\\\"connection\\\":[{\\\"querySql\\\":[\\\"select * from thgc_old.ge_user\\\"],\\\"jdbcUrl\\\":[\\\"jdbc:mysql://192.168.0.23:3306/thgc_old?useSSL=false&useUnicode=true&characterEncoding=utf8\\\"]}],\\\"username\\\":\\\"thgc\\\"},\\\"name\\\":\\\"mysqlreader\\\"},\\\"writer\\\":{\\\"parameter\\\":{\\\"fileName\\\":\\\"widthtable_20211109_bigdata\\\",\\\"compress\\\":\\\"NONE\\\",\\\"column\\\":[{\\\"name\\\":\\\"ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_NAME\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_CODE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_GENDER\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_BIRTH\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"ID_CARD\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"ENTRY_TIME\\\",\\\"type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"DEPARTURE_TIME\\\",\\\"type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"E_MAIL\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_POSITION\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"TEL_PHONE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"SORT_NUMBER\\\",\\\"type\\\":\\\"INT\\\"},{\\\"name\\\":\\\"DELETE_FLAG\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"PICTURE_PATH\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_REMARK\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"CREATE_TIME\\\",\\\"type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"CREATE_USER_ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"LAST_UPDATE_TIME\\\",\\\"type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"LAST_UPDATE_USER_ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_ONE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_TWO\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_THREE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_FOUR\\\",\\\"type\\\":\\\"STRING\\\"}],\\\"writeMode\\\":\\\"append\\\",\\\"fieldDelimiter\\\":\\\",\\\",\\\"path\\\":\\\"/user/hive/warehouse/hive_test.db/widthtable_20211109_bigdata/\\\",\\\"password\\\":\\\"bd@0414\\\",\\\"partition\\\":\\\"\\\",\\\"thriftUrl\\\":\\\"jdbc:hive2://192.168.0.174:10000/\\\",\\\"hadoopConfig\\\":{\\\"dfs.client.use.datanode.hostname\\\":true},\\\"defaultFS\\\":\\\"hdfs://192.168.0.174:8020\\\",\\\"user\\\":\\\"root\\\",\\\"fileType\\\":\\\"orc\\\"},\\\"name\\\":\\\"hdfswriter\\\"}}],\\\"setting\\\":{\\\"speed\\\":{\\\"channel\\\":1}}}\",\"localParams\":[]},\"preTasks\":[],\"retryInterval\":\"1\",\"runFlag\":\"NORMAL\",\"taskInstancePriority\":\"MEDIUM\",\"timeout\":{\"enable\":false},\"type\":\"DATAX\",\"workerGroup\":\"default\"}],\"tenantCode\":\"autotester\",\"timeout\":0}");
-        System.out.println(getValue(json, PATH));
+        /*String json = ("{\"globalParams\":[],\"tasks\":[{\"conditionResult\":{\"failedNode\":[],\"successNode\":[]},\"dependence\":{},\"description\":\"\",\"id\":\"tasks-94508\",\"maxRetryTimes\":\"0\",\"name\":\"bigdata\",\"params\":{\"customConfig\":1,\"json\":\"{\\\"content\\\":[{\\\"reader\\\":{\\\"parameter\\\":{\\\"password\\\":\\\"thgc@0305\\\",\\\"transferDict\\\":[],\\\"needTransferColumns\\\":{},\\\"connection\\\":[{\\\"querySql\\\":[\\\"select * from thgc_old.ge_user\\\"],\\\"jdbcUrl\\\":[\\\"jdbc:mysql://192.168.0.23:3306/thgc_old?useSSL=false&useUnicode=true&characterEncoding=utf8\\\"]}],\\\"username\\\":\\\"thgc\\\"},\\\"name\\\":\\\"mysqlreader\\\"},\\\"writer\\\":{\\\"parameter\\\":{\\\"fileName\\\":\\\"widthtable_20211109_bigdata\\\",\\\"compress\\\":\\\"NONE\\\",\\\"column\\\":[{\\\"name\\\":\\\"ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_NAME\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_CODE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_GENDER\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_BIRTH\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"ID_CARD\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"ENTRY_TIME\\\",\\\"type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"DEPARTURE_TIME\\\",\\\"type\\\":\\\"DATE\\\"},{\\\"name\\\":\\\"E_MAIL\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_POSITION\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"TEL_PHONE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"SORT_NUMBER\\\",\\\"type\\\":\\\"INT\\\"},{\\\"name\\\":\\\"DELETE_FLAG\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"PICTURE_PATH\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"USER_REMARK\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"CREATE_TIME\\\",\\\"type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"CREATE_USER_ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"LAST_UPDATE_TIME\\\",\\\"type\\\":\\\"BIGINT\\\"},{\\\"name\\\":\\\"LAST_UPDATE_USER_ID\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_ONE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_TWO\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_THREE\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"EXTEND_FOUR\\\",\\\"type\\\":\\\"STRING\\\"}],\\\"writeMode\\\":\\\"append\\\",\\\"fieldDelimiter\\\":\\\",\\\",\\\"path\\\":\\\"/user/hive/warehouse/hive_test.db/widthtable_20211109_bigdata/\\\",\\\"password\\\":\\\"bd@0414\\\",\\\"partition\\\":\\\"\\\",\\\"thriftUrl\\\":\\\"jdbc:hive2://192.168.0.174:10000/\\\",\\\"hadoopConfig\\\":{\\\"dfs.client.use.datanode.hostname\\\":true},\\\"defaultFS\\\":\\\"hdfs://192.168.0.174:8020\\\",\\\"user\\\":\\\"root\\\",\\\"fileType\\\":\\\"orc\\\"},\\\"name\\\":\\\"hdfswriter\\\"}}],\\\"setting\\\":{\\\"speed\\\":{\\\"channel\\\":1}}}\",\"localParams\":[]},\"preTasks\":[],\"retryInterval\":\"1\",\"runFlag\":\"NORMAL\",\"taskInstancePriority\":\"MEDIUM\",\"timeout\":{\"enable\":false},\"type\":\"DATAX\",\"workerGroup\":\"default\"}],\"tenantCode\":\"autotester\",\"timeout\":0}");
+        System.out.println(getValue(json, PATH));*/
+        String json = "{\"globalParams\":[],\"tenantCode\":\"hadoop\",\"tasks\":[{\"conditionResult\":{\"successNode\":[],\"failedNode\":[]},\"description\":\"\",\"runFlag\":\"NORMAL\",\"params\":{\"customConfig\":1,\"json\":\"{\\\"core\\\":{\\\"transport\\\":{\\\"channel\\\":{\\\"speed\\\":{\\\"record\\\":100000,\\\"channel\\\":2}}}},\\\"content\\\":[{\\\"reader\\\":{\\\"parameter\\\":{\\\"password\\\":\\\"MySQL2021\\\",\\\"transferDict\\\":[],\\\"needTransferColumns\\\":{\\\"sex\\\":\\\"1473538490168598529\\\"},\\\"connection\\\":[{\\\"querySql\\\":[\\\"select t02.student3.id,t02.student3.code,t02.student3.name,t02.student3.sex,t02.student3.age,t02.student3.class,t02.student3.create_time from  t02.student3 where t02.student3.create_time <= '2022-01-05 16:59:59'\\\"],\\\"jdbcUrl\\\":[\\\"jdbc:mysql://192.168.0.193:3306/t02?useSSL=false&useUnicode=true&characterEncoding=utf8\\\"]}],\\\"username\\\":\\\"root\\\"},\\\"name\\\":\\\"mysqlreader\\\"},\\\"writer\\\":{\\\"parameter\\\":{\\\"fileName\\\":\\\"widthtable_20220105_3999603\\\",\\\"compress\\\":\\\"NONE\\\",\\\"column\\\":[{\\\"name\\\":\\\"id\\\",\\\"type\\\":\\\"INT\\\"},{\\\"name\\\":\\\"code\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"name\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"sex\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"age\\\",\\\"type\\\":\\\"INT\\\"},{\\\"name\\\":\\\"class\\\",\\\"type\\\":\\\"STRING\\\"},{\\\"name\\\":\\\"create_time\\\",\\\"type\\\":\\\"DATE\\\"}],\\\"writeMode\\\":\\\"append\\\",\\\"fieldDelimiter\\\":\\\",\\\",\\\"path\\\":\\\"/user/hive/warehouse/hive_test2.db/widthtable_20220105_3999603/2022-01-05_16\\\",\\\"password\\\":\\\"bd@0414\\\",\\\"partition\\\":\\\"hour_\\\",\\\"thriftUrl\\\":\\\"jdbc:hive2://192.168.0.174:10000/\\\",\\\"hadoopConfig\\\":{\\\"dfs.client.use.datanode.hostname\\\":true},\\\"defaultFS\\\":\\\"hdfs://192.168.0.174:8020\\\",\\\"user\\\":\\\"root\\\",\\\"fileType\\\":\\\"orc\\\"},\\\"name\\\":\\\"hdfswriter\\\"}}],\\\"setting\\\":{\\\"speed\\\":{\\\"channel\\\":2}}}\",\"localParams\":[]},\"type\":\"DATAX\",\"timeout\":{\"enable\":false},\"maxRetryTimes\":\"0\",\"taskInstancePriority\":\"MEDIUM\",\"name\":\"fdfdsfsfdfd\",\"dependence\":{},\"preTasks\":[],\"retryInterval\":\"1\",\"id\":\"tasks-71210\",\"workerGroup\":\"default\"}],\"timeout\":0}";
+        List<String> dictIds = getDictIds(json);
+        System.out.println(JSONObject.toJSONString(dictIds));
+        String s = replaceTransferDict(json, dictIds);
+        System.out.println(s);
     }
 
 
@@ -156,7 +168,7 @@ public class ProcessScheduleJob implements Job {
 
     private static final String PATH = "content[0].writer.parameter.path";
 
-    public static Object getValue(String json, String path) {
+    /*public static Object getValue(String json, String path) {
         Configuration from = Configuration.from(json);
         Object js = from.get("tasks[0].params.json");
         Configuration content = Configuration.from(JSONUtil.toJsonStr(js));
@@ -170,6 +182,69 @@ public class ProcessScheduleJob implements Job {
         content.set(path, newValue);
 
         from.set("tasks[0].params.json", content.toJSON());
+        return from;
+    }*/
+
+    private static List<String> getDictIds(String oldStatementJson) {
+        List<String> results = Lists.newArrayList();
+        Object value = getValue(oldStatementJson, NEED_TRANSFER_COLUMNS);
+        Map map = JSONObject.parseObject(JSONObject.toJSONString(value)).toJavaObject(Map.class);
+        Collection values = map.values();
+        if (CollectionUtils.isNotEmpty(values)) {
+            for (Object o : values) {
+                results.add(o.toString());
+            }
+        }
+        return results;
+    }
+
+    private final static String TRANSFER_DICT = "content[0].reader.parameter.transferDict";
+    private final static String NEED_TRANSFER_COLUMNS = "content[0].reader.parameter.needTransferColumns";
+    private final static String TASK_PARAM_JSON = "tasks[0].params.json";
+
+    private static String replaceTransferDict(String oldStatementJson, List<String> dictIds) {
+        if (CollectionUtils.isNotEmpty(dictIds)) {
+            /*List<String> collect = dictIds.stream()
+                    .filter(org.apache.dolphinscheduler.common.utils.StringUtils::isNotBlank)
+                    .map(s -> REDIS_DICT_PREFIX + s)
+                    .collect(Collectors.toList());
+            List<String> strings = redisTemplate.opsForValue().multiGet(collect);*/
+//            if (CollectionUtils.isNotEmpty(strings)) {
+                /*List<DictInfo> dictInfos = Lists.newArrayList();
+                for (String string : strings) {
+                    RedisDictInfoResult redisDictInfo = JSONObject.parseObject(string).toJavaObject(RedisDictInfoResult.class);
+                    DictInfo dictInfo = new DictInfo();
+                    dictInfo.setKey(redisDictInfo.getDictId());
+                    dictInfo.setValue(redisDictInfo.getColumnKey());
+                    dictInfo.setName(redisDictInfo.getColumnValue());
+                    dictInfos.add(dictInfo);
+                }*/
+
+            List<String> dictInfos = Lists.newArrayList();
+            dictInfos.add("aaa");
+            dictInfos.add("bbb");
+            Configuration re = setValue(oldStatementJson, TRANSFER_DICT, JSONObject.toJSONString(dictInfos));
+            return re.toJSON();
+//            }
+
+        }
+        return oldStatementJson;
+    }
+
+    public static Object getValue(String json, String path) {
+        Configuration from = Configuration.from(json);
+        Object js = from.get(TASK_PARAM_JSON);
+        Configuration content = Configuration.from(JSONUtil.toJsonStr(js));
+        return content.get(path);
+    }
+
+    public static Configuration setValue(String json, String path, String newValue) {
+        Configuration from = Configuration.from(json);
+        Object js = from.get(TASK_PARAM_JSON);
+        Configuration content = Configuration.from(JSONUtil.toJsonStr(js));
+        content.set(path, newValue);
+
+        from.set(TASK_PARAM_JSON, content.toJSON());
         return from;
     }
 }

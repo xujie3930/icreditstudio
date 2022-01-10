@@ -208,5 +208,10 @@ public class IcreditDatasourceController {
     public BusinessResult<Boolean> delDatasourceFromWorkspace(@RequestParam("spaceId") String spaceId) {
         return datasourceService.delDatasourceFromWorkspace(spaceId);
     }
+
+    @GetMapping("/offDatasourceFromWorkspace")
+    public BusinessResult<Boolean> offDatasourceFromWorkspace(@RequestParam("spaceId") String spaceId) {
+        return datasourceService.offDatasourceFromWorkspace(spaceId);
+    }
 }
 

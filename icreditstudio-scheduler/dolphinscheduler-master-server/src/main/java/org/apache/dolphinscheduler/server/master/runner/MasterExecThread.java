@@ -52,6 +52,7 @@ import static org.apache.dolphinscheduler.common.Constants.*;
  * master exec thread,split dag
  */
 public class MasterExecThread implements Runnable {
+
     /**
      * logger of MasterExecThread
      */
@@ -136,7 +137,6 @@ public class MasterExecThread implements Runnable {
      * master config
      */
     private MasterConfig masterConfig;
-
     /**
      *
      */
@@ -949,7 +949,6 @@ public class MasterExecThread implements Runnable {
             }
             updateProcessInstanceState();
         }
-
         logger.info("process:{} end, state :{}", processInstance.getId(), processInstance.getState());
     }
 

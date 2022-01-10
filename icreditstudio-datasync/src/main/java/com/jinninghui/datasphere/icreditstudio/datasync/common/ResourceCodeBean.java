@@ -103,7 +103,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000087("600000867", "文件中没有实际的有效内容"),
         RESOURCE_CODE_60000088("60000087", "库表归集参数错误"),
         RESOURCE_CODE_60000089("60000088", "获取表字段"),
-        RESOURCE_CODE_60000090("60000089", "确定返回字段所属表错误"),
+        RESOURCE_CODE_60000090("60000090", "确定返回字段所属表错误"),
+        RESOURCE_CODE_60000091("60000091", "字典表中文名不能重复")
         ;
 
         public final String code;

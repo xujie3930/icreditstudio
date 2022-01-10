@@ -20,4 +20,6 @@ public interface DictMapper extends BaseMapper<DictEntity> {
     List<DictQueryResult> pageList(DictQueryDTO dictQueryDTO);
 
     boolean delById(@Param("delFlag") Integer delFlag, @Param("id") String id);
+
+    DictEntity findByName(@Param("chineseName") String chineseName);
 }

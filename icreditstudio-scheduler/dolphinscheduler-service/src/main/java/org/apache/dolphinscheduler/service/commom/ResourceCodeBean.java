@@ -23,7 +23,8 @@ public class ResourceCodeBean {
         RESOURCE_CODE_60000009("60000009", "该任务正在【执行中】，不能进行重跑"),
         RESOURCE_CODE_60000010("60000010", "工作空间ID不能为空"),
         RESOURCE_CODE_60000011("60000011", "当前登陆用户ID不能为空"),
-        RESOURCE_CODE_60000013("60000013", "周期任务正在【执行】本次增量数据同步，请等待周期任务执行完成")
+        RESOURCE_CODE_60000013("60000013", "周期任务正在【执行】本次增量数据同步，请等待周期任务执行完成"),
+        RESOURCE_CODE_60000014("60000014", "该任务正在【终止】，不能进行重跑")
         ;
 
         public final String code;
