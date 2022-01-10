@@ -295,7 +295,6 @@ public class DispatchServiceImpl implements DispatchService {
         if (StringUtils.isNotEmpty(definitionJson)) {
             List<String> dictIds = getDictIds(definitionJson);
             definitionJson = replaceTransferDict(definitionJson, dictIds);
-            // TODO 更新匹配字典
             processService.updateProcessDefinitionById(definition.getId(), definitionJson);
         }
 
@@ -310,10 +309,8 @@ public class DispatchServiceImpl implements DispatchService {
                 ExecutionStatus.STOP == processInstance.getState())) {
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
 
-
-            List<String> dictIds = getDictIds(definitionJson);
-            definitionJson = replaceTransferDict(definitionJson, dictIds);
-            // TODO 更新匹配字典
+            List<String> dictIds = getDictIds(processInstanceJson);
+            processInstanceJson = replaceTransferDict(processInstanceJson, dictIds);
             processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);
