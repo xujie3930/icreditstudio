@@ -51,7 +51,7 @@ export default that => ({
       prop: 'remark'
     },
     {
-      type: 'operation',
+      type: 'slot',
       label: '操作',
       prop: 'operation',
       width: 80,

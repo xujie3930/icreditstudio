@@ -205,14 +205,16 @@
                   v-model.trim="secondTaskForm.wideTableName"
                   @blur="handleVerifyWidthTableName"
                 >
-                  <!-- :disabled="!verifyTableDisabled" -->
                   <el-button
                     size="mini"
                     :class="[
                       'append-btn',
-                      verifyTableDisabled ? '' : 'is-disabled'
+                      verifyTableDisabled && opType !== 'edit'
+                        ? ''
+                        : 'append-btn-disabled'
                     ]"
                     slot="append"
+                    :disabled="opType === 'edit'"
                     :loading="widthTableLoading"
                     @click="handleIdentifyTable"
                   >
@@ -225,7 +227,14 @@
                 <el-select
                   clearable
                   size="mini"
-                  v-model="secondTaskForm.syncCondition.incrementalField"
+                  :disabled="opType === 'edit'"
+                  v-model="
+                    secondTaskForm.syncCondition[
+                      opType === 'edit'
+                        ? 'incrementalFieldLabel'
+                        : ' incrementalField'
+                    ]
+                  "
                   placeholder="请选择增量字段"
                   @change="handleIncrementFieldChange"
                 >
@@ -238,24 +247,10 @@
                   </el-option>
                 </el-select>
 
-                <!-- 增量类型 -->
-                <!-- <el-select
-                  style="margin-left:10px"
-                  size="mini"
-                  v-model="secondTaskForm.syncCondition.partition"
-                  placeholder="请选择增量类型"
-                >
-                  <el-option
-                    v-for="(item, idx) in zoningOptions"
-                    :key="`${item.value}-${idx}`"
-                    :label="item.label"
-                    :value="item.value"
-                  >
-                  </el-option>
-                </el-select> -->
                 <el-checkbox
                   size="mini"
                   style="margin-left:16px"
+                  :disabled="opType === 'edit'"
                   v-if="secondTaskForm.syncCondition.incrementalField"
                   v-model="secondTaskForm.syncCondition.inc"
                 >
@@ -271,6 +266,7 @@
                   size="mini"
                   style="width: 80px"
                   controls-position="right"
+                  :disabled="opType === 'edit'"
                   :min="1"
                   v-model="secondTaskForm.syncCondition.n"
                 />
@@ -334,6 +330,17 @@
                   placeholder="请输入备注"
                   v-model.trim="row.remark"
                 ></el-input>
+              </template>
+
+              <!-- 操作 -->
+              <template #operationColumn="params">
+                <el-button
+                  size="mini"
+                  type="text"
+                  :disabled="opType === 'edit'"
+                  @click="handleDateleRow(params)"
+                  >删除</el-button
+                >
               </template>
             </JTable>
           </div>
@@ -463,7 +470,12 @@ export default {
 
       // 表单参数
       secondTaskForm: {
-        syncCondition: { incrementalField: '', inc: undefined, n: 1 },
+        syncCondition: {
+          incrementalField: '',
+          incrementalFieldLabel: '',
+          inc: undefined,
+          n: 1
+        },
         sql: '',
         targetSource: '', // 目标库
         wideTableName: '', // 宽表名称
@@ -586,7 +598,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          this.secondTaskForm.fieldInfos.splice(options.$index, 1)
+          this.secondTaskForm.fieldInfos.splice(options.index, 1)
         })
         .catch(() => {})
     },
@@ -1702,7 +1714,7 @@ export default {
           border-radius: 0px 4px 4px 0px;
         }
 
-        .is-disabled {
+        .append-btn-disabled {
           color: #fff;
           background-color: #8cc8ff;
           border-color: #8cc8ff;
