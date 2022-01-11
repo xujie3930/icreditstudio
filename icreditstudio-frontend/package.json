@@ -50,6 +50,7 @@
     "monaco-editor": "^0.20.0",
     "nprogress": "^0.2.0",
     "pinyin": "^2.9.0",
+    "qiankun": "^2.6.3",
     "qs": "^6.9.1",
     "reconnecting-websocket": "^4.1.10",
     "sql-formatter": "^2.1.0",
