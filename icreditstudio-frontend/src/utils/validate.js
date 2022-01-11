@@ -25,6 +25,12 @@ export const validStrZh = str => {
 // 表单校验只能输入中文
 export const verifyStrzh = () => {}
 
+export const isChina = str => {
+  const regExp = /[\u4E00-\u9FA5]|[\uFE30-\uFFA0]/gi
+  // /.*[\u4e00-\u9fa5]+.*$/
+  return regExp.exec(str)
+}
+
 // 验证特殊字符
 export const validStrSpecial = str => {
   // 特殊符号

@@ -1,6 +1,8 @@
 package com.jinninghui.datasphere.icreditstudio.datasync.service.result;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Peng
@@ -11,6 +13,16 @@ public class SyncCondition {
      * 增量字段
      */
     private String incrementalField;
+
+    private String incrementalFieldLabel;
+
+    public String getIncrementalFieldLabel() {
+        if (StringUtils.isBlank(incrementalField)) {
+            return "";
+        }
+        return StrUtil.subAfter(incrementalField, ".", true);
+    }
+
     /**
      * 分区类型
      */

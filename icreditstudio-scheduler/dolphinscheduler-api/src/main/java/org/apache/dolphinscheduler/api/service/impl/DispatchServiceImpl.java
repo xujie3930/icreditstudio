@@ -134,11 +134,12 @@ public class DispatchServiceImpl implements DispatchService {
             PlatformPartitionParam platformPartitionParam = processService.handlePartition(partitionParam, false, TaskTypeEnum.MANUAL.getCode());
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
 
-            List<String> dictIds = getDictIds(processInstanceJson);
+            List<String> dictIds = getDictIds(processDefinition.getProcessDefinitionJson());
             logger.info("=============>配置的字典ID列表" + JSONObject.toJSONString(dictIds));
+            processInstanceJson = replaceNeedTransferColumns(processInstanceJson, getValue(processDefinition.getProcessDefinitionJson(), NEED_TRANSFER_COLUMNS));
+            logger.info("=============>替换需要转换的列后产生的json" + processInstanceJson);
             processInstanceJson = replaceTransferDict(processInstanceJson, dictIds);
             logger.info("=============>转换后的流程实例任务json" + processInstanceJson);
-            //TODO 更新流程实例的json参数
             processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
             result = insertCommand(instanceId, processDefinition.getId(), CommandType.REPEAT_RUNNING);
@@ -191,6 +192,14 @@ public class DispatchServiceImpl implements DispatchService {
                 return re.toJSON();
             }
 
+        }
+        return oldStatementJson;
+    }
+
+    private String replaceNeedTransferColumns(String oldStatementJson, Object newNeedTransferColumns) {
+        if (StringUtils.isNotBlank(oldStatementJson)) {
+            Configuration configuration = setValue(oldStatementJson, NEED_TRANSFER_COLUMNS, newNeedTransferColumns);
+            return configuration.toJSON();
         }
         return oldStatementJson;
     }
@@ -294,8 +303,9 @@ public class DispatchServiceImpl implements DispatchService {
 
         if (StringUtils.isNotEmpty(definitionJson)) {
             List<String> dictIds = getDictIds(definitionJson);
+            logger.info("=============>配置的字典ID列表" + JSONObject.toJSONString(dictIds));
             definitionJson = replaceTransferDict(definitionJson, dictIds);
-            // TODO 更新匹配字典
+            logger.info("=============>转换后的流程实例任务json" + definitionJson);
             processService.updateProcessDefinitionById(definition.getId(), definitionJson);
         }
 
@@ -310,10 +320,12 @@ public class DispatchServiceImpl implements DispatchService {
                 ExecutionStatus.STOP == processInstance.getState())) {
             String processInstanceJson = processService.handleProcessInstance(processInstance.getProcessInstanceJson(), processInstance.getFileName(), platformPartitionParam);
 
-
-            List<String> dictIds = getDictIds(definitionJson);
-            definitionJson = replaceTransferDict(definitionJson, dictIds);
-            // TODO 更新匹配字典
+            List<String> dictIds = getDictIds(definition.getProcessDefinitionJson());
+            logger.info("=============>配置的字典ID列表" + JSONObject.toJSONString(dictIds));
+            processInstanceJson = replaceNeedTransferColumns(processInstanceJson, getValue(definition.getProcessDefinitionJson(), NEED_TRANSFER_COLUMNS));
+            logger.info("=============>替换需要转换的列后产生的json" + processInstanceJson);
+            processInstanceJson = replaceTransferDict(processInstanceJson, dictIds);
+            logger.info("=============>转换后的流程实例任务json" + processInstanceJson);
             processInstance.setProcessInstanceJson(processInstanceJson);
             processInstanceMapper.updateById(processInstance);
             insertCommand(processInstance.getId(), definitionId, CommandType.REPEAT_RUNNING);

@@ -11,6 +11,7 @@ public class DictEntity {
 
     public static final String CHINESE_NAME = "chinese_name";
     public static final String WORKSPACE_ID = "workspace_id";
+    public static final String DEL_FLAG = "del_flag";
     private String id;
     private String workspaceId;
     private String englishName;
