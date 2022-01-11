@@ -1207,7 +1207,8 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
                         info.setSourceTable(entity.getSource());
                         DictEntity dictById = dictService.getDictById(entity.getDictKey());
                         if (Objects.nonNull(dictById)) {
-                            info.setAssociateDict(dictById.getChineseName());
+                            info.setAssociateDict(dictById.getId());
+                            info.setAssociateDictPair(new WideTable.Select(dictById.getChineseName(), dictById.getId()));
                         }
                         info.setFieldType(Arrays.asList(HiveMapJdbcTypeEnum.find(entity.getType()).getCategoryEnum().getCode(), entity.getType()));
                         info.setFieldName(entity.getName());
