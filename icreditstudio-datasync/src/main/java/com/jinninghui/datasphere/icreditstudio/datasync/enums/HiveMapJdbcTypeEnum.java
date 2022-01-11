@@ -23,6 +23,7 @@ public enum HiveMapJdbcTypeEnum {
     DOUBLE("DOUBLE", "DOUBLE", HiveFieldCategoryEnum.NUMERIC),
     DECIMAL("DECIMAL", "DECIMAL", HiveFieldCategoryEnum.NUMERIC),
     NUMBER("NUMBER", "INT", HiveFieldCategoryEnum.NUMERIC),
+    TINYINT("TINYINT", "INT", HiveFieldCategoryEnum.NUMERIC),
 
     DATETIME("DATETIME", "DATE", HiveFieldCategoryEnum.DATE),
     DATE("DATE", "DATE", HiveFieldCategoryEnum.DATE),
@@ -35,7 +36,7 @@ public enum HiveMapJdbcTypeEnum {
 
     public static HiveMapJdbcTypeEnum find(String jdbcType) {
         for (HiveMapJdbcTypeEnum value : HiveMapJdbcTypeEnum.values()) {
-            if (value.jdbcType.equals(jdbcType)) {
+            if (value.jdbcType.equalsIgnoreCase(jdbcType)) {
                 return value;
             }
         }
