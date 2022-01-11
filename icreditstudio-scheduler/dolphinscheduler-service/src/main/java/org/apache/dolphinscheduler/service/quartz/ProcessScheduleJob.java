@@ -20,7 +20,6 @@ package org.apache.dolphinscheduler.service.quartz;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dolphinscheduler.common.Constants;
@@ -102,7 +101,7 @@ public class ProcessScheduleJob implements Job {
 
         releaseState = schedule.getReleaseState();
         if (releaseState == ReleaseState.OFFLINE) {
-            logger.warn("定时任务是下线状态，不能创建command, projectId:{}, processId:{}", projectId, scheduleId);
+            logger.warn("定时任务是下线状态，不能创建command, scheduleId:{}, processId:{}", scheduleId, processDefinition.getId());
             return;
         }
 
