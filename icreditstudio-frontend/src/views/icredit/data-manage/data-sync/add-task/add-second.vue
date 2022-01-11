@@ -232,7 +232,7 @@
                     secondTaskForm.syncCondition[
                       opType === 'edit'
                         ? 'incrementalFieldLabel'
-                        : ' incrementalField'
+                        : 'incrementalField'
                     ]
                   "
                   placeholder="请选择增量字段"
@@ -251,7 +251,7 @@
                   size="mini"
                   style="margin-left:16px"
                   :disabled="opType === 'edit'"
-                  v-if="secondTaskForm.syncCondition.incrementalField"
+                  v-if="showConditionLabel"
                   v-model="secondTaskForm.syncCondition.inc"
                 >
                   增量存储
@@ -259,7 +259,7 @@
               </div>
               <div
                 class="label-wrap"
-                v-if="secondTaskForm.syncCondition.incrementalField"
+                v-if="showConditionLabel"
               >
                 <div class="label">时间过滤条件: T +</div>
                 <el-input-number
@@ -512,6 +512,14 @@ export default {
     verifyTableDisabled() {
       const { sql } = this.secondTaskForm
       return Boolean(sql) || this.selectedTable.length
+    },
+
+    showConditionLabel() {
+      const {
+        incrementalField,
+        incrementalFieldLabel
+      } = this.secondTaskForm.syncCondition
+      return incrementalField || incrementalFieldLabel
     }
   },
 
