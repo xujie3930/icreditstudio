@@ -643,6 +643,9 @@ public class ProcessService {
      */
     private String replaceDictAndNeedTransferColumns(String oldStatementJson, Object newTransferColumns) {
         if (StringUtils.isNotBlank(oldStatementJson)) {
+            if (Objects.isNull(newTransferColumns)) {
+                newTransferColumns = new HashMap<>();
+            }
             oldStatementJson = replaceNeedTransferColumns(oldStatementJson, newTransferColumns);
             List<String> dictIds = getDictIds(oldStatementJson);
             return replaceTransferDict(oldStatementJson, dictIds);
