@@ -42,7 +42,7 @@ export default {
     {
       type: 'text',
       label: '关联字典表',
-      prop: 'associateDict'
+      prop: 'associateDictLabel'
     },
     {
       type: 'text',

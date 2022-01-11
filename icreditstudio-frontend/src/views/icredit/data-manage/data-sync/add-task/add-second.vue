@@ -257,10 +257,7 @@
                   增量存储
                 </el-checkbox>
               </div>
-              <div
-                class="label-wrap"
-                v-if="showConditionLabel"
-              >
+              <div class="label-wrap" v-if="showConditionLabel">
                 <div class="label">时间过滤条件: T +</div>
                 <el-input-number
                   size="mini"
@@ -1074,14 +1071,20 @@ export default {
 
     // 表格信息过滤
     hadleFieldInfos(fields = []) {
-      return deepClone(fields)?.map(item => {
-        return {
-          fieldTypeOptions: this.fieldTypeOptions,
-          dictLoading: false,
-          dictionaryOptions: [],
-          ...item
+      return deepClone(fields)?.map(
+        ({ associateDict, associateDictLabel, ...rest }) => {
+          return {
+            ...rest,
+            associateDict,
+            associateDictLabel,
+            fieldTypeOptions: this.fieldTypeOptions,
+            dictLoading: false,
+            dictionaryOptions: associateDict
+              ? [{ name: associateDictLabel, key: associateDict }]
+              : []
+          }
         }
-      })
+      )
     },
 
     // 切换数据源类型
