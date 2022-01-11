@@ -70,4 +70,6 @@ public interface TaskInstanceService extends IService<TaskInstance> {
     void deleteByProcessDefinitionId(String processDefinitionId);
 
     Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray);
+
+    void statictics(TaskInstanceStatisticsResult taskInstance) throws Exception;
 }
