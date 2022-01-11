@@ -251,8 +251,9 @@ export default {
     // 渲染周期同步任务下拉框的值
     handleRenderCron(cronParam) {
       const { taskId } = this.taskForm
-      const { moment, type } = cronParam
+      const { moment, type, firstFull } = cronParam
 
+      this.taskForm.cronParam.firstFull = firstFull
       if (taskId && type && moment.length) {
         this.taskForm.cronParam.type = type
         this.taskForm.cronParam.moment = moment
