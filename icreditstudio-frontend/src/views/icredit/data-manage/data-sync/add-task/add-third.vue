@@ -145,8 +145,12 @@ export default {
   data() {
     const verifyLimitRate = (rule, value, cb) => {
       const num = parseInt(value, 10) || 0
-      this.taskForm.limitRate = num
-      cb()
+      if (num < 0 || num > 10000000) {
+        cb(new Error('请输入0到10,000,000的数值'))
+      } else {
+        this.taskForm.limitRate = num
+        cb()
+      }
     }
 
     return {
@@ -190,7 +194,7 @@ export default {
           { required: true, message: '必填项不能为空', trigger: 'change' }
         ],
         limitRate: [
-          { required: true, validator: verifyLimitRate, trigger: 'blur' }
+          { required: true, trigger: 'blur', validator: verifyLimitRate }
         ],
         'cronParam.firstFull': [
           { required: true, message: '必填项不能为空', trigger: 'change' }
