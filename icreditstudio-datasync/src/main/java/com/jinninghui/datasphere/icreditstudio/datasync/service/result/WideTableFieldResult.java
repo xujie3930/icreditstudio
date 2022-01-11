@@ -11,5 +11,5 @@ import java.util.List;
 public class WideTableFieldResult extends WideTableFieldInfo {
     private List<Object> fieldType;
 
-    private WideTable.Select associateDictPair;
+    private String associateDictLabel;
 }
