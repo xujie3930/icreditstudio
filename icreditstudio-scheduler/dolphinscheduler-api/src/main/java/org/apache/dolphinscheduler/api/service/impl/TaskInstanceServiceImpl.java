@@ -18,22 +18,26 @@
 package org.apache.dolphinscheduler.api.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.dolphinscheduler.api.enums.StatisticsType;
+import org.apache.dolphinscheduler.api.enums.TaskExecStatusEnum;
+import org.apache.dolphinscheduler.api.service.StatisticsDefinitionService;
+import org.apache.dolphinscheduler.api.service.StatisticsInstanceService;
 import org.apache.dolphinscheduler.api.service.TaskInstanceService;
 import org.apache.dolphinscheduler.common.enums.ExecutionStatus;
-import org.apache.dolphinscheduler.dao.entity.ProcessDefinition;
-import org.apache.dolphinscheduler.dao.entity.TaskInstance;
-import org.apache.dolphinscheduler.dao.entity.User;
+import org.apache.dolphinscheduler.dao.entity.*;
 import org.apache.dolphinscheduler.dao.entity.result.TaskInstanceStatisticsResult;
 import org.apache.dolphinscheduler.dao.mapper.ProcessDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.StatisticsDefinitionMapper;
 import org.apache.dolphinscheduler.dao.mapper.TaskInstanceMapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * task instance service impl
@@ -56,6 +60,12 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
     private ProcessDefinitionMapper processDefinitionMapper;
     @Resource
     private StatisticsDefinitionMapper statisticsDefinitionMapper;
+    @Autowired
+    private TaskInstanceService taskInstanceService;
+    @Autowired
+    private StatisticsInstanceService instanceService;
+    @Autowired
+    private StatisticsDefinitionService definitionService;
 
 //    @Resource
 //    ProcessInstanceService processInstanceService;
@@ -209,5 +219,41 @@ public class TaskInstanceServiceImpl extends ServiceImpl<TaskInstanceMapper, Tas
     @Override
     public Long countByWorkspaceIdAndTime(String workspaceId, String userId, Date startTime, Date endTime, int[] statusArray) {
         return taskInstanceMapper.countByWorkspaceIdAndTime(workspaceId, userId, startTime, endTime, statusArray);
+    }
+
+    @Override
+    @Transactional(rollbackFor=Exception.class)
+    public void statictics(TaskInstanceStatisticsResult taskInstance) throws Exception{
+        String workspaceId = taskInstance.getWorkspaceId();
+        String userId = taskInstance.getUserId();
+        Date date = taskInstance.getDate();
+        Integer state = ExecutionStatus.getCategoryByCode(taskInstance.getState());
+        if (Objects.isNull(date)) {
+            date = taskInstance.getSubmitTime();
+            state = TaskExecStatusEnum.FAIL.getCode();
+        }
+        String platformTaskId = taskInstance.getPlatformTaskId();
+        StatisticsInstanceEntity instanceRowData = instanceService.getRowData(workspaceId, userId, date, state);
+        StatisticsDefinitionEntity definitionRowData = definitionService.getRowData(workspaceId, userId, date, platformTaskId);
+        if (null == instanceRowData) {
+            StatisticsInstanceEntity entity = new StatisticsInstanceEntity(workspaceId, userId, state, date, 1, taskInstance.getTotalRecords(), taskInstance.getTotalBytes(), taskInstance.getScheduleType());
+            instanceService.save(entity);
+        } else {
+            instanceRowData.setCount(instanceRowData.getCount() + 1);
+            instanceRowData.setTotalRecords(instanceRowData.getTotalRecords() + taskInstance.getTotalRecords());
+            instanceRowData.setTotalByte(instanceRowData.getTotalByte() + taskInstance.getTotalBytes());
+            instanceService.updateById(instanceRowData);
+        }
+        if (null == definitionRowData) {
+            Integer errorTime = Objects.equals(TaskExecStatusEnum.FAIL.getCode(), state) ? 1 : 0;
+            StatisticsDefinitionEntity definitionEntity = new StatisticsDefinitionEntity(workspaceId, userId, taskInstance.getPlatformTaskId(), date, taskInstance.getTaskName(), 1, errorTime, taskInstance.getSpeedTime(), taskInstance.getScheduleType());
+            definitionService.save(definitionEntity);
+        } else {
+            definitionRowData.setTime(definitionRowData.getTime() + 1);
+            definitionRowData.setSpeedTime(definitionRowData.getSpeedTime() + taskInstance.getSpeedTime());
+            definitionRowData.setErrorTime(definitionRowData.getErrorTime() + (Objects.equals(TaskExecStatusEnum.FAIL.getCode(), state) ? 1 : 0));
+            definitionService.updateById(definitionRowData);
+        }
+        taskInstanceService.updateScanStateById(taskInstance.getInstanceId(), StatisticsType.HAD.ordinal());
     }
 }

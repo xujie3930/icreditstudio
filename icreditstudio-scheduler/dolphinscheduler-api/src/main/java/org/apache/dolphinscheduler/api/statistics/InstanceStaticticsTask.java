@@ -45,37 +45,11 @@ public class InstanceStaticticsTask {
             return;
         }
         for (TaskInstanceStatisticsResult taskInstance : taskInstanceList) {
-            String workspaceId = taskInstance.getWorkspaceId();
-            String userId = taskInstance.getUserId();
-            Date date = taskInstance.getDate();
-            Integer state = ExecutionStatus.getCategoryByCode(taskInstance.getState());
-            if (Objects.isNull(date)) {
-                date = taskInstance.getSubmitTime();
-                state = TaskExecStatusEnum.FAIL.getCode();
+            try {
+                taskInstanceService.statictics(taskInstance);
+            } catch (Exception e) {
+                continue;
             }
-            String platformTaskId = taskInstance.getPlatformTaskId();
-            StatisticsInstanceEntity instanceRowData = instanceService.getRowData(workspaceId, userId, date, state);
-            StatisticsDefinitionEntity definitionRowData = definitionService.getRowData(workspaceId, userId, date, platformTaskId);
-            if (null == instanceRowData) {
-                StatisticsInstanceEntity entity = new StatisticsInstanceEntity(workspaceId, userId, state, date, 1, taskInstance.getTotalRecords(), taskInstance.getTotalBytes(), taskInstance.getScheduleType());
-                instanceService.save(entity);
-            } else {
-                instanceRowData.setCount(instanceRowData.getCount() + 1);
-                instanceRowData.setTotalRecords(instanceRowData.getTotalRecords() + taskInstance.getTotalRecords());
-                instanceRowData.setTotalByte(instanceRowData.getTotalByte() + taskInstance.getTotalBytes());
-                instanceService.updateById(instanceRowData);
-            }
-            if (null == definitionRowData) {
-                Integer errorTime = Objects.equals(TaskExecStatusEnum.FAIL.getCode(), state) ? 1 : 0;
-                StatisticsDefinitionEntity definitionEntity = new StatisticsDefinitionEntity(workspaceId, userId, taskInstance.getPlatformTaskId(), taskInstance.getDate(), taskInstance.getTaskName(), 1, errorTime, taskInstance.getSpeedTime(), taskInstance.getScheduleType());
-                definitionService.save(definitionEntity);
-            } else {
-                definitionRowData.setTime(definitionRowData.getTime() + 1);
-                definitionRowData.setSpeedTime(definitionRowData.getSpeedTime() + taskInstance.getSpeedTime());
-                definitionRowData.setErrorTime(definitionRowData.getErrorTime() + (Objects.equals(TaskExecStatusEnum.FAIL.getCode(), state) ? 1 : 0));
-                definitionService.updateById(definitionRowData);
-            }
-            taskInstanceService.updateScanStateById(taskInstance.getInstanceId(), StatisticsType.HAD.ordinal());
         }
     }
 }

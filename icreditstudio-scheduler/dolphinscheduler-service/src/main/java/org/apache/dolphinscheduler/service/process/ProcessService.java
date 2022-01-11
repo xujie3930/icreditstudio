@@ -472,10 +472,11 @@ public class ProcessService {
         }
 
         processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
-
-        Object needTransferColumns = getValue(processDefinition.getProcessDefinitionJson(), NEED_TRANSFER_COLUMNS);
-        String processInsJson = replaceDictAndNeedTransferColumns(processInstance.getProcessInstanceJson(), needTransferColumns);
-        processInstance.setProcessInstanceJson(processInsJson);
+        if (Objects.nonNull(processInstance)) {
+            Object needTransferColumns = getValue(processDefinition.getProcessDefinitionJson(), NEED_TRANSFER_COLUMNS);
+            String processInsJson = replaceDictAndNeedTransferColumns(processInstance.getProcessInstanceJson(), needTransferColumns);
+            processInstance.setProcessInstanceJson(processInsJson);
+        }
         if (cmdParam != null) {
             String processInstanceId = null;
             // recover from failure or pause tasks
@@ -642,6 +643,9 @@ public class ProcessService {
      */
     private String replaceDictAndNeedTransferColumns(String oldStatementJson, Object newTransferColumns) {
         if (StringUtils.isNotBlank(oldStatementJson)) {
+            if (Objects.isNull(newTransferColumns)) {
+                newTransferColumns = new HashMap<>();
+            }
             oldStatementJson = replaceNeedTransferColumns(oldStatementJson, newTransferColumns);
             List<String> dictIds = getDictIds(oldStatementJson);
             return replaceTransferDict(oldStatementJson, dictIds);
