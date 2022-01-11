@@ -43,6 +43,7 @@
             v-model="taskForm.createMode"
             placeholder="请选择创建方式"
             style="width:100%"
+            :disabled="opType === 'edit'"
           >
             <el-option
               v-for="item in createModeOptions"
@@ -158,7 +159,9 @@ export default {
     initPage() {
       // 编辑的情况下 taskId 有值
       const { taskId, taskName } = this.taskForm
-      this.taskForm.taskId = taskId || this.$route.query?.taskId
+      const { query } = this.$route
+      this.taskForm.taskId = taskId || query?.taskId
+      this.opType = query?.opType ?? ''
       this.taskForm.taskId
         ? this.getDetailData()
         : this.autoGenerateTaskName(taskName)
