@@ -37,10 +37,11 @@ public class SyncCondition {
     private String dialect;
 
     public Boolean getInc() {
-        if (inc == null) {
+        /*if (inc == null) {
             return false;
         }
-        return inc;
+        return inc;*/
+        return true;
     }
 
     /**
