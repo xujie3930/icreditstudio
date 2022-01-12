@@ -303,7 +303,7 @@ export default {
       const verifyFieldArr = Object.keys(this.selectCron)
       const msgArr = []
 
-      if (scheduleType) return true
+      if (!scheduleType) return true
       if (type) {
         const { selectcronForm } = this.$refs.selectDate.$refs
         selectcronForm.validateField(verifyFieldArr, msg => {
@@ -313,6 +313,7 @@ export default {
       return !msgArr.length
     },
 
+    // 周期执行的参数
     handleSaveParam() {
       const { cronParam, scheduleType } = this.taskForm
       const { type, firstFull } = cronParam
