@@ -21,4 +21,13 @@ public interface MetadataFeign {
      */
     @PostMapping("/metadata/auth")
     BusinessResult<Boolean> auth(@RequestBody FeignUserAuthRequest request);
+
+    /**
+     * 用户移除表权限
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/metadata/unAuth")
+    BusinessResult<Boolean> unAuth(@RequestBody FeignUserAuthRequest request);
 }

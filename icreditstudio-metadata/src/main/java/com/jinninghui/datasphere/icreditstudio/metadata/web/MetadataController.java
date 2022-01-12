@@ -74,4 +74,11 @@ public class MetadataController {
         BeanCopyUtils.copyProperties(request, param);
         return metadataService.auth(param);
     }
+
+    @PostMapping("/unAuth")
+    public BusinessResult<Boolean> unAuth(@RequestBody WorkspaceUserAuthRequest request) {
+        WorkspaceUserAuthParam param = new WorkspaceUserAuthParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return metadataService.unAuth(param);
+    }
 }

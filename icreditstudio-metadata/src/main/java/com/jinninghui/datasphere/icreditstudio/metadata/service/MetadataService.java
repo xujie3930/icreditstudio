@@ -41,4 +41,6 @@ public interface MetadataService {
     BusinessResult<WarehouseInfo> getWarehouseInfo();
 
     BusinessResult<Boolean> auth(WorkspaceUserAuthParam param);
+
+    BusinessResult<Boolean> unAuth(WorkspaceUserAuthParam param);
 }

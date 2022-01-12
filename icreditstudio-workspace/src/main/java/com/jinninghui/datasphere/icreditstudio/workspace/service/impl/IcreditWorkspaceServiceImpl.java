@@ -219,11 +219,17 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         }
         String spaceId = entity.getId();
 
-        List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
+        List<IcreditWorkspaceUserEntity> icreditWorkspaceUserEntities = workspaceUserService.queryMemberListByWorkspaceId(spaceId);
+        List<String> delList = Optional.ofNullable(icreditWorkspaceUserEntities).orElse(Lists.newArrayList()).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
         List<WorkspaceMember> workspaceMembers = newUserList(delList, param.getMemberList());
         List<String> userCodes = getUserCode(workspaceMembers);
         //给用户授权
-        authToUsers(userCodes,param.getId());
+        authToUsers(userCodes, param.getId());
+
+        //移除用户权限
+        List<IcreditWorkspaceUserEntity> userEntities = removeUserList(icreditWorkspaceUserEntities, param.getMemberList());
+        List<String> userCodeFromWorkspaceUser = getUserCodeFromWorkspaceUser(userEntities);
+        unAuthFromUsers(userCodeFromWorkspaceUser, param.getId());
         //先删除该空间下所有成员
         workspaceUserService.removeByIds(delList);
         for (int i = 0; i < param.getMemberList().size(); i++) {
@@ -276,12 +282,25 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     /**
      * 对比空间用户移除情况
      *
-     * @param oldUsers
-     * @param inputMemberIds
+     * @param oldMemberIds
+     * @param inputMembers
      * @return
      */
-    private List<IcreditWorkspaceUserEntity> removeUserList(List<IcreditWorkspaceUserEntity> oldUsers, List<String> inputMemberIds) {
-        return null;
+    private List<IcreditWorkspaceUserEntity> removeUserList(List<IcreditWorkspaceUserEntity> oldMemberIds, List<WorkspaceMember> inputMembers) {
+        List<IcreditWorkspaceUserEntity> results = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(oldMemberIds)) {
+            return results;
+        }
+        if (!CollectionUtils.isEmpty(inputMembers)) {
+            List<String> collect = inputMembers.stream()
+                    .filter(Objects::nonNull)
+                    .map(WorkspaceMember::getUserId)
+                    .collect(Collectors.toList());
+            results = oldMemberIds.stream()
+                    .filter(oldMemberId -> !collect.contains(oldMemberId.getUserId()))
+                    .collect(Collectors.toList());
+        }
+        return results;
     }
 
     /**
@@ -308,14 +327,28 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         return results;
     }
 
+    private List<String> getUserCodeFromWorkspaceUser(List<IcreditWorkspaceUserEntity> userEntities) {
+        List<String> results = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(userEntities)) {
+            results = userEntities.stream()
+                    .filter(Objects::nonNull)
+                    .map(IcreditWorkspaceUserEntity::getTenantCode)
+                    .collect(Collectors.toList());
+        }
+        return results;
+    }
+
     /**
      * 移除用户权限
      *
      * @param userCodes
      * @return
      */
-    private BusinessResult<Boolean> unAuthFromUsers(List<String> userCodes) {
-        return null;
+    private BusinessResult<Boolean> unAuthFromUsers(List<String> userCodes, String workspaceId) {
+        FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
+        feignUserAuthRequest.setUserCode(userCodes);
+        feignUserAuthRequest.setWorkspaceId(workspaceId);
+        return metadataFeign.unAuth(feignUserAuthRequest);
     }
 
     @Override

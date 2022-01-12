@@ -371,4 +371,42 @@ public class MetadataServiceImpl implements MetadataService {
         param.setWorkspaceId(workspaceId);
         return workspaceTableService.getWorkspaceTableList(param);
     }
+
+    @Override
+    public BusinessResult<Boolean> unAuth(WorkspaceUserAuthParam param) {
+        List<String> userCodes = param.getUserCode();
+        if (CollectionUtils.isNotEmpty(userCodes)) {
+            preCheckAuth(param);
+            String workspaceId = param.getWorkspaceId();
+            List<WorkspaceTableEntity> workspaceTableEntities = getWorkspaceTableEntityByWorkspaceId(workspaceId);
+            if (CollectionUtils.isNotEmpty(workspaceTableEntities)) {
+                Connection connection = this.connection.getConnection();
+                try {
+                    List<UserPerm> perms = Lists.newArrayList();
+                    for (String userCode : userCodes) {
+                        for (WorkspaceTableEntity workspaceTableEntity : workspaceTableEntities) {
+                            UserPerm userPerm = new UserPerm();
+                            userPerm.setUserName(userCode);
+
+                            TablePerm tablePerm = new TablePerm();
+                            tablePerm.setDatabase(workspaceTableEntity.getDatabaseName());
+                            tablePerm.setTableName(workspaceTableEntity.getTableName());
+
+                            Perm perm = new Perm();
+                            perm.setPerm("all");
+                            tablePerm.setPerms(Lists.newArrayList(perm));
+                            userPerm.setTablePerms(Lists.newArrayList(tablePerm));
+                            perms.add(userPerm);
+                        }
+                    }
+                    workspaceTableService.unAuthTable(perms, connection);
+                } catch (Exception e) {
+                    log.error("授权失败，失败原因可能是:" + e);
+                } finally {
+                    IoUtil.close(connection);
+                }
+            }
+        }
+        return BusinessResult.success(true);
+    }
 }
