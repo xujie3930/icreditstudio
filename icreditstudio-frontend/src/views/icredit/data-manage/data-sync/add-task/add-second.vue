@@ -232,7 +232,7 @@
                     secondTaskForm.syncCondition[
                       opType === 'edit'
                         ? 'incrementalFieldLabel'
-                        : ' incrementalField'
+                        : 'incrementalField'
                     ]
                   "
                   placeholder="请选择增量字段"
@@ -251,16 +251,13 @@
                   size="mini"
                   style="margin-left:16px"
                   :disabled="opType === 'edit'"
-                  v-if="secondTaskForm.syncCondition.incrementalField"
+                  v-if="showConditionLabel"
                   v-model="secondTaskForm.syncCondition.inc"
                 >
                   增量存储
                 </el-checkbox>
               </div>
-              <div
-                class="label-wrap"
-                v-if="secondTaskForm.syncCondition.incrementalField"
-              >
+              <div class="label-wrap" v-if="showConditionLabel">
                 <div class="label">时间过滤条件: T +</div>
                 <el-input-number
                   size="mini"
@@ -512,6 +509,14 @@ export default {
     verifyTableDisabled() {
       const { sql } = this.secondTaskForm
       return Boolean(sql) || this.selectedTable.length
+    },
+
+    showConditionLabel() {
+      const {
+        incrementalField,
+        incrementalFieldLabel
+      } = this.secondTaskForm.syncCondition
+      return incrementalField || incrementalFieldLabel
     }
   },
 
@@ -1066,14 +1071,20 @@ export default {
 
     // 表格信息过滤
     hadleFieldInfos(fields = []) {
-      return deepClone(fields)?.map(item => {
-        return {
-          fieldTypeOptions: this.fieldTypeOptions,
-          dictLoading: false,
-          dictionaryOptions: [],
-          ...item
+      return deepClone(fields)?.map(
+        ({ associateDict, associateDictLabel, ...rest }) => {
+          return {
+            ...rest,
+            associateDict,
+            associateDictLabel,
+            fieldTypeOptions: this.fieldTypeOptions,
+            dictLoading: false,
+            dictionaryOptions: associateDict
+              ? [{ name: associateDictLabel, key: associateDict }]
+              : []
+          }
         }
-      })
+      )
     },
 
     // 切换数据源类型

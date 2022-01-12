@@ -222,7 +222,7 @@ export default {
 
   filters: {
     filterIncrementalField(item) {
-      return item ? item?.incrementalField : ''
+      return item ? item?.incrementalFieldLabel : ''
     }
   },
 

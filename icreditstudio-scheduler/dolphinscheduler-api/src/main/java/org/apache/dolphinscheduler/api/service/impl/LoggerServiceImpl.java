@@ -68,7 +68,7 @@ public class LoggerServiceImpl implements LoggerService {
         TaskInstance taskInstance = processService.findTaskInstanceById(taskInstId);
 
         if (taskInstance == null || StringUtils.isBlank(taskInstance.getHost())) {
-            return BusinessResult.fail("", Status.TASK_INSTANCE_NOT_FOUND.getMsg());
+            return BusinessResult.fail("", Status.TASK_INSTANCE_NOT_COMPLETED.getZhMsg());
         }
 
         String host = getHost(taskInstance.getHost());

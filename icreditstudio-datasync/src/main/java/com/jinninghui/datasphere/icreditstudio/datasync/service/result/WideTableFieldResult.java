@@ -10,4 +10,6 @@ import java.util.List;
 @Data
 public class WideTableFieldResult extends WideTableFieldInfo {
     private List<Object> fieldType;
+
+    private String associateDictLabel;
 }

@@ -244,6 +244,14 @@ public class PlatformProcessDefinitionServiceImpl extends BaseServiceImpl implem
         ProcessData processData = JSONUtils.parseObject(JSONObject.toJSONString(definitionJson), ProcessData.class);
         Date now = new Date();
 
+        PlatformPartitionParam platformPartitionParam = BeanCopyUtils.copyProperties(param.getPartitionParam(), PlatformPartitionParam.class);
+
+        if (Objects.isNull(param.getSchedulerParam())) {
+            param.setSchedulerParam(new SchedulerParam());
+        }
+        PlatformPartitionParam syncCondition = IncrementUtil.getSyncCondition(platformPartitionParam, param.getSchedulerParam().getCron());
+        processDefine.setPartitionParam(JSONObject.toJSONString(syncCondition));
+
         processDefine.setTaskType(param.getOrdinaryParam().getTaskType());
         processDefine.setVersion(param.getOrdinaryParam().getVersion());
         processDefine.setTargetTable(param.getOrdinaryParam().getTargetTable());

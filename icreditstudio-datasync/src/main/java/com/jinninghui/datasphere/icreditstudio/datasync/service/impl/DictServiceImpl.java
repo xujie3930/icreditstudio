@@ -54,7 +54,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<Boolean> save(DictSaveParam param) {
         checkDictParam(param);
         DictEntity oldDict = findByName(param.getChineseName());
-        if(null != oldDict){
+        if (null != oldDict) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
         DictEntity dict = createDict(param);
@@ -66,7 +66,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     }
 
     //将字典表列保存到redis
-    private void saveDictColumnToRedis(String dictId, List<DictColumnSaveParam> saveParams){
+    private void saveDictColumnToRedis(String dictId, List<DictColumnSaveParam> saveParams) {
         List<RedisDictColumnDTO> redisDictColumnDTOList = new ArrayList<>();
         for (DictColumnSaveParam saveParam : saveParams) {
             RedisDictColumnDTO redisDictColumnDTO = new RedisDictColumnDTO(dictId, saveParam.getColumnKey(), saveParam.getColumnValue());
@@ -76,7 +76,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         redisTemplate.opsForValue().set(REDIS_DICT_PREFIX + dictId, redisDictStr);
     }
 
-    private DictEntity findByName(String chineseName){
+    private DictEntity findByName(String chineseName) {
         return dictMapper.findByName(chineseName);
     }
 
@@ -147,7 +147,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         checkDictId(param.getId());
         checkDictParam(param);
         DictEntity oldDict = findByName(param.getChineseName());
-        if(null != oldDict && !oldDict.getId().equals(param.getId())){
+        if (null != oldDict && !oldDict.getId().equals(param.getId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
         DictEntity dict = new DictEntity();
@@ -169,7 +169,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         checkDictParam(param);
         DictEntity oldDict = findByName(param.getChineseName());
-        if(null != oldDict){
+        if (null != oldDict) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
         DictEntity dict = createDict(param);
@@ -196,6 +196,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
             wrapper.like(DictEntity.CHINESE_NAME, param.getName());
         }
         wrapper.eq(DictEntity.WORKSPACE_ID, param.getWorkspaceId());
+        wrapper.eq(DictEntity.DEL_FLAG, 0);
         List<DictEntity> list = list(wrapper);
 
         List<AssociatedDictInfoResult> results = null;

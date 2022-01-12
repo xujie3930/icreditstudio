@@ -168,7 +168,6 @@ export default {
       this.reset()
       this.mixinRetrieveTableData()
       this.polling()
-      this.$refs.baseDialog.open()
     },
 
     close() {
@@ -179,6 +178,9 @@ export default {
     reset() {
       this.logDetail = ''
       this.extraData = {}
+      this.mixinTablePagination.currentPage = 1
+      this.mixinTablePagination.pageSize = 10
+      this.$refs.baseDialog.open()
       this.$nextTick(() => {
         this.mixinHandleReset()
       })

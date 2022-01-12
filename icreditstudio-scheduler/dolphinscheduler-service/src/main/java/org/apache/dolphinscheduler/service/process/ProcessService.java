@@ -472,6 +472,11 @@ public class ProcessService {
         }
 
         processInstance = processInstanceMapper.getLastInstanceByDefinitionId(processDefinition.getId());
+        if (Objects.nonNull(processInstance)) {
+            Object needTransferColumns = getValue(processDefinition.getProcessDefinitionJson(), NEED_TRANSFER_COLUMNS);
+            String processInsJson = replaceDictAndNeedTransferColumns(processInstance.getProcessInstanceJson(), needTransferColumns);
+            processInstance.setProcessInstanceJson(processInsJson);
+        }
         if (cmdParam != null) {
             String processInstanceId = null;
             // recover from failure or pause tasks
@@ -629,6 +634,23 @@ public class ProcessService {
         }
         processInstance.setState(runStatus);
         return processInstance;
+    }
+
+    /**
+     * 替换json中的字典列表和要进行字典转换的列
+     *
+     * @return
+     */
+    private String replaceDictAndNeedTransferColumns(String oldStatementJson, Object newTransferColumns) {
+        if (StringUtils.isNotBlank(oldStatementJson)) {
+            if (Objects.isNull(newTransferColumns)) {
+                newTransferColumns = new HashMap<>();
+            }
+            oldStatementJson = replaceNeedTransferColumns(oldStatementJson, newTransferColumns);
+            List<String> dictIds = getDictIds(oldStatementJson);
+            return replaceTransferDict(oldStatementJson, dictIds);
+        }
+        return oldStatementJson;
     }
 
     //获取增量同步的开始时间、结束时间、分区路径格式
@@ -1384,6 +1406,14 @@ public class ProcessService {
                 return re.toJSON();
             }
 
+        }
+        return oldStatementJson;
+    }
+
+    private String replaceNeedTransferColumns(String oldStatementJson, Object newNeedTransferColumns) {
+        if (StringUtils.isNotBlank(oldStatementJson)) {
+            Configuration configuration = setValue(oldStatementJson, NEED_TRANSFER_COLUMNS, newNeedTransferColumns);
+            return configuration.toJSON();
         }
         return oldStatementJson;
     }
