@@ -22,8 +22,11 @@
         select 1
         from icredit_datasource
         <where>
-            <if test="name != null and name != '' ">
-                AND name = #{name}
+            <if test="request.name != null and request.name != '' ">
+                AND name = #{request.name}
+            </if>
+            <if test="request.id != null and request.id != '' ">
+                AND id != #{request.id}
             </if>
         and del_flag = 'N'
         </where>

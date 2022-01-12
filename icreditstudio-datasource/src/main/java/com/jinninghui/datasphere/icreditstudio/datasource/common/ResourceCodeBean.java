@@ -28,6 +28,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_70000011("70000011", "该工作空间有启用的数据源,请停用后再进行此操作"),
         RESOURCE_CODE_70000012("70000012", "该数据源有启用的同步任务,请停用后再进行此操作"),
         RESOURCE_CODE_70000013("70000013", "数据源操作状态只能是0、1"),
+        RESOURCE_CODE_70000014("70000014", "数据源名称重复，请重新输入"),
         ;
 
         public final String code;

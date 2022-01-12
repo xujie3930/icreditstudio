@@ -72,6 +72,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     @BusinessParamsValidate
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(String userId, IcreditWorkspaceSaveParam param) {
+        checkHasExistSpaceName(new WorkspaceHasExistRequest(param.getName(), null));
         Date date = new Date();
         String createUserName = param.getCreateUser();
         //保存工作空间信息
@@ -161,9 +162,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     }
 
     @Override
-    public BusinessResult<Boolean> hasExit(WorkspaceHasExistRequest request) {
-        boolean hasExit = BooleanUtils.isTrue(workspaceMapper.hasExit(request));
-        return BusinessResult.success(hasExit);
+    public Boolean hasExit(WorkspaceHasExistRequest request) {
+        return BooleanUtils.isTrue(workspaceMapper.hasExit(request));
     }
 
     @Override
@@ -207,6 +207,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         if (DEFAULT_WORKSPACEID.equals(param.getId())) {
             throw new AppException("80000004");
         }
+        checkHasExistSpaceName(new WorkspaceHasExistRequest(param.getName(), param.getId()));
         //更新workspace
         IcreditWorkspaceEntity entity = BeanCopyUtils.copyProperties(param, new IcreditWorkspaceEntity());
         entity.setUpdateTime(new Date());
@@ -224,6 +225,13 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             workspaceUserService.save(newMember);
         }
         return BusinessResult.success(true);
+    }
+
+    private void checkHasExistSpaceName(WorkspaceHasExistRequest request) {
+        Boolean hasExit = hasExit(request);
+        if (hasExit){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
+        }
     }
 
     private void updateByspaceId(IcreditWorkspaceEntity entity) {

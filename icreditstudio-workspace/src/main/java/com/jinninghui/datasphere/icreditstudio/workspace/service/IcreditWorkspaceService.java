@@ -28,7 +28,7 @@ public interface IcreditWorkspaceService extends IService<IcreditWorkspaceEntity
 
     BusinessPageResult queryPage(IcreditWorkspaceEntityPageRequest pageRequest);
 
-    BusinessResult<Boolean> hasExit(WorkspaceHasExistRequest request);
+    Boolean hasExit(WorkspaceHasExistRequest request);
 
     WorkspaceDetailResult getDetailById(String id);
 

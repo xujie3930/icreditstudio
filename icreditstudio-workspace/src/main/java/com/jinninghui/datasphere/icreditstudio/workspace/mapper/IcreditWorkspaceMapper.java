@@ -23,7 +23,7 @@ public interface IcreditWorkspaceMapper extends BaseMapper<IcreditWorkspaceEntit
 
     void updateStatusById(@Param("id") String id);
 
-    Boolean hasExit(WorkspaceHasExistRequest request);
+    Boolean hasExit(@Param("request") WorkspaceHasExistRequest request);
 
     List<IcreditWorkspaceEntity> queryPage(Page<IcreditWorkspaceEntity> page, @Param(value = "request") IcreditWorkspaceEntityPageParam request);
 }
