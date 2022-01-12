@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.metadata.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.metadata.entity.WorkspaceTableEntity;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.UserPerm;
+import com.jinninghui.datasphere.icreditstudio.metadata.web.request.WorkspaceTableListParam;
 
 import java.sql.Connection;
 import java.util.List;
@@ -26,4 +27,11 @@ public interface WorkspaceTableService extends IService<WorkspaceTableEntity> {
      * @return
      */
     boolean unAuthTable(List<UserPerm> userPerms, Connection conn);
+
+    /**
+     * 查询workspaceTable列表
+     *
+     * @return
+     */
+    List<WorkspaceTableEntity> getWorkspaceTableList(WorkspaceTableListParam param);
 }

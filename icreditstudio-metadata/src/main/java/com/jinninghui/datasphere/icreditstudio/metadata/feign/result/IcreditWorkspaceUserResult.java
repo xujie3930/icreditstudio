@@ -90,4 +90,9 @@ public class IcreditWorkspaceUserResult implements Serializable {
      * 排序字段，用于展示成员列表的排序，空间的创建者为0
      */
     private Integer sort;
+
+    /**
+     * 用户账号
+     */
+    private String tenantCode;
 }

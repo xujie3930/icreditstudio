@@ -5,10 +5,12 @@ import com.jinninghui.datasphere.icreditstudio.framework.result.util.BeanCopyUti
 import com.jinninghui.datasphere.icreditstudio.metadata.service.MetadataService;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataGenerateWideTableParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.MetadataQueryTargetSourceParam;
+import com.jinninghui.datasphere.icreditstudio.metadata.service.param.WorkspaceUserAuthParam;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.web.request.MetadataGenerateWideTableRequest;
 import com.jinninghui.datasphere.icreditstudio.metadata.web.request.MetadataQueryTargetSourceRequest;
+import com.jinninghui.datasphere.icreditstudio.metadata.web.request.WorkspaceUserAuthRequest;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -58,5 +60,18 @@ public class MetadataController {
     @GetMapping("/getWarehouseInfo")
     public BusinessResult<WarehouseInfo> getWarehouseInfo() {
         return metadataService.getWarehouseInfo();
+    }
+
+    /**
+     * 用户授予表操作权限
+     *
+     * @param request
+     * @return
+     */
+    @PostMapping("/auth")
+    public BusinessResult<Boolean> auth(@RequestBody WorkspaceUserAuthRequest request) {
+        WorkspaceUserAuthParam param = new WorkspaceUserAuthParam();
+        BeanCopyUtils.copyProperties(request, param);
+        return metadataService.auth(param);
     }
 }
