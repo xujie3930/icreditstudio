@@ -300,8 +300,14 @@ export default {
     handleVerifyCronField() {
       const { scheduleType, cronParam } = this.taskForm
       const { type } = cronParam
-      const verifyFieldArr = Object.keys(this.selectCron)
       const msgArr = []
+      const keyMapping = {
+        year: ['month', 'day', 'hour', 'minute', 'second'],
+        month: ['day', 'hour', 'minute', 'second'],
+        day: ['hour', 'minute', 'second'],
+        hour: ['minute', 'second']
+      }
+      const verifyFieldArr = keyMapping[type]
 
       if (!scheduleType) return true
       if (type) {
@@ -310,6 +316,8 @@ export default {
           Boolean(msg) && msgArr.push(msg)
         })
       }
+
+      console.log(msgArr, !msgArr.length, verifyFieldArr, '!msgArr.length')
       return !msgArr.length
     },
 
@@ -362,7 +370,9 @@ export default {
         cronParam: this.handleSaveParam()
       }
       this.$refs.taskForm.validate(valid => {
+        console.log(valid, 'kikii')
         if (valid && this.handleVerifyCronField()) {
+          console.log(111111)
           this[loading] = true
           API.dataSyncAdd(params)
             .then(({ success, data }) => {
