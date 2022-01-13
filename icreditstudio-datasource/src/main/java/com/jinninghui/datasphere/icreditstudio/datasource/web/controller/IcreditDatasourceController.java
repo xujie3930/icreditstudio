@@ -44,7 +44,8 @@ public class IcreditDatasourceController {
     @PostMapping("/hasExist")
     @Logable
     public BusinessResult<Boolean> info(@RequestBody DataSourceHasExistRequest request) {
-        return datasourceService.hasExit(request);
+        Boolean hasExit = datasourceService.hasExit(request);
+        return BusinessResult.success(hasExit);
     }
 
 

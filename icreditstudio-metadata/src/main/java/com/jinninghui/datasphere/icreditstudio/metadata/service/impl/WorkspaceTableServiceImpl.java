@@ -1,6 +1,7 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
 import cn.hutool.core.io.IoUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.metadata.common.ResourceCodeBean;
@@ -10,7 +11,9 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.WorkspaceTableSe
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.Perm;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.TablePerm;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.UserPerm;
+import com.jinninghui.datasphere.icreditstudio.metadata.web.request.WorkspaceTableListParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
@@ -63,7 +66,7 @@ public class WorkspaceTableServiceImpl extends ServiceImpl<WorkspaceTableMapper,
         }
     }
 
-    public static void unAuth(List<UserPerm> userPerms, Connection conn) {
+    public void unAuth(List<UserPerm> userPerms, Connection conn) {
         Statement state = null;
         try {
             state = conn.createStatement();
@@ -83,6 +86,7 @@ public class WorkspaceTableServiceImpl extends ServiceImpl<WorkspaceTableMapper,
                 }
             }
         } catch (Exception e) {
+            log.error("hive解除权限异常", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000008.getCode());
         } finally {
             IoUtil.close(state);
@@ -108,5 +112,15 @@ public class WorkspaceTableServiceImpl extends ServiceImpl<WorkspaceTableMapper,
             IoUtil.close(connection);
         }
         return apply;
+    }
+
+    @Override
+    public List<WorkspaceTableEntity> getWorkspaceTableList(WorkspaceTableListParam param) {
+        QueryWrapper<WorkspaceTableEntity> wrapper = new QueryWrapper<>();
+        if (StringUtils.isNotBlank(param.getWorkspaceId())) {
+            wrapper.eq(WorkspaceTableEntity.WORKSPACE_ID, param.getWorkspaceId());
+        }
+        wrapper.eq(WorkspaceTableEntity.DELETE_FLAG, 0);
+        return list(wrapper);
     }
 }

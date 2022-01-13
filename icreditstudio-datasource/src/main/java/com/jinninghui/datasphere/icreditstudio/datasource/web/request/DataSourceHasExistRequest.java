@@ -10,4 +10,13 @@ import lombok.Data;
 @Data
 public class DataSourceHasExistRequest {
     private String name;//数据源名称
+    private String id;//数据源id
+
+    public DataSourceHasExistRequest() {
+    }
+
+    public DataSourceHasExistRequest(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
 }

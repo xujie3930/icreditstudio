@@ -38,8 +38,9 @@ public class IcreditWorkspaceController extends BaseController<IcreditWorkspaceE
      */
     @PostMapping("/hasExist")
     @Logable
-    public BusinessResult<Boolean> info(@RequestBody WorkspaceHasExistRequest request) {
-        return workspaceService.hasExit(request);
+    public BusinessResult<Boolean> hasExist(@RequestBody WorkspaceHasExistRequest request) {
+        Boolean hasExit = workspaceService.hasExit(request);
+        return BusinessResult.success(hasExit);
     }
 
     /**

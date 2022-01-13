@@ -10,4 +10,13 @@ import lombok.Data;
 @Data
 public class WorkspaceHasExistRequest {
     private String name;
+    private String id;
+
+    public WorkspaceHasExistRequest() {
+    }
+
+    public WorkspaceHasExistRequest(String name, String id) {
+        this.name = name;
+        this.id = id;
+    }
 }
