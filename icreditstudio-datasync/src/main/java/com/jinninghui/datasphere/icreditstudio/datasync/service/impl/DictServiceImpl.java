@@ -53,7 +53,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> save(DictSaveParam param) {
         checkDictParam(param);
-        DictEntity oldDict = findByName(param.getChineseName());
+        DictEntity oldDict = findByName(param.getChineseName(), param.getWorkspaceId(), param.getCreateUserId());
         if (null != oldDict) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
@@ -76,8 +76,11 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         redisTemplate.opsForValue().set(REDIS_DICT_PREFIX + dictId, redisDictStr);
     }
 
-    private DictEntity findByName(String chineseName) {
-        return dictMapper.findByName(chineseName);
+    private DictEntity findByName(String chineseName, String workspaceId, String createUserId) {
+        if(!DEFAULT_WORKSPACE_ID.equals(workspaceId)){
+            createUserId = null;
+        }
+        return dictMapper.findByName(chineseName, workspaceId, createUserId);
     }
 
     private static void checkDictParam(DictSaveParam param) {
@@ -146,7 +149,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
     public BusinessResult<Boolean> update(DictSaveParam param) {
         checkDictId(param.getId());
         checkDictParam(param);
-        DictEntity oldDict = findByName(param.getChineseName());
+        DictEntity oldDict = findByName(param.getChineseName(), param.getWorkspaceId(), param.getCreateUserId());
         if (null != oldDict && !oldDict.getId().equals(param.getId())) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
@@ -168,7 +171,7 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, DictEntity> impleme
         }
         DictSaveParam param = JSONObject.parseObject(dictSaveRequestJson).toJavaObject(DictSaveParam.class);
         checkDictParam(param);
-        DictEntity oldDict = findByName(param.getChineseName());
+        DictEntity oldDict = findByName(param.getChineseName(), param.getWorkspaceId(), param.getCreateUserId());
         if (null != oldDict) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.code, ResourceCodeBean.ResourceCode.RESOURCE_CODE_60000091.message);
         }
