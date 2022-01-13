@@ -228,6 +228,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     }
 
     private void checkHasExistSpaceName(WorkspaceHasExistRequest request) {
+        if (StringUtils.isBlank(request.getName())){
+            return;
+        }
         Boolean hasExit = hasExit(request);
         if (hasExit){
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
