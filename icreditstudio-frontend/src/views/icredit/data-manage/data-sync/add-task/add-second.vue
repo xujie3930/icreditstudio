@@ -993,8 +993,9 @@ export default {
         if (!isShow) return
       }
 
-      const datasourceId =
-        this.selectedTable[0]?.datasourceId ?? this.datasourceId
+      const datasourceId = this.selectedTable.length
+        ? this.selectedTable[0]?.datasourceId ?? this.datasourceId
+        : this.datasourceId
       const {
         sourceType,
         sql,
