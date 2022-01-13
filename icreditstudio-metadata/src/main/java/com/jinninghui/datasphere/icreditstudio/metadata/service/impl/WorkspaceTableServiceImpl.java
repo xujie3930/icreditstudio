@@ -86,6 +86,7 @@ public class WorkspaceTableServiceImpl extends ServiceImpl<WorkspaceTableMapper,
                 }
             }
         } catch (Exception e) {
+            log.error("hive解除权限异常", e);
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000008.getCode());
         } finally {
             IoUtil.close(state);
