@@ -381,6 +381,7 @@ public class MetadataServiceImpl implements MetadataService {
             List<WorkspaceTableEntity> workspaceTableEntities = getWorkspaceTableEntityByWorkspaceId(workspaceId);
             if (CollectionUtils.isNotEmpty(workspaceTableEntities)) {
                 Connection connection = this.connection.getConnection();
+                log.info("取得连接:" + connection);
                 try {
                     List<UserPerm> perms = Lists.newArrayList();
                     for (String userCode : userCodes) {
@@ -394,14 +395,16 @@ public class MetadataServiceImpl implements MetadataService {
 
                             Perm perm = new Perm();
                             perm.setPerm("all");
-                            tablePerm.setPerms(Lists.newArrayList(perm));
+//                            tablePerm.setPerms(Lists.newArrayList(perm));
+                            tablePerm.setUnPerms(Lists.newArrayList(perm));
                             userPerm.setTablePerms(Lists.newArrayList(tablePerm));
                             perms.add(userPerm);
                         }
                     }
+                    log.info("解除授权的用户:" + JSONObject.toJSONString(perms));
                     workspaceTableService.unAuthTable(perms, connection);
                 } catch (Exception e) {
-                    log.error("授权失败，失败原因可能是:" + e);
+                    log.error("解除授权失败，失败原因可能是:", e);
                 } finally {
                     IoUtil.close(connection);
                 }

@@ -220,16 +220,20 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         String spaceId = entity.getId();
 
         List<IcreditWorkspaceUserEntity> icreditWorkspaceUserEntities = workspaceUserService.queryMemberListByWorkspaceId(spaceId);
-        List<String> delList = Optional.ofNullable(icreditWorkspaceUserEntities).orElse(Lists.newArrayList()).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
-        List<WorkspaceMember> workspaceMembers = newUserList(delList, param.getMemberList());
-        List<String> userCodes = getUserCode(workspaceMembers);
-        //给用户授权
-        authToUsers(userCodes, param.getId());
-
+        List<String> oldUserIds = Optional.ofNullable(icreditWorkspaceUserEntities).orElse(Lists.newArrayList()).stream().map(IcreditWorkspaceUserEntity::getUserId).collect(Collectors.toList());
+        List<WorkspaceMember> workspaceMembers = newUserList(oldUserIds, param.getMemberList());
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(workspaceMembers)) {
+            List<String> userCodes = getUserCode(workspaceMembers);
+            //给用户授权
+            authToUsers(userCodes, param.getId());
+        }
         //移除用户权限
         List<IcreditWorkspaceUserEntity> userEntities = removeUserList(icreditWorkspaceUserEntities, param.getMemberList());
-        List<String> userCodeFromWorkspaceUser = getUserCodeFromWorkspaceUser(userEntities);
-        unAuthFromUsers(userCodeFromWorkspaceUser, param.getId());
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(userEntities)) {
+            List<String> userCodeFromWorkspaceUser = getUserCodeFromWorkspaceUser(userEntities);
+            unAuthFromUsers(userCodeFromWorkspaceUser, param.getId());
+        }
+        List<String> delList = Optional.ofNullable(icreditWorkspaceUserEntities).orElse(Lists.newArrayList()).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
         //先删除该空间下所有成员
         workspaceUserService.removeByIds(delList);
         for (int i = 0; i < param.getMemberList().size(); i++) {
@@ -241,6 +245,9 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     }
 
     private void checkHasExistSpaceName(WorkspaceHasExistRequest request) {
+        if (StringUtils.isBlank(request.getName())) {
+            return;
+        }
         Boolean hasExit = hasExit(request);
         if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
@@ -310,10 +317,13 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
      * @return
      */
     private BusinessResult<Boolean> authToUsers(List<String> userCodes, String workspaceId) {
-        FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
-        feignUserAuthRequest.setUserCode(userCodes);
-        feignUserAuthRequest.setWorkspaceId(workspaceId);
-        return metadataFeign.auth(feignUserAuthRequest);
+        if (!CollectionUtils.isEmpty(userCodes) && !StringUtils.isBlank(workspaceId)) {
+            FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
+            feignUserAuthRequest.setUserCode(userCodes);
+            feignUserAuthRequest.setWorkspaceId(workspaceId);
+            return metadataFeign.auth(feignUserAuthRequest);
+        }
+        return BusinessResult.success(true);
     }
 
     private List<String> getUserCode(List<WorkspaceMember> members) {
@@ -345,10 +355,13 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
      * @return
      */
     private BusinessResult<Boolean> unAuthFromUsers(List<String> userCodes, String workspaceId) {
-        FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
-        feignUserAuthRequest.setUserCode(userCodes);
-        feignUserAuthRequest.setWorkspaceId(workspaceId);
-        return metadataFeign.unAuth(feignUserAuthRequest);
+        if (!CollectionUtils.isEmpty(userCodes) && !StringUtils.isBlank(workspaceId)) {
+            FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
+            feignUserAuthRequest.setUserCode(userCodes);
+            feignUserAuthRequest.setWorkspaceId(workspaceId);
+            return metadataFeign.unAuth(feignUserAuthRequest);
+        }
+        return BusinessResult.success(true);
     }
 
     @Override

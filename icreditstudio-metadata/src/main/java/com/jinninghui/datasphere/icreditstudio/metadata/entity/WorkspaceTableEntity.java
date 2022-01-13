@@ -15,11 +15,11 @@ import java.io.Serializable;
 @TableName("icredit_workspace_table")
 public class WorkspaceTableEntity extends SyncBaseEntity implements Serializable {
 
-    public static final String WORKSPACE_ID = "workspaceId";
+    public static final String WORKSPACE_ID = "workspace_id";
 
     public static final String DATABASE_NAME = "database_name";
 
-    public static final String TABLE_NAME = "tableName";
+    public static final String TABLE_NAME = "table_name";
 
     @TableId(type = IdType.ID_WORKER_STR)
     private String id;

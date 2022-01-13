@@ -911,7 +911,8 @@ export default {
       const { workspaceId } = this
       // 可视化方式参数处理
       !this.secondTaskForm.createMode && this.handleVisualizationParams()
-      const { fieldInfos, ...restForm } = this.secondTaskForm
+      const { fieldInfos, datasourceId, ...restForm } = this.secondTaskForm
+
       const newFieldInfos = deepClone(fieldInfos).map(
         ({
           dictLoading,
@@ -926,7 +927,12 @@ export default {
           }
         }
       )
-      const secondForm = { fieldInfos: newFieldInfos, workspaceId, ...restForm }
+      const secondForm = {
+        workspaceId,
+        fieldInfos: newFieldInfos,
+        datasourceId: datasourceId ?? this.datasourceId,
+        ...restForm
+      }
       return secondForm
     },
 
@@ -993,8 +999,11 @@ export default {
         if (!isShow) return
       }
 
-      const datasourceId =
-        this.selectedTable[0]?.datasourceId ?? this.datasourceId
+      const datasourceId = this.selectedTable.length
+        ? this.selectedTable[0]?.datasourceId ?? this.datasourceId
+        : this.datasourceId
+
+      console.log(datasourceId, 'datasourceId')
       const {
         sourceType,
         sql,
