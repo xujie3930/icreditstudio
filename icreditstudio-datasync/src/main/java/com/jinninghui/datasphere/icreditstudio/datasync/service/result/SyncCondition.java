@@ -20,7 +20,8 @@ public class SyncCondition {
         if (StringUtils.isBlank(incrementalField)) {
             return "";
         }
-        return StrUtil.subAfter(incrementalField, ".", true);
+        String label = StrUtil.subAfter(incrementalField, ".", true);
+        return StrUtil.unWrap(label, '\"');
     }
 
     /**
