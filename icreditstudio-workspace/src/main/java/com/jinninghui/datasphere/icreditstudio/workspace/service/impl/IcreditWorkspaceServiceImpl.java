@@ -241,7 +241,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     }
 
     private void checkHasExistSpaceName(WorkspaceHasExistRequest request) {
-        if (StringUtils.isBlank(request.getName())){
+        if (StringUtils.isBlank(request.getName())) {
             return;
         }
         Boolean hasExit = hasExit(request);
