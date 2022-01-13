@@ -1,7 +1,6 @@
 package com.jinninghui.datasphere.icreditstudio.metadata.service.impl;
 
 import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
@@ -18,6 +17,7 @@ import com.jinninghui.datasphere.icreditstudio.metadata.service.WorkspaceTableSe
 import com.jinninghui.datasphere.icreditstudio.metadata.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.TargetSourceInfo;
 import com.jinninghui.datasphere.icreditstudio.metadata.service.result.WarehouseInfo;
+import com.jinninghui.datasphere.icreditstudio.metadata.web.request.WorkspaceTableListParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -161,6 +161,7 @@ public class MetadataServiceImpl implements MetadataService {
         }
     }
 
+
     /**
      * 工作空间的用户
      *
@@ -174,7 +175,7 @@ public class MetadataServiceImpl implements MetadataService {
         if (workspaceUsers.isSuccess() && CollectionUtils.isNotEmpty(data)) {
             results = data.stream()
                     .filter(Objects::nonNull)
-                    .map(IcreditWorkspaceUserResult::getUsername)
+                    .map(IcreditWorkspaceUserResult::getTenantCode)
                     .distinct()
                     .collect(Collectors.toList());
         }
@@ -319,5 +320,93 @@ public class MetadataServiceImpl implements MetadataService {
             statement.add("stored as  orc");
         }
         return statement.toString();
+    }
+
+    @Override
+    public BusinessResult<Boolean> auth(WorkspaceUserAuthParam param) {
+        List<String> userCodes = param.getUserCode();
+        if (CollectionUtils.isNotEmpty(userCodes)) {
+            preCheckAuth(param);
+            String workspaceId = param.getWorkspaceId();
+            List<WorkspaceTableEntity> workspaceTableEntities = getWorkspaceTableEntityByWorkspaceId(workspaceId);
+            if (CollectionUtils.isNotEmpty(workspaceTableEntities)) {
+                Connection connection = this.connection.getConnection();
+                try {
+                    List<UserPerm> perms = Lists.newArrayList();
+                    for (String userCode : userCodes) {
+                        for (WorkspaceTableEntity workspaceTableEntity : workspaceTableEntities) {
+                            UserPerm userPerm = new UserPerm();
+                            userPerm.setUserName(userCode);
+
+                            TablePerm tablePerm = new TablePerm();
+                            tablePerm.setDatabase(workspaceTableEntity.getDatabaseName());
+                            tablePerm.setTableName(workspaceTableEntity.getTableName());
+
+                            Perm perm = new Perm();
+                            perm.setPerm("all");
+                            tablePerm.setPerms(Lists.newArrayList(perm));
+                            userPerm.setTablePerms(Lists.newArrayList(tablePerm));
+                            perms.add(userPerm);
+                        }
+                    }
+                    workspaceTableService.authTable(perms, connection);
+                } catch (Exception e) {
+                    log.error("授权失败，失败原因可能是:" + e);
+                } finally {
+                    IoUtil.close(connection);
+                }
+            }
+        }
+        return BusinessResult.success(true);
+    }
+
+    private void preCheckAuth(WorkspaceUserAuthParam param) {
+        if (StringUtils.isBlank(param.getWorkspaceId())) {
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000004.getCode());
+        }
+    }
+
+    private List<WorkspaceTableEntity> getWorkspaceTableEntityByWorkspaceId(String workspaceId) {
+        WorkspaceTableListParam param = new WorkspaceTableListParam();
+        param.setWorkspaceId(workspaceId);
+        return workspaceTableService.getWorkspaceTableList(param);
+    }
+
+    @Override
+    public BusinessResult<Boolean> unAuth(WorkspaceUserAuthParam param) {
+        List<String> userCodes = param.getUserCode();
+        if (CollectionUtils.isNotEmpty(userCodes)) {
+            preCheckAuth(param);
+            String workspaceId = param.getWorkspaceId();
+            List<WorkspaceTableEntity> workspaceTableEntities = getWorkspaceTableEntityByWorkspaceId(workspaceId);
+            if (CollectionUtils.isNotEmpty(workspaceTableEntities)) {
+                Connection connection = this.connection.getConnection();
+                try {
+                    List<UserPerm> perms = Lists.newArrayList();
+                    for (String userCode : userCodes) {
+                        for (WorkspaceTableEntity workspaceTableEntity : workspaceTableEntities) {
+                            UserPerm userPerm = new UserPerm();
+                            userPerm.setUserName(userCode);
+
+                            TablePerm tablePerm = new TablePerm();
+                            tablePerm.setDatabase(workspaceTableEntity.getDatabaseName());
+                            tablePerm.setTableName(workspaceTableEntity.getTableName());
+
+                            Perm perm = new Perm();
+                            perm.setPerm("all");
+                            tablePerm.setPerms(Lists.newArrayList(perm));
+                            userPerm.setTablePerms(Lists.newArrayList(tablePerm));
+                            perms.add(userPerm);
+                        }
+                    }
+                    workspaceTableService.unAuthTable(perms, connection);
+                } catch (Exception e) {
+                    log.error("授权失败，失败原因可能是:" + e);
+                } finally {
+                    IoUtil.close(connection);
+                }
+            }
+        }
+        return BusinessResult.success(true);
     }
 }

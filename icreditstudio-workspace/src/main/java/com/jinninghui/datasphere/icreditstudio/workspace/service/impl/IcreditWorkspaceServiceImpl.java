@@ -2,6 +2,7 @@ package com.jinninghui.datasphere.icreditstudio.workspace.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.jinninghui.datasphere.icreditstudio.framework.exception.interval.AppException;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessResult;
@@ -16,8 +17,10 @@ import com.jinninghui.datasphere.icreditstudio.workspace.common.enums.WorkspaceS
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.entity.IcreditWorkspaceUserEntity;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.DatasourceFeignClient;
+import com.jinninghui.datasphere.icreditstudio.workspace.feign.MetadataFeign;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.SchedulerFeign;
 import com.jinninghui.datasphere.icreditstudio.workspace.feign.SystemFeignClient;
+import com.jinninghui.datasphere.icreditstudio.workspace.feign.request.FeignUserAuthRequest;
 import com.jinninghui.datasphere.icreditstudio.workspace.mapper.IcreditWorkspaceMapper;
 import com.jinninghui.datasphere.icreditstudio.workspace.service.IcreditWorkspaceService;
 import com.jinninghui.datasphere.icreditstudio.workspace.service.param.IcreditWorkspaceDelParam;
@@ -35,10 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +65,8 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
     private DatasourceFeignClient datasourceFeignClient;
     @Autowired
     private SchedulerFeign schedulerFeign;
+    @Autowired
+    private MetadataFeign metadataFeign;
     private static final String DEFAULT_WORKSPACEID = "0";
     private static final String SEPARATOR = ",";
 
@@ -102,17 +104,17 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         newMember.setSpaceId(defEntity.getId());
         newMember.setCreateUser(defEntity.getCreateUser());
         newMember.setCreateTime(new Date());
-        if (!CollectionUtils.isEmpty(member.getOrgNames())){
-            newMember.setOrgName(StringUtils.join(member.getOrgNames().toArray(),SEPARATOR));
+        if (!CollectionUtils.isEmpty(member.getOrgNames())) {
+            newMember.setOrgName(StringUtils.join(member.getOrgNames().toArray(), SEPARATOR));
         }
-        if (!CollectionUtils.isEmpty(member.getUserRole())){
-            newMember.setUserRole(StringUtils.join(member.getUserRole().toArray(),SEPARATOR));
+        if (!CollectionUtils.isEmpty(member.getUserRole())) {
+            newMember.setUserRole(StringUtils.join(member.getUserRole().toArray(), SEPARATOR));
         }
-        if (!CollectionUtils.isEmpty(member.getDataAuthority())){
-            newMember.setDataAuthority(StringUtils.join(member.getDataAuthority().toArray(),SEPARATOR));
+        if (!CollectionUtils.isEmpty(member.getDataAuthority())) {
+            newMember.setDataAuthority(StringUtils.join(member.getDataAuthority().toArray(), SEPARATOR));
         }
-        if (!CollectionUtils.isEmpty(member.getFunctionalAuthority())){
-            newMember.setFunctionalAuthority(StringUtils.join(member.getFunctionalAuthority().toArray(),SEPARATOR));
+        if (!CollectionUtils.isEmpty(member.getFunctionalAuthority())) {
+            newMember.setFunctionalAuthority(StringUtils.join(member.getFunctionalAuthority().toArray(), SEPARATOR));
         }
         return newMember;
     }
@@ -152,7 +154,7 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
         }
         List<IcreditWorkspaceEntity> list = workspaceMapper.queryPage(page, param);
         //如果指定了空间，则不用展示默认工作空间
-        if (!StringUtils.isBlank(pageRequest.getSpaceId()) && !DEFAULT_WORKSPACEID.equals(pageRequest.getSpaceId())){
+        if (!StringUtils.isBlank(pageRequest.getSpaceId()) && !DEFAULT_WORKSPACEID.equals(pageRequest.getSpaceId())) {
             list = list.parallelStream()
                     .filter(w -> !DEFAULT_WORKSPACEID.equals(w.getId()))
                     .collect(Collectors.toList());
@@ -216,8 +218,19 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             return BusinessResult.success(true);
         }
         String spaceId = entity.getId();
+
+        List<IcreditWorkspaceUserEntity> icreditWorkspaceUserEntities = workspaceUserService.queryMemberListByWorkspaceId(spaceId);
+        List<String> delList = Optional.ofNullable(icreditWorkspaceUserEntities).orElse(Lists.newArrayList()).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
+        List<WorkspaceMember> workspaceMembers = newUserList(delList, param.getMemberList());
+        List<String> userCodes = getUserCode(workspaceMembers);
+        //给用户授权
+        authToUsers(userCodes, param.getId());
+
+        //移除用户权限
+        List<IcreditWorkspaceUserEntity> userEntities = removeUserList(icreditWorkspaceUserEntities, param.getMemberList());
+        List<String> userCodeFromWorkspaceUser = getUserCodeFromWorkspaceUser(userEntities);
+        unAuthFromUsers(userCodeFromWorkspaceUser, param.getId());
         //先删除该空间下所有成员
-        List<String> delList = workspaceUserService.queryMemberListByWorkspaceId(spaceId).stream().map(IcreditWorkspaceUserEntity::getId).collect(Collectors.toList());
         workspaceUserService.removeByIds(delList);
         for (int i = 0; i < param.getMemberList().size(); i++) {
             IcreditWorkspaceUserEntity newMember = getNewMember(param.getMemberList().get(i), entity);
@@ -232,14 +245,14 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             return;
         }
         Boolean hasExit = hasExit(request);
-        if (hasExit){
+        if (hasExit) {
             throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000006.getCode());
         }
     }
 
     private void updateByspaceId(IcreditWorkspaceEntity entity) {
         //先停用该空间下的所有数据源，再停用该空间
-        if (WorkspaceStatusEnum.OFF.getCode().equals(entity.getStatus())){
+        if (WorkspaceStatusEnum.OFF.getCode().equals(entity.getStatus())) {
             try {
                 datasourceFeignClient.offDatasourceFromWorkspace(entity.getId());
             } catch (Exception e) {
@@ -247,6 +260,98 @@ public class IcreditWorkspaceServiceImpl extends ServiceImpl<IcreditWorkspaceMap
             }
         }
         updateById(entity);
+    }
+
+    /**
+     * 对比空间用户新增情况
+     *
+     * @param oldMemberIds
+     * @param inputMembers
+     * @return
+     */
+    private List<WorkspaceMember> newUserList(List<String> oldMemberIds, List<WorkspaceMember> inputMembers) {
+        if (CollectionUtils.isEmpty(oldMemberIds)) {
+            return inputMembers;
+        }
+        List<WorkspaceMember> results = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(inputMembers)) {
+            results = inputMembers.stream()
+                    .filter(workspaceMember -> !oldMemberIds.contains(workspaceMember.getUserId()))
+                    .collect(Collectors.toList());
+        }
+        return results;
+    }
+
+    /**
+     * 对比空间用户移除情况
+     *
+     * @param oldMemberIds
+     * @param inputMembers
+     * @return
+     */
+    private List<IcreditWorkspaceUserEntity> removeUserList(List<IcreditWorkspaceUserEntity> oldMemberIds, List<WorkspaceMember> inputMembers) {
+        List<IcreditWorkspaceUserEntity> results = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(oldMemberIds)) {
+            return results;
+        }
+        if (!CollectionUtils.isEmpty(inputMembers)) {
+            List<String> collect = inputMembers.stream()
+                    .filter(Objects::nonNull)
+                    .map(WorkspaceMember::getUserId)
+                    .collect(Collectors.toList());
+            results = oldMemberIds.stream()
+                    .filter(oldMemberId -> !collect.contains(oldMemberId.getUserId()))
+                    .collect(Collectors.toList());
+        }
+        return results;
+    }
+
+    /**
+     * 给用户授权
+     *
+     * @param userCodes
+     * @return
+     */
+    private BusinessResult<Boolean> authToUsers(List<String> userCodes, String workspaceId) {
+        FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
+        feignUserAuthRequest.setUserCode(userCodes);
+        feignUserAuthRequest.setWorkspaceId(workspaceId);
+        return metadataFeign.auth(feignUserAuthRequest);
+    }
+
+    private List<String> getUserCode(List<WorkspaceMember> members) {
+        List<String> results = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(members)) {
+            results = members.stream()
+                    .filter(Objects::nonNull)
+                    .map(WorkspaceMember::getTenantCode)
+                    .collect(Collectors.toList());
+        }
+        return results;
+    }
+
+    private List<String> getUserCodeFromWorkspaceUser(List<IcreditWorkspaceUserEntity> userEntities) {
+        List<String> results = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(userEntities)) {
+            results = userEntities.stream()
+                    .filter(Objects::nonNull)
+                    .map(IcreditWorkspaceUserEntity::getTenantCode)
+                    .collect(Collectors.toList());
+        }
+        return results;
+    }
+
+    /**
+     * 移除用户权限
+     *
+     * @param userCodes
+     * @return
+     */
+    private BusinessResult<Boolean> unAuthFromUsers(List<String> userCodes, String workspaceId) {
+        FeignUserAuthRequest feignUserAuthRequest = new FeignUserAuthRequest();
+        feignUserAuthRequest.setUserCode(userCodes);
+        feignUserAuthRequest.setWorkspaceId(workspaceId);
+        return metadataFeign.unAuth(feignUserAuthRequest);
     }
 
     @Override
