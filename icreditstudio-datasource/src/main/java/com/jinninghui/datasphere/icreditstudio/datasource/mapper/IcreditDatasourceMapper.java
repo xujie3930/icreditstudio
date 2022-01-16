@@ -21,7 +21,7 @@ public interface IcreditDatasourceMapper extends BaseMapper<IcreditDatasourceEnt
 
     IcreditDatasourceEntity selectById(@Param("id") String id);
 
-    Boolean hasExit(DataSourceHasExistRequest request);
+    Boolean hasExit(@Param("request") DataSourceHasExistRequest request);
 
     List<IcreditDatasourceEntity> selectAll(@Param("spaceId")String spaceId, @Param("status") Integer status);
 

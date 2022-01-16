@@ -484,11 +484,11 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
             //创建宽表
             createWideTable(wideTableParam);
         } else {
-            if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
+//            if (TaskStatusEnum.ENABLE.getCode().equals(taskEntity.getEnable())) {
                 schedulerFeign.update(build);
-            } else {
-                schedulerFeign.updateDefinitionById(taskEntity.getVersion(), info.getCronParam().getCron(), scheduleId);
-            }
+//            } else {
+//                schedulerFeign.updateDefinitionById(taskEntity.getVersion(), info.getCronParam().getCron(), scheduleId);
+//            }
         }
         //判断是否是周期执行
         if (Objects.nonNull(taskEntity.getEnable())

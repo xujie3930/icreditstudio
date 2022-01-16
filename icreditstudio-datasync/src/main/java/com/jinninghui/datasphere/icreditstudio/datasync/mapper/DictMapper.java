@@ -21,5 +21,5 @@ public interface DictMapper extends BaseMapper<DictEntity> {
 
     boolean delById(@Param("delFlag") Integer delFlag, @Param("id") String id);
 
-    DictEntity findByName(@Param("chineseName") String chineseName);
+    DictEntity findByName(@Param("chineseName") String chineseName, @Param("workspaceId") String workspaceId, @Param("createUserId") String createUserId);
 }

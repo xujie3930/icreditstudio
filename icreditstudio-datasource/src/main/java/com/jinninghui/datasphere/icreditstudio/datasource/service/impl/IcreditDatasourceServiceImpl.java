@@ -92,6 +92,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     @Override
     @Transactional(rollbackFor = Exception.class)
     public BusinessResult<Boolean> saveDef(String userId, IcreditDatasourceSaveParam param) {
+        checkHasExistDataBaseName(new DataSourceHasExistRequest(param.getName(), null));
         IcreditDatasourceTestConnectRequest testConnectRequest = BeanCopyUtils.copyProperties(param, IcreditDatasourceTestConnectRequest.class);
         checkDatabase(testConnectRequest);
         IcreditDatasourceEntity defEntity = new IcreditDatasourceEntity();
@@ -102,6 +103,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             return BusinessResult.success(true);
         } else {
             return BusinessResult.fail("", "保存失败");
+        }
+    }
+
+    private void checkHasExistDataBaseName(DataSourceHasExistRequest request) {
+        Boolean hasExit = hasExit(request);
+        if (hasExit){
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000005.getCode());
         }
     }
 
@@ -424,9 +432,8 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
 
     @Override
-    public BusinessResult<Boolean> hasExit(DataSourceHasExistRequest request) {
-        boolean hasExit = BooleanUtils.isTrue(datasourceMapper.hasExit(request));
-        return BusinessResult.success(hasExit);
+    public Boolean hasExit(DataSourceHasExistRequest request) {
+        return BooleanUtils.isTrue(datasourceMapper.hasExit(request));
     }
 
     @Override
@@ -510,6 +517,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
 
     @Override
     public BusinessResult<Boolean> updateDef(String userId, IcreditDatasourceUpdateParam param) {
+        checkHasExistDataBaseName(new DataSourceHasExistRequest(param.getName(), param.getId()));
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         //若数据源发生改动，则需要判断uri是否正确
         if (StringUtils.isNotBlank(param.getUri())) {

@@ -15,6 +15,7 @@ public class ResourceCodeBean {
         RESOURCE_CODE_80000003("80000003", "默认工作空间不支持查询"),
         RESOURCE_CODE_80000004("80000004", "默认工作空间不支持修改"),
         RESOURCE_CODE_80000005("80000005", "该工作空间有启用的同步任务，请停用后再进行此操作"),
+        RESOURCE_CODE_80000006("80000006", "该工作空间名称已存在，请重新输入"),
         ;
 
         public final String code;
