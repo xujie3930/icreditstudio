@@ -84,6 +84,11 @@ router.beforeEach((to, from, next) => {
       next({ path: INDEX_MAIN_PAGE_PATH }) // TODO
       NProgress.done()
     } else if (!store.getters['user/permissionList'].length) {
+      console.log(
+        '%c user/permissionList=',
+        'color:red',
+        store.getters['user/permissionList']
+      )
       store
         .dispatch('user/getPermissionListAction')
         .then(async ({ menus, shortMenus }) => {
@@ -142,6 +147,7 @@ router.beforeEach((to, from, next) => {
               const redirect = decodeURIComponent(
                 from.query.redirect || to.path
               )
+              console.log('%c redirect=', 'color:red', redirect)
               // store.getters['user/userInfo'].firstLogin
               if (store.getters['user/userInfo'].firstLogin) {
                 next({ path: '/manage/changepassword' })
@@ -176,6 +182,7 @@ router.beforeEach((to, from, next) => {
       })
       NProgress.done()
     } else {
+      console.log('33333333')
       next()
     }
   } else if (whiteList.indexOf(to.path) !== -1) {

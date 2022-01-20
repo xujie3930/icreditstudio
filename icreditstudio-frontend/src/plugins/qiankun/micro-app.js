@@ -5,11 +5,13 @@
  */
 export default [
   {
-    name: '数据同步',
-    entry: '//localhost: 8888',
+    name: 'icreditstudio-data-sync',
+    entry: '//localhost:3333',
     activeRule: '/sub-app/data-sync/',
-    container: '#subapp'
-    // loader: '',
+    container: '#subapp-container',
+    loader: loading => {
+      console.log('loading', loading)
+    }
     // props: {}
   }
 ]

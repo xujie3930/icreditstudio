@@ -3,23 +3,19 @@
  * @Description: 乾坤全局的微应用生命周期钩子
  * @Date: 2022-01-10
  */
-
 // TODO Loading
 
 export default {
   beforeLoad: [
-    app => {
+    app =>
       console.log('[LifeCycle] before load %c%s', 'color: green;', app.name)
-    }
   ],
 
   beforeMount: [
-    app => {
+    app =>
       console.log('[LifeCycle] before mount %c%s', 'color: green;', app.name)
-    }
   ],
 
-  afterMount: app => {
+  afterMount: app =>
     console.log('[LifeCycle] before load %c%s', 'color: green;', app.name)
-  }
 }

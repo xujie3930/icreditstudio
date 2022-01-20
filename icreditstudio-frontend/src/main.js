@@ -1,9 +1,12 @@
+/*
+ * @Author: lizheng
+ * @Description:
+ * @Date: 2021-10-14
+ */
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-
-import bootstrap from './plugins/qiankun'
 
 import '@/config/config.mount.js'
 
@@ -45,6 +48,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
-
-// 启动微应用框架qiankun
-bootstrap()

@@ -5,9 +5,11 @@ import Main from '../components/layouts/LayoutMain'
  * @type {{redirect: string, path: string, hidden: boolean}[]}
  */
 export const asyncRouter = [
-  {
-    path: '*', redirect: '/404', hidden: true
-  }
+  // {
+  //   path: '*',
+  //   redirect: '/404',
+  //   hidden: true
+  // }
 ]
 
 /**
@@ -18,7 +20,8 @@ export const constantRouter = [
   {
     path: '/login',
     name: 'login',
-    component: () => import(/* webpackChunkName: "login" */ '@/views/user/Login'),
+    component: () =>
+      import(/* webpackChunkName: "login" */ '@/views/user/Login'),
     hidden: true
   },
   {
@@ -41,9 +44,10 @@ export const constantRouter = [
         }
       }
     ]
-  },
-  {
-    path: '/404',
-    component: () => import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
+  // {
+  //   path: '/404',
+  //   component: () =>
+  //     import(/* webpackChunkName: "fail" */ '@/views/exception/404')
+  // }
 ]
