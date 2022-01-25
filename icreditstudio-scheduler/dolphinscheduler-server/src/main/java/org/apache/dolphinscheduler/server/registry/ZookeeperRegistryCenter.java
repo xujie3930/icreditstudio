@@ -62,6 +62,12 @@ public class ZookeeperRegistryCenter implements InitializingBean {
      */
     public String WORKER_PATH;
 
+    //状态回写监听 路径
+    public String LISTEN_PATH_FOR_TASK_STATUS;
+    //datax同步记录数、同步字节数、fileName 回写路径
+    public String DATAX_PATH_FOR_TASK_INSTANCE;
+    public String DATAX_PATH_FOR_PROCESS_INSTANCE;
+
     public final String EMPTY = "";
 
     private IStoppable stoppable;
@@ -71,6 +77,10 @@ public class ZookeeperRegistryCenter implements InitializingBean {
         NODES = zookeeperConfig.getDsRoot() + "/nodes";
         MASTER_PATH = NODES + "/master";
         WORKER_PATH = NODES + "/worker";
+        LISTEN_PATH_FOR_TASK_STATUS = zookeeperConfig.getDsRoot() + "/task/status";
+        DATAX_PATH_FOR_TASK_INSTANCE = zookeeperConfig.getTaskInstanceWriteBackPath();
+        DATAX_PATH_FOR_PROCESS_INSTANCE = zookeeperConfig.getProcessInstanceWriteBackPath();
+
 
         init();
     }
@@ -90,6 +100,9 @@ public class ZookeeperRegistryCenter implements InitializingBean {
     private void initNodes() {
         registerOperator.persist(MASTER_PATH, EMPTY);
         registerOperator.persist(WORKER_PATH, EMPTY);
+        registerOperator.persist(LISTEN_PATH_FOR_TASK_STATUS, EMPTY);
+        registerOperator.persist(DATAX_PATH_FOR_TASK_INSTANCE, EMPTY);
+        registerOperator.persist(DATAX_PATH_FOR_PROCESS_INSTANCE, EMPTY);
     }
 
     /**
@@ -117,6 +130,10 @@ public class ZookeeperRegistryCenter implements InitializingBean {
      */
     public String getWorkerPath() {
         return WORKER_PATH;
+    }
+
+    public String getTaskListenPath() {
+        return LISTEN_PATH_FOR_TASK_STATUS;
     }
 
     /**

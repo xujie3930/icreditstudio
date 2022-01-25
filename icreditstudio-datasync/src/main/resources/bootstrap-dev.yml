@@ -40,3 +40,13 @@ ribbon:
   ReadTimeout: 500000
   SocketTimeout: 500000
   ConnectTimeout: 500000
+
+zookeeper:
+  connectString: 192.168.0.30:2181
+  maxRetries: 3
+  connectionTimeoutMs: 3000
+  sessionTimeoutMs: 3000
+  baseSleepTimeMs: 1000
+
+task:
+  writeBackPath: /icredit_studio/task/status

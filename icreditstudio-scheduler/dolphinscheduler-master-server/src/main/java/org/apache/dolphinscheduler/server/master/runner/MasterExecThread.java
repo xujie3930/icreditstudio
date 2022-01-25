@@ -18,9 +18,11 @@ package org.apache.dolphinscheduler.server.master.runner;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import org.apache.curator.framework.CuratorFramework;
 import org.apache.dolphinscheduler.common.Constants;
 import org.apache.dolphinscheduler.common.enums.*;
 import org.apache.dolphinscheduler.common.graph.DAG;
+import org.apache.dolphinscheduler.common.model.TaskCallBackModel;
 import org.apache.dolphinscheduler.common.model.TaskNode;
 import org.apache.dolphinscheduler.common.model.TaskNodeRelation;
 import org.apache.dolphinscheduler.common.process.ProcessDag;
@@ -33,6 +35,7 @@ import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.dao.utils.DagHelper;
 import org.apache.dolphinscheduler.remote.NettyRemotingClient;
 import org.apache.dolphinscheduler.server.master.config.MasterConfig;
+import org.apache.dolphinscheduler.server.registry.ZookeeperRegistryCenter;
 import org.apache.dolphinscheduler.server.utils.AlertManager;
 import org.apache.dolphinscheduler.service.bean.SpringApplicationContext;
 import org.apache.dolphinscheduler.service.process.ProcessService;
@@ -142,6 +145,9 @@ public class MasterExecThread implements Runnable {
      */
     private NettyRemotingClient nettyRemotingClient;
 
+    private ZookeeperRegistryCenter zookeeperRegistryCenter;
+    private CuratorFramework zkClient;
+
     /**
      * constructor of MasterExecThread
      *
@@ -158,6 +164,8 @@ public class MasterExecThread implements Runnable {
         this.taskExecService = ThreadUtils.newDaemonFixedThreadExecutor("Master-Task-Exec-Thread",
                 masterTaskExecNum);
         this.nettyRemotingClient = nettyRemotingClient;
+        this.zookeeperRegistryCenter = SpringApplicationContext.getBean(ZookeeperRegistryCenter.class);
+        this.zkClient = zookeeperRegistryCenter.getRegisterOperator().getZkClient();
     }
 
     @Override
@@ -326,7 +334,13 @@ public class MasterExecThread implements Runnable {
     private void endProcess() {
         processInstance.setEndTime(new Date());
         processService.updateProcessInstance(processInstance);
-        processService.updateTaskByScheduleId(processInstance.getProcessDefinitionId(), processInstance.getState().getCode(), processInstance.getStartTime());
+        TaskCallBackModel model = new TaskCallBackModel(processInstance.getProcessDefinitionId(), 7 == processInstance.getState().getCode() ? 0 : 1, processInstance.getStartTime());
+        try {
+            this.zkClient.setData().forPath(zookeeperRegistryCenter.getTaskListenPath(), JSON.toJSONString(model).getBytes());
+        } catch (Exception e) {
+            logger.info("task状态回写失败");
+            e.printStackTrace();
+        }
         if (processInstance.getState().typeIsWaitingThread()) {
             processService.createRecoveryWaitingThreadCommand(null, processInstance);
         }

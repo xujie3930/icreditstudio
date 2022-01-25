@@ -126,4 +126,8 @@
     <update id="updateExecStatusByScheduleId">
         UPDATE icredit_sync_task SET exec_status = #{execState} WHERE schedule_id = #{scheduleId}
     </update>
+
+    <update id="taskWriteBack" parameterType="com.jinninghui.datasphere.icreditstudio.datasync.model.TaskCallBackModel">
+        UPDATE icredit_sync_task SET exec_status = #{taskStatus},last_scheduling_time = #{execTime} WHERE schedule_id = #{processDefinitionId}
+    </update>
 </mapper>

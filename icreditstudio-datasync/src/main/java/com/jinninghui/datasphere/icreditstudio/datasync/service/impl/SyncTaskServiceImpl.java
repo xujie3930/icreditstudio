@@ -33,6 +33,7 @@ import com.jinninghui.datasphere.icreditstudio.datasync.feign.request.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.CreatePlatformTaskResult;
 import com.jinninghui.datasphere.icreditstudio.datasync.feign.result.WarehouseInfo;
 import com.jinninghui.datasphere.icreditstudio.datasync.mapper.SyncTaskMapper;
+import com.jinninghui.datasphere.icreditstudio.datasync.model.TaskCallBackModel;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.increment.IncrementUtil;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
@@ -1443,5 +1444,10 @@ public class SyncTaskServiceImpl extends ServiceImpl<SyncTaskMapper, SyncTaskEnt
     public BusinessResult<List<DictInfo>> getDictColumnsByDictIds(Set<String> ids) {
         List<DictInfo> dictInfos = findDictInfos(ids);
         return BusinessResult.success(dictInfos);
+    }
+
+    @Override
+    public void taskWriteBack(TaskCallBackModel model) {
+        syncTaskMapper.taskWriteBack(model);
     }
 }

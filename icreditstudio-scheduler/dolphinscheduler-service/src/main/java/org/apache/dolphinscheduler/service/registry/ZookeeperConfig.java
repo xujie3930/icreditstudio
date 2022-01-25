@@ -51,8 +51,14 @@ public class ZookeeperConfig {
     @Value("${zookeeper.connection.digest: }")
     private String digest;
 
-    @Value("${zookeeper.dolphinscheduler.root:/dolphinscheduler}")
+    @Value("${zookeeper.dolphinscheduler.root:/icredit_studio}")
     private String dsRoot;
+
+    @Value("${zk.taskInstance.writeBack.path:/icredit_studio/task/instance}")
+    private String taskInstanceWriteBackPath;
+
+    @Value("${zk.processInstance.writeBack.path:/icredit_studio/process/instance}")
+    private String processInstanceWriteBackPath;
 
     @Value("${zookeeper.max.wait.time:10000}")
     private int maxWaitTime;

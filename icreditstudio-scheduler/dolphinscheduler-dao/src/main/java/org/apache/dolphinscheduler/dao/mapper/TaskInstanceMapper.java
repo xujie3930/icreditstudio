@@ -92,4 +92,6 @@ public interface TaskInstanceMapper extends BaseMapper<TaskInstance> {
     void updateScanStateById(@Param("id") String id, @Param("scanState")Integer scanState);
 
     Long countByWorkspaceIdAndTime(@Param("workspaceId")String workspaceId, @Param("userId")String userId, @Param("startTime")Date startTime, @Param("endTime")Date endTime, @Param("states") int[] statusArray);
+
+    void setTotalRecordAndBytesById(@Param("taskInstanceId") String taskInstanceId, @Param("writeSucceedRecords") Long writeSucceedRecords, @Param("writeSucceedBytes") Long writeSucceedBytes);
 }

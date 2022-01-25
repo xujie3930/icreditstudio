@@ -59,6 +59,7 @@ public class ZookeeperOperator implements InitializingBean {
         this.zkClient = buildClient();
         initStateListener();
         treeCacheStart();
+        nodeCacheStart();
     }
 
     /**
@@ -67,6 +68,8 @@ public class ZookeeperOperator implements InitializingBean {
     protected void registerListener(){}
 
     protected void treeCacheStart(){}
+
+    protected void nodeCacheStart(){}
 
     public void initStateListener() {
         checkNotNull(zkClient);

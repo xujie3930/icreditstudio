@@ -214,4 +214,6 @@ public interface ProcessInstanceMapper extends BaseMapper<ProcessInstance> {
     void deleteByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 
     ProcessInstance getLastInstanceByDefinitionId(@Param("processDefinitionId") String processDefinitionId);
+
+    void setFileNameById(@Param("processInstanceId") String processInstanceId, @Param("fileName") String fileName);
 }

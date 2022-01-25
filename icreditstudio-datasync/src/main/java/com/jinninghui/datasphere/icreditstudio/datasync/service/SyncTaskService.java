@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jinninghui.datasphere.icreditstudio.datasync.container.vo.Associated;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.model.TaskCallBackModel;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.*;
 import com.jinninghui.datasphere.icreditstudio.framework.result.BusinessPageResult;
@@ -173,4 +174,6 @@ public interface SyncTaskService extends IService<SyncTaskEntity> {
      * @return
      */
     BusinessResult<List<DictInfo>> getDictColumnsByDictIds(Set<String> ids);
+
+    void taskWriteBack(TaskCallBackModel model);
 }

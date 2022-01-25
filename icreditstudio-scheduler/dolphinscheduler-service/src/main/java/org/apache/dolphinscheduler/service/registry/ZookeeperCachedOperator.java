@@ -16,11 +16,12 @@
  */
 package org.apache.dolphinscheduler.service.registry;
 
+import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.recipes.cache.ChildData;
-import org.apache.curator.framework.recipes.cache.TreeCache;
-import org.apache.curator.framework.recipes.cache.TreeCacheEvent;
-import org.apache.curator.framework.recipes.cache.TreeCacheListener;
+import org.apache.curator.framework.recipes.cache.*;
+import org.apache.dolphinscheduler.service.model.ProcessInstanceWriteBackModel;
+import org.apache.dolphinscheduler.service.model.TaskInstanceWriteBackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,12 +35,39 @@ public class ZookeeperCachedOperator extends ZookeeperOperator {
 
 
     private TreeCache treeCache;
+    private NodeCache taskNodeCache;
+    private NodeCache processNodeCache;
 
     /**
      * register a unified listener of /${dsRoot},
      */
     @Override
     protected void registerListener() {
+        NodeCacheListener processListener = new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                ChildData childData = processNodeCache.getCurrentData();
+                String processInstanceWriteBackStr = new String(childData.getData(), "Utf-8");
+                ProcessInstanceWriteBackModel processModel = JSONObject.parseObject(processInstanceWriteBackStr, ProcessInstanceWriteBackModel.class);
+                if(null != processModel && !StringUtils.isEmpty(processModel.getProcessInstanceId()) && !StringUtils.isEmpty(processModel.getFileName())){
+                    handleProcessModel(processModel);
+                }
+            }
+        };
+        processNodeCache.getListenable().addListener(processListener);
+
+        NodeCacheListener taskListener = new NodeCacheListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                ChildData childData = taskNodeCache.getCurrentData();
+                String taskInstanceWriteBackStr = new String(childData.getData(), "Utf-8");
+                TaskInstanceWriteBackModel taskModel = JSONObject.parseObject(taskInstanceWriteBackStr, TaskInstanceWriteBackModel.class);
+                if(null != taskModel && !StringUtils.isEmpty(taskModel.getTaskInstanceId())){
+                    handleTaskModel(taskModel);
+                }
+            }
+        };
+        taskNodeCache.getListenable().addListener(taskListener);
 
         treeCache.getListenable().addListener((client, event) -> {
             String path = null == event.getData() ? "" : event.getData().getPath();
@@ -62,9 +90,25 @@ public class ZookeeperCachedOperator extends ZookeeperOperator {
         }
     }
 
-    //for sub class
-    protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {
+    @Override
+    protected void nodeCacheStart() {
+        processNodeCache = new NodeCache(zkClient, getZookeeperConfig().getProcessInstanceWriteBackPath());
+        logger.info("add listener to zk path: {}", getZookeeperConfig().getProcessInstanceWriteBackPath());
+        taskNodeCache = new NodeCache(zkClient, getZookeeperConfig().getTaskInstanceWriteBackPath());
+        logger.info("add listener to zk path: {}", getZookeeperConfig().getTaskInstanceWriteBackPath());
+        try {
+            processNodeCache.start();
+            taskNodeCache.start();
+        } catch (Exception e) {
+            logger.error("add listener to zk path: {} failed", getZookeeperConfig().getProcessInstanceWriteBackPath() + "," + getZookeeperConfig().getTaskInstanceWriteBackPath());
+            throw new RuntimeException(e);
+        }
     }
+
+    //for sub class
+    protected void dataChanged(final CuratorFramework client, final TreeCacheEvent event, final String path) {}
+    protected void handleProcessModel(ProcessInstanceWriteBackModel processModel) {}
+    protected void handleTaskModel(TaskInstanceWriteBackModel taskModel) {}
 
     public String getFromCache(final String cachePath, final String key) {
         ChildData resultInCache = treeCache.getCurrentData(key);

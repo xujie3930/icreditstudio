@@ -52,9 +52,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.*;
 import java.util.Date;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -84,26 +81,6 @@ public class ProcessService {
             ExecutionStatus.RUNNING_EXECUTION.ordinal(),
             ExecutionStatus.READY_PAUSE.ordinal(),
             ExecutionStatus.READY_STOP.ordinal()};
-
-    private String driverStr;
-    private String mysqlUrl;
-    private String pwd;
-    private String userName;
-    private String statusBackWritSql = "update icredit_sync_task set exec_status = ?,last_scheduling_time = ? where schedule_id = ?";
-
-    {
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream("task.properties");
-        try {
-            Properties properties = new Properties();
-            properties.load(in);
-            this.driverStr = properties.getProperty("task.datasource.driver-class-name");
-            this.mysqlUrl = properties.getProperty("task.datasource.url");
-            this.pwd = properties.getProperty("task.datasource.password");
-            this.userName = properties.getProperty("task.datasource.username");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Resource
     private ProcessDefinitionMapper processDefineMapper;
@@ -1309,48 +1286,6 @@ public class ProcessService {
         return Constants.DEFAULT_WORKER_GROUP;
     }
 
-    public void updateTaskByScheduleId(String processDefinitionId, int state, Date nowDate) {
-        Connection con = getConnection();
-        try {
-            PreparedStatement pstmt = con.prepareStatement(this.statusBackWritSql);
-            int status = (7 == state) ? 0 : 1;
-            pstmt.setInt(1, status);
-            pstmt.setTimestamp(2, new Timestamp(nowDate.getTime()));
-            pstmt.setString(3, processDefinitionId);
-            pstmt.execute();
-            StringBuffer logInfo = new StringBuffer();
-            logInfo.append("sql: ").append(statusBackWritSql).append(",status: ").append(status).append(",execTime: ").append(DateUtils.format(nowDate, "yyyy-MM-dd HH:mm:ss"))
-                    .append(",processDefinitionId: ").append(processDefinitionId);
-            logger.info(String.valueOf(logInfo));
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            closeConn(con);
-        }
-    }
-
-    private Connection getConnection() {
-        try {
-            Class.forName(this.driverStr);
-            return DriverManager.getConnection(this.mysqlUrl, this.userName, this.pwd);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private void closeConn(Connection con) {
-        if (null != con) {
-            try {
-                con.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     public ProcessInstance getLastInstanceByDefinitionId(String definitionId) {
         return processInstanceMapper.getLastInstanceByDefinitionId(definitionId);
     }
@@ -1432,6 +1367,14 @@ public class ProcessService {
         content.set(path, newValue);
         from.set(TASK_PARAM_JSON, content.toJSON());
         return from;
+    }
+
+    public void setFileNameById(String processInstanceId, String fileName) {
+        processInstanceMapper.setFileNameById(processInstanceId, fileName);
+    }
+
+    public void setTotalRecordAndBytesById(String taskInstanceId, Long writeSucceedRecords, Long writeSucceedBytes) {
+        taskInstanceMapper.setTotalRecordAndBytesById(taskInstanceId, writeSucceedRecords, writeSucceedBytes);
     }
 
 }

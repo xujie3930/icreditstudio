@@ -192,10 +192,14 @@
     </delete>
 
     <select id="getLastInstanceByDefinitionId" resultType="org.apache.dolphinscheduler.dao.entity.ProcessInstance">
-        select *
+        SELECT *
         FROM t_ds_process_instance
         WHERE process_definition_id = #{processDefinitionId}
         ORDER BY command_start_time DESC
         LIMIT 1
     </select>
+
+    <update id="setFileNameById">
+        UPDATE t_ds_process_instance SET file_name = #{fileName} WHERE id = #{processInstanceId}
+    </update>
 </mapper>

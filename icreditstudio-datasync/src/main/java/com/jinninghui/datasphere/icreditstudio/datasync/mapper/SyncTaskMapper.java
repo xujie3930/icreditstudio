@@ -3,6 +3,7 @@ package com.jinninghui.datasphere.icreditstudio.datasync.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.jinninghui.datasphere.icreditstudio.datasync.dto.DataSyncDispatchTaskPageDTO;
 import com.jinninghui.datasphere.icreditstudio.datasync.entity.SyncTaskEntity;
+import com.jinninghui.datasphere.icreditstudio.datasync.model.TaskCallBackModel;
 import com.jinninghui.datasphere.icreditstudio.datasync.service.result.DataSyncDispatchTaskPageResult;
 import org.apache.ibatis.annotations.Param;
 import org.mapstruct.Mapper;
@@ -25,4 +26,7 @@ public interface SyncTaskMapper extends BaseMapper<SyncTaskEntity> {
     String getDatasourceId(@Param("taskId") String taskId);
 
     void updateExecStatusByScheduleId(@Param("scheduleId") String scheduleId, @Param("execState") int execState);
+
+    void taskWriteBack(TaskCallBackModel model);
+
 }

@@ -268,4 +268,8 @@
             and  t.workspace_id = #{workspaceId} and t.scan_state = 0
         </where>
     </select>
+
+    <update id="setTotalRecordAndBytesById">
+        UPDATE t_ds_task_instance SET total_records = #{writeSucceedRecords},total_bytes = #{writeSucceedBytes} WHERE id = #{taskInstanceId}
+    </update>
 </mapper>

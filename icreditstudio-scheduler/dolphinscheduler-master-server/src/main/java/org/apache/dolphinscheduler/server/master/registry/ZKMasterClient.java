@@ -33,6 +33,8 @@ import org.apache.dolphinscheduler.dao.entity.TaskInstance;
 import org.apache.dolphinscheduler.server.builder.TaskExecutionContextBuilder;
 import org.apache.dolphinscheduler.server.entity.TaskExecutionContext;
 import org.apache.dolphinscheduler.server.utils.ProcessUtils;
+import org.apache.dolphinscheduler.service.model.ProcessInstanceWriteBackModel;
+import org.apache.dolphinscheduler.service.model.TaskInstanceWriteBackModel;
 import org.apache.dolphinscheduler.service.process.ProcessService;
 import org.apache.dolphinscheduler.service.registry.AbstractZKClient;
 import org.slf4j.Logger;
@@ -128,6 +130,16 @@ public class ZKMasterClient extends AbstractZKClient {
             //monitor worker
             handleWorkerEvent(event, path);
         }
+    }
+
+    @Override
+    protected void handleProcessModel(ProcessInstanceWriteBackModel processModel) {
+        processService.setFileNameById(processModel.getProcessInstanceId(), processModel.getFileName());
+    }
+
+    @Override
+    protected void handleTaskModel(TaskInstanceWriteBackModel taskModel) {
+        processService.setTotalRecordAndBytesById(taskModel.getTaskInstanceId(), taskModel.getWriteSucceedRecords(), taskModel.getWriteSucceedBytes());
     }
 
     /**
