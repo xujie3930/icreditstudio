@@ -60,9 +60,6 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String requestURI = FinalAuthFilter.getUri(uri);
         // 获取请求的方法,POST，GET等
         String method = serverHttpRequest.getMethod().name();
-        if (RequestMethod.OPTIONS.name().equalsIgnoreCase(method)) {
-            chain.filter(exchange);
-        }
         // 获取cookie集合
         MultiValueMap<String, HttpCookie> cookies = serverHttpRequest.getCookies();
         // 根据uri和方法，判断请求是否需要鉴权
