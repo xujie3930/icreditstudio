@@ -41,7 +41,8 @@ const getters = {
   shortMenus: state => state.shortMenus,
   workspaceList: state => state.workspaceList,
   workspaceCreateAuth: state => state.workspaceCreateAuth,
-  workspaceId: state => state.workspaceId
+  workspaceId: state => state.workspaceId,
+  token: state => state.token
 }
 
 const mutations = {

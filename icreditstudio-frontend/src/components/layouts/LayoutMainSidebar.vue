@@ -121,10 +121,14 @@ export default {
   },
 
   watch: {
-    $route: {
+    '$route.path': {
       immediate: true,
-      handler(nRoute) {
-        this.defalutActived = nRoute.path
+      handler(path) {
+        console.log(path, 'path')
+        this.defalutActived =
+          path && path.includes('/sub-app/data-sync/')
+            ? '/sub-app/data-sync/index'
+            : path
       }
     }
   },

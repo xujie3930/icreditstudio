@@ -1,7 +1,13 @@
+/*
+ * @Author: lizheng
+ * @Description:
+ * @Date: 2021-10-14
+ */
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+
 import '@/config/config.mount.js'
 
 import JUI from '@jnh/icredit-ui'

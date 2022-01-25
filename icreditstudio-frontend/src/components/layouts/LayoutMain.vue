@@ -198,12 +198,16 @@ export default {
           ? children[0].children.filter(item => item.isShow && !item.deleteFlag)
           : []
 
-        this.$router.push(
-          exitShowChild.length ? exitShowChild[0].url : children[0].url
-        )
+        const url = exitShowChild.length
+          ? exitShowChild[0].url
+          : children[0].url
+
+        this.$router.push(url)
+        history.pushState(null, '', url)
       } else {
         this.getChildMenus(childMenu)
         this.$router.push(childMenu.url)
+        history.pushState(null, '', childMenu.url)
       }
 
       // 当前页面参数缓存， 以防刷新跳到首页

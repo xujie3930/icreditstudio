@@ -95,17 +95,6 @@ export function generateIndexRouter(data) {
     }
   }
   return [
-    // {
-    //   path: '/',
-    //   name: 'defaultHome',
-    //   component: resolve => require(['@/components/layouts/LayoutMain'], resolve),
-    //   meta: { title: '测试' },
-    //   redirect: data[0].path,
-    //   children: [
-    //     ...generateChildRouters(data)
-    //   ]
-    // },
-    // ...generateChildRouters(_data),
     {
       path: '/',
       name: 'layoutMain',
@@ -114,7 +103,11 @@ export function generateIndexRouter(data) {
       children: [...tilePathData]
     },
     {
-      path: '*',
+      path: '/404',
+      hidden: true
+    },
+    {
+      path: '/*',
       redirect: '/404',
       hidden: true
     }
@@ -122,18 +115,11 @@ export function generateIndexRouter(data) {
 }
 
 // 生成嵌套路由（子路由）
-
 function generateChildRouters(data) {
   const routers = []
   for (const item of data) {
     let component = ''
     component = `views/${item.filePath}`
-    // eslint-disable-next-line
-    // let URL = (item.meta.url || '').replace(/{{([^}}]+)?}}/g, (s1, s2) => eval(s2)) // URL支持{{ window.xxx }}占位符变量
-    // if (isURL(URL)) {
-    //   item.meta.url = URL
-    // }
-    // const componentPath = resolve => require([`@/${component}.vue`], resolve)
     const menu = {
       path: item.url,
       name: item.name,

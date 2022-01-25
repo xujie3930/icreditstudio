@@ -1,3 +1,8 @@
+/*
+ * @Author: lizheng
+ * @Description: 路由入口
+ * @Date: 2021-10-14
+ */
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { constantRouter } from '@/router/constant-route.js'

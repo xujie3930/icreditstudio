@@ -97,6 +97,10 @@ module.exports = {
           '^/api': ''
         }
       }
+    },
+
+    headers: {
+      'Access-Control-Allow-Origin': '*'
     }
   }
 }
