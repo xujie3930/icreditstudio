@@ -65,6 +65,7 @@ service.interceptors.request.use(
     const _type = _config.method === 'get' ? 'params' : 'data'
     // 添加时间戳和应用id
     if (!(_config[_type] instanceof FormData)) {
+      console.log(config, 'figfig')
       _config[_type] = {
         ...handleTrim(_config[_type]),
         _t: new Date().getTime(),

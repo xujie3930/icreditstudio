@@ -103,11 +103,6 @@ export function generateIndexRouter(data) {
       children: [...tilePathData]
     },
     {
-      path: '/sub-app/*',
-      name: 'subApp',
-      component: () => import('@/views/sub-app')
-    },
-    {
       path: '/404',
       hidden: true
     },
@@ -123,7 +118,6 @@ export function generateIndexRouter(data) {
 function generateChildRouters(data) {
   const routers = []
   for (const item of data) {
-    console.log(item, 'item')
     let component = ''
     component = `views/${item.filePath}`
     const menu = {

@@ -1,3 +1,9 @@
+/*
+ * @Author: lizheng
+ * @Description: 前端定义静态路由参数
+ * @Date: 2021-10-14
+ */
+// import mincroAppRouters from './micro-app-routers'
 import Main from '../components/layouts/LayoutMain'
 
 /**
@@ -5,11 +11,11 @@ import Main from '../components/layouts/LayoutMain'
  * @type {{redirect: string, path: string, hidden: boolean}[]}
  */
 export const asyncRouter = [
-  // {
-  //   path: '*',
-  //   redirect: '/404',
-  //   hidden: true
-  // }
+  {
+    path: '*',
+    redirect: '/404',
+    hidden: true
+  }
 ]
 
 /**
@@ -42,12 +48,18 @@ export const constantRouter = [
           affix: true,
           name: '首页'
         }
+      },
+      {
+        path: '/subapp/**',
+        name: 'subApp',
+        component: () => import('@/views/sub-app')
       }
     ]
+  },
+  // ...mincroAppRouters,
+  {
+    path: '/404',
+    component: () =>
+      import(/* webpackChunkName: "fail" */ '@/views/exception/404')
   }
-  // {
-  //   path: '/404',
-  //   component: () =>
-  //     import(/* webpackChunkName: "fail" */ '@/views/exception/404')
-  // }
 ]

@@ -9,10 +9,10 @@ import {
   start
 } from 'qiankun'
 import microApp from './micro-app'
-import LifeCycles from './life-cycles'
+import lifeCycles from './life-cycles'
 
 // 注册子应用
-registerMicroApps(microApp, LifeCycles)
+registerMicroApps(microApp, lifeCycles)
 
 // 捕获异常
 addGlobalUncaughtErrorHandler(evt => {
