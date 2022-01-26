@@ -3,6 +3,7 @@ export const ACCESS_TOKEN = 'Access-Token'
 export const INDEX_MAIN_PAGE_PATH = '/'
 export const COMMON_TOGGLE_COLLAPSE = 'COMMON_TOGGLE_COLLAPSE'
 export const COMMON_TOGGLE_HEADER_COLLAPSE = 'COMMON_TOGGLE_HEADER_COLLAPSE'
+export const SET_LOAD_SUBAPP_STATE = 'SET_LOAD_SUBAPP_STATE'
 
 /* user */
 export const SET_TOKEN = 'SET_TOKEN'

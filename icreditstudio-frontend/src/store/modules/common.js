@@ -1,19 +1,22 @@
 import {
   COMMON_TOGGLE_COLLAPSE,
   SET_COPYRIGHT,
-  COMMON_TOGGLE_HEADER_COLLAPSE
+  COMMON_TOGGLE_HEADER_COLLAPSE,
+  SET_LOAD_SUBAPP_STATE
 } from '@/store/mutation-types'
 
 const states = () => ({
   isHeaderCollapse: false,
   isCollapse: false,
-  copyright: ''
+  copyright: '',
+  loadSubAppState: true // 加载子应用
 })
 
 const getters = {
   isHeaderCollapse: state => state.isHeaderCollapse,
   isCollapse: state => state.isCollapse,
-  copyright: state => state.copyright
+  copyright: state => state.copyright,
+  loadSubAppState: state => state.loadSubAppState
 }
 
 const mutations = {
@@ -27,6 +30,10 @@ const mutations = {
 
   [SET_COPYRIGHT](state, value) {
     state.copyright = value
+  },
+
+  [SET_LOAD_SUBAPP_STATE](state, loading) {
+    state.loadSubAppState = loading
   }
 }
 
