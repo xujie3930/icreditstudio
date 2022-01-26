@@ -23,6 +23,7 @@ import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDatasou
 import com.jinninghui.datasphere.icreditstudio.datasource.service.IcreditDdlSyncService;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceFactory;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.DatasourceSync;
+import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.ColumnSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.factory.pojo.TableSyncInfo;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.param.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.result.ConnectionInfo;
@@ -84,10 +85,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     private SequenceService sequenceService;
     @Autowired
     private SystemFeignClient systemFeignClient;
-    @Autowired
-    private UserWorkspaceFeignClient userWorkspaceFeignClient;
-    @Autowired
-    private DatasyncFeignClient datasyncFeignClient;
+//    @Autowired
+//    private UserWorkspaceFeignClient userWorkspaceFeignClient;
+//    @Autowired
+//    private DatasyncFeignClient datasyncFeignClient;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -144,13 +145,14 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 log.info("当前用户为管理员，拥有全部空间权限");
                 userId = "";
             }
-            BusinessResult<List<Map<String, String>>> workspaceList = userWorkspaceFeignClient.getWorkspaceListByUserId(userId);
-            List<Map<String, String>> data = workspaceList.getData();
-            List<String> list = new ArrayList<>();
-            for (Map<String, String> map : data) {
-                list.add(map.get("id"));
-            }
-            wrapper.in(IcreditDatasourceEntity.SPACE_ID, list);
+//            BusinessResult<List<Map<String, String>>> workspaceList = userWorkspaceFeignClient.getWorkspaceListByUserId(userId);
+//            if (workspaceList.isSuccess() && CollectionUtils.isNotEmpty(workspaceList.getData())){
+//                List<String> list = new ArrayList<>();
+//                workspaceList.getData().stream().forEach(map -> {
+//                    list.add(map.get("id"));
+//                });
+//                wrapper.in(IcreditDatasourceEntity.SPACE_ID, list);
+//            }
         }
         if (StringUtils.isNotBlank(pageRequest.getName())) {
             wrapper.like(IcreditDatasourceEntity.NAME, pageRequest.getName());
@@ -212,13 +214,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             //获取旧数据,无旧数据则新增，旧数据与新数据不同，更新表结构字段且版本号+1
             IcreditDdlSyncEntity oldEntity = ddlSyncMapper.selectMaxVersionByDatasourceId(dataEntity.getId());
             if (oldEntity == null) {
-                extracted(map, key, ddlEntity);
+                saveOrUpdateDatasourceDDL(map, key, ddlEntity);
                 result = getResult(null, map.get(DatasourceSync.DATASOURCEINFO));
             } else {
                 String oldColumnsInfo = HDFSUtils.getStringFromHDFS(oldEntity.getColumnsInfo());
                 if (!oldColumnsInfo.equals(map.get(DatasourceSync.DATASOURCEINFO))) {
                     ddlEntity.setVersion(oldEntity.getVersion() + 1);
-                    extracted(map, key, ddlEntity);
+                    saveOrUpdateDatasourceDDL(map, key, ddlEntity);
                     result = getResult(oldColumnsInfo, map.get(DatasourceSync.DATASOURCEINFO));
                 }
             }
@@ -250,6 +252,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         Integer del = 0;
         Integer delCloumns = 0;
         Integer update = 0;
+        Integer updateCloumns = 0;
         if (StringUtils.isBlank(oldColumnsInfo)) {
             newStructure = JSON.parseArray(datasourceInfo, TableSyncInfo.class);
             for (TableSyncInfo tableSyncInfo : newStructure) {
@@ -265,6 +268,15 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             if (newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()) &&
                     !CollectionUtils.isEqualCollection(n.getColumnList(), tableSyncInfo.getColumnList()))) {
                 update++;
+                //根据表名，比较新旧记录更新的字段数量
+                List<ColumnSyncInfo> oldColumns = tableSyncInfo.getColumnList();
+                List<ColumnSyncInfo> newColumns= newStructure.parallelStream().filter(n -> n.getTableName().equals(tableSyncInfo.getTableName())).findAny().get().getColumnList();
+                //两个集合不同数量即为更新字段的数量
+                int newSize = newColumns.size();
+                //新旧数据的交集
+                newColumns.retainAll(oldColumns);
+                int retainSize = newColumns.size();
+                updateCloumns = newSize - retainSize;
             } else if (!newStructure.parallelStream().anyMatch(n -> n.getTableName().equals(tableSyncInfo.getTableName()))) {
                 del++;
                 delCloumns += tableSyncInfo.getColumnList().size();
@@ -283,10 +295,13 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         if (del > 0 && delCloumns > 0) {
             builder.append(String.format(",删除 %s 张表,共 %s 个字段", del, delCloumns));
         }
+        if (update > 0 && updateCloumns > 0) {
+            builder.append(String.format(",更新 %s 张表,共 %s 个字段", update, updateCloumns));
+        }
         return builder.toString();
     }
 
-    private void extracted(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
+    private void saveOrUpdateDatasourceDDL(Map<String, String> map, String key, IcreditDdlSyncEntity ddlEntity) throws Exception {
         String hdfsPath = HDFSUtils.copyStringToHDFS(map.get(DatasourceSync.DATASOURCEINFO), key);
         ddlEntity.setColumnsInfo(hdfsPath);
         ddlSyncMapper.insert(ddlEntity);
@@ -558,10 +573,10 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
         }
         //删除数据源时候需要判断该数据源下是否有工作流
         if (DatasourceStatusEnum.DISABLE.getCode().equals(param.getDatasourceStatus())) {
-            Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
-            if (hasRunningTask) {
-                throw new AppException("70000012");
-            }
+//            Boolean hasRunningTask = datasyncFeignClient.hasRunningTask(param.getId());
+//            if (hasRunningTask) {
+//                throw new AppException("70000012");
+//            }
         }
         IcreditDatasourceEntity datasourceEntity = datasourceMapper.selectById(param.getId());
         datasourceEntity.setStatus(param.getDatasourceStatus());

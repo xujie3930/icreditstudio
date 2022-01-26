@@ -47,6 +47,6 @@ public class DatasourceClearTask {
         }
         long endTime = System.currentTimeMillis();
         long spendTime = (endTime - startTime) / 1000;
-        System.out.println("定时更新数据源任务总耗时:" + spendTime);
+        System.out.println("定时更新数据源任务总耗时/秒:" + spendTime);
     }
 }
