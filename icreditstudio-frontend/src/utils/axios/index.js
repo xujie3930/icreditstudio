@@ -61,6 +61,8 @@ const err = error => {
 // request interceptor
 service.interceptors.request.use(
   config => {
+    console.log(Vue.ls.get(ACCESS_TOKEN))
+    const token = Vue.ls.get(ACCESS_TOKEN)
     const _config = config
     const _type = _config.method === 'get' ? 'params' : 'data'
     // 添加时间戳和应用id
@@ -71,6 +73,11 @@ service.interceptors.request.use(
         _t: new Date().getTime(),
         applicationId: baseConfig.applicationId
       }
+    }
+
+    if (token) {
+      _config.headers.Authorization = token
+      _config.headers.userId = store.getters['user/userInfo'].id
     }
     removePendingAjax(_config)
     addPendingAjax(_config)
