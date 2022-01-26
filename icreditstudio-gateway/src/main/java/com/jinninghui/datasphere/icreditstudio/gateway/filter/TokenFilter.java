@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -60,8 +61,13 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String requestURI = FinalAuthFilter.getUri(uri);
         // 获取请求的方法,POST，GET等
         String method = serverHttpRequest.getMethod().name();
+        if (RequestMethod.OPTIONS.name().equalsIgnoreCase(method)) {
+            chain.filter(exchange);
+        }
         // 获取cookie集合
         MultiValueMap<String, HttpCookie> cookies = serverHttpRequest.getCookies();
+        /*List<String> authorization = serverHttpRequest.getHeaders().get("Authorization");
+        String token = authorization.get(0);*/
         // 根据uri和方法，判断请求是否需要鉴权
         if (serverHttpRequest.getHeaders().containsKey(Constants.AUTH_PASS_KEY)) {
             log.info("不需要执行token鉴权,因为其他鉴权Filter已经鉴权通过, uri=" + requestURI + ",method=" + method);
@@ -100,6 +106,8 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     httpHeaders1.set("x-customer-type", businessToken.getCustomerTypeCode());
                     httpHeaders1.set("x-business-type", businessToken.getBusinessType());
                     httpHeaders1.set("x-extra", businessToken.getExtra());
+                    httpHeaders1.set("Authorization", businessToken.getToken());
+                    httpHeaders1.set("userId", String.valueOf(businessToken.getUserId()));
                 };
                 ServerHttpRequest build = serverHttpRequest.mutate().headers(httpHeaders).build();
 
