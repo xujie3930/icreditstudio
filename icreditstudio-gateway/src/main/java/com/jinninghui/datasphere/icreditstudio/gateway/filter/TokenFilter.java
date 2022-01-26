@@ -17,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -60,10 +61,13 @@ public class TokenFilter implements GlobalFilter, Ordered {
         String requestURI = FinalAuthFilter.getUri(uri);
         // 获取请求的方法,POST，GET等
         String method = serverHttpRequest.getMethod().name();
+        if (RequestMethod.OPTIONS.name().equalsIgnoreCase(method)) {
+            chain.filter(exchange);
+        }
         // 获取cookie集合
-        //MultiValueMap<String, HttpCookie> cookies = serverHttpRequest.getCookies();
-        List<String> authorization = serverHttpRequest.getHeaders().get("Authorization");
-        String token = authorization.get(0);
+        MultiValueMap<String, HttpCookie> cookies = serverHttpRequest.getCookies();
+        /*List<String> authorization = serverHttpRequest.getHeaders().get("Authorization");
+        String token = authorization.get(0);*/
         // 根据uri和方法，判断请求是否需要鉴权
         if (serverHttpRequest.getHeaders().containsKey(Constants.AUTH_PASS_KEY)) {
             log.info("不需要执行token鉴权,因为其他鉴权Filter已经鉴权通过, uri=" + requestURI + ",method=" + method);
@@ -73,7 +77,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("不需要执行token鉴权,因为该接口未配置需要执行token鉴权, uri=" + requestURI + ",method=" + method);
             return chain.filter(exchange);
         }
-        if (StringUtils.isBlank(token) && !serverHttpRequest.getHeaders().containsKey(Constants.TOKEN_AUTH_TYPE_OUT)) {
+        if (StringUtils.isBlank(getToken(cookies)) && !serverHttpRequest.getHeaders().containsKey(Constants.TOKEN_AUTH_TYPE_OUT)) {
             log.info("不需要执行token鉴权,因为请求的cookies中没有包含token, uri=" + requestURI + ",method=" + method);
             return chain.filter(exchange);
         }
@@ -81,11 +85,11 @@ public class TokenFilter implements GlobalFilter, Ordered {
         // 1 内部管理系统  2  外部登录用户
         String requestType = "2";
         // 外部登录用户  Access-Token 获取token鉴权
-        token = serverHttpRequest.getHeaders().getFirst(Constants.TOKEN_AUTH_TYPE_OUT);
+        String token = serverHttpRequest.getHeaders().getFirst(Constants.TOKEN_AUTH_TYPE_OUT);
         // 内部管理系统 从Cookie 中获取 token
         if (token == null) {
             requestType = "1";
-            token = token;
+            token = getToken(cookies);
         }
         try {
             // token鉴权
@@ -103,6 +107,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
                     httpHeaders1.set("x-business-type", businessToken.getBusinessType());
                     httpHeaders1.set("x-extra", businessToken.getExtra());
                     httpHeaders1.set("Authorization", businessToken.getToken());
+                    httpHeaders1.set("userId", String.valueOf(businessToken.getUserId()));
                 };
                 ServerHttpRequest build = serverHttpRequest.mutate().headers(httpHeaders).build();
 
