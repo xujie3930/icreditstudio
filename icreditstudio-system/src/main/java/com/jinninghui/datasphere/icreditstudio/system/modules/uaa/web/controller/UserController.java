@@ -57,6 +57,8 @@ public class UserController {
         Cookie cookie = new Cookie("token", operateLoginResponse.getData().getToken());
         cookie.setPath("/");
         response.addCookie(cookie);
+        response.setHeader("Authorization", operateLoginResponse.getData().getToken());
+        response.setHeader("userId", operateLoginResponse.getData().getUserId());
         return operateLoginResponse;
     }
 
