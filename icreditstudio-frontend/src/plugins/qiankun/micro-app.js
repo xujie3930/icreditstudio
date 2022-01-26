@@ -9,7 +9,7 @@ import shared from './shared'
 export default [
   {
     name: 'icreditstudio-datasource',
-    entry: '//localhost:3333',
+    entry: '/datasource/',
     activeRule: '/subapp/datasource/',
     container: '#subapp-container',
     props: shared

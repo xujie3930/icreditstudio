@@ -61,13 +61,11 @@ const err = error => {
 // request interceptor
 service.interceptors.request.use(
   config => {
-    console.log(Vue.ls.get(ACCESS_TOKEN))
     const token = Vue.ls.get(ACCESS_TOKEN)
     const _config = config
     const _type = _config.method === 'get' ? 'params' : 'data'
     // 添加时间戳和应用id
     if (!(_config[_type] instanceof FormData)) {
-      console.log(config, 'figfig')
       _config[_type] = {
         ...handleTrim(_config[_type]),
         _t: new Date().getTime(),
