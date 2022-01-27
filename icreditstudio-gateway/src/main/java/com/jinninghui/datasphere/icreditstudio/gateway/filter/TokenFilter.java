@@ -66,8 +66,8 @@ public class TokenFilter implements GlobalFilter, Ordered {
         }
         // 获取cookie集合
         MultiValueMap<String, HttpCookie> cookies = serverHttpRequest.getCookies();
-        /*List<String> authorization = serverHttpRequest.getHeaders().get("Authorization");
-        String token = authorization.get(0);*/
+        String authToken = serverHttpRequest.getHeaders().getFirst("Authorization");
+        System.out.println(authToken);
         // 根据uri和方法，判断请求是否需要鉴权
         if (serverHttpRequest.getHeaders().containsKey(Constants.AUTH_PASS_KEY)) {
             log.info("不需要执行token鉴权,因为其他鉴权Filter已经鉴权通过, uri=" + requestURI + ",method=" + method);
@@ -77,7 +77,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
             log.info("不需要执行token鉴权,因为该接口未配置需要执行token鉴权, uri=" + requestURI + ",method=" + method);
             return chain.filter(exchange);
         }
-        if (StringUtils.isBlank(getToken(cookies)) && !serverHttpRequest.getHeaders().containsKey(Constants.TOKEN_AUTH_TYPE_OUT)) {
+        if (StringUtils.isBlank(authToken) && !serverHttpRequest.getHeaders().containsKey(Constants.TOKEN_AUTH_TYPE_OUT)) {
             log.info("不需要执行token鉴权,因为请求的cookies中没有包含token, uri=" + requestURI + ",method=" + method);
             return chain.filter(exchange);
         }
@@ -89,7 +89,7 @@ public class TokenFilter implements GlobalFilter, Ordered {
         // 内部管理系统 从Cookie 中获取 token
         if (token == null) {
             requestType = "1";
-            token = getToken(cookies);
+            token = authToken;
         }
         try {
             // token鉴权
