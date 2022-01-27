@@ -3,6 +3,7 @@
  * @Description: 启动qiankun以及配置相应参数
  * @Date: 2022-01-10
  */
+import store from '@/store'
 import {
   registerMicroApps,
   addGlobalUncaughtErrorHandler,
@@ -10,10 +11,9 @@ import {
 } from 'qiankun'
 import microApp from './micro-app'
 import lifeCycles from './life-cycles'
-import store from '@/store'
 
 // 注册子应用
-store.dispatch('common/SET_LOAD_SUBAPP_STATE', true)
+store.commit('common/SET_LOAD_SUBAPP_STATE', true)
 registerMicroApps(microApp, lifeCycles)
 
 // 捕获异常

@@ -1,5 +1,5 @@
 /* base */
-export const ACCESS_TOKEN = 'Access-Token'
+export const ACCESS_TOKEN = 'ACCESS_TOKEN'
 export const INDEX_MAIN_PAGE_PATH = '/'
 export const COMMON_TOGGLE_COLLAPSE = 'COMMON_TOGGLE_COLLAPSE'
 export const COMMON_TOGGLE_HEADER_COLLAPSE = 'COMMON_TOGGLE_HEADER_COLLAPSE'

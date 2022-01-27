@@ -5,14 +5,13 @@
  */
 
 import Vue from 'vue'
-
 import store from '@/store'
-console.log(store, 'store')
+
 //主与子应用通信
 const state = {
-  wodrkspaceId: store.getters['user/workspaceId'],
+  workspaceId: store.getters['user/workspaceId'],
   userInfo: store.getters['user/userInfo'],
-  userToken: store.getters['user/token'] || Vue.ls.get('ACCESS_TOKEN')
+  token: store.getters['user/token'] || Vue.ls.get('ACCESS_TOKEN')
 }
 
 class Shared {

@@ -14,5 +14,13 @@ export default [
     activeRule: '/subapp/datasource/',
     container: '#subapp-container',
     props: shared
+  },
+  {
+    name: 'icreditstudio-dictionary',
+    // entry: 'http://192.168.0.201:3333/',
+    entry: '//localhost:4444',
+    activeRule: '/subapp/dictionary/',
+    container: '#subapp-container',
+    props: shared
   }
 ]
