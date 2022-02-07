@@ -41,9 +41,19 @@
             <version>8.0.25</version>
         </dependency>
         <!-- 引入nacos注册-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.jinninghui.datasphere</groupId>
             <artifactId>icreditstudio-servicecenter</artifactId>
+        </dependency>-->
+        <!--服务间调用 openFeign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <!--nacos 配置中心-->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
     </dependencies>
     <build>
