@@ -8,7 +8,7 @@
 export const canBackPages = [
   '/workspace/detail',
   '/workspace/data-model/add',
-  '/data-manage/sync-task',
+  '/subapp/datasync/data-manage/sync-task',
   '/data-manage/add-task',
   '/data-manage/add-build',
   '/data-manage/add-transfer',

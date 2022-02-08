@@ -89,7 +89,7 @@ export default {
       } else {
         this.$ss.remove('taskForm')
         this.$ss.remove('selectedTable')
-        this.$router.push('/data-manage/data-sync')
+        this.$router.push('/subapp/datasync/list')
       }
     },
 
