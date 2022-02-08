@@ -113,4 +113,9 @@ public class DatasourceDetailResult implements Serializable {
      * 工作流列表
      */
     private List<WorkFlowResult> workFlowList = new ArrayList<>();
+
+    /**
+     * 数据库名
+     */
+    private String databaseName;
 }

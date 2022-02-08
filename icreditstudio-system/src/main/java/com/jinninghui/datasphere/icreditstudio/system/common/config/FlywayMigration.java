@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
  * @description Flyway
  * @date 2021/3/12 10:48
  */
-@Component
-public class FlywayMigration implements FlywayMigrationStrategy {
-    @Override
-    public void migrate(Flyway flyway) {
-        // 如果第一次初始化，则以当前数据库版本为基准
-        flyway.setBaselineOnMigrate(true);
-        flyway.migrate();
-    }
-}
+//@Component
+//public class FlywayMigration implements FlywayMigrationStrategy {
+//    @Override
+//    public void migrate(Flyway flyway) {
+//        // 如果第一次初始化，则以当前数据库版本为基准
+//        flyway.setBaselineOnMigrate(true);
+//        flyway.migrate();
+//    }
+//}

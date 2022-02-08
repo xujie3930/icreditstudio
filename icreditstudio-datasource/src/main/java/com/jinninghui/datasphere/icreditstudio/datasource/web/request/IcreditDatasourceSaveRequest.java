@@ -11,7 +11,6 @@ import javax.validation.constraints.NotBlank;
  **/
 @Data
 public class IcreditDatasourceSaveRequest {
-    @NotBlank(message = "工作空间不能为空")
     private String spaceId;//工作空间id
     private int category;//数据源分类（1-关系型，2-半结构化，3-NoSql,4-本地文件，5-区块链）
     private int type;//数据源类型

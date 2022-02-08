@@ -54,7 +54,7 @@ public class FeignAutoConfiguration extends FeignClientsConfiguration {
         return new ResponseEntityDecoder(new CustomerFeignDecoder(this.messageConverters));
     }
 
-    @Override
+//    @Override
     @Bean
     public Encoder feignEncoder() {
         //结合原来的springEncoder，修改该编码器对文件和非文件的处理
