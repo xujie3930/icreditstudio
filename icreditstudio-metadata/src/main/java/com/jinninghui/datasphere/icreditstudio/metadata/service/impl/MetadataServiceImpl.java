@@ -114,7 +114,7 @@ public class MetadataServiceImpl implements MetadataService {
                 log.error(e.getMessage(), e);
                 String message = e.getMessage();
                 if (message.contains("AlreadyExistsException")) {
-                    throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_80000003.getCode());
+                    throw new AppException("80000003");
                 }
             } finally {
                 IoUtil.close(stmt);
