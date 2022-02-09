@@ -4,7 +4,7 @@ ICREDITSTUDIO_VERSION=0.0.1  ##版本号
 
 ##service
 PROFILE=dev ##启动的环境，如果需要新的环境，需要手动添加配置文件
-NACOS_SERVER_ADDRESS=192.168.0.178:8848 ##nacos的地址
+NACOS_SERVER_ADDRESS=192.168.0.30:8848 ##nacos的地址
 NACOS_DISCOVERY_NAMESPACE=dd8ede24-19c7-4547-8956-a566f800a823
 ##nacos的namespace
 MYSQL_HOST=192.168.0.17 ##mysql数据库ip，如果需要每个服务单独一个数据库，需要手动修改具体服务的数据库配置，采用一键配置将所有的服务共用一个数据库
