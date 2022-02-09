@@ -20,7 +20,7 @@ import '@/router/permission'
 import '@/components/svg/index'
 
 // import '@jnh/icredit-ui/lib/theme/lib/index.css'; // 默认样式
-import 'iview/dist/styles/iview.css'
+// import 'iview/dist/styles/iview.css'
 import '@/styles/common/_icredit.scss' // 自定义主题色
 
 // 公共样式、布局样式
