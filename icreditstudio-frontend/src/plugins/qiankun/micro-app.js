@@ -33,8 +33,8 @@ export default [
   },
   {
     name: 'icreditstudio-schedule',
-    entry: 'http://192.168.0.201:8088/',
-    // entry: '//localhost:8088',
+    entry: 'http://192.168.0.201:8099/',
+    // entry: '//localhost:8099',
     activeRule: '/subapp/schedule/',
     container: '#subapp-container',
     props: shared
