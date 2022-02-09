@@ -12,9 +12,9 @@ import com.jinninghui.datasphere.icreditstudio.datasource.common.ResourceCodeBea
 import com.jinninghui.datasphere.icreditstudio.datasource.common.enums.*;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDatasourceEntity;
 import com.jinninghui.datasphere.icreditstudio.datasource.entity.IcreditDdlSyncEntity;
-import com.jinninghui.datasphere.icreditstudio.datasource.feign.DatasyncFeignClient;
+//import com.jinninghui.datasphere.icreditstudio.datasource.feign.DatasyncFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.feign.SystemFeignClient;
-import com.jinninghui.datasphere.icreditstudio.datasource.feign.UserWorkspaceFeignClient;
+//import com.jinninghui.datasphere.icreditstudio.datasource.feign.UserWorkspaceFeignClient;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDatasourceMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.mapper.IcreditDdlSyncMapper;
 import com.jinninghui.datasphere.icreditstudio.datasource.service.ConnectionSource;
@@ -233,7 +233,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
             dataEntity.setLastSyncStatus(DatasourceSyncStatusEnum.FAIL.getStatus());
             icreditDatasourceService.updateDatasourceById(dataEntity);
             log.error("数据源同步异常:{}", e.getMessage());
-            throw new AppException("70000003");
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000003.getCode());
         }
         return BusinessResult.success(result);
     }
@@ -271,7 +271,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
                 //根据表名，比较新旧记录更新的字段数量
                 List<ColumnSyncInfo> oldColumns = tableSyncInfo.getColumnList();
                 List<ColumnSyncInfo> newColumns= newStructure.parallelStream().filter(n -> n.getTableName().equals(tableSyncInfo.getTableName())).findAny().get().getColumnList();
-                //两个集合不同数量即为更新字段的数量
+                //新数量-新旧数据的交集=更新字段的数量
                 int newSize = newColumns.size();
                 //新旧数据的交集
                 newColumns.retainAll(oldColumns);
@@ -643,7 +643,7 @@ public class IcreditDatasourceServiceImpl extends ServiceImpl<IcreditDatasourceM
     private void checkDatabase(IcreditDatasourceTestConnectRequest testConnectRequest) {
         BusinessResult<String> testConnResult = testConn(testConnectRequest);
         if (!testConnResult.isSuccess()) {
-            throw new AppException("70000008");
+            throw new AppException(ResourceCodeBean.ResourceCode.RESOURCE_CODE_70000008.getCode());
         }
     }
 

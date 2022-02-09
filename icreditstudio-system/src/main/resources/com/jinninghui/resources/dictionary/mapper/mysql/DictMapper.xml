@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.mapper.DictMapper">
+
+    <resultMap id="BaseResultMap" type="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.entity.DictEntity">
+            <id property="id" column="id" jdbcType="VARCHAR"/>
+            <result property="englishName" column="english_name" jdbcType="VARCHAR"/>
+            <result property="chineseName" column="chinese_name" jdbcType="VARCHAR"/>
+            <result property="createUserId" column="create_user_id" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="DATE"/>
+            <result property="dictDesc" column="dict_desc" jdbcType="VARCHAR"/>
+            <result property="delFlag" column="del_flag" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,english_name,chinese_name,create_user_id,create_time,dict_desc,del_flag
+    </sql>
+
+    <select id="getInfoById" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.service.result.DictResult">
+        SELECT id,english_name AS englishName,chinese_name AS chineseName,dict_desc AS dictDesc FROM icredit_dict WHERE id = #{id}
+    </select>
+    <select id="pageList" parameterType="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.dto.DictQueryDTO" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.service.result.DictQueryResult">
+        SELECT id,english_name AS englishName,chinese_name AS chineseName,dict_desc AS dictDesc,create_user_name AS createUserName,create_time AS createTime
+        FROM icredit_dict WHERE del_flag = 0
+        <if test="dictName != null and dictName != ''">
+            AND (chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%'))
+        </if>
+        <if test="userId != null and userId != ''">
+            AND create_user_id = #{userId}
+        </if>
+        <if test="workspaceId != null and workspaceId != ''">
+            AND workspace_id = #{workspaceId}
+        </if>
+        ORDER BY create_time DESC
+        limit #{pageNum},#{pageSize}
+    </select>
+    <select id="countDict" parameterType="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.dto.DictQueryDTO" resultType="java.lang.Long">
+        SELECT count(1) FROM icredit_dict WHERE del_flag = 0
+        <if test="dictName != null and dictName != ''">
+            AND (chinese_name LIKE concat('%', #{dictName}, '%') OR english_name LIKE concat('%', #{dictName}, '%'))
+        </if>
+        <if test="userId != null and userId != ''">
+            AND create_user_id = #{userId}
+        </if>
+        <if test="workspaceId != null and workspaceId != ''">
+            AND workspace_id = #{workspaceId}
+        </if>
+    </select>
+    <update id="delById">
+        UPDATE icredit_dict SET del_flag = #{delFlag} WHERE id = #{id}
+    </update>
+    <select id="findByName" resultType="com.jinninghui.datasphere.icreditstudio.system.modules.dictionary.entity.DictEntity">
+        SELECT id
+        FROM icredit_dict
+        WHERE del_flag = 0
+        <if test="createUserId != null and createUserId != ''">
+            AND create_user_id = #{createUserId}
+        </if>
+        <if test="workspaceId != null and workspaceId != ''">
+            AND workspace_id = #{workspaceId}
+        </if>
+        <if test="chineseName != null and chineseName != ''">
+            AND chinese_name = #{chineseName}
+        </if>
+        limit 1
+    </select>
+</mapper>
