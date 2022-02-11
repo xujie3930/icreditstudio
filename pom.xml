@@ -157,7 +157,7 @@
         <module>icreditstudio-datasource</module>
 <!--        <module>auto-generator</module>-->
         <module>assembly-package</module>
-        <module>icreditstudio-iframe</module>
+        <!--<module>icreditstudio-iframe</module>-->
         <!--        <module>icreditstudio-sparkx</module>-->
 <!--        <module>icreditstudio-enginex</module>-->
     </modules>
