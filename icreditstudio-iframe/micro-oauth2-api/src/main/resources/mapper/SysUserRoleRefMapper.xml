@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.system.user.mapper.SysUserRoleRefMapper">
+
+  <select id="getRoleByUserId" resultType="com.micro.cloud.modules.system.user.dto.SysUserRoleRefDto">
+    select user.sys_user_id as userId,
+           role.role_name as roleName,
+           role.sys_role_id as roleId
+    from sys_role role
+    left join sys_user_role_ref ref
+    on role.sys_role_id = ref.sys_role_id
+    left join sys_user user on ref.sys_user_id = user.sys_user_id
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        user.sys_user_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+          #{id,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+      <if test="roleId != null and roleId != ''">
+         and role.sys_role_id = #{roleId}
+      </if>
+    </where>
+  </select>
+    <select id="selectSysUserRoleRefPageList" parameterType="com.micro.cloud.modules.system.org.vo.SysUserRoleRefPageReqVO"
+            resultType="com.micro.cloud.modules.system.user.dataobject.SysUserRoleRef">
+      select * from sys_user_role_ref
+    </select>
+</mapper>

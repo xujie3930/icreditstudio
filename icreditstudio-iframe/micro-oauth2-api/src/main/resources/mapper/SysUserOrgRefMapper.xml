@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.system.user.mapper.SysUserOrgRefMapper">
+
+
+  <resultMap type="com.micro.cloud.modules.system.org.vo.SysUserOrgRefRespVO" id="sysUserOrgRefRespVO">
+    <result column="sys_user_org_id" property="sysUserOrgId"/>
+    <result column="sys_user_id" property="sysUserId"/>
+    <result column="sys_org_id" property="sysOrgId"/>
+    <result column="creator_id" property="creatorId"/>
+    <result column="create_time" property="createTime"/>
+
+    <result column="updater_id" property="updaterId"/>
+    <result column="update_time" property="updateTime"/>
+
+  </resultMap>
+  <select id="existRefByOrgIds" resultType="java.lang.Integer">
+    select count(1) from sys_user_org_ref
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        sys_org_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="orgId">
+          #{orgId,jdbcType=VARBINARY}
+        </foreach>
+      </if>
+    </where>
+
+  </select>
+  <select id="getMembersCount" resultType="java.util.Map">
+    select org.sys_org_id ,
+    count(ref.sys_user_id) as members
+    from
+    sys_org org left join
+    sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+    <where>
+      org.sys_org_id in
+      <foreach collection="ids" open="(" separator="," close=")" item="orgId">
+        #{orgId,jdbcType=VARBINARY}
+      </foreach>
+    </where>
+    group by id
+  </select>
+  <select id="getUserDepartbyId" resultType="java.lang.String">
+    select org.sys_org_id
+    from sys_org org
+           left join
+         sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+    where ref.sys_user_id = #{userId,jdbcType=VARCHAR}
+  </select>
+  <select id="getDepartByUserId" resultType="com.micro.cloud.modules.system.org.dataobject.SysOrg">
+    select org.sys_org_id, org.org_name, org.org_credit_code, org.type
+    from sys_org org
+           left join sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+           left join sys_user user on ref.sys_user_id = user.sys_user_id
+    where user.sys_user_id = #{userId}
+  </select>
+  <select id="selectSysUserRefList" parameterType="com.micro.cloud.modules.system.org.vo.SysUserOrgRefPageReqVO"
+    resultType="com.micro.cloud.modules.system.user.dataobject.SysUserOrgRef">
+    select sys_user_org_id, sys_user_id, sys_org_id, creator_id, create_time, updater_id, update_time
+    from sys_user_org_ref
+  </select>
+  <select id="getDepartByUserIds" resultType="com.micro.cloud.modules.system.org.dataobject.SysOrg">
+    select org.sys_org_id, org.org_name, org.org_credit_code, org.type
+    from sys_org org
+    left join sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+    left join sys_user user on ref.sys_user_id = user.sys_user_id
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        user.sys_user_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="item">
+          #{item,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+</mapper>

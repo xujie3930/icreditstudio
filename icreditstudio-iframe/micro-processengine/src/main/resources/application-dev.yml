@@ -1,0 +1,55 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: micro-processengine
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.178:8848
+        group: DEV
+  datasource:
+    url: "jdbc:mysql://192.168.0.210:3306/iframegj?serverTimezone=GMT%2B8&allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: root
+    password: H1lkkg!o(m<?
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 10 #最小空闲连接数
+      max-active: 20 #最大连接数
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+      stat-view-servlet: #访问监控网页的登录用户名和密码
+        login-username: druid
+        login-password: druid
+  redis:
+    host: 192.168.0.210 # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间（毫秒）
+  #文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+
+debug: false #开启debug模式
+
+## 文件上传路径
+file:
+  upload:
+    path: /Users/roy/data/share/iframe-dev/
+  view:
+    domain: http://192.168.0.248:8012
+
+

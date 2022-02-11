@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>icreditstudio-iframe</artifactId>
+    <groupId>com.jinninghui.datasphere</groupId>
+    <version>1.0.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>micro-admin</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-jetty</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-server</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <!-- redis -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+
+    <!--nacos 配置中心-->
+    <dependency>
+      <groupId>com.alibaba.cloud</groupId>
+      <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>cn.smallbun.screw</groupId>
+      <artifactId>screw-core</artifactId>
+      <version>1.0.5</version>
+    </dependency>
+
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>1.5.4.RELEASE</version>
+        <configuration>
+          <mainClass>com.micro.cloud.MicroAdminApplication</mainClass>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>cn.smallbun.screw</groupId>
+        <artifactId>screw-maven-plugin</artifactId>
+        <version>1.0.5</version>
+        <dependencies>
+          <!-- HikariCP -->
+          <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.5</version>
+          </dependency>
+          <!--mysql driver-->
+          <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.20</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <!--username-->
+          <username>root</username>
+          <!--password-->
+          <password>H1lkkg!o(m&lt;?</password>
+          <!--driver-->
+          <driverClassName>com.mysql.cj.jdbc.Driver</driverClassName>
+          <!--jdbc url-->
+          <jdbcUrl>jdbc:mysql://192.168.0.210:3306/iframegj?serverTimezone=UTC&amp;allowMultiQueries=true&amp;useSSL=false&amp;useUnicode=true&amp;characterEncoding=utf8</jdbcUrl>
+          <!--生成文件类型-->
+          <fileType>HTML</fileType>
+          <!--打开文件输出目录-->
+          <openOutputDir>false</openOutputDir>
+          <!--生成模板-->
+          <produceType>freemarker</produceType>
+          <!--文档名称 为空时:将采用[数据库名称-描述-版本号]作为文档名称-->
+          <fileName>工作流引擎数据库设计</fileName>
+          <!--描述-->
+          <description>工作流引擎数据库设计文档</description>
+          <!--版本-->
+          <version>1.0.0</version>
+          <!--标题-->
+          <title>数据库文档</title>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>deploy</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

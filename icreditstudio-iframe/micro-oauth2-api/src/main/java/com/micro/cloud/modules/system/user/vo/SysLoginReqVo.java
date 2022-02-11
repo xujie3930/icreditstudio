@@ -1,0 +1,69 @@
+package com.micro.cloud.modules.system.user.vo;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
+
+/**
+ * 用户登录参数
+ *
+ * @author roy
+ */
+@ApiModel(value = "用户登录请求入参")
+public class SysLoginReqVo implements Serializable {
+
+  private static final long serialVersionUID = -5610974785527188221L;
+
+  @NotBlank(message = "用户名不能为空")
+  @ApiModelProperty(value = "用户名", required = true, example = "xinqi")
+  private String username;
+
+  @NotBlank(message = "用户密码不能为空")
+  @ApiModelProperty(value = "密码", required = true, example = "123456")
+  private String password;
+
+  @ApiModelProperty(value = "图片验证码", required = true)
+  @Length(min = 4, max = 5, message = "图片验证码必须至少4位")
+  private String captchaCode;
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public String getCaptchaCode() {
+    return captchaCode;
+  }
+
+  public void setCaptchaCode(String captchaCode) {
+    this.captchaCode = captchaCode;
+  }
+
+  @Override
+  public String toString() {
+    return "SysLoginReqVo{"
+        + "username='"
+        + username
+        + '\''
+        + ", password='"
+        + password
+        + '\''
+        + ", captchaCode='"
+        + captchaCode
+        + '\''
+        + '}';
+  }
+}

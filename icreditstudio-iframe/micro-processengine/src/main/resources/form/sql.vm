@@ -1,0 +1,14 @@
+## 建表语句
+
+CREATE TABLE IF NOT EXIST `${tableName}`  (
+#foreach($field in $fields)
+`${field.fieldName}` ${field.fieldDbType} #if(${field.fieldDbType} ==
+    'datetime')  #else (${field.fieldLength}) #end #if($field.isNullable) NOT NULL #elseif(${field.fieldDbType} ==
+    'datetime') DEFAULT CURRENT_TIMESTAMP  #else DEFAULT NULL #end COMMENT `${field.fieldLabel}`
+#end
+## 设置主键、索引
+#foreach($field in $fields)
+    #if($field.isPrimaryKey) PRIMARY KEY (`${field.name}`) USING BTREE,
+    #end
+#end
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;

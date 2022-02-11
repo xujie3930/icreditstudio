@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: micro-processengine
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.178:8848 #配置中心地址
+        file-extension: yml #配置文件结尾的配置
+        group: DEV
+  profiles:
+    active: dev
+
+# 日志文件配置
+logging:
+  file:
+    name: ../logs/micro-processengine.log # 日志文件名，全路径

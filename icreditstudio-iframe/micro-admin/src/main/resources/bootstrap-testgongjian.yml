@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: micro-admin
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.107:8848 #配置中心地址
+        file-extension: yml #配置文件结尾的配置
+        group: TEST-GONGJIAN
+  profiles:
+    active: testgongjian
+# 日志文件配置
+logging:
+  file:
+    name: ../logs/micro-admin.log # 日志文件名，全路径
