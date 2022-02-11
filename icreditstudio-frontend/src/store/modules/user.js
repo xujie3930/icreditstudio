@@ -19,7 +19,7 @@ import { font, theme } from '@/utils/theme'
 import { DEFAULT_FONT_SIZE, DEFAULT_CSS_ID } from '@/config/constant'
 
 const states = () => ({
-  token: '',
+  token: Vue.ls.get('ACCESS_TOKEN') || '',
   userInfo: {},
   systemSetting: {},
   auth: [],

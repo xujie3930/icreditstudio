@@ -166,6 +166,7 @@ export default {
   watch: {
     workspaceId(nVal) {
       this.wid = nVal
+      this.$actions.setGlobalState({ workspaceId: nVal })
     }
   },
 
