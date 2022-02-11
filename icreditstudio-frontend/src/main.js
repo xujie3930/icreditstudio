@@ -5,16 +5,19 @@
  */
 import Vue from 'vue'
 import App from './App.vue'
+
+import '@/utils/vue.ls.js'
+import '@/utils/vue.ss.js'
+
 import router from './router'
 import store from './store'
+import actions from './plugins/qiankun/actions'
 
 import '@/config/config.mount.js'
 
 import JUI from '@jnh/icredit-ui'
 import VueEditor from 'vue2-editor'
 
-import '@/utils/vue.ls.js'
-import '@/utils/vue.ss.js'
 // import '@/mock'
 import '@/router/permission'
 import '@/components/svg/index'
@@ -41,6 +44,7 @@ Vue.component(CrudBasic.name, CrudBasic)
 
 Vue.config.productionTip = false
 
+Vue.prototype.$actions = actions
 Vue.prototype.$ELEMENT = { size: 'small' }
 
 new Vue({
