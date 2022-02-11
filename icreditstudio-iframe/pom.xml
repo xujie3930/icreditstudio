@@ -11,6 +11,7 @@
 
     <artifactId>icreditstudio-iframe</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
 
     <name>icreditstudio-iframe</name>
     <!-- FIXME change it to the project's website -->
