@@ -1,0 +1,68 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.107:8848
+        group: TEST
+  datasource:
+    url: "jdbc:mysql://192.168.0.17:3306/jodpiframe?serverTimezone=UTC&allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: jodp
+    password: jodp@2018
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 10 #最小空闲连接数
+      max-active: 100 #最大连接数
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+      stat-view-servlet: #访问监控网页的登录用户名和密码
+        login-username: druid
+        login-password: druid
+  redis:
+    host: 192.168.0.107 # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间（毫秒）
+
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+
+debug: false #开启debug模式
+
+# 用户实名认证接口 暂时使用归属地查询代替
+idCard:
+  address: http://api.asilu.com/idcard?id={id}
+
+micro:
+  datasource:
+    name: jodpiframe
+
+oa:
+  uid: dingqq
+  tokenUrl: http://218.94.60.162:22080/oaapi/token.php
+  userUrl: http://218.94.60.162:22080/oaapi/user.php
+  deptUrl: http://218.94.60.162:22080/oaapi/dept.php
+  singleLogin: http://218.94.60.162:22080/oaapi/sso.php
+  flowQueryUrl: http://218.94.60.162:22080/oaapi/flow.php
+  cron: 0 0 */4 * * *
+  isStart : false
+
+project:
+  #获取项目管理token
+  tokenUrl: http://118.31.225.251:8988/pj-manage/api/uaa/auth/getToken
+  #获取项目管理Url
+  projectUrl: http://iframegj.thed3chain.com:9001/pm/
+  #获取待支付列表
+  unpayListUrl: http://118.31.225.251:8988/pj-manage/v1/mp/payPage
+  #支付接口
+  payUrl: http://118.31.225.251:8988/pj-manage/v1/mp/updateFpa
+  #角色菜单同步接口
+  roleResourcesUrl: http://118.31.225.251:8988/pj-manage/v1/pj/getOaMenuRoleData

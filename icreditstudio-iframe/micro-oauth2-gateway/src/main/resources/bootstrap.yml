@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: micro-oauth2-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.178:8848 #配置中心地址
+        file-extension: yaml #配置文件结尾的配置
+        enabled: true
+        group: DEV
+  profiles:
+    active: dev
+
+# 日志文件配置
+logging:
+  file:
+    name: ../logs/micro-oauth2-gateway.log # 日志文件名，全路径

@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: micro-processengine
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.178:8848 #配置中心地址
+        file-extension: yml #配置文件结尾的配置
+        group: DEV-GONGJIAN
+  profiles:
+    active: devgongjian
+
+# 日志文件配置
+logging:
+  file:
+    name: ../logs/micro-processengine.log # 日志文件名，全路径
+project:
+  #参建单位列表接口
+  queryPcListUrl: http://118.31.225.251:8988/pj-manage/v1/pic/queryPcList

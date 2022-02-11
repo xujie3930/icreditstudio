@@ -1,0 +1,46 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.30:8848
+        group: JIANGBEILIANDEV
+  datasource:
+    url: "jdbc:mysql://192.168.0.23:3306/nfrdi?serverTimezone=UTC&allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: nfrdi
+    password: nfrdi@1206
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 10 #最小空闲连接数
+      max-active: 100 #最大连接数
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+      stat-view-servlet: #访问监控网页的登录用户名和密码
+        login-username: druid
+        login-password: druid
+  # redis配置信息
+  redis:
+    host: 192.168.0.59 # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间（毫秒）
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+
+micro:
+  info:
+    version: 1.0.0
+    base-package: com.micro.cloud
+  swagger:
+    title: OAuth2 后台
+    description: OAuth2 后台接口文档
+    version: ${micro.info.version}
+    base-package: ${micro.info.base-package}.modules

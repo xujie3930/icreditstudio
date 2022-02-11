@@ -1,0 +1,18 @@
+server:
+  port: 8888
+spring:
+  profiles:
+    active: dev
+  application:
+    name: micro-admin
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  security:
+    user:
+      name: admin #账号
+      password: 1qaz2WSX #密码
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*" # 选择暴露所有可监控端点

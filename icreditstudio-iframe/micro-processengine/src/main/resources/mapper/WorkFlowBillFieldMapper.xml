@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.form.dal.mapper.WorkFlowBillFieldMapper">
+
+  <select id="getFields" resultType="com.micro.cloud.modules.form.dal.dataobject.WorkflowBillField">
+    select field.*
+    from workflow_bill_field field
+    left join
+    workflow_bill bill on field.workflow_bill_id = bill.workflow_bill_id
+    where
+    bill.process_key = #{processKey,jdbcType=VARCHAR}
+    <if test="fields != null and fields.size() > 0">
+      and field.field_name in
+      <foreach collection="fields" open="(" separator="," close=")" item="field">
+        #{field,jdbcType=VARCHAR}
+      </foreach>
+    </if>
+  </select>
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+  <!--定义日志文件的存储地址 -->
+  <property name="LOG_HOME" value="../logs"/>
+  <!--TRACE<DEBUG<INFO<WARN<ERROR-->
+  <property name="log.level" value="debug"/>
+
+  <!-- 彩色日志依赖的渲染类 -->
+  <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+  <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter" />
+  <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter" />
+  <!-- 彩色日志格式 -->
+  <property name="CONSOLE_LOG_PATTERN"
+    value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}:%clr(%L)){cyan} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}" />
+
+  <!--<property name="COLOR_PATTERN" value="%black(%contextName-) %red(%d{yyyy-MM-dd HH:mm:ss}) %green([%thread]) %highlight(%-5level) %boldMagenta( %replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''})- %gray(%msg%xEx%n)" />-->
+  <!-- 控制台输出 -->
+  <appender name="consoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符
+      <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50}:%L - %msg%n</pattern>-->
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+  </appender>
+
+  <!-- 按照每天生成日志文件 -->
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--文件路径-->
+    <file>${LOG_HOME}/micro-oauth2-api.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!--日志文件输出的文件名 -->
+      <FileNamePattern>${LOG_HOME}/micro-oauth2-api-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+      <!--日志文件保留天数 -->
+      <MaxHistory>30</MaxHistory>
+      <maxFileSize>10MB</maxFileSize>
+    </rollingPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+  </appender>
+
+  <!--DEBUG-->
+  <appender name="debugAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--文件路径-->
+    <file>${LOG_HOME}/micro-oauth2-api-debug.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!--文件名称-->
+      <fileNamePattern>${LOG_HOME}/debug/micro-oauth2-api-debug.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <!--日志文件保留天数 -->
+      <MaxHistory>30</MaxHistory>
+      <maxFileSize>10MB</maxFileSize>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>DEBUG</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+
+  <!--INFO-->
+  <appender name="infoAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--文件路径-->
+    <file>${LOG_HOME}/micro-oauth2-api-info.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!--文件名称-->
+      <fileNamePattern>${LOG_HOME}/info/micro-oauth2-api-info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <!--日志文件保留天数 -->
+      <MaxHistory>30</MaxHistory>
+      <maxFileSize>10MB</maxFileSize>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>INFO</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+
+  <!--ERROR-->
+  <appender name="errorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--文件路径-->
+    <file>${LOG_HOME}/micro-oauth2-api-error.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+      <!--文件名称-->
+      <fileNamePattern>${LOG_HOME}/error/micro-oauth2-api-error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+      <!--日志文件保留天数 -->
+      <MaxHistory>30</MaxHistory>
+      <maxFileSize>10MB</maxFileSize>
+    </rollingPolicy>
+    <encoder>
+      <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+      <charset>utf8</charset>
+    </encoder>
+    <filter class="ch.qos.logback.classic.filter.LevelFilter">
+      <level>ERROR</level>
+      <onMatch>ACCEPT</onMatch>
+      <onMismatch>DENY</onMismatch>
+    </filter>
+  </appender>
+
+  <!--常规日志输出, additivity属性为true时,这里配置的信息也会在IDE控制台打印出来-->
+  <logger name="com.micro.cloud" level="${log.level}" additivity="true">
+    <appender-ref ref="debugAppender"/>
+    <appender-ref ref="infoAppender"/>
+    <appender-ref ref="errorAppender"/>
+  </logger>
+
+  <root level="info">
+    <appender-ref ref="consoleAppender"/>
+    <appender-ref ref="FILE"/>
+  </root>
+</configuration>
