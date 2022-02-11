@@ -1,0 +1,95 @@
+开放平台资源信息	名称	服务地址
+前缀：http://192.168.0.125:8000/backend
+
+免鉴权接口		
+名称	地址
+门户首页/根据主题id查询主题下的分类	/source/data/classify/queryDataClassifyById
+门户首页/查询资源分类	/source/topic
+测试接口	/source/data/classify/uploadFile
+测试接口	/source/data/classify/uploadFile2
+资源数据申请/应用场景	/apply/application/scene
+提交建议/提交	/advice/track/addAdvice
+提交建议/验证码	/advice/track/createCode
+提交建议/详情	/advice/track/detailAdvice
+建议列表/列表	/advice/track/listAdvice
+开放统计/开放总览	/open/statistics/overview
+开放统计/平台浏览历史	/open/statistics/platformScanHistory
+开放统计/主题收藏量统计	/open/statistics/topicFavoriteCount
+开放统计/主题数据量统计	/open/statistics/topicRecordCount
+开放统计/浏览量和调用量统计	/open/statistics/topicScanAndInvokeCount
+接口调用/日志记录	/interface/invoke/record/add
+门户首页/接口调用top10	/interface/invoke/record/top
+门户首页/平台指南下载	/guide/download
+文件上传	/uploadFile
+浏览记录/新增	/source/scan/record/add
+门户首页/浏览统计top10	/source/scan/record/top
+资源数据/列表左侧统计信息	/source/directory/left
+资源数据/列表	/source/directory/list
+资源目录详情/基础信息	/source/directory/querySourceDetailById
+资源目录详情/标题信息	/source/directory/querySourceTitleById
+门户首页/最近更新数据top10	/source/directory/recentUpdData
+测试接口	/source/directory/testRedis
+门户首页/最近更新接口top10	/source/directory/interface/topTenInterInfo
+资源目录详情/数据项	/source/directory/data/sourceDirectoryDataList
+资源目录详情/资源文件数据预览	/source/directory/file/sourceFileDataPreview
+门户首页/资源目录下载	/source/directory/downloadSourceDirectory
+
+  
+
+
+		
+鉴权接口		
+名称	地址
+资源申请/申请	/apply/source/directory/applySource
+资源申请/详情	/apply/source/directory/detail
+资源申请/列表	/apply/source/directory/list
+收藏/收藏	/source/directory/favorite
+收藏/检查是否收藏	/source/directory/favorite/checkFavorite
+收藏/列表	/source/directory/favorite/listFavorite
+纠错/纠错	/source/directory/correct/correctSubmit
+纠错/详情	/source/directory/correct/detailCorrect
+纠错/列表	/source/directory/correct/listCorrect
+资源目录详情/接口调用	/source/directory/interface/sourceDirectoryInterfaceInfo
+资源目录详情/文件查看	/source/directory/file
+文件信息/删除	/source/directory/file/deleteSourceFile
+文件信息/下载	/source/directory/file/download
+管理端查看资源目录文件列表	/source/directory/file/manageQueryDirectoryFile
+管理端/上传或替换资源文件	/source/directory/file/uploadSourceFile
+资源目录/新增	/source/directory/add
+资源目录/删除	/source/directory/deleteSourceDirectory
+资源目录/编辑	/source/directory/edit
+资源目录/后台列表	/source/directory/managerSourceList
+
+	
+
+
+		
+		
+        
+				
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+                                    
+
+		
+		
+		

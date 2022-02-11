@@ -1,0 +1,74 @@
+spring:
+  profiles:
+    active: testgongjian
+  application:
+    name: micro-processengine
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.107:8848
+        group: TEST-GONGJIAN
+  datasource:
+    url: "jdbc:mysql://192.168.0.17:3306/iframegj?serverTimezone=GMT%2B8&allowMultiQueries=true&useSSL=false&useUnicode=true&characterEncoding=utf8"
+    username: iframegj
+    password: iframegj
+    druid:
+      initial-size: 5 #连接池初始化大小
+      min-idle: 10 #最小空闲连接数
+      max-active: 20 #最大连接数
+      web-stat-filter:
+        exclusions: "*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*" #不统计这些请求数据
+      stat-view-servlet: #访问监控网页的登录用户名和密码
+        login-username: druid
+        login-password: druid
+  redis:
+    host: 192.168.0.107 # Redis服务器地址
+    database: 1 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间（毫秒）
+  #文件大小限制
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
+# swagger 登录认证
+knife4j:
+  basic:
+    enable: false
+    ## Basic认证用户名
+    username: admin
+    ## Basic认证密码
+    password: admin123456
+  production: false #默认是false ,屏蔽所有Swagger的相关资源
+  enable: true #是否开启swagger
+
+debug: false #开启debug模式
+
+## 文件上传路径
+file:
+  view:
+    domain: http://192.168.0.32:8013
+oa:
+  uid: dingqq
+  tokenUrl: http://218.94.60.162:22080/oaapi/token.php
+  userUrl: http://218.94.60.162:22080/oaapi/user.php
+  deptUrl: http://218.94.60.162:22080/oaapi/dept.php
+  singleLogin: http://218.94.60.162:22080/oaapi/sso.php
+  flowQueryUrl: http://218.94.60.162:22080/oaapi/flow.php
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*' #暴露所有可监控的端点
+
+# 流程审批结果消息同步接口
+process:
+  callback: http://81.68.236.204:8288/pj-manage/api/process/callback
+
+project:
+  #参建单位列表接口
+  queryPcListUrl: http://81.68.236.204:8288/pj-manage/v1/pic/queryPcList
+
+

@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: micro-oauth2-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: 192.168.0.234:8848 #配置中心地址
+        file-extension: yml #配置文件结尾的配置
+        shared-dataids: micro-oauth2-gateway-dev.yml #GateWay白名单配置
+        refreshable-dataids: micro-oauth2-gateway-dev.yml
+        enabled: true
+        group: JIANGBEILIANRELEASE
+  profiles:
+    active: jiangbeilianrelease

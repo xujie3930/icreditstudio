@@ -1,0 +1,67 @@
+server:
+  port: 9527
+spring:
+  profiles:
+    active: DEV
+  application:
+    name: micro-oauth2-api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+# MyBatis Plus 的配置项
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true # 虽然默认为 true ，但是还是显示去指定下。
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印日志
+  mapper-locations: classpath*:mapper/*.xml
+feign:
+  okhttp:
+    enabled: true
+ribbon:
+  ConnectTimeout: 3000 #服务请求连接超时时间（毫秒）
+  ReadTimeout: 3000 #服务请求处理超时时间（毫秒）
+
+#################### micro相关配置 ####################
+
+micro:
+  info:
+    version: 1.0.0
+    base-package: com.micro.cloud
+  swagger:
+    title: IPlatform管理后台
+    description: 系统管理接口文档
+    version: ${micro.info.version}
+    base-package: ${micro.info.base-package}.modules
+  captcha:
+    timeout: 3000 # 失效时间5m
+    width: 160
+    height: 60
+  codegen:
+    base-package: ${micro.info.base-package}
+    db-schemas: ${micro.datasource.name}
+  sms-code: # 短信验证码相关的配置项
+    expire-times: 10m
+    send-frequency: 1m
+    send-maximum-quantity-per-day: 10
+    begin-code: 9999 # 配置 9999 方便测试。
+    end-code: 9999 # 配置 9999 方便测试。
+
+
+captcha:
+  timeout: 120 #图片验证码过期时间
+
+oa:
+  uid: dingqq
+  tokenUrl: http://218.94.60.162:22080/oaapi/token.php
+  userUrl: http://218.94.60.162:22080/oaapi/user.php
+  deptUrl: http://218.94.60.162:22080/oaapi/dept.php
+  singleLogin: http://218.94.60.162:22080/oaapi/sso.php
+  flowQueryUrl: http://218.94.60.162:22080/oaapi/flow.php
+  cron: 0 */2 * * * *
+project:
+  #获取项目管理token
+  tokenUrl: http://118.31.225.251:8588/pj-manage/api/uaa/auth/getToken
+  #获取项目管理Url
+  projectUrl: http://61.142.135.13:39527/index/

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.form.dal.mapper.FormMapper">
+
+  <resultMap id="targetDataBatchMap" type="com.micro.cloud.modules.form.result.TargetDataResult">
+    <result column="business_id" property="businessId" jdbcType="VARCHAR"/>
+    <result column="type" property="value" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <insert id="insertFormData">
+    INSERT INTO ${tableName} (${columns})
+    VALUES (${values})
+  </insert>
+
+  <update id="updateFormData">
+    UPDATE ${tableName}
+    SET ${statement}
+    WHERE business_id = #{businessId}
+  </update>
+
+  <delete id="deleteFormData">
+    DELETE
+    FROM ${tableName}
+    WHERE business_id = #{businessId}
+  </delete>
+
+  <select id="selectFormData" resultType="HashMap">
+    SELECT *
+    from ${tableName}
+    where business_id = #{businessId}
+  </select>
+
+  <select id="getTargetDataBatch" resultType="com.micro.cloud.modules.form.result.TargetDataResult">
+    select business_id, ${target} as value
+    from ${tableName}
+    <where>
+      ${target} is not null
+      <if test="ids != null and ids.size > 0">
+        and business_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+          #{id,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <!--查询合同编号取最大值-->
+  <select id="selMaxHtbh" resultType="java.lang.String">
+    select max(htbh) as maxHtbh
+    from ${tableName}
+  </select>
+
+  <!--查询变更表重大编号取最大值-->
+  <select id="selMaxZdbh" resultType="java.lang.String">
+    select max(zdbh) as maxHtbh
+    from business_form_bg
+  </select>
+
+  <select id="getFormDataBatch" resultType="java.util.Map">
+    select * from ${tableName}
+    <where>
+      <if test="ids != null and ids.size >0">
+        and business_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+          #{id,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <!--删除文件-->
+  <delete id="delFileById">
+    delete
+    from act_hi_attachment
+    where ID_ = #{id}
+  </delete>
+
+</mapper>

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.system.org.mapper.SysOrgMapper">
+
+
+  <resultMap id="orgMap" type="com.micro.cloud.modules.system.org.dataobject.SysOrg">
+    <result property="sysOrgId" column="sys_org_id"/>
+    <result property="orgName" column="org_name"/>
+    <result property="orgCreditCode" column="org_credit_code"/>
+    <result property="directId" column="direct_id"/>
+    <result property="type" column="type"/>
+    <result property="phone" column="phone"/>
+    <result property="status" column="status"/>
+    <result property="parentId" column="parent_id"/>
+    <result property="isLeaf" column="is_leaf"/>
+    <result property="createTime" column="create_time"/>
+    <result property="creatorId" column="creator_id"/>
+    <result property="creatorName" column="creator_name"/>
+    <result property="creatorDepartId" column="creator_depart_id"/>
+    <result property="creatorDepartName" column="creator_depart_name"/>
+    <result property="updaterId" column="updater_id"/>
+    <result property="updateTime" column="update_time"/>
+    <result property="updaterDepartId" column="updater_depart_id"/>
+    <result property="updaterDepartName" column="updater_depart_name"/>
+  </resultMap>
+  <sql id="org_column_list">
+    org.sys_org_id, org.org_name, org.org_credit_code,
+    org.direct_id, org.type, org.phone, org.status,
+    org.create_time, org.creator_id, org.creator_name,
+    org.creator_depart_id, org.creator_depart_name, org.update_time,
+    org.updater_id, org.updater_name, org.updater_depart_id,
+    org.updater_depart_name, org.parent_id, org.is_leaf,
+    org.nick_name
+  </sql>
+  <select id="getOrgByUserIds" resultType="com.micro.cloud.modules.system.user.vo.org.OrgUserPageRepVO">
+    select
+    su.sys_user_id as userId,
+    su.user_name,
+    su.real_name as realName,
+    org.sys_org_id as orgId,
+    org.org_name as title,
+    org.org_credit_code as creditCode,
+    org.type as orgType,
+    org.status as status
+    from sys_org org
+    left join sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+    left join sys_user su on ref.sys_user_id = su.sys_user_id
+    <where>
+      <if test="ids != null and ids.size() > 0">
+        su.sys_user_id in
+        <foreach collection="ids" open="(" separator="," close=")" item="id">
+          #{id,jdbcType=VARCHAR}
+        </foreach>
+      </if>
+    </where>
+  </select>
+  <select id="selectOrgList" parameterType="com.micro.cloud.modules.system.org.vo.SysOrgPageReqVO"
+    resultType="com.micro.cloud.modules.system.org.vo.SysOrgRespVO">
+    select org.sys_org_id as id,
+    org.org_name as title,
+    org.short_name,
+    org.org_code,
+    org.status,
+    org.order_by as orderBy,
+    org.create_time as createTime,
+    count(ref.sys_user_id) as members,
+    org.contact,
+    org.phone
+    from sys_org org
+    left join
+    sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+    <where>
+      org.type = 3
+      <if test="vo.parentId == null or vo.parentId == ''">
+        and org.parent_id is null or org.parent_id = ''
+      </if>
+      <if test="vo.parentId != null and vo.parentId != ''">
+        and org.parent_id = #{vo.parentId,jdbcType=VARCHAR}
+      </if>
+      <if test="vo.name != null and vo.name != ''">
+        and org.org_name like concat('%',#{vo.name,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="vo.code != null and vo.code != ''">
+        and org.org_code like concat('%',#{vo.code,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="vo.status != null">
+        and org.status = #{vo.status,jdbcType=TINYINT}
+      </if>
+    </where>
+    group by id
+    <if test="vo.orderBy != null and vo.sort == true">
+        order by org.${vo.orderBy} asc
+    </if>
+    <if test="vo.orderBy != null and vo.sort == false">
+      order by org.${vo.orderBy} desc
+    </if>
+    <if test="vo.orderBy == null and vo.sort == true">
+      order by org.create_time asc
+    </if>
+    <if test="vo.orderBy == null and vo.sort == false">
+      order by org.create_time desc
+    </if>
+    <if test="vo.orderBy == null and vo.sort == null">
+      order by org.create_time desc
+    </if>
+  </select>
+
+  <select id="SelAllOrg" parameterType="com.micro.cloud.modules.system.org.vo.SysOrgPageReqVO"
+          resultType="com.micro.cloud.modules.system.org.vo.SysOrgRespVO">
+    select org.sys_org_id as id,
+           org.org_name as title,
+           org.short_name,
+           org.org_code,
+           org.status,
+           org.order_by as orderBy,
+           org.create_time as createTime
+    from sys_org org
+    <where>
+      org.type = 3
+      <if test="vo.parentId != null and vo.parentId != ''">
+        and org.parent_id = #{vo.parentId,jdbcType=VARCHAR}
+      </if>
+      <if test="vo.name != null and vo.name != ''">
+        and org.org_name like concat('%',#{vo.name,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="vo.code != null and vo.code != ''">
+        and org.org_code like concat('%',#{vo.code,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="vo.status != null">
+        and org.status = #{vo.status,jdbcType=TINYINT}
+      </if>
+    </where>
+  </select>
+  <select id="getSimpleOrg" resultType="com.micro.cloud.modules.system.org.vo.SysOrgSimpleRespVO">
+    select sys_org_id as id, org_name as name from sys_org
+    <where>
+      status = 1 and type = 3
+      <if test="vo.name != null and vo.name != ''">
+        and org_name like concat('%',#{vo.name,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+    order by order_by
+  </select>
+  <select id="getUserByOrgId" resultType="com.micro.cloud.modules.system.user.vo.internal.InternalUserSimpleVO">
+    SELECT
+    su.sys_user_id AS id,
+    su.user_name,
+    su.real_name AS realName
+    FROM
+    sys_user su
+    LEFT JOIN sys_user_org_ref ref ON su.sys_user_id = ref.sys_user_id
+    LEFT JOIN sys_org org ON ref.sys_org_id = org.sys_org_id
+    <where>
+      <if test="param.orgId != null and param.orgId != ''">
+        and org.sys_org_id = #{param.orgId,jdbcType=VARCHAR}
+      </if>
+      <if test="param.userName != null and param.userName != ''">
+        and su.user_name like concat('%',#{param.userName,jdbcType=VARCHAR},'%')
+      </if>
+      <if test="param.realName != null and param.realName != ''">
+        and ( su.real_name like concat('%',#{param.realName,jdbcType=VARCHAR},'%')
+        or su.user_name like concat('%',#{param.realName,jdbcType=VARCHAR},'%') )
+      </if>
+    </where>
+  </select>
+    <select id="getSysOrgByName" resultType="com.micro.cloud.modules.system.org.dataobject.SysOrg">
+      select sys_org_id from sys_org where org_name=#{orgName,jdbcType=VARCHAR}
+    </select>
+  <select id="getSysOrgByCreatorName" resultType="com.micro.cloud.modules.system.org.dataobject.SysOrg">
+    select sys_org_id from sys_org where creator_name=#{creatorName,jdbcType=VARCHAR}
+  </select>
+
+  <update id="updateStatusBatch">
+    update sys_org set status = #{status,jdbcType=TINYINT}
+    where sys_org_id in
+    <foreach collection="orgIds" open="(" close=")" separator="," item="orgId">
+      #{orgId,jdbcType=VARCHAR}
+    </foreach>
+  </update>
+</mapper>

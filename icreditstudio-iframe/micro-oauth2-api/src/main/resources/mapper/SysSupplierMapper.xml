@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.system.supplier.mapper.SysSupplierMapper">
+
+    <select id="selectOrgList" parameterType="com.micro.cloud.modules.system.org.vo.SysOrgPageReqVO"
+            resultType="com.micro.cloud.modules.system.org.vo.SysOrgRespVO">
+        select org.sys_org_id as id,
+        org.org_name as title,
+        org.short_name,
+        org.org_code,
+        org.status,
+        org.order_by as orderBy,
+        org.create_time as createTime,
+        count(ref.sys_user_id) as members,
+        org.contact,
+        org.phone,
+        org.org_credit_code as creditCode
+        from sys_org org
+        left join
+        sys_user_org_ref ref on org.sys_org_id = ref.sys_org_id
+        <where>
+            org.type = 4
+            <if test="vo.name != null and vo.name != ''">
+                and org.org_name like concat('%',#{vo.name,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="vo.code != null and vo.code != ''">
+                and org.org_code like concat('%',#{vo.code,jdbcType=VARCHAR},'%')
+            </if>
+            <if test="vo.status != null">
+                and org.status = #{vo.status,jdbcType=TINYINT}
+            </if>
+        </where>
+        group by id
+        <if test="vo.orderBy != null and vo.sort == true">
+            order by org.${vo.orderBy} asc
+        </if>
+        <if test="vo.orderBy != null and vo.sort == false">
+            order by org.${vo.orderBy} desc
+        </if>
+        <if test="vo.orderBy == null and vo.sort == true">
+            order by org.create_time asc
+        </if>
+        <if test="vo.orderBy == null and vo.sort == false">
+            order by org.create_time desc
+        </if>
+        <if test="vo.orderBy == null and vo.sort == null">
+            order by org.create_time desc
+        </if>
+    </select>
+
+    <select id="selLowerOrg" resultType="com.micro.cloud.modules.system.org.vo.SysOrgRespVO">
+        SELECT
+            DISTINCT
+            ref.sys_supplier_hierarchy_ref_id as id,
+            org.org_name AS title,
+            org.short_name,
+            org.org_code,
+            org.STATUS,
+            org.order_by AS orderBy,
+            org.create_time AS createTime,
+            org.contact,
+            org.phone,
+            org.org_credit_code as creditCode
+        FROM
+            sys_supplier_hierarchy_ref ref
+                LEFT JOIN sys_org org ON org.sys_org_id = ref.sys_org_id
+        WHERE
+            ref.parent_id = #{vo.parentId} and org.type=4
+        order by org.create_time desc
+    </select>
+
+    <select id="selectOrgAll" parameterType="com.micro.cloud.modules.system.org.vo.SysOrgPageReqVO"
+            resultType="com.micro.cloud.modules.system.org.vo.SysOrgRespVO">
+        select org.sys_org_id as id,
+        org.org_name as title,
+        org.short_name,
+        org.org_code,
+        org.status,
+        org.order_by as orderBy,
+        org.create_time as createTime,
+        org.contact,
+        org.phone
+        from sys_org org
+        where org.type=4
+    </select>
+
+
+    <select id="selByParentIds" resultType="java.lang.String">
+        select sys_org_id from sys_supplier_hierarchy_ref where parent_id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <delete id="deleteByOrgIds">
+        delete from sys_supplier_hierarchy_ref where sys_org_id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByParentIds">
+        delete from sys_supplier_hierarchy_ref where parent_id in
+        <foreach collection="list" item="item" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

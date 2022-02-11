@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.micro.cloud.modules.process.dal.mapper.ProcessAssociateSettingMapper">
+
+  <select id="getAssociatedProcessList" resultType="com.micro.cloud.modules.process.vo.TaskVO">
+    select setting.associated_process_key
+    from process_associate_setting setting
+           left join process_associate_setting_ref ref
+                     on setting.process_associate_setting_id = ref.process_associate_setting_id
+
+            <where>
+
+            </where>
+  </select>
+</mapper>

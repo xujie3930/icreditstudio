@@ -1,0 +1,20 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.0.178:8848
+        group: DEV
+  # redis配置信息
+  redis:
+    host: 192.168.0.210 # Redis服务器地址
+    database: 0 # Redis数据库索引（默认为0）
+    port: 6379 # Redis服务器连接端口
+    password:  # Redis服务器连接密码（默认为空）
+    timeout: 3000ms # 连接超时时间（毫秒）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  security:
+    user:
+      name: admin #账号
+      password: 1qaz2WSX #密码
+debug: true #开启debug模式-package}.modules
