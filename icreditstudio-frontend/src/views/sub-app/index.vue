@@ -38,7 +38,7 @@ export default {
   },
 
   updated() {
-    bootstrap()
+    this.$nextTick(() => bootstrap())
   }
 }
 </script>

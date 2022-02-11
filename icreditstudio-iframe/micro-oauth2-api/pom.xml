@@ -12,7 +12,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.micro.cloud</groupId>
+      <groupId>com.jinninghui.datasphere</groupId>
       <artifactId>micro-framework</artifactId>
     </dependency>
     <dependency>

@@ -19,7 +19,7 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.micro.cloud</groupId>
+      <groupId>com.jinninghui.datasphere</groupId>
       <artifactId>micro-common</artifactId>
     </dependency>
     <dependency>

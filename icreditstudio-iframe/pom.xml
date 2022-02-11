@@ -99,13 +99,13 @@
             </dependency>
             <!--micro 通用模块-->
             <dependency>
-                <groupId>com.micro.cloud</groupId>
+                <groupId>com.jinninghui.datasphere</groupId>
                 <artifactId>micro-common</artifactId>
                 <version>${micro-common.version}</version>
             </dependency>
             <!--micro基础设施-->
             <dependency>
-                <groupId>com.micro.cloud</groupId>
+                <groupId>com.jinninghui.datasphere</groupId>
                 <artifactId>micro-framework</artifactId>
                 <version>${micro-framework.version}</version>
             </dependency>
