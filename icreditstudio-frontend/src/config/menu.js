@@ -46,12 +46,22 @@ export const secondMenuMapping = {
     icon: 'menu-datasource',
     iconActive: 'menu-datasource-active'
   },
+  '/subapp/datasource/list': {
+    name: '数据源管理',
+    icon: 'menu-datasource',
+    iconActive: 'menu-datasource-active'
+  },
   '/workspace/data-model': {
     name: '数仓建模',
     icon: 'menu-modeling',
     iconActive: 'menu-modeling-active'
   },
   '/data-manage/data-sync': {
+    name: '数据同步',
+    icon: 'menu-sync',
+    iconActive: 'menu-sync-active'
+  },
+  '/subapp/datasync/list': {
     name: '数据同步',
     icon: 'menu-sync',
     iconActive: 'menu-sync-active'
@@ -67,6 +77,11 @@ export const secondMenuMapping = {
     iconActive: 'menu-schedule-active'
   },
   '/data-manage/data-dictionary': {
+    name: '字典表',
+    icon: 'menu-dictionary',
+    iconActive: 'menu-dictionary-active'
+  },
+  '/subapp/dictionary/list': {
     name: '字典表',
     icon: 'menu-dictionary',
     iconActive: 'menu-dictionary-active'
