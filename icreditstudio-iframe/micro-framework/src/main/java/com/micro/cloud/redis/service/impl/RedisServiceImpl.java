@@ -1,12 +1,14 @@
 package com.micro.cloud.redis.service.impl;
 
 import com.micro.cloud.redis.service.RedisService;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * redis操作实现类
@@ -14,8 +16,10 @@ import org.springframework.data.redis.core.RedisTemplate;
  * @author roy
  * @date 2020/3/3
  */
+@Component
 public class RedisServiceImpl implements RedisService {
-  @Autowired private RedisTemplate<String, Object> redisTemplate;
+  @Resource
+  private RedisTemplate<String, Object> redisTemplate;
 
   @Override
   public void set(String key, Object value, long time) {

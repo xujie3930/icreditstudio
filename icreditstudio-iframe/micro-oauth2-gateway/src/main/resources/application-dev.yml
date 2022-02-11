@@ -1,12 +1,12 @@
 server:
-  port: 9201
+  port: 13249
 spring:
   application:
     name: micro-oauth2-gateway
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.0.178:8848
+        server-addr: 192.168.110.118:8848
         group: DEV
     gateway:
       globalcors:
@@ -24,7 +24,37 @@ spring:
         #相同header多个值时的处理方式，三种规则可选（RETAIN_FIRST|RETAIN_UNIQUE|RETAIN_LAST）
         - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
 
-      routes: #配置路由路径
+      routes: # 路由可以有多个
+        - id: workspace # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://workspace # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/workspace/**
+          # gateway⽹关从服务注册中⼼获取实例信息然后负载后路由
+        - id: system # 我们⾃定义的路由 ID，保持唯⼀
+          uri: lb://uaa #服务名不要用下划线
+          predicates:
+            - Path=/system/**
+        - id: datasourcenew # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://datasourcenew # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/datasource/**
+        - id: datasync # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://datasync # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/datasync/**
+        - id: metadata # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://metadata # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/metadata/**
+        - id: dolphinscheduler # 我们⾃定义的路由 ID，保持唯⼀
+          #uri: http://127.0.0.1:8082 # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          uri: lb://dolphinscheduler # ⽬标服务地址 部署多实例） 动态路由：uri配置的应该是⼀个服务名称，⽽不应该是⼀个具体的服务实例的地址
+          predicates:
+            - Path=/dolphinscheduler/**
         - id: oauth2-api-route
           uri: lb://micro-oauth2-api
           predicates:
@@ -43,24 +73,6 @@ spring:
             - Path=/proc/**
           filters:
             - StripPrefix=1
-        - id: jiangbeilian-backend
-          uri: http://192.168.0.125:8000/
-          predicates:
-            - Path=/jiangbeilian/**
-          filters:
-            - StripPrefix=1
-        - id: dataresource-backend
-          uri: lb://dataresource-backend
-          predicates:
-            - Path=/dataresource/**
-          filters:
-            - StripPrefix=1
-        - id: gongjiankx-backend
-          uri: http://61.142.135.13:39527/
-          predicates:
-            - Path=/kx/**
-          filters:
-            - StripPrefix=1
 
       discovery:
         locator:
@@ -72,7 +84,7 @@ spring:
         jwt:
           jwk-set-uri: 'http://192.168.0.178:9526/rsa/publicKey' #配置RSA的公钥访问地址
   redis:
-    host: 192.168.0.210 # Redis服务器地址
+    host: 192.168.110.7 # Redis服务器地址
     database: 0 # Redis数据库索引（默认为0）
     port: 6379 # Redis服务器连接端口
     password:  # Redis服务器连接密码（默认为空）

@@ -1,5 +1,5 @@
 server:
-  port: 9201
+  port: 13249
 spring:
   main:
     web-application-type: reactive
